@@ -5,7 +5,13 @@
     <RootNamespace>Faemiyah.BtDamageResolver.Common</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.Common</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.217</Version>
+    <Version>0.0.218</Version>
+    <PackageProjectUrl>https://github.com/Warmag2/BtDamageResolver</PackageProjectUrl>
+    <Company>Faemiyah</Company>
+    <Product>BtDamageResolver</Product>
+    <Authors>Warma</Authors>
+    <Copyright>Faemiyah 2020</Copyright>
+    <RepositoryUrl>https://github.com/Warmag2/BtDamageResolver</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
