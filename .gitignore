@@ -154,3 +154,6 @@ __pycache__/
 
 # .svg exports from Corel
 *.svg
+
+# Mac folder properties
+.DS_Store

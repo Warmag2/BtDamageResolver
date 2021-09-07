@@ -14,7 +14,7 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - orleansdb # Required for actor persistence
+      - orleansdb # Data source
     restart: on-failure
 
   # Data Importer
