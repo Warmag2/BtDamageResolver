@@ -16,7 +16,7 @@ To be able to use the source, add the following personal access tokens with read
     <packageSourceCredentials>
       <githubWarma>
         <add key="Username" value="Warmag2" />
-        <add key="ClearTextPassword" value="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" />
+        <add key="ClearTextPassword" value="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" />
       </githubWarma>
     </packageSourceCredentials>
     
