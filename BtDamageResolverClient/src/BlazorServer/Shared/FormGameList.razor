@@ -1,0 +1,47 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+
+<table class="resolver_table resolver_table_gamelist">
+    <tr>
+        <th>
+            Game Name
+        </th>
+        <th>
+            Players
+        </th>
+        <th>
+            Last activity
+        </th>
+        <th>
+            <button class="resolver_button" @onclick="RefreshGameList">Refresh</button>
+        </th>
+    </tr>
+    @if (Games != null)
+    {
+        @foreach (var game in Games)
+        {
+            <FormGameEntry Game="@game" OnJoin="@OnGameJoin"></FormGameEntry>
+        }
+    }
+</table>
+
+
+@code {
+    [Parameter]
+    public List<GameEntry> Games { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnJoin { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnRefresh { get; set; }
+
+    private void OnGameJoin(string gameName)
+    {
+        OnJoin.InvokeAsync(gameName);
+    }
+
+    private void RefreshGameList()
+    {
+        OnRefresh.InvokeAsync(new object());
+    }
+}

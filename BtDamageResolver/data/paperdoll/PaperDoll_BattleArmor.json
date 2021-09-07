@@ -1,0 +1,31 @@
+{
+  "Type": "BattleArmor",
+  "AttackType": "Normal",
+  "Direction": "Front",
+  "LocationMapping": {
+    "2": [ "BattleArmor" ],
+    "3": [ "BattleArmor" ],
+    "4": [ "BattleArmor" ],
+    "5": [ "BattleArmor" ],
+    "6": [ "BattleArmor" ],
+    "7": [ "BattleArmor" ],
+    "8": [ "BattleArmor" ],
+    "9": [ "BattleArmor" ],
+    "10": [ "BattleArmor" ],
+    "11": [ "BattleArmor" ],
+    "12": [ "BattleArmor" ]
+  },
+  "CriticalDamageMapping": {
+    "2": "None",
+    "3": "None",
+    "4": "None",
+    "5": "None",
+    "6": "None",
+    "7": "None",
+    "8": "None",
+    "9": "None",
+    "10": "None",
+    "11": "None",
+    "12": "None"
+  }
+} 

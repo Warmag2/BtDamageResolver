@@ -1,0 +1,68 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+
+@if (_criticalDamageTable != null)
+{
+    <div class="resolver_div_componentrow">
+        <table class="resolver_table">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>@_criticalDamageTable.GetId()</td>
+            </tr>
+            <tr>
+                <td>Unit Type</td>
+                <td>@_criticalDamageTable.UnitType</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>@_criticalDamageTable.Type</td>
+            </tr>
+            <tr>
+                <td>Location</td>
+                <td>@_criticalDamageTable.Location</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="resolver_div_componentrow">
+        <table class="resolver_table">
+            <tr>
+                <th>Dice Roll</th>
+                <th>Mapping</th>
+            </tr>
+            @foreach (var item in _criticalDamageTable.Mapping)
+            {
+                <tr>
+                    <td>
+                        @item.Key
+                    </td>
+                    <td>
+                        @(string.Join(", ", item.Value))
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+@code
+{
+    private CriticalDamageTable _criticalDamageTable;
+
+        [Parameter]
+        public string CriticalDamageTableName { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            if (!string.IsNullOrEmpty(CriticalDamageTableName) && CommonData.MapCriticalDamageTable.ContainsKey(CriticalDamageTableName))
+            {
+                _criticalDamageTable = CommonData.MapCriticalDamageTable[CriticalDamageTableName];
+            }
+            await base.OnInitializedAsync();
+        }
+        }

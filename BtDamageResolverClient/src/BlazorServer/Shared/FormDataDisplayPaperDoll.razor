@@ -1,0 +1,102 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+
+@if (_paperDoll != null)
+{
+    <div class="resolver_div_componentrow">
+
+        <table class="resolver_table">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>@_paperDoll.GetId()</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>@_paperDoll.Type</td>
+            </tr>
+            <tr>
+                <td>Attack Type</td>
+                <td>@_paperDoll.AttackType</td>
+            </tr>
+            <tr>
+                <td>Direction</td>
+                <td>@_paperDoll.Direction</td>
+            </tr>
+            <tr>
+                <td>Rules</td>
+                <td>
+                    @if(_paperDoll.Rules != null && _paperDoll.Rules.Any())
+                    {
+                        @(string.Join(", ", _paperDoll.Rules.Select(r => r.ToString())))
+                    }
+                    else
+                    {
+                        @("N/A")
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="resolver_div_componentrow">
+        <table class="resolver_table">
+            <tr>
+                <th>Dice Roll</th>
+                <th>Location Mapping</th>
+            </tr>
+            @foreach (var location in _paperDoll.LocationMapping)
+            {
+                <tr>
+                    <td>
+                        @location.Key
+                    </td>
+                    <td>
+                        @(string.Join(", ", location.Value))
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+
+    <div class="resolver_div_componentcell">
+        <table class="resolver_table">
+            <tr>
+                <th>Dice Roll</th>
+                <th>Critical Damage Mapping</th>
+            </tr>
+            @foreach (var location in _paperDoll.CriticalDamageMapping)
+            {
+                <tr>
+                    <td>
+                        @location.Key
+                    </td>
+                    <td>
+                        @location.Value
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+@code
+{
+    private PaperDoll _paperDoll;
+
+    [Parameter]
+    public string PaperDollName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(PaperDollName) && CommonData.MapPaperDoll.ContainsKey(PaperDollName))
+        {
+            _paperDoll = CommonData.MapPaperDoll[PaperDollName];
+        }
+        await base.OnInitializedAsync();
+    }
+}

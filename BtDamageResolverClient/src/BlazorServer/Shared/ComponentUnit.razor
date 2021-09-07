@@ -1,0 +1,128 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Extensions
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject VisualStyleController VisualStyleController
+@inject UserStateController UserStateController
+
+<div class="resolver_div_componentcontainer">
+    
+    <div class="resolver_div_componentrow">
+        <div class="resolver_div_unitid">
+            @UnitEntry.Id
+        </div>
+    </div>
+    
+    <div class="resolver_div_componentrow">
+            
+        <div class="resolver_div_unit resolver_div_unitname resolver_div_componentcell mobile">
+            @UnitEntry.Name
+        </div>
+
+        <div class="resolver_div_unit resolver_div_unitname resolver_div_componentcell desktop">
+            @for (int ii = 0; ii < UnitEntry.Name.Length; ii++)
+            {
+                @UnitEntry.Name[ii]
+                if (ii != UnitEntry.Name.Length - 1)
+                {
+                    <br />
+                }
+            }
+        </div>
+            
+        <div class="resolver_div_unit resolver_div_componentcell">
+            <table>
+                <tr class="resolver_tr_unitinformation">
+                    <td class="resolver_td_unitinformation_label">Gunnery/Piloting</td>
+                    <td class="resolver_td_unitinformation_data">@UnitEntry.Gunnery / @UnitEntry.Piloting</td>
+                </tr>
+                <tr class="resolver_tr_unitinformation">
+                    <td class="resolver_td_unitinformation_label">Type</td>
+                    <td class="resolver_td_unitinformation_data">@UnitEntry.Type</td>
+            </tr>
+            <tr class="resolver_tr_unitinformation" style="@(VisualStyleController.HideElement(VisualStyleController.GetTonnageHidden(UnitEntry.Type)))">
+                <td class="resolver_td_unitinformation_label">Tonnage</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.Tonnage</td>
+            </tr>
+            <tr class="resolver_tr_unitinformation" style="@(VisualStyleController.HideElement(VisualStyleController.GetTroopersHidden(UnitEntry.Type)))">
+                <td class="resolver_td_unitinformation_label">Troopers</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.Troopers</td>
+            </tr>
+                <tr class="resolver_tr_unitinformation">
+                    <td class="resolver_td_unitinformation_label" colspan="2">
+                        <div style="@(VisualStyleController.HideElement(!UnitEntry.Narced))" class="resolver_div_unitinformation_data">Narced</div>
+                        <div style="@(VisualStyleController.HideElement(!UnitEntry.Tagged))" class="resolver_div_unitinformation_data">Tagged</div>
+                    </td>
+                </tr>
+                @if (UnitEntry.Features.Any())
+                {
+                    <tr class="resolver_tr_unitinformation">
+                        <td class="resolver_td_unitinformation_label">Features</td>
+                        <td class="resolver_td_unitinformation_data">
+                            @foreach (var feature in UnitEntry.Features)
+                            {
+                                <div class="resolver_div_unitinformation_data">
+                                    @($"{feature}")
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (UnitEntry.Quirks.Any())
+                {
+                    <tr class="resolver_tr_unitinformation">
+                        <td class="resolver_td_unitinformation_label">Quirks</td>
+                        <td class="resolver_td_unitinformation_data">
+                            @foreach (var quirk in UnitEntry.Quirks)
+                            {
+                                <div class="resolver_div_unitinformation_data">
+                                    @($"{quirk}")
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+            <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label">Movement</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.MovementClass - @UnitEntry.Movement</td>
+            </tr>
+            <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label">Target</td>
+                <td class="resolver_td_unitinformation_data">@UserStateController.GetUnitName(UnitEntry.FiringSolution.TargetUnit)</td>
+            </tr>
+            <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label">Modifier</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.FiringSolution.AttackModifier</td>
+            </tr>
+            <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label">Distance</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.FiringSolution.Distance</td>
+            </tr>
+            <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label">Facing</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.FiringSolution.Direction</td>
+            </tr>
+            <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label">Cover</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.FiringSolution.Cover</td>
+            </tr>
+            <tr>
+                <td class="resolver_td_unitinformation_label" colspan="2">
+                    <table>
+                        @foreach (var weaponEntry in UnitEntry.Weapons)
+                        {
+                            <ComponentWeaponEntry WeaponEntry=@weaponEntry></ComponentWeaponEntry> // Removed key from here
+                        }
+                    </table>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public UnitEntry UnitEntry { get; set; }
+}

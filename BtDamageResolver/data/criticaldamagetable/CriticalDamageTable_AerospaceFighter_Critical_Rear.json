@@ -1,0 +1,18 @@
+{
+  "Type": "Critical",
+  "Location": "Rear",
+  "UnitType": "AerospaceFighter",
+  "Mapping": {
+    "2": [ "WeaponDestroyed" ],
+    "3": [ "HeatSink" ],
+    "4": [ "Fuel" ],
+    "5": [ "WeaponDestroyed" ],
+    "6": [ "Engine" ],
+    "7": [ "Control" ],
+    "8": [ "Engine" ],
+    "9": [ "WeaponDestroyed" ],
+    "10": [ "Fuel" ],
+    "11": [ "HeatSink" ],
+    "12": [ "WeaponDestroyed" ]
+  }
+}

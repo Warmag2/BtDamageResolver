@@ -1,0 +1,95 @@
+[
+  {
+    "Name": "Rocket Launcher 10",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 11,
+      "Long": 18,
+      "Extreme": 18
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 3,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "Rocket Launcher 15",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 15
+    },
+    "DamageAerospace": {
+      "Short": 9
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 4,
+      "Medium": 9,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 4,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "Rocket Launcher 20",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 20
+    },
+    "DamageAerospace": {
+      "Short": 12
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 7,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 5,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  }
+]

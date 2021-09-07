@@ -1,0 +1,32 @@
+{
+  "Type": "Vehicle",
+  "AttackType": "Normal",
+  "Direction": "Rear",
+  "Rules": [ "ImprovedVehicleSurvivability" ],
+  "LocationMapping": {
+    "2": [ "Rear" ],
+    "3": [ "Rear" ],
+    "4": [ "Rear" ],
+    "5": [ "Left" ],
+    "6": [ "Rear" ],
+    "7": [ "Rear" ],
+    "8": [ "Rear" ],
+    "9": [ "Right" ],
+    "10": [ "Turret" ],
+    "11": [ "Turret" ],
+    "12": [ "Turret" ]
+  },
+  "CriticalDamageMapping": {
+    "2": "Critical",
+    "3": "Motive",
+    "4": "Motive",
+    "5": "None",
+    "6": "None",
+    "7": "None",
+    "8": "None",
+    "9": "None",
+    "10": "None",
+    "11": "None",
+    "12": "Critical"
+  }
+}

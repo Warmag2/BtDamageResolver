@@ -1,0 +1,43 @@
+﻿<label class="resolver_label_checkboxradio">
+    <input class="" type="checkbox" disabled="@Disabled" @bind="CheckedInternal">
+    <span class="resolver_span_checkboxradio @(Disabled ? "disabled" : string.Empty) @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")">@ChildContent</span>
+</label>
+
+@code
+{
+    private bool _checked;
+    private DateTime _updateTimeStamp = DateTime.MinValue;
+
+    [Parameter]
+    public bool Checked { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public DateTime ComparisonTimeStamp { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnChanged { get; set; }
+
+    public bool CheckedInternal
+    {
+        get => _checked;
+        set
+        {
+            _checked = value;
+            _updateTimeStamp = DateTime.UtcNow;
+            OnChanged.InvokeAsync(value);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        CheckedInternal = Checked;
+        _updateTimeStamp = DateTime.MinValue;
+        base.OnInitialized();
+    }
+}

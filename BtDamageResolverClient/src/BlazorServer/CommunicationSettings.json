@@ -1,0 +1,14 @@
+﻿{
+  "LoggingOptions": {
+    "LogFile": "/logs/BtDamageResolver_.log",
+    "ProgramName": "BtDamageResolver",
+    "LogToConsole": true,
+    "LogToFile": false,
+    "LogLevel": "Information",
+    "LogLevelOrleans": "Warning"
+  },
+  "ClusterOptions": {
+    "Invariant": "Npgsql",
+    "ConnectionString": "User ID=faemiyah;Password=fuRZdwzQXl98wlNH8_bE;Host=orleansdb;Port=5432;Database=BtDamageResolver"
+  }
+}

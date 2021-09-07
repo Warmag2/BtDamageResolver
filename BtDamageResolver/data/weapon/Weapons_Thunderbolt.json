@@ -1,0 +1,102 @@
+[
+  {
+    "Name": "Thunderbolt-5",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 12,
+      "Long": 18,
+      "Extreme": 18
+    },
+    "RangeAerospace": "Medium",
+    "RangeMinimum": {
+      "Normal": 5,
+      "Special": 5
+    },
+    "Heat": 3,
+    "UsesAmmo": true
+  },
+  {
+    "Name": "Thunderbolt-10",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 12,
+      "Long": 18,
+      "Extreme": 18
+    },
+    "RangeAerospace": "Medium",
+    "RangeMinimum": {
+      "Normal": 5,
+      "Special": 5
+    },
+    "Heat": 5,
+    "UsesAmmo": true
+  },
+  {
+    "Name": "Thunderbolt-15",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 15
+    },
+    "DamageAerospace": {
+      "Short": 15
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 12,
+      "Long": 18,
+      "Extreme": 18
+    },
+    "RangeAerospace": "Medium",
+    "RangeMinimum": {
+      "Normal": 5,
+      "Special": 5
+    },
+    "Heat": 7,
+    "UsesAmmo": true
+  },
+  {
+    "Name": "Thunderbolt-20",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 20
+    },
+    "DamageAerospace": {
+      "Short": 20
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 12,
+      "Long": 18,
+      "Extreme": 18
+    },
+    "RangeAerospace": "Medium",
+    "RangeMinimum": {
+      "Normal": 5,
+      "Special": 5
+    },
+    "Heat": 8,
+    "UsesAmmo": true
+  }
+]

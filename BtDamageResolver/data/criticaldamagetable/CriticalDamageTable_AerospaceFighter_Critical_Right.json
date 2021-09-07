@@ -1,0 +1,18 @@
+{
+  "Type": "Critical",
+  "Location": "Right",
+  "UnitType": "AerospaceFighter",
+  "Mapping": {
+    "2": [ "WeaponDestroyed" ],
+    "3": [ "Gear" ],
+    "4": [ "Sensors" ],
+    "5": [ "CrewKilled" ],
+    "6": [ "WeaponDestroyed" ],
+    "7": [ "Avionics" ],
+    "8": [ "Bomb" ],
+    "9": [ "Control" ],
+    "10": [ "Engine" ],
+    "11": [ "Gear" ],
+    "12": [ "WeaponDestroyed" ]
+  }
+}

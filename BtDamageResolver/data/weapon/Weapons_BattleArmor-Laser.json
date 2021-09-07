@@ -1,0 +1,138 @@
+[
+  {
+    "Name": "BA Small Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 3,
+      "Extreme": 3
+    },
+    "RangeAerospace": "Short",
+    "Heat": 1
+  },
+  {
+    "Name": "BA Medium Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 3
+  },
+  {
+    "Name": "BA ER Small Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 5,
+      "Extreme": 5
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2
+  },
+  {
+    "Name": "BA ER Medium Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 4,
+      "Medium": 8,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 5
+  },
+  {
+    "Name": "BA Small Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 3,
+      "Extreme": 3
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+      "Special": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  },
+  {
+    "Name": "BA Medium Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 6
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 6,
+      "Extreme": 6
+    },
+    "RangeAerospace": "Short",
+    "Heat": 4,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Pulse" } ],
+      "Special": [ { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  }
+]

@@ -1,0 +1,124 @@
+﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+@inject IResolverCommunicator ResolverCommunicator
+@inject UserStateController UserStateController
+
+@{
+    var adminRights = UserStateController.PlayerState.PlayerId == UserStateController.GameState.AdminId;
+}
+
+<div class="resolver_div_componentlistcontainer">
+
+    <div class="resolver_div_componentcontainer">
+        <h3 class="resolver_header">
+            Tools
+        </h3>
+
+        <div class="resolver_div_componentrow">
+            <button class="resolver_button" disabled="@(!adminRights)" @onclick="ForceReady">Force Ready</button>
+            <button class="resolver_button" disabled="@(!adminRights)" @onclick="ShowModalKick">Kick Player</button>
+            <button class="resolver_button" @onclick="ShowModalMoveUnit">Move Unit</button>
+        </div>
+    </div>
+</div>
+
+@if (_showModalKick)
+{
+    <div class="resolver_modal_background">
+        <div class="resolver_modal" id="passwordModal" style="display:block" role="dialog">
+            <!-- Modal Header -->
+            <div class="resolver_modal_header resolver_header">
+                <h4 class="resolver_modal_title">Kick Player</h4>
+                <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="resolver_modal_body">
+                <FormComboBox Options="@UserStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="resolver_modal_footer">
+                <button type="button" class="resolver_button" @onclick=@Kick>Submit</button>
+                <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_showModalMoveUnit)
+{
+    <div class="resolver_modal_background">
+        <div class="resolver_modal" id="passwordModal" style="display:block" role="dialog">
+            <!-- Modal Header -->
+            <div class="resolver_modal_header resolver_header">
+                <h4 class="resolver_modal_title">Move Unit to Player</h4>
+                <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="resolver_modal_body">
+                <FormComboBox Options="@UserStateController.GetUnitIds()" OnChanged="(Guid unitId) => OnUnitIdChanged(unitId)"></FormComboBox>
+                <FormComboBox Options="@UserStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="resolver_modal_footer">
+                <button type="button" class="resolver_button" @onclick=@MoveUnit>Submit</button>
+                <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code
+{
+    private bool _showModalKick;
+    private bool _showModalMoveUnit;
+    private string _playerName = string.Empty;
+    private Guid _unitId = Guid.Empty;
+
+    private void OnPlayerNameChanged(string playerName)
+    {
+        _playerName = playerName;
+    }
+
+    private void OnUnitIdChanged(Guid unitId)
+    {
+        _unitId = unitId;
+    }
+
+    private async Task ForceReady()
+    {
+        await ResolverCommunicator.ForceReady();
+    }
+
+    private async Task Kick()
+    {
+        ModalClose();
+        await ResolverCommunicator.KickPlayer(_playerName);
+    }
+
+    private async Task MoveUnit()
+    {
+        ModalClose();
+        await ResolverCommunicator.MoveUnit(_unitId, _playerName);
+    }
+
+    private void ModalClose()
+    {
+        _showModalKick = false;
+        _showModalMoveUnit = false;
+    }
+
+    private void ShowModalKick()
+    {
+        _showModalKick = true;
+    }
+
+    private void ShowModalMoveUnit()
+    {
+        _showModalMoveUnit = true;
+    }
+}

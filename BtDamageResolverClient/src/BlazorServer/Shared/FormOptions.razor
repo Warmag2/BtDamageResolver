@@ -1,0 +1,233 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+@inject UserStateController UserStateController
+@inject VisualStyleController VisualStyleController
+
+@{
+    var adminRights = UserStateController.PlayerState.PlayerId == UserStateController.GameState.AdminId;
+}
+
+<div class="resolver_div_componentrow">
+
+    <h3 class="resolver_header">
+        Default visibility of elements in the dashboard
+    </h3>
+
+    <div class="resolver_div_options">
+        <FormCheckbox Checked="@UserStateController.PlayerOptions.ShowToolsOnMainScreenByDefault" OnChanged="@OnToolVisibilityChanged">Tools</FormCheckbox>
+        <FormCheckbox Checked="@UserStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormCheckbox>
+        <FormCheckbox Checked="@UserStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormCheckbox>
+        <FormCheckbox Checked="@UserStateController.PlayerOptions.ShowOtherUnitsOnMainScreenByDefault" OnChanged="@OnOtherUnitVisibilityChanged">Other players' units</FormCheckbox>
+    </div>
+
+</div>
+
+<div class="resolver_div_componentrow">
+
+    <h3 class="resolver_header">
+        Default visibility of other players' damage reports on the dashboard
+    </h3>
+
+    <div class="resolver_div_options">
+        <FormCheckbox Checked="@UserStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Show other players' damage reports on the dashboard</FormCheckbox>
+    </div>
+
+</div>
+
+<div class="resolver_div_componentrow">
+
+    <h3 class="resolver_header">
+        Default visibility of the attack log in damage reports
+    </h3>
+
+    <div class="resolver_div_options">
+        <FormCheckbox Checked="@UserStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Show attack logs</FormCheckbox>
+    </div>
+
+</div>
+
+<div class="resolver_div_componentrow">
+
+    <h3 class="resolver_header">
+        Default visibility of individual attack log entries in the attack log
+    </h3>
+
+    <div class="resolver_div_options">
+        @foreach (var attackLogEntryType in UserStateController.PlayerOptions.AttackLogEntryVisibility)
+        {
+            <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
+        }
+    </div>
+
+</div>
+
+<div class="resolver_div_componentrow">
+
+    <h2 class="resolver_header">
+        Game options
+    </h2>
+
+    @if (UserStateController.GameOptions != null)
+    {
+        <h3 class="resolver_header">
+            General rules
+        </h3>
+
+        <div class="resolver_div_options">
+            Use of floating critical rule
+            <FormCheckbox @key="@UserStateController.GameOptions.TimeStamp" Checked="@UserStateController.GameOptions.Rules[Rule.FloatingCritical]" Disabled="@(!adminRights)" OnChanged="@OnRuleFloatingCriticalChanged">Floating Critical</FormCheckbox>
+        </div>
+
+
+        <h3 class="resolver_header">
+            Weather conditions
+        </h3>
+
+        <div class="resolver_div_options">
+            Modifier to all weapon attacks
+            <FormRadio @key="@UserStateController.GameOptions.TimeStamp" Options="@CommonData.MapAttackModifier" SelectedOption="@UserStateController.GameOptions.PenaltyAll" Disabled="@(!adminRights)" OnChanged="(int penalty) => OnWeatherModifierChangedAll(penalty)"></FormRadio>
+        </div>
+        <div class="resolver_div_options">
+            Modifier to Ballistic weapon attacks
+            <FormRadio @key="@UserStateController.GameOptions.TimeStamp" Options="@CommonData.MapAttackModifier" SelectedOption="@UserStateController.GameOptions.PenaltyBallistic" Disabled="@(!adminRights)" OnChanged="(int penalty) => OnWeatherModifierChangedBallistic(penalty)"></FormRadio>
+        </div>
+        <div class="resolver_div_options">
+            Modifier to Energy weapon attacks
+            <FormRadio @key="@UserStateController.GameOptions.TimeStamp" Options="@CommonData.MapAttackModifier" SelectedOption="@UserStateController.GameOptions.PenaltyEnergy" Disabled="@(!adminRights)" OnChanged="(int penalty) => OnWeatherModifierChangedEnergy(penalty)"></FormRadio>
+        </div>
+        <div class="resolver_div_options">
+            Modifier to Missile weapon attacks
+            <FormRadio @key="@UserStateController.GameOptions.TimeStamp" Options="@CommonData.MapAttackModifier" SelectedOption="@UserStateController.GameOptions.PenaltyMissile" Disabled="@(!adminRights)" OnChanged="(int penalty) => OnWeatherModifierChangedMissile(penalty)"></FormRadio>
+        </div>
+    }
+    else
+    {
+        <div class="resolver_div_options">
+            Not connected to a game.
+        </div>
+    }
+
+</div>
+
+@code {
+    private void NotifyPlayerOptionsChanged()
+    {
+        UserStateController.PlayerOptions.TimeStamp = DateTime.UtcNow;
+        UserStateController.NotifyPlayerOptionsChanged();
+    }
+
+    private void NotifyGameOptionsChanged()
+    {
+        UserStateController.GameOptions.TimeStamp = DateTime.UtcNow;
+        UserStateController.NotifyGameOptionsChanged();
+    }
+
+    private void OnAttackLogVisibilityChanged(bool attackLogVisibility)
+    {
+        if (UserStateController.PlayerOptions.ShowAttackLogByDefault != attackLogVisibility)
+        {
+            UserStateController.PlayerOptions.ShowAttackLogByDefault = attackLogVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnToolVisibilityChanged(bool toolVisibility)
+    {
+        if (UserStateController.PlayerOptions.ShowToolsOnMainScreenByDefault != toolVisibility)
+        {
+            UserStateController.PlayerOptions.ShowToolsOnMainScreenByDefault = toolVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnDamageRequestVisibilityChanged(bool damageRequestVisibility)
+    {
+        if (UserStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault != damageRequestVisibility)
+        {
+            UserStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault = damageRequestVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnDamageReportVisibilityChanged(bool damageReportVisibility)
+    {
+        if (UserStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault != damageReportVisibility)
+        {
+            UserStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault = damageReportVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnOtherPlayerDamageReportVisibilityChanged(bool damageReportVisibility)
+    {
+        if (UserStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault != damageReportVisibility)
+        {
+            UserStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault = damageReportVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnOtherUnitVisibilityChanged(bool otherUnitVisibility)
+    {
+        if (UserStateController.PlayerOptions.ShowOtherUnitsOnMainScreenByDefault != otherUnitVisibility)
+        {
+            UserStateController.PlayerOptions.ShowOtherUnitsOnMainScreenByDefault = otherUnitVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnAttackLogEntryVisibilityChanged(AttackLogEntryType attackLogEntryType, bool entryVisibility)
+    {
+        if (UserStateController.PlayerOptions.AttackLogEntryVisibility[attackLogEntryType] != entryVisibility)
+        {
+            UserStateController.PlayerOptions.AttackLogEntryVisibility[attackLogEntryType] = entryVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnRuleFloatingCriticalChanged(bool ruleFloatingCritical)
+    {
+        if (UserStateController.GameOptions.Rules[Rule.FloatingCritical] != ruleFloatingCritical)
+        {
+            UserStateController.GameOptions.Rules[Rule.FloatingCritical] = ruleFloatingCritical;
+            NotifyGameOptionsChanged();
+        }
+    }
+
+    private void OnWeatherModifierChangedAll(int modifier)
+    {
+        if (UserStateController.GameOptions.PenaltyAll != modifier)
+        {
+            UserStateController.GameOptions.PenaltyAll = modifier;
+            NotifyGameOptionsChanged();
+        }
+    }
+
+    private void OnWeatherModifierChangedBallistic(int modifier)
+    {
+        if (UserStateController.GameOptions.PenaltyBallistic != modifier)
+        {
+            UserStateController.GameOptions.PenaltyBallistic = modifier;
+            NotifyGameOptionsChanged();
+        }
+    }
+
+    private void OnWeatherModifierChangedEnergy(int modifier)
+    {
+        if (UserStateController.GameOptions.PenaltyEnergy != modifier)
+        {
+            UserStateController.GameOptions.PenaltyEnergy = modifier;
+            NotifyGameOptionsChanged();
+        }
+    }
+
+    private void OnWeatherModifierChangedMissile(int modifier)
+    {
+        if (UserStateController.GameOptions.PenaltyMissile != modifier)
+        {
+            UserStateController.GameOptions.PenaltyMissile = modifier;
+            NotifyGameOptionsChanged();
+        }
+    }
+}

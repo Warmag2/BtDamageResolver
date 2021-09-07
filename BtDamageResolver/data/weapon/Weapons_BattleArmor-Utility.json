@@ -1,0 +1,53 @@
+[
+  {
+    "Name": "BA Narc",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 1
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 5,
+      "Extreme": 5
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0,
+    "UsesAmmo": true,
+    "SpecialDamage": {
+      "Normal": { "Data": "1", "Type": "Narc" },
+      "Special": { "Data": "1", "Type": "Narc" }
+    },
+    "ClusterSize": 1,
+    "ClusterDamage": 0
+  },
+  {
+    "Name": "BA Tag",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 0
+    },
+    "DamageAerospace": {
+      "Short": 0
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0,
+    "SpecialDamage": {
+      "Normal": { "Data": "1", "Type": "Tag" },
+      "Special": { "Data": "1", "Type": "Tag" }
+    }
+  }
+]

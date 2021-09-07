@@ -1,0 +1,9 @@
+﻿{
+  "LoggingOptions": {
+    "LogLevel": "Debug",
+    "OrleansLogLevel": "Information"
+  },
+  "ClusterOptions": {
+    "ConnectionString": "User ID=faemiyah;Password=fuRZdwzQXl98wlNH8_bE;Host=10.2.0.2;Port=65432;Database=BtDamageResolver"
+  }
+}

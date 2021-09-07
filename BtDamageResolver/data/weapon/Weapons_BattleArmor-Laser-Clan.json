@@ -1,0 +1,146 @@
+[
+  {
+    "Name": "BA Clan ER Micro Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 4,
+      "Extreme": 5
+    },
+    "RangeAerospace": "Short",
+    "Heat": 1
+  },
+  {
+    "Name": "BA Clan ER Small Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 6,
+      "Extreme": 6
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2
+  },
+  {
+    "Name": "BA Clan ER Medium Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 10,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 5
+  },
+  {
+    "Name": "BA Clan Micro Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 3,
+      "Extreme": 3
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "1d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+      "Special": [ { "Data": "1d6", "Type": "Burst" }, { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  },
+  {
+    "Name": "BA Clan Small Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 6,
+      "Extreme": 6
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+      "Special": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  },
+  {
+    "Name": "BA Clan Medium Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 4,
+      "Medium": 8,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Short",
+    "Heat": 4,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Pulse" } ],
+      "Special": [ { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  }
+]

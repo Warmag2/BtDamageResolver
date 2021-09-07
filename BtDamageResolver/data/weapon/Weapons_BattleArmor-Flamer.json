@@ -1,0 +1,32 @@
+[
+  {
+    "Name": "BA Flamer",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 3,
+      "Extreme": 3
+    },
+    "RangeAerospace": "Short",
+    "Heat": 3,
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "3d6", "Type": "Burst" }, { "Data": "2", "Type": "Heat" } ],
+      "Special": [ { "Data": "3d6", "Type": "Burst" }, { "Data": "2", "Type": "Heat" } ]
+    },
+    "SpecialDamage": {
+      "Normal": { "Data": "2", "Type": "Heat" },
+      "Special": { "Data": "2", "Type": "Heat" }
+    },
+    "ClusterDamage": 1,
+    "ClusterSize": 5
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "Type": "Critical",
+  "Location": "Front",
+  "UnitType": "Mech",
+  "Mapping": {
+    "2": [ "None" ],
+    "3": [ "None" ],
+    "4": [ "None" ],
+    "5": [ "None" ],
+    "6": [ "None" ],
+    "7": [ "None" ],
+    "8": [ "Critical" ],
+    "9": [ "Critical" ],
+    "10": [ "Critical", "Critical" ],
+    "11": [ "Critical", "Critical" ],
+    "12": [ "Critical", "Critical", "Critical" ]
+  }
+}

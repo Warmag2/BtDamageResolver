@@ -1,0 +1,314 @@
+[
+  {
+    "Name": "MML-3 SRM+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 2
+    }
+  },
+  {
+    "Name": "MML-5 SRM+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 3,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 2
+    }
+  },
+  {
+    "Name": "MML-7 SRM+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 12
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 4,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 2
+    }
+  },
+  {
+    "Name": "MML-9 SRM+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 14
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 5,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 2
+    }
+  },
+  {
+    "Name": "MML-3 LRM+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "Heat": 2,
+    "UsesAmmo": true,
+    "Modes": [
+      "Normal",
+      "Special"
+    ],
+    "ModeDescription": {
+      "Normal": "Direct",
+      "Special": "Indirect"
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
+    },
+    "HitModifier": {
+      "Normal": 0,
+      "Special": 1,
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 0
+    }
+  },
+  {
+    "Name": "MML-5 LRM+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "Heat": 3,
+    "UsesAmmo": true,
+    "Modes": [
+      "Normal",
+      "Special"
+    ],
+    "ModeDescription": {
+      "Normal": "Direct",
+      "Special": "Indirect"
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
+    },
+    "HitModifier": {
+      "Normal": 0,
+      "Special": 1,
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 0
+    }
+  },
+  {
+    "Name": "MML-7 LRM+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "Heat": 4,
+    "UsesAmmo": true,
+    "Modes": [
+      "Normal",
+      "Special"
+    ],
+    "ModeDescription": {
+      "Normal": "Direct",
+      "Special": "Indirect"
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
+    },
+    "HitModifier": {
+      "Normal": 0,
+      "Special": 1,
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 0
+    }
+  },
+  {
+    "Name": "MML-9 LRM+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 7
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "Heat": 5,
+    "UsesAmmo": true,
+    "Modes": [
+      "Normal",
+      "Special"
+    ],
+    "ModeDescription": {
+      "Normal": "Direct",
+      "Special": "Indirect"
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
+    },
+    "HitModifier": {
+      "Normal": 0,
+      "Special": 1,
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 0
+    }
+  }
+]

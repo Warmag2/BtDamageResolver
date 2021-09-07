@@ -1,0 +1,18 @@
+{
+  "Type": "Motive",
+  "Location": "Front",
+  "UnitType": "Vehicle",
+  "Mapping": {
+    "2": [ "None" ],
+    "3": [ "None" ],
+    "4": [ "None" ],
+    "5": [ "None" ],
+    "6": [ "LightMotive" ],
+    "7": [ "LightMotive" ],
+    "8": [ "ModerateMotive" ],
+    "9": [ "ModerateMotive" ],
+    "10": [ "HeavyMotive" ],
+    "11": [ "HeavyMotive" ],
+    "12": [ "Immobilized" ]
+  }
+}

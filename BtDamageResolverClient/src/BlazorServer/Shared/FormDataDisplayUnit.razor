@@ -1,0 +1,119 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+
+@if (_unitEntry != null)
+{
+    <div class="resolver_div_componentrow">
+        <button class="resolver_button" @onclick="DeleteUnitEntry">Delete</button>
+    </div>
+
+    <div class="resolver_div_componentrow">
+        <table class="resolver_table">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>@_unitEntry.Name</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>@_unitEntry.Type</td>
+            </tr>
+            <tr>
+                <td>Gunnery</td>
+                <td>@_unitEntry.Gunnery</td>
+            </tr>
+            <tr>
+                <td>Piloting</td>
+                <td>@_unitEntry.Piloting</td>
+            </tr>
+            <tr>
+                <td>Speed</td>
+                <td>@_unitEntry.Speed</td>
+            </tr>
+            <tr>
+                <td>Jump Jets</td>
+                <td>@_unitEntry.JumpJets</td>
+            </tr>
+            <tr>
+                <td>Tonnage</td>
+                <td>@_unitEntry.Tonnage</td>
+            </tr>
+            <tr>
+                <td>Troopers</td>
+                <td>@_unitEntry.Troopers</td>
+            </tr>
+            <tr>
+                <td>Features</td>
+                <td>
+                    @foreach (var feature in _unitEntry.Features)
+                    {
+                        @($"{feature}")
+                        <br/>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Quirks</td>
+                <td>
+                    @foreach (var quirk in _unitEntry.Quirks)
+                    {
+                        @($"{quirk}")
+                        <br/>
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="resolver_div_componentrow">
+        <table class="resolver_table">
+            <tr>
+                <th colspan="2">Weapons</th>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <th>Mode</th>
+            </tr>
+            @foreach (var weapon in _unitEntry.Weapons)
+            {
+                <tr>
+                    <td>
+                        @weapon.WeaponName
+                    </td>
+                    <td>
+                        @CommonData.MapWeapon[weapon.WeaponName].ModeDescription[weapon.Mode]
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+@code
+{
+    private Unit _unitEntry;
+
+    [Parameter]
+    public string UnitName { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnDelete { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(UnitName))
+        {
+            _unitEntry = await CommonData.GetUnitEntry(UnitName);
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private void DeleteUnitEntry()
+    {
+        OnDelete.InvokeAsync(UnitName);
+    }
+}

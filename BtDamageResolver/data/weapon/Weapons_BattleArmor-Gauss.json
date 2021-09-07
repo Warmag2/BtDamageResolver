@@ -1,0 +1,102 @@
+[
+  {
+    "Name": "BA Gauss Rifle David",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 1
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 5,
+      "Long": 8,
+      "Extreme": 8
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0
+  },
+  {
+    "Name": "BA Gauss Rifle KingDavid",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 1
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0
+  },
+  {
+    "Name": "BA Gauss Rifle GrandMauler",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 1
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 5,
+      "Extreme": 5
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0
+  },
+  {
+    "Name": "BA Gauss Rifle MagShot",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0
+  },
+  {
+    "Name": "BA Gauss Rifle Tsunami",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 1
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 5,
+      "Extreme": 5
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0
+  }
+]

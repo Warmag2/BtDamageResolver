@@ -1,0 +1,57 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Extensions
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject UserStateController UserStateController
+
+<tr>
+    <td>
+        @Game.Name
+    </td>
+    <td>
+        @Game.Players
+    </td>
+    <td>
+        @{
+            var age = DateTime.UtcNow - Game.TimeStamp;
+            var timeUnit = age.GetLargestTimeUnit();
+        }
+        @switch (timeUnit)
+        {
+            case TimeUnit.Second:
+                @($"{age.TotalSeconds:0.}sec")
+                break;
+            case TimeUnit.Minute:
+                @($"{age.TotalMinutes:0.}min")
+                break;
+            case TimeUnit.Hour:
+                @($"{age.TotalHours:0.}h")
+                break;
+            case TimeUnit.Day:
+                @($"{age.TotalDays:0.}d")
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    </td>
+    <td>
+        @if (!(UserStateController.ConnectedToGame && UserStateController.GameState.GameId == Game.Name))
+        {
+            <button class="resolver_button" @onclick="OnGameJoin">Join</button>
+        }
+    </td>
+</tr>
+
+@code{
+    [Parameter]
+    public GameEntry Game { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnJoin { get; set; }
+
+
+    private void OnGameJoin()
+    {
+        OnJoin.InvokeAsync(Game.Name);
+    }
+}

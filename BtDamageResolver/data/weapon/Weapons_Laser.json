@@ -1,0 +1,422 @@
+[
+  {
+    "Name": "Small Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 3,
+      "Extreme": 3
+    },
+    "RangeAerospace": "Short",
+    "Heat": 1
+  },
+  {
+    "Name": "Medium Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 3
+  },
+  {
+    "Name": "Large Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 8
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 10,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 8
+  },
+  {
+    "Name": "ER Small Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 5,
+      "Extreme": 5
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2
+  },
+  {
+    "Name": "ER Medium Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 4,
+      "Medium": 8,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 5
+  },
+  {
+    "Name": "ER Large Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 8
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 19,
+      "Extreme": 19
+    },
+    "RangeAerospace": "Long",
+    "Heat": 12
+  },
+  {
+    "Name": "Small Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 3,
+      "Extreme": 3
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+      "Special": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  },
+  {
+    "Name": "Medium Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 6
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 6,
+      "Extreme": 6
+    },
+    "RangeAerospace": "Short",
+    "Heat": 4,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Pulse" } ],
+      "Special": [ { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  },
+  {
+    "Name": "Large Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 9
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 7,
+      "Long": 10,
+      "Extreme": 10
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 10,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Pulse" } ],
+      "Special": [ { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  },
+  {
+    "Name": "Clan ER Small Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 6,
+      "Extreme": 6
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2
+  },
+  {
+    "Name": "Clan ER Medium Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 7
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 10,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 5
+  },
+  {
+    "Name": "Clan ER Large Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 8,
+      "Medium": 15,
+      "Long": 25,
+      "Extreme": 25
+    },
+    "RangeAerospace": "Extreme",
+    "Heat": 12
+  },
+  {
+    "Name": "Clan Small Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 6,
+      "Extreme": 6
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+      "Special": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  },
+  {
+    "Name": "Clan Medium Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 7
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 4,
+      "Medium": 8,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 4,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Pulse" } ],
+      "Special": [ { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  },
+  {
+    "Name": "Clan Large Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 14,
+      "Long": 20,
+      "Extreme": 20
+    },
+    "RangeAerospace": "Long",
+    "Heat": 10,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Pulse" } ],
+      "Special": [ { "Type": "Pulse" } ]
+    },
+    "HitModifier": {
+      "Normal": -2,
+      "Special": -2
+    }
+  },
+  {
+    "Name": "Clan Heavy Small Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 6
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 3,
+      "Extreme": 3
+    },
+    "RangeAerospace": "Short",
+    "Heat": 3,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    }
+  },
+  {
+    "Name": "Clan Heavy Medium Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 7,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    }
+  },
+  {
+    "Name": "Clan Heavy Large Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 16
+    },
+    "DamageAerospace": {
+      "Short": 16
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 10,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 18,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    }
+  }
+]

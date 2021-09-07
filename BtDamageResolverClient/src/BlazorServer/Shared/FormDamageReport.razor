@@ -1,0 +1,156 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject UserStateController UserStateController
+@inject VisualStyleController VisualStyleController
+
+@{
+    var attackingUnitOwnedByYou = UserStateController.PlayerState.UnitEntries.Any(u => u.Id == DamageReport.FiringUnitId);
+    var defendingUnitOwnedByYou = UserStateController.PlayerState.UnitEntries.Any(u => u.Id == DamageReport.TargetUnitId);
+
+    string unitAttackString;
+    string unitDefenseString;
+
+    if (DamageReport.FiringUnitId == Guid.Empty)
+    {
+        unitAttackString = "N/A";
+    }
+    else 
+    {
+        unitAttackString = UserStateController.UnitList.ContainsKey(DamageReport.FiringUnitId) ?
+            attackingUnitOwnedByYou ?
+                $"{DamageReport.FiringUnitName}" :
+                $"{DamageReport.FiringUnitName} ({UserStateController.UnitList[DamageReport.FiringUnitId].PlayerId})"
+            : "Unknown unit";
+    }
+
+    if (!UserStateController.UnitList.ContainsKey(DamageReport.TargetUnitId))
+    {
+        unitDefenseString = "Unknown unit (Unknown player)";
+    }
+    else
+    {
+        unitDefenseString = defendingUnitOwnedByYou ?
+            $"{DamageReport.TargetUnitName}" :
+            $"{DamageReport.TargetUnitName} ({UserStateController.UnitList[DamageReport.TargetUnitId].PlayerId})";
+    }
+}
+
+<div class="resolver_div_componentcontainer">
+    
+    <div class="resolver_div_damagereportcontainer @(defendingUnitOwnedByYou ? "incomingdamage" : "outgoingdamage")">
+        
+        <div class="resolver_div_componentrow">
+            <h3 class="resolver_header">
+                @unitAttackString &rArr; @unitDefenseString
+            </h3>
+        </div>
+        
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_phase">
+                Phase: <b>@DamageReport.Phase</b>
+            </div>
+        </div>
+        
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_totaldamage">
+                Total damage to target: @DamageReport.DamagePaperDoll.DamageCollection.Sum(d => d.Value.Sum())
+            </div>
+        </div>
+
+        <FormPaperDoll DamagePaperDoll="@DamageReport.DamagePaperDoll" DamageReport="@DamageReport"></FormPaperDoll>
+        
+        @switch (UserStateController.GetUnitType(DamageReport.FiringUnitId))
+        {
+            case UnitType.AerospaceFighter:
+            case UnitType.Mech:
+            case UnitType.MechTripod:
+            case UnitType.MechQuad:
+                <div class="resolver_div_componentrow">
+                    <div class="resolver_div_attackerheat">
+                        <b>Attacker heat:</b> @DamageReport.AttackerHeat
+                    </div>
+                </div>
+                break;
+        }
+        
+        @if (DamageReport.AmmoUsageAttacker.Any())
+        {
+            <div class="resolver_div_componentrow">
+                @foreach (var ammoExpenditureItem in DamageReport.AmmoUsageAttacker)
+                {
+                    <div class="resolver_div_ammo">
+                        Attacker <b>@ammoExpenditureItem.Key</b> ammo spent: <b>@ammoExpenditureItem.Value</b>
+                    </div>
+                }
+            </div>
+        }
+        
+        @if (DamageReport.AmmoUsageDefender.Any())
+        {
+            <div class="resolver_div_componentrow">
+                @foreach (var ammoExpenditureItem in DamageReport.AmmoUsageDefender)
+                {
+                    <div class="resolver_div_ammo">
+                        Defender <b>@ammoExpenditureItem.Key</b> ammo spent: <b>@ammoExpenditureItem.Value</b>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+    
+    <div class="resolver_div_componentrow">
+
+        <button class="resolver_button_accordion @VisualStyleController.GetActiveClass(_attackLogVisible)" @onclick="@(e => _attackLogVisible = !_attackLogVisible)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Attack log</button>
+        <div class="resolver_div_accordioncontent @VisualStyleController.GetActiveClass(_attackLogVisible)" style="@VisualStyleController.HideElement(!_attackLogVisible)">
+            <div class="resolver_div_options">
+                @foreach (var attackLogEntryType in _logLineVisibility)
+                {
+                    <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
+                }
+            </div>
+
+            @foreach (var logLine in DamageReport.AttackLog.Log)
+            {
+                <div class="@($"resolver_div_attacklog_{logLine.Type.ToString().ToLowerInvariant()}")" style="@VisualStyleController.HideElement(!_logLineVisibility[logLine.Type])">
+                    @logLine.ToString()
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="resolver_div_componentrow">
+        <button @onclick="Delete">Delete</button>
+    </div>
+
+</div>
+
+@code
+{
+    private Dictionary<AttackLogEntryType, bool> _logLineVisibility;
+    private bool _attackLogVisible;
+
+    [Parameter]
+    public DamageReport DamageReport { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _attackLogVisible = UserStateController.PlayerOptions.ShowAttackLogByDefault;
+        _logLineVisibility = UserStateController.GetAttackLogEntryVisibilityCopy();
+    }
+
+    public void Delete()
+    {
+        UserStateController.DeleteDamageReport(DamageReport);
+    }
+
+    private void OnAttackLogEntryVisibilityChanged(AttackLogEntryType attackLogEntryType, bool entryVisibility)
+    {
+        if (_logLineVisibility[attackLogEntryType] != entryVisibility)
+        {
+            _logLineVisibility[attackLogEntryType] = entryVisibility;
+            StateHasChanged();
+        }
+    }
+}

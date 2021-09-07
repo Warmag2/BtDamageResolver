@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "BA PPC",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 5,
+      "Long": 7,
+      "Extreme": 6
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0
+  }
+]

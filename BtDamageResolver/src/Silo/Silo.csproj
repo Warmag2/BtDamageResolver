@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Faemiyah.BtDamageResolver.Silo</RootNamespace>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="3.4.3" />
+    <PackageReference Include="Microsoft.Orleans.Core" Version="3.4.3" />
+    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.4.3" />
+    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.4.3" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="3.4.3" />
+    <PackageReference Include="Microsoft.Orleans.Runtime.Abstractions" Version="3.4.3" />
+    <PackageReference Include="Npgsql" Version="5.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Actors\Actors.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="SiloSettings.Debug.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SiloSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SiloSettings.Release.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,162 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+
+@if (_weapon != null)
+{
+    <div class="resolver_div_componentrow">
+        <table class="resolver_table">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>@_weapon.Name</td>
+            </tr>
+            <tr>
+                <td>Modes</td>
+                <td>
+                    @foreach (var mode in _weapon.Modes)
+                    {
+                        @($"{mode}: {_weapon.ModeDescription[mode]}")
+                        <br/>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>@_weapon.Type</td>
+            </tr>
+            <tr>
+                <td>Attack Type</td>
+                <td>@_weapon.AttackType</td>
+            </tr>
+            <tr>
+                <td>Range</td>
+                <td>
+                    @foreach (var rangeBracket in _weapon.Range)
+                    {
+                        @($"{rangeBracket.Key}: {rangeBracket.Value}")
+                        <br/>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Range (Aerospace)</td>
+                <td>@_weapon.RangeAerospace</td>
+            </tr>
+            <tr>
+                <td>Range (Minimum)</td>
+                <td>
+                    @foreach (var mode in _weapon.RangeMinimum)
+                    {
+                        @($"{mode.Key}: {mode.Value}")
+                        <br />
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Damage</td>
+                <td>
+                    @foreach (var rangeBracket in _weapon.Damage)
+                    {
+                        @($"{rangeBracket.Key}: {rangeBracket.Value}")
+                        <br/>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Damage (Aerospace)</td>
+                <td>
+                    @foreach (var rangeBracket in _weapon.DamageAerospace)
+                    {
+                        @($"{rangeBracket.Key}: {rangeBracket.Value}")
+                        <br/>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Heat</td>
+                <td>@_weapon.Heat</td>
+            </tr>
+            <tr>
+                <td>UsesAmmo</td>
+                <td>@_weapon.UsesAmmo</td>
+            </tr>
+            <tr>
+                <td>Hit modifiers</td>
+                <td>
+                    @foreach (var mode in _weapon.HitModifier)
+                    {
+                        @($"{mode.Key}: {mode.Value}")
+                        <br/>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Cluster Size</td>
+                <td>@_weapon.ClusterSize</td>
+            </tr>
+            <tr>
+                <td>Cluster Damage</td>
+                <td>@_weapon.ClusterDamage</td>
+            </tr>
+            <tr>
+                <td>Cluster Bonus</td>
+                <td>
+                    @foreach (var mode in _weapon.ClusterBonus)
+                    {
+                        @($"{mode.Key}: {mode.Value}")
+                        <br/>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Cluster Table</td>
+                <td>@_weapon.ClusterTable</td>
+            </tr>
+            <tr>
+                <td>Special Damage</td>
+                <td>
+                    @foreach (var mode in _weapon.SpecialDamage)
+                    {
+                        @($"{mode.Key}: {mode.Value}")
+                        <br/>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Special Features</td>
+                <td>
+                    @foreach (var mode in _weapon.SpecialFeatures)
+                    {
+                        foreach (var entry in mode.Value)
+                        {
+                            @($"{mode.Key}: {entry}")
+                            <br/>
+                        }
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+
+@code
+{
+    private Weapon _weapon;
+
+    [Parameter]
+    public string WeaponName { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(WeaponName) && CommonData.MapWeapon.ContainsKey(WeaponName))
+        {
+            _weapon = CommonData.MapWeapon[WeaponName];
+        }
+
+        base.OnInitializedAsync();
+    }
+}

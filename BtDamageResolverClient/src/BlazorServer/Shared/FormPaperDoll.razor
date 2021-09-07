@@ -1,0 +1,158 @@
+﻿@using System.Globalization
+@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject UserStateController UserStateController
+
+<div class="resolver_div_componentrow">
+
+    <div class="resolver_div_imagecontainer">
+        @switch (DamagePaperDoll.PaperDoll.Type)
+        {
+            case PaperDollType.AerospaceFighter:
+                <FormPaperDollAerospaceFighter FormPaperDoll="@this"></FormPaperDollAerospaceFighter>
+                break;
+            case PaperDollType.AerospaceCapital:
+                <FormPaperDollAerospaceCapital FormPaperDoll="@this"></FormPaperDollAerospaceCapital>
+                break;
+            case PaperDollType.Building:
+                <FormPaperDollBuilding FormPaperDoll="@this"></FormPaperDollBuilding>
+                break;
+            case PaperDollType.Mech:
+                <FormPaperDollMech FormPaperDoll="@this"></FormPaperDollMech>
+                break;
+            case PaperDollType.BattleArmor:
+                <FormPaperDollBattleArmor FormPaperDoll="@this" DamageReport="@DamageReport"></FormPaperDollBattleArmor>
+                break;
+            case PaperDollType.Trooper:
+                <FormPaperDollTrooper FormPaperDoll="@this" DamageReport="@DamageReport"></FormPaperDollTrooper>
+                break;
+            case PaperDollType.Vehicle:
+                <FormPaperDollVehicle FormPaperDoll="@this"></FormPaperDollVehicle>
+                break;
+            case PaperDollType.VehicleVtol:
+                <FormPaperDollVehicleVtol FormPaperDoll="@this"></FormPaperDollVehicleVtol>
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    </div>
+
+    <div class="resolver_div_damagereport">
+        @foreach (var location in DamagePaperDoll.DamageCollection)
+        {
+        <div class="damageentry">
+            <b>@location.Key</b>
+            <br />
+            @location.Value.Sum()
+
+            @if (DamagePaperDoll.CriticalDamageCollection.ContainsKey(location.Key))
+            {
+                foreach (var criticalDamageEntry in DamagePaperDoll.CriticalDamageCollection[location.Key])
+                {
+                    <br />
+                    switch (criticalDamageEntry.Type)
+                    {
+                        case CriticalDamageType.Critical:
+                            @("Critical hit")
+                            break;
+                        case CriticalDamageType.Immobilized:
+                            @("Immobilized")
+                            break;
+                        case CriticalDamageType.HeavyMotive:
+                            @("Heavy motive damage")
+                            break;
+                        case CriticalDamageType.LightMotive:
+                            @("Light motive damage")
+                            break;
+                        case CriticalDamageType.ModerateMotive:
+                            @("Moderate motive damage")
+                            break;
+                        case CriticalDamageType.LimbBlownOff:
+                            @("Limb blown off")
+                            break;
+                        default:
+                            switch(criticalDamageEntry.ThreatType)
+                            {
+                                case CriticalThreatType.DamageThreshold:
+                                    @($"Critical threat to: {criticalDamageEntry.Type} (Threshold {criticalDamageEntry.InducingDamage})")
+                                    break;
+                                case CriticalThreatType.Normal:
+                                    @($"Critical damage to: {criticalDamageEntry.Type} ({criticalDamageEntry.InducingDamage})")
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+
+                            break;
+                    }
+                }
+            }
+        </div>
+        }
+
+        @foreach (var specialDamageEntryGroup in DamagePaperDoll.SpecialDamageCollection.SelectMany(p => p.Value).GroupBy(s => s.Type))
+        {
+            <div class="damageentry">
+                <b>
+                    @specialDamageEntryGroup.Key
+                </b>
+                &rarr;
+                <b>
+                    @specialDamageEntryGroup.Sum(s => int.Parse(s.Data))
+                </b>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public DamagePaperDoll DamagePaperDoll { get; set; }
+
+    [Parameter]
+    public DamageReport DamageReport { get; set; }
+
+    public bool AnyDamage(Location location)
+    {
+        return DamagePaperDoll.DamageCollection.ContainsKey(location);
+    }
+
+    public string GetDamageText(Location location)
+    {
+        if(DamagePaperDoll.DamageCollection.ContainsKey(location))
+        {
+            return $"'<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location])}'";
+        }
+
+        return $"'<b>{location}</b><br>0'";
+    }
+
+    public string GetDamageColor(Location location)
+    {
+        if (DamagePaperDoll.DamageCollection.ContainsKey(location))
+        {
+            var damage = DamagePaperDoll.DamageCollection[location].Sum();
+
+            if (damage > 0)
+            {
+                return TranslateDamageToColor(damage);
+            }
+        }
+
+        return "#E5E5E5";
+    }
+
+    private string TranslateDamageToColor(int damage)
+    {
+        const decimal damageScalingMax = 100;
+
+        var scaledDamage = Math.Clamp(damage, 0m, damageScalingMax);
+
+        var red = decimal.ToInt32(Math.Clamp((2*damageScalingMax - scaledDamage * 2) / damageScalingMax, 0m, 1m)*255m).ToString("X2", NumberFormatInfo.InvariantInfo);
+        var white = decimal.ToInt32(Math.Clamp((damageScalingMax - scaledDamage * 2) / damageScalingMax, 0m, 1m)*255m).ToString("X2", NumberFormatInfo.InvariantInfo);
+
+        return $"#{red}{white}{white}";
+    }
+}

@@ -1,0 +1,36 @@
+﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject VisualStyleController _visualStyleController
+
+<div class="resolver_div_tabcontainer">
+    <div class="resolver_div_tab">
+        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverServerTab.Connection)" @onclick="@(e => SelectTab(ResolverServerTab.Connection))">Connection</button>
+        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverServerTab.Data)" @onclick="@(e => SelectTab(ResolverServerTab.Data))">Data</button>
+    </div>
+</div>
+
+<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverServerTab.Connection)">
+    <!-- <FormServerConnection OnConnectedToGame="@OnConnected"></FormServerConnection> -->
+</div>
+
+<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverServerTab.Data)">
+    <FormData></FormData>
+</div>
+
+@code
+{
+        private ResolverServerTab _selectedTab = ResolverServerTab.Connection;
+
+        [Parameter]
+        public EventCallback<string> OnConnectedToGame { get; set; }
+
+        private void SelectTab(ResolverServerTab resolverTab)
+        {
+            _selectedTab = resolverTab;
+        }
+
+        private void OnConnected(string gameName)
+        {
+            OnConnectedToGame.InvokeAsync(gameName);
+        }
+    }

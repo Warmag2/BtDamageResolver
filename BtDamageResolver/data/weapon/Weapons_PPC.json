@@ -1,0 +1,222 @@
+[
+  {
+    "Name": "PPC",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 12,
+      "Long": 18,
+      "Extreme": 18
+    },
+    "RangeMinimum": {
+      "Normal": 3,
+      "Special": -1
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 10,
+    "Modes": [
+      "Normal",
+      "Special"
+    ],
+    "SpecialDamage": {
+      "Normal": { "Type": "None" },
+      "Special": { "Data": "1", "Type": "Emp" }
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "None" } ],
+      "Special": [ { "Type": "PpcInhibitorOverride" } ]
+    },
+    "ModeDescription": {
+      "Normal": "Inhibitor",
+      "Special": "No Inhibitor"
+    }
+  },
+  {
+    "Name": "ER PPC",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 23,
+      "Extreme": 23
+    },
+    "RangeAerospace": "Long",
+    "Heat": 15,
+    "Modes": [
+      "Normal",
+      "Special"
+    ],
+    "SpecialDamage": {
+      "Normal": { "Type": "None" },
+      "Special": { "Data": "1", "Type": "Emp" }
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "None" } ],
+      "Special": [ { "Type": "PpcInhibitorOverride" } ]
+    },
+    "ModeDescription": {
+      "Normal": "Inhibitor",
+      "Special": "No Inhibitor"
+    }
+  },
+  {
+    "Name": "Light PPC",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 12,
+      "Long": 18,
+      "Extreme": 18
+    },
+    "RangeMinimum": {
+      "Normal": 3,
+      "Special": -1
+    },
+    "Heat": 5,
+    "RangeAerospace": "Medium",
+    "Modes": [
+      "Normal",
+      "Special"
+    ],
+    "SpecialDamage": {
+      "Normal": { "Type": "None" },
+      "Special": { "Data": "1", "Type": "Emp" }
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "None" } ],
+      "Special": [ { "Type": "PpcInhibitorOverride" } ]
+    },
+    "ModeDescription": {
+      "Normal": "Inhibitor",
+      "Special": "No Inhibitor"
+    }
+  },
+  {
+    "Name": "Heavy PPC",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 15
+    },
+    "DamageAerospace": {
+      "Short": 15
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 12,
+      "Long": 18,
+      "Extreme": 18
+    },
+    "Heat": 15,
+    "RangeMinimum": {
+      "Normal": 3,
+      "Special": -1
+    },
+    "RangeAerospace": "Medium",
+    "Modes": [
+      "Normal",
+      "Special"
+    ],
+    "SpecialDamage": {
+      "Normal": { "Type": "None" },
+      "Special": { "Data": "1", "Type": "Emp" }
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "None" } ],
+      "Special": [ { "Type": "PpcInhibitorOverride" } ]
+    },
+    "ModeDescription": {
+      "Normal": "Inhibitor",
+      "Special": "No Inhibitor"
+    }
+  },
+  {
+    "Name": "Snub-Nose PPC",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "PointBlank": 10,
+      "Short": 10,
+      "Medium": 8,
+      "Long": 5,
+      "Extreme": 5
+    },
+    "DamageAerospace": {
+      "PointBlank": 10,
+      "Short": 10,
+      "Medium": 8,
+      "Long": 8,
+      "Extreme": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 9,
+      "Medium": 13,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 10
+  },
+  {
+    "Name": "Clan ER PPC",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 15
+    },
+    "DamageAerospace": {
+      "Short": 15
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 23,
+      "Extreme": 23
+    },
+    "RangeAerospace": "Long",
+    "Heat": 15,
+    "Modes": [
+      "Normal",
+      "Special"
+    ],
+    "SpecialDamage": {
+      "Normal": { "Type": "None" },
+      "Special": { "Data": "1", "Type": "Emp" }
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "None" } ],
+      "Special": [ { "Type": "PpcInhibitorOverride" } ]
+    },
+    "ModeDescription": {
+      "Normal": "Inhibitor",
+      "Special": "No Inhibitor"
+    }
+  }
+]

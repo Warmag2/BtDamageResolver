@@ -1,0 +1,18 @@
+{
+  "Type": "Critical",
+  "Location": "Front",
+  "UnitType": "Vehicle",
+  "Mapping": {
+    "2": [ "None" ],
+    "3": [ "None" ],
+    "4": [ "None" ],
+    "5": [ "None" ],
+    "6": [ "Driver" ],
+    "7": [ "WeaponMalfunction" ],
+    "8": [ "Stabilizer" ],
+    "9": [ "Sensors" ],
+    "10": [ "Commander" ],
+    "11": [ "WeaponDestroyed" ],
+    "12": [ "CrewKilled" ]
+  }
+}

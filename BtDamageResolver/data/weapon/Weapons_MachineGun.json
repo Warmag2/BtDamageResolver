@@ -1,0 +1,77 @@
+[
+  {
+    "Name": "Machine Gun",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 3,
+      "Extreme": 3
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "2d6", "Type": "Burst" } ],
+      "Special": [ { "Data": "2d6", "Type": "Burst" } ]
+    }
+  },
+  {
+    "Name": "Light Machine Gun",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 1
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 4,
+      "Long": 6,
+      "Extreme": 6
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "1d6", "Type": "Burst" } ],
+      "Special": [ { "Data": "1d6", "Type": "Burst" } ]
+    }
+  },
+  {
+    "Name": "Heavy Machine Gun",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 2,
+      "Extreme": 2
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "3d6", "Type": "Burst" } ],
+      "Special": [ { "Data": "3d6", "Type": "Burst" } ]
+    }
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "Type": "Critical",
+  "Location": "Front",
+  "UnitType": "AerospaceFighter",
+  "Mapping": {
+    "2": [ "WeaponDestroyed" ],
+    "3": [ "Sensors" ],
+    "4": [ "HeatSink" ],
+    "5": [ "WeaponDestroyed" ],
+    "6": [ "Avionics" ],
+    "7": [ "Control" ],
+    "8": [ "Fcs" ],
+    "9": [ "WeaponDestroyed" ],
+    "10": [ "HeatSink" ],
+    "11": [ "Gear" ],
+    "12": [ "WeaponDestroyed" ]
+  }
+}

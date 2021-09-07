@@ -1,0 +1,18 @@
+{
+  "Type": "Motive",
+  "Location": "Propulsion",
+  "UnitType": "VehicleVtol",
+  "Mapping": {
+    "2": [ "Propulsion" ],
+    "3": [ "Propulsion" ],
+    "4": [ "Propulsion" ],
+    "5": [ "Propulsion" ],
+    "6": [ "Propulsion" ],
+    "7": [ "Propulsion" ],
+    "8": [ "Propulsion" ],
+    "9": [ "Propulsion" ],
+    "10": [ "Propulsion" ],
+    "11": [ "Propulsion" ],
+    "12": [ "Propulsion" ]
+  }
+}

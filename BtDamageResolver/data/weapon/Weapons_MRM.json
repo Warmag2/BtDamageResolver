@@ -1,0 +1,250 @@
+[
+  {
+    "Name": "MRM-10",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 4,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MRM-20",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 20
+    },
+    "DamageAerospace": {
+      "Short": 12
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 6,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MRM-30",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 30
+    },
+    "DamageAerospace": {
+      "Short": 18
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 10,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MRM-40",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 40
+    },
+    "DamageAerospace": {
+      "Short": 24
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 12,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MRM-10+Apollo",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 4,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": {
+      "Normal": -1,
+      "Special": -1
+    }
+  },
+  {
+    "Name": "MRM-20+Apollo",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 20
+    },
+    "DamageAerospace": {
+      "Short": 11
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 6,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": {
+      "Normal": -1,
+      "Special": -1
+    }
+  },
+  {
+    "Name": "MRM-30+Apollo",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 30
+    },
+    "DamageAerospace": {
+      "Short": 17
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 10,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": {
+      "Normal": -1,
+      "Special": -1
+    }
+  },
+  {
+    "Name": "MRM-40+Apollo",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 40
+    },
+    "DamageAerospace": {
+      "Short": 23
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 12,
+    "UsesAmmo": true,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": {
+      "Normal": -1,
+      "Special": -1
+    }
+  }
+]

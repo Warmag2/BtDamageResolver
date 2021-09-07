@@ -1,0 +1,110 @@
+﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+
+@{
+    var sortedItemDict = new SortedDictionary<string, string>();
+    _items.ForEach(i => sortedItemDict.Add(i, i));
+}
+
+<div class="resolver_div_componentlistcontainer">
+
+    <div class="resolver_div_componentcontainer">
+        <h3 class="resolver_header">
+            Data Type
+        </h3>
+
+        <div class="resolver_div_componentrow">
+            <FormSelect Options="@(Enum.GetValues(typeof(ResolverDataType)).Cast<ResolverDataType>().ToDictionary(n => n.ToString()))" SelectedOption=@_selectedDataType OnChanged="(ResolverDataType dataType) => OnDataTypeChanged(dataType)"></FormSelect>
+        </div>
+
+        @if (_items.Count > 0)
+        {
+            <h3 class="resolver_header">
+                Data Entry
+            </h3>
+
+            <div class="resolver_div_componentrow">
+                <FormComboBox @key="@_entryName" Options="@sortedItemDict" SelectedOption=@_entryName OnChanged="(string entryName) => OnEntityChanged(entryName)"></FormComboBox>
+            </div>
+            
+            @switch (_selectedDataType)
+            {
+                case ResolverDataType.ClusterTable:
+                    <FormDataDisplayClusterTable @key=@_entryName ClusterTableName=@_entryName></FormDataDisplayClusterTable>
+                    break;
+                case ResolverDataType.CriticalDamageTable:
+                    <FormDataDisplayCriticalDamageTable @key=@_entryName CriticalDamageTableName=@_entryName></FormDataDisplayCriticalDamageTable>
+                    break;
+                case ResolverDataType.PaperDoll:
+                    <FormDataDisplayPaperDoll @key=@_entryName PaperDollName=@_entryName></FormDataDisplayPaperDoll>
+                    break;
+                case ResolverDataType.Unit:
+                    <FormDataDisplayUnit @key=@_entryName UnitName=@_entryName OnDelete=@OnUnitDeleted></FormDataDisplayUnit>
+                    break;
+                case ResolverDataType.Weapon:
+                    <FormDataDisplayWeapon @key=@_entryName WeaponName=@_entryName></FormDataDisplayWeapon>
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    </div>
+</div>
+
+@code
+{
+    private ResolverDataType _selectedDataType = ResolverDataType.ClusterTable;
+    private List<string> _items = new List<string>();
+    private string _entryName;
+
+    protected override void OnInitialized()
+    {
+        RefreshDataList();
+
+        base.OnInitialized();
+    }
+
+    private void RefreshDataList()
+    {
+        switch (_selectedDataType)
+        {
+            case ResolverDataType.ClusterTable:
+                _items = CommonData.MapClusterTable.Keys.ToList();
+                break;
+            case ResolverDataType.CriticalDamageTable:
+                _items = CommonData.MapCriticalDamageTable.Keys.ToList();
+                break;
+            case ResolverDataType.PaperDoll:
+                _items = CommonData.MapPaperDoll.Keys.ToList();
+                break;
+            case ResolverDataType.Unit:
+                _items = CommonData.GetSavedUnits().Keys.ToList();
+                break;
+            case ResolverDataType.Weapon:
+                _items = CommonData.MapWeapon.Keys.ToList();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        _entryName = _items.FirstOrDefault();
+    }
+
+    private void OnDataTypeChanged(ResolverDataType selectedDataType)
+    {
+        _selectedDataType = selectedDataType;
+        RefreshDataList();
+    }
+
+    private void OnEntityChanged(string entryName)
+    {
+        _entryName = entryName;
+    }
+
+    private async Task OnUnitDeleted(string entryName)
+    {
+        await CommonData.DeleteUnit(entryName);
+        _entryName = _items.FirstOrDefault();
+    }
+}

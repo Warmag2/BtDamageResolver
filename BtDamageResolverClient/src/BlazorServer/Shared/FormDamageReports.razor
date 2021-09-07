@@ -1,0 +1,63 @@
+﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject UserStateController UserStateController
+@inject VisualStyleController VisualStyleController
+@implements IDisposable
+
+@if (!UserStateController.DamageReportCollection.Any())
+{
+    <h3>
+        No damagereports available
+    </h3>
+}
+else
+{
+    @if (OnlyNewest)
+    {
+        @if (UserStateController.DamageReportCollection.Any())
+        {
+            @foreach (var damageReport in UserStateController.DamageReportCollection.Values.Last().DamageReports)
+            {
+                if (UserStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault || UserStateController.DamageReportConcernsPlayer(damageReport))
+                {
+                    <div class="resolver_div_componentlistcontainer alternatingcolors">
+                        <FormDamageReport @key=@damageReport.Id DamageReport=@damageReport></FormDamageReport>
+                    </div>
+                }
+            }
+        }
+    }
+    else
+    {
+        @foreach (var singleTurnDamageReports in UserStateController.DamageReportCollection.Reverse())
+        {
+<button class="resolver_button_accordion @VisualStyleController.GetActiveClass(singleTurnDamageReports.Value.Visible)" @onclick="@(e => singleTurnDamageReports.Value.Visible = !singleTurnDamageReports.Value.Visible)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Turn @singleTurnDamageReports.Key</button>
+            <div class="resolver_div_accordioncontent @VisualStyleController.GetActiveClass(singleTurnDamageReports.Value.Visible)" style="@VisualStyleController.HideElement(!singleTurnDamageReports.Value.Visible)">
+                @foreach (var damageReport in singleTurnDamageReports.Value.DamageReports)
+                {
+                    <div class="resolver_div_componentlistcontainer alternatingcolors">
+                        <FormDamageReport @key=@damageReport.Id DamageReport=@damageReport></FormDamageReport>
+                    </div>
+                }
+            </div>
+        }
+    }
+}
+
+<!-- This is here because we only want exactly one /-->
+<div id="resolver_tooltip_paperdoll" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
+
+@code
+{
+    [Parameter]
+    public bool OnlyNewest { get; set; }
+
+    protected override void OnInitialized()
+    {
+        UserStateController.OnDamageReportChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        UserStateController.OnDamageReportChange -= StateHasChanged;
+    }
+}

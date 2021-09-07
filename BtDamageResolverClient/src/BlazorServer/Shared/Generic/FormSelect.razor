@@ -1,0 +1,58 @@
+﻿@typeparam TItem
+
+<select class="resolver_input resolver_input_select @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" disabled="@Disabled" @bind="SelectedOptionInternal">
+    @foreach (var option in Options)
+    {
+        if (option.Key.Equals(SelectedOptionInternal))
+        {
+            <option value="@option.Key" selected>@option.Key</option>
+        }
+        else
+        {
+            <option value="@option.Key">@option.Key</option>
+        }
+
+    }
+</select>
+
+@code
+{
+    private string _selectedOption;
+    private DateTime _updateTimeStamp = DateTime.MinValue;
+
+    [Parameter]
+    public Dictionary<string, TItem> Options { get; set; }
+
+    [Parameter]
+    public TItem SelectedOption { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public DateTime ComparisonTimeStamp { get; set; }
+
+    [Parameter]
+    public EventCallback<TItem> OnChanged { get; set; }
+
+    public string SelectedOptionInternal
+    {
+        get => _selectedOption;
+        set
+        {
+            _selectedOption = value;
+            _updateTimeStamp = DateTime.UtcNow;
+            if (Options.TryGetValue(value ?? string.Empty, out var item))
+            {
+                OnChanged.InvokeAsync(item);
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        SelectedOptionInternal = Options.FirstOrDefault(o => o.Value.Equals(SelectedOption)).Key;
+        _updateTimeStamp = DateTime.MinValue;
+        base.OnInitialized();
+    }
+}

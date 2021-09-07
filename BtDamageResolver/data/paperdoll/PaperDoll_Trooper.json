@@ -1,0 +1,31 @@
+{
+  "Type": "Trooper",
+  "AttackType": "Normal",
+  "Direction": "Front",
+  "LocationMapping": {
+    "2": [ "Trooper" ],
+    "3": [ "Trooper" ],
+    "4": [ "Trooper" ],
+    "5": [ "Trooper" ],
+    "6": [ "Trooper" ],
+    "7": [ "Trooper" ],
+    "8": [ "Trooper" ],
+    "9": [ "Trooper" ],
+    "10": [ "Trooper" ],
+    "11": [ "Trooper" ],
+    "12": [ "Trooper" ]
+  },
+  "CriticalDamageMapping": {
+    "2": "None",
+    "3": "None",
+    "4": "None",
+    "5": "None",
+    "6": "None",
+    "7": "None",
+    "8": "None",
+    "9": "None",
+    "10": "None",
+    "11": "None",
+    "12": "None"
+  }
+} 

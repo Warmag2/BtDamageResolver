@@ -1,0 +1,740 @@
+﻿/*******************************************************************************
+    Variables
+*******************************************************************************/
+
+:root {
+    --color_bg_weaponentry_active: #C0E0C0;
+    --color_bg_weaponentry_inactive: #C0C0C0;
+    --color_bg_base: #F0F0F0;
+    --color_text_base: #000000;
+    --color_outline_base: gray;
+    --color_bg_unselected: #E0E0E0;
+    --color_text_unselected: #000000;
+    --color_bg_selected: #646464;
+    --color_text_selected: #FFFFFF;
+    --color_bg_hover: #B1C1FF;
+    --color_text_hover: #000000;
+    --color_bg_hover_selected: #7080B1;
+    --color_text_hover_selected: #FFFFFF;
+    --color_bg_disabled: #D4D0C8;
+    --color_text_disabled: #808080;
+    --color_bg_disabled_selected: #8D8D8D;
+    --color_text_disabled_selected: #E2DDD6;
+    --color_bg_error: #FFB0B0;
+    --color_text_error: #B00000;
+    --color_bg_ammo: #E0C0A0;
+    --color_text_ammo: #403020;
+    --color_bg_heat: #FFC0E0;
+    --color_text_heat: #600030;
+    --color_bg_dragdrop: #CCAAFF;
+    --color_text_dragdrop: #000000;
+    --color_outline_incomingdamage: #FF0000;
+    --color_outline_outgoingdamage: #0060FF;
+    --color_bg_table_even: #E0E0E0;
+    --color_bg_table_odd: #C0C0C0;
+    --color_text_table: #000000;
+    --color_bg_table_header: #404040;
+    --color_text_table_header: #FFFFFF;
+    --color_outline_reminder: #706050;
+    --color_bg_reminder: #F8E8B0;
+    --color_text_reminder: #000000;
+    --color_bg_reminder_selected: #706050;
+    --color_text_reminder_selected: #FFFFFF;
+    --color_bg_status_normal: #C0E0C0;
+    --color_text_status_normal: #000000;
+    --color_bg_status_warning: #F0F050;
+    --color_text_status_warning: #000000;
+    --color_bg_status_critical: #FFB0B0;
+    --color_text_status_critical: #000000;
+}
+
+.resolver_content { width: 100%; }
+
+@media only screen and (min-width: 1024px) {
+    .resolver_content { padding: 1rem; }
+}
+
+.resolver_div_errormessage {
+    background: var(--color_bg_error);
+    color: var(--color_text_error);
+}
+
+/*******************************************************************************
+    Erraneous inputs
+*******************************************************************************/
+
+.resolver_input.error {
+    background: var(--color_bg_error);
+    color: var(--color_text_error);
+}
+
+/*******************************************************************************
+    Reminder inputs
+*******************************************************************************/
+
+.reminder {
+    outline: 2px inset var(--color_outline_reminder);
+    outline-offset: -2px;
+}
+
+/*******************************************************************************
+    Generic inputs
+*******************************************************************************/
+
+.resolver_input_text {
+    min-width: 12rem;
+    max-width: 24rem;
+}
+
+.resolver_wide {
+    width: 100% !important;
+}
+
+.resolver_input.reminder {
+    background-color: var(--color_bg_reminder);
+    color: var(--color_text_reminder);
+}
+
+/*******************************************************************************
+    Checkbox and radio inputs
+*******************************************************************************/
+.resolver_label_checkboxradio {
+    position: relative;
+    float: left;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    white-space: nowrap;
+    font-family: Tahoma;
+}
+
+/* Hide the browser's default checkbox */
+
+.resolver_label_checkboxradio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.resolver_span_checkboxradio {
+    display: inline-block;
+    position: relative;
+    padding-left: 4px;
+    padding-right: 4px;
+    vertical-align: middle;
+    margin-left: 0;
+    margin-right: 0;
+    border: 1px outset gray;
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+}
+
+.resolver_label_checkboxradio:hover input:checked ~ .resolver_span_checkboxradio {
+    background-color: var(--color_bg_hover_selected);
+    color: var(--color_text_hover_selected);
+}
+
+.resolver_label_checkboxradio:hover input ~ .resolver_span_checkboxradio {
+    background-color: var(--color_bg_hover);
+    color: var(--color_text_hover);
+}
+
+.resolver_label_checkboxradio input:checked ~ .resolver_span_checkboxradio {
+    background-color: var(--color_bg_selected);
+    color: var(--color_text_selected);
+}
+
+.resolver_span_checkboxradio.reminder {
+    background-color: var(--color_bg_reminder);
+    color: var(--color_text_reminder);
+}
+
+.resolver_label_checkboxradio input:checked ~ .resolver_span_checkboxradio.reminder {
+    background-color: var(--color_bg_reminder_selected);
+    color: var(--color_text_reminder_selected);
+}
+
+.resolver_span_checkboxradio.disabled {
+    background-color: var(--color_bg_disabled);
+    color: var(--color_text_disabled);
+}
+
+.resolver_label_checkboxradio input:checked ~ .resolver_span_checkboxradio.disabled {
+    background-color: var(--color_bg_disabled_selected);
+    color: var(--color_text_disabled_selected);
+}
+
+.resolver_span_checkboxradio.error {
+    background: var(--color_bg_error);
+    color: var(--color_text_error);
+}
+
+/*******************************************************************************
+    Combobox input
+*******************************************************************************/
+
+.resolver_div_combobox {
+    position: absolute;
+    overflow-y: auto;
+    max-height: 300px;
+    width: 16rem;
+    z-index: 9999 !important;
+}
+
+.resolver_div_comboboxitem {
+    border: 1px outset var(--color_outline_base);
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+}
+
+.resolver_div_comboboxitem.active {
+    background-color: var(--color_bg_selected);
+    color: var(--color_text_selected);
+}
+
+.resolver_div_comboboxitem:hover {
+    background-color: var(--color_bg_hover);
+    color: var(--color_text_hover);
+}
+
+.resolver_div_comboboxitem.active:hover {
+    background-color: var(--color_bg_hover_selected);
+    color: var(--color_text_hover_selected);
+}
+
+/*******************************************************************************
+    Distance picker input
+*******************************************************************************/
+
+.resolver_div_picker {
+    position: absolute;
+    overflow-y: auto;
+    max-width: 15rem;
+    padding: 4px 4px;
+    z-index: 9999 !important;
+    background-color: var(--color_bg_base);
+}
+
+.resolver_div_pickeritem {
+    border: 1px outset var(--color_outline_base);
+    float: left;
+    padding: 4px 8px;
+    vertical-align: middle;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.resolver_div_pickeritem {
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+}
+
+.resolver_div_pickeritem.active {
+    background-color: var(--color_bg_selected);
+    color: var(--color_text_selected);
+}
+
+.resolver_div_pickeritem:hover {
+    background-color: var(--color_bg_hover);
+    color: var(--color_text_hover);
+}
+
+.resolver_div_pickeritem.active:hover {
+    background-color: var(--color_bg_hover_selected);
+    color: var(--color_text_hover_selected);
+}
+
+.resolver_distance_picker_display_only {
+    padding: 4px 8px;
+    margin-left: 0.25em;
+    margin-right: 0.5em;
+    font-weight: bold;
+}
+
+/*******************************************************************************
+    PickSet input
+*******************************************************************************/
+.resolver_div_pickset {
+    float: left;
+}
+
+/*******************************************************************************
+    Labels
+*******************************************************************************/
+.resolver_label_auth {
+    padding-left: 0.5rem;
+}
+
+/*******************************************************************************
+    Button inputs
+*******************************************************************************/
+.resolver_button_ready {
+    margin-left: 2rem;
+    font-weight: bold;
+}
+
+/*******************************************************************************
+    Tabs
+*******************************************************************************/
+
+/* Tab style */
+
+.resolver_div_tabcontainer {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color_bg_unselected);
+}
+
+.resolver_div_tab { float: left; }
+
+/* Individual tab buttons */
+
+.resolver_div_tab button {
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 14px;
+    font-size: 17px;
+}
+
+.resolver_div_tab button:hover {
+    background-color: var(--color_bg_hover);
+    color: var(--color_text_hover);
+}
+
+.resolver_div_tab button.active {
+    background-color: var(--color_bg_selected);
+    color: var(--color_text_selected);
+}
+
+.resolver_div_tab button.active:hover {
+    background-color: var(--color_bg_hover_selected);
+    color: var(--color_text_hover_selected);
+}
+
+.resolver_div_tabcontent { padding: 0; }
+
+/*******************************************************************************
+    Tables
+*******************************************************************************/
+
+.resolver_table {
+    margin-top: 0.5rem;
+    margin-bottom: 0.2rem;
+}
+
+.resolver_table td {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.resolver_table th {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background-color: var(--color_bg_table_header);
+    color: var(--color_text_table_header);
+}
+
+.resolver_table tr { color: var(--color_text_table); }
+
+.resolver_table tr:nth-child(even) { background-color: var(--color_bg_table_even); }
+
+.resolver_table tr:nth-child(odd) { background-color: var(--color_bg_table_odd); }
+
+/*******************************************************************************
+    Accordion
+*******************************************************************************/
+
+/* Style the buttons that are used to open and close the accordion panel */
+
+.resolver_button_accordion {
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 14px;
+    font-size: 17px;
+    text-align: left;
+    width: 100%;
+}
+
+.resolver_button_accordion:hover {
+    background-color: var(--color_bg_hover);
+    color: var(--color_text_hover);
+}
+
+.resolver_button_accordion.active {
+    background-color: var(--color_bg_selected);
+    color: var(--color_text_selected);
+}
+
+.resolver_button_accordion.active:hover {
+    background-color: var(--color_bg_hover_selected);
+    color: var(--color_text_hover_selected);
+}
+
+.resolver_div_accordioncontent { padding: 0; }
+
+.resolver_accordion_indicator {
+    float: left;
+    font-weight: bolder;
+    padding-right: 0.5em;
+}
+
+.resolver_button_accordion.active .resolver_accordion_indicator.inactive {
+    display: none;
+}
+
+.resolver_button_accordion.inactive .resolver_accordion_indicator.active {
+    display: none;
+}
+
+/*******************************************************************************
+    Modal
+*******************************************************************************/
+
+/* The Modal (background) */
+
+.resolver_modal_background {
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+
+.resolver_modal {
+    background-color: #fefefe;
+    margin: 10% auto; /* 15% from the top and centered */
+    padding: 1rem;
+    border: 1px solid var(--color_outline_base);
+    width: 50%; /* Could be more or less, depending on screen size */
+}
+
+.resolver_modal_title { float: left; }
+
+.resolver_modal_header { clear: both; }
+
+.resolver_modal_body { clear: both; }
+
+.resolver_modal_footer { clear: both; }
+
+/* The Close Button */
+
+.button_modal_close {
+    color: var(--color_text_unselected);
+    background-color: var(--color_bg_unselected);
+    border: none;
+    float: right;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.button_modal_close:hover {
+    color: var(--color_text_hover);
+    background-color: var(--color_bg_hover);
+}
+
+/*******************************************************************************
+    Resolver form base look
+*******************************************************************************/
+
+.resolver_header {
+    padding: 0;
+    margin-top: 0.5rem;
+    margin-bottom: 0.2rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.resolver_div_login {
+    width: 100%;
+}
+
+.resolver_div_componentlistcontainer { position: relative; }
+
+.resolver_div_componentcontainer {
+    display: table;
+    position: relative;
+    float: left;
+}
+
+.resolver_div_componentcontainer.alternatingcolors:nth-child(odd) {
+    background-color: var(--color_bg_base);
+    color: var(--color_text_base);
+}
+
+.resolver_div_componentrow { display: table-row; }
+
+.resolver_div_componentcell { float: left; }
+
+.resolver_div_alignright { float: right !important; }
+
+.resolver_div_unitid
+{
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.resolver_div_hr {
+    clear: both;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.resolver_div_unit
+{
+    margin-right: 0.5rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    width: 100%;
+}
+
+.resolver_div_unitname {
+    max-height: inherit;
+    overflow: hidden;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    font-family: "Lucida Console";
+    text-transform: uppercase;
+}
+
+    .resolver_div_unitname.desktop {
+        line-height: 95%;
+        text-align: center;
+        display: none;
+    }
+
+    .resolver_div_unitname.mobile {
+        text-align: left;
+        display: block;
+    }
+
+@media only screen and (min-width: 1024px) {
+    .resolver_div_unitname.desktop {
+        display: block;
+    }
+
+    .resolver_div_unitname.mobile {
+        display: none;
+    }
+
+    .resolver_div_unit {
+        width: auto;
+    }
+}
+
+.resolver_div_unitname.draggable:hover { background-color: var(--color_bg_dragdrop); }
+
+.resolver_tr_weaponentry { background-color: var(--color_bg_weaponentry_inactive); }
+
+.resolver_tr_weaponentry.active { background-color: var(--color_bg_weaponentry_active); }
+
+.resolver_td_targetnumber {
+    width: 2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.resolver_td_weaponname {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.resolver_td_targetnumber.draggable:hover { background-color: var(--color_bg_dragdrop); }
+
+.resolver_tr_unitinformation { }
+
+.resolver_td_unitinformation_label { }
+
+.resolver_td_unitinformation_data {
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    font-family: Tahoma;
+    border: 1px outset gray;
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+}
+
+/* Unit display label */
+
+.resolver_div_unitinformation_data {
+    float: left;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin-left: 2px;
+    margin-right: 2px;
+    border: 1px outset var(--color_outline_base);
+    border-radius: 2px;
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+    font-family: Tahoma;
+}
+
+/*******************************************************************************
+    Damage report
+*******************************************************************************/
+
+.resolver_div_damagereportcontainer.outgoingdamage {
+    border: 2px solid var(--color_outline_outgoingdamage);
+    box-shadow: inset 0 0 0.5rem var(--color_outline_outgoingdamage);
+}
+
+.resolver_div_damagereportcontainer.incomingdamage {
+    border: 2px solid var(--color_outline_incomingdamage);
+    box-shadow: inset 0 0 0.5rem var(--color_outline_incomingdamage);
+}
+
+.resolver_div_damagereport {
+    padding: 0.5rem;
+    float: left;
+}
+
+.resolver_div_damagereport.damageentry { padding: 0.5rem; }
+
+.resolver_div_attackerheat {
+    background-color: var(--color_bg_heat);
+    color: var(--color_text_heat);
+    font-size: 16px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.resolver_div_ammo {
+    background-color: var(--color_bg_ammo);
+    color: var(--color_text_ammo);
+    font-size: 16px;
+    padding-left: 1rem;
+}
+
+.resolver_div_phase {
+    font-size: 18px;
+    padding-left: 2rem;
+}
+
+.resolver_div_totaldamage {
+    font-size: 18px;
+    padding-left: 2rem;
+}
+
+.resolver_div_imagecontainer {
+    float: left;
+    max-width: 18rem;
+    height: 18rem;
+    overflow: hidden;
+}
+
+.resolver_div_paperdoll_image svg { height: 18rem; }
+
+.resolver_div_paperdoll_image_battlearmor svg { height: 6rem; }
+
+.resolver_div_paperdoll_image_trooper svg { height: 3rem; }
+
+.resolver_div_paperdoll_image svg polygon:hover { fill: #B1C1FF; }
+
+.resolver_div_tooltip {
+    background: cornsilk;
+    border: 1px solid black;
+    border-radius: 2px;
+    padding: 4px;
+}
+
+.resolver_div_attacklog_fire {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    font-weight: bold;
+}
+
+.resolver_div_attacklog_critical {
+    padding-left: 2rem;
+    padding-right: 0.5rem;
+    font-weight: bold;
+}
+
+.resolver_div_attacklog_damage {
+    padding-left: 2rem;
+    padding-right: 0.5rem;
+    font-weight: bold;
+}
+
+.resolver_div_attacklog_specialdamage {
+    padding-left: 2rem;
+    padding-right: 0.5rem;
+    font-weight: bold;
+}
+
+.resolver_div_attacklog_hit {
+    padding-left: 1.5rem;
+    padding-right: 0.5rem;
+    font-weight: bold;
+}
+
+.resolver_div_attacklog_miss {
+    padding-left: 1.5rem;
+    padding-right: 0.5rem;
+    font-weight: bold;
+}
+
+.resolver_div_attacklog_heat {
+    padding-left: 2rem;
+    padding-right: 0.5rem;
+    font-weight: bold;
+}
+
+.resolver_div_attacklog_calculation {
+    padding-left: 2.5rem;
+    padding-right: 0.5rem;
+}
+
+.resolver_div_attacklog_diceroll {
+    padding-left: 3rem;
+    padding-right: 0.5rem;
+}
+
+.resolver_div_attacklog_information {
+    padding-left: 2.5rem;
+    padding-right: 0.5rem;
+}
+
+.resolver_div_options { padding: 0.5rem 0.5rem 0.25rem; }
+
+/*******************************************************************************
+    Status effect colors
+*******************************************************************************/
+
+.resolver_status_normal {
+    background-color: var(--color_bg_status_normal);
+    color: var(--color_text_status_normal);
+}
+
+.resolver_status_warning {
+    background-color: var(--color_bg_status_warning);
+    color: var(--color_text_status_warning);
+}
+
+.resolver_status_critical {
+    background-color: var(--color_bg_status_critical);
+    color: var(--color_text_status_critical);
+}

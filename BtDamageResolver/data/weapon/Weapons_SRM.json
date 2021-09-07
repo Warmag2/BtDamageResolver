@@ -1,0 +1,338 @@
+[
+  {
+    "Name": "SRM-2",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "SRM-4",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 4
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 3,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "SRM-6",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 6
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 4,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "SRM-2+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 2
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "SRM-4+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 4
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 3,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 2
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "SRM-6+Artemis",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 6
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 4,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Normal": 2,
+      "Special": 2
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "Streak SRM-2",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 2,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
+    }
+  },
+  {
+    "Name": "Streak SRM-4",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 4
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 3,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
+    }
+  },
+  {
+    "Name": "Streak SRM-6",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 6
+    },
+    "DamageAerospace": {
+      "Short": 12
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": 4,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
+    }
+  },
+  {
+    "Name": "Clan Streak SRM-2",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 4,
+      "Medium": 8,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 2,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
+    }
+  },
+  {
+    "Name": "Clan Streak SRM-4",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 4
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 4,
+      "Medium": 8,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 3,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
+    }
+  },
+  {
+    "Name": "Clan Streak SRM-6",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 6
+    },
+    "DamageAerospace": {
+      "Short": 12
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 4,
+      "Medium": 8,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 4,
+    "UsesAmmo": true,
+    "ClusterSize": 1,
+    "ClusterDamage": 2,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
+      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
+    }
+  }
+]

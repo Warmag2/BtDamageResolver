@@ -1,0 +1,104 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+@inject VisualStyleController VisualStyleController
+
+@{
+    var pickDisabled = Disabled;
+}
+
+<input class="resolver_input resolver_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+<button class="resolver_button" disabled="@pickDisabled" @onclick="Pick">Pick</button>
+
+<div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
+    @foreach(var option in _options)
+    {
+        var optionToSelect = option.End;
+        if (_selectedOption >= option.Begin && _selectedOption <= option.End)
+        {
+            <div class="resolver_div_pickeritem active" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
+        }
+        else
+        {
+            <div class="resolver_div_pickeritem" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
+        }
+    }
+</div>
+
+@code
+{
+    private int _selectedOption;
+    private bool _selectionBoxHidden = true;
+    private List<PickBracket> _options = new List<PickBracket>();
+    private DateTime _updateTimeStamp = DateTime.MinValue;
+
+    [Parameter]
+    public Func<List<PickBracket>> BracketCreatorDelegate { get; set; }
+
+    [Parameter]
+    public int SelectedOption { get; set; }
+
+    [Parameter]
+    public int Min { get; set; }
+
+    [Parameter]
+    public int Max { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public DateTime ComparisonTimeStamp { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnChanged { get; set; }
+
+    public int SelectedOptionInternal
+    {
+        get => _selectedOption;
+        set
+        {
+            _selectedOption = value;
+            HideSelectionBox();
+            _updateTimeStamp = DateTime.UtcNow;
+            OnChanged.InvokeAsync(value);
+        }
+    }
+
+    private void Pick()
+    {
+        if (_selectionBoxHidden == false)
+        {
+            HideSelectionBox();
+        }
+        else
+        {
+            _options = BracketCreatorDelegate();
+
+            ShowSelectionBox();
+        }
+    }
+
+    private void ShowSelectionBox()
+    {
+        _selectionBoxHidden = false;
+    }
+
+    private void HideSelectionBox()
+    {
+        _selectionBoxHidden = true;
+    }
+
+    protected override void OnInitialized()
+    {
+        SelectedOptionInternal = SelectedOption;
+        _updateTimeStamp = DateTime.MinValue;
+        base.OnInitialized();
+    }
+
+    private void SelectOptionManual(int optionToSelect)
+    {
+        SelectedOptionInternal = optionToSelect;
+    }
+}

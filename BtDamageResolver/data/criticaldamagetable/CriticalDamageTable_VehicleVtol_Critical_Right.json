@@ -1,0 +1,18 @@
+{
+  "Type": "Critical",
+  "Location": "Right",
+  "UnitType": "VehicleVtol",
+  "Mapping": {
+    "2": [ "None" ],
+    "3": [ "None" ],
+    "4": [ "None" ],
+    "5": [ "None" ],
+    "6": [ "WeaponMalfunction" ],
+    "7": [ "Cargo" ],
+    "8": [ "Stabilizer" ],
+    "9": [ "WeaponDestroyed" ],
+    "10": [ "Engine" ],
+    "11": [ "Ammunition" ],
+    "12": [ "Fuel" ]
+  }
+}

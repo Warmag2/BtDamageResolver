@@ -1,0 +1,102 @@
+	Implemented
+
+[FEATURE] Heat tracking and hit probability effects.
+[FEATURE] EMP tracking and hit probability effects.
+[FEATURE] Floating Critical Rule
+[FEATURE] Weather
+[FEATURE] Attacker ammo expenditure tracking
+[FEATURE] Defender AMS ammo expenditure tracking
+[FEATURE] Game owner can kick players from the game.
+[FEATURE] GM can force a ready state for all players.
+[FEATURE] GM can move units from a player to another.
+[FEATURE] Players can gift units to other players.
+
+[FEATURE] A player can choose to see ALL damage reports in the damage reports tab, not just those associated with him/herself.
+
+[FEATURE] Game remembers damage reports and sends them to joining units.
+
+[FEATURE] Damage reports contain unit names in addition to unit IDs, so that players can correctly see which units were damaged, even if the units have already been removed from the game.
+
+[FEATURE] Total damage from attack action is now visible in the damage report.
+[FEATURE] Just writing the correct weapon name selects that weapon.
+[FEATURE] Default unit type is now a mech.
+[FEATURE] Now all numeric items can be picked, not just distance.
+[FEATURE] Flak.
+[FEATURE] Weather effects, can be set by game creator.
+[FEATURE] AMS Immune tag for future missiles which need it, such as Arrow IV.
+
+	Implemented (internal)
+
+[FEATURE] Faster and stabler repositories.
+[FEATURE] Better parser
+[FEATURE] Data sent over network is compressed with LZMA.
+
+[FEATURE] Make ResolverCommunicator a scoped service in ResolverClient. This avoids having to pass it to components and makes the system more resilient to bugs.
+
+[FEATURE] All public actions in the game now require authentication by a token given to the user upon connection. API can be published and anybody can make a client of their own without disturbing other users with illegal actions.
+
+[FEATURE] Make ConnectedToGame a deduced property (from Game State). This avoids having to ever set/unset it, which is bug-prone.
+
+[FEATURE] Make the connection a bit more resilient. If the server has lost its connection to the client grain observer, the messages that have not been delivered, are stored, and will be resent when the player reconnects. Automatic reconnection happens when the player tries to update his/her state and the grain informs him that the connection is faulted.
+
+[FEATURE] Reverted to sending target number updates as separate events instead of weapon data, reducing bandwidth usage and increasing reliability.
+
+[FEATURE] PlayerActor only keeps one unsent gamestate in memory.
+[FEATURE] PlayerActor sends damage reports in bulk -> better compression.
+[FEATURE] All compressed data is now sent with the same method, reducing complexity.
+[FEATURE] Weapon rework, now all rules are simply weapon special features.
+[FEATURE] Proper single missile attack handling.
+
+	Fixed
+
+[BUG] Task for resolving a turn was ignored so exceptions could not be caught. User received no information at all about errors.
+
+[BUG] Charge attacks did not work against units which could not take motive hits.
+[BUG] Selecting any tab other than Server with no game connection crashes the client.
+[BUG] Selecting a weapon item may select another item with a similar name.
+[BUG] Cannot set <no target>
+[BUG] Grey inactive weapons do not read "inactive"
+[BUG] Faulty unit breaks the whole game instead of discarding invalid values.
+[BUG] LBX shooting VTOL: "hit modifier from weapon features"
+[BUG] Toggle static parameters does nothing.
+[BUG] Unit that cannot hit still produces a damage report.
+[BUG] If absolutely no weapons are not active, damage report is still produced.
+[BUG] Attack log shows weapons that could not hit.
+[BUG] Rapid fire weapon heat was calculated incorrectly.
+[BUG] Attacker heat was not displayed, now shown on a separate line.
+[BUG] Exploit fix: Authentication was not required for some public actions.
+[BUG] User could not separate critical damage from critical damage threats.
+[BUG] Weapons may go missing.
+[BUG] Cannot join game after disconnection, password is not accepted.
+[BUG] Cluster weapons now always do maximum damage against buildings.
+[BUG] Battle armor should be able to fire at range 0 units.
+[BUG] Now you cannot pick a distance if you do not have weapons.
+[BUG] Clicking "Pick" again now closes the picker.
+
+[BUG] Race condition in TN reporting, target list flickers and displays wrong values.
+[COMMENT]: Target number updates are no longer sent. Target number update updates unit state directly.
+[COMMENT]: This has since been reverted. Target number updates are again sent, but seem to work this time.
+
+[BUG] Target list refreshes every update -> difficult to select targets if somebody is doing changes to his/her units.
+[COMMENT]: Target list is only refreshed if the number of targets actually changes. It will still flicker when this happens, but this is unavoidable.
+
+[BUG] Penaltry from shooting VTOL should be communicated to player (in UI)
+[COMMENT]: Now all target calculation information is communicated to player if target number is hovered over.
+
+[BUG] BA trooper attacking armored car had TN 6 and hit roll 9 => nothing still happened
+[BUG] Can set 0 troopers to BA squad
+[COMMENT]: These were linked. BA Trooper count was zero and thus 0 weapon attacks were generated. Setting minimum number of troopers to 1. Units are now also always generated with 1 trooper.
+
+[BUG] Battle armor squads with many troopers and infantry burst damage do not work correctly (at least, may be that BA squads with many troopers do not work at all).
+[COMMENT]: Multiple bugs were present here, and BA never did damage to infantry from multiple troopers. Should now be fixed for both normal damage and burst damage.
+
+[BUG] Generated damage reports should not be printed for next turn.
+[COMMENT]: They are now printed for the turn that last run its weapons phase.
+
+	Wontfix / needs discussion
+
+[BUG] Unit type is not visible after toggling static parameters.
+[COMMENT]: This is a feature, as you won't change it after you set it. Why should it stay visible? If this needs to stay visible, what other things need to be displayed after you've already set them and want to hide them?
+
+[BUG] Can't manual select 3 if bracket is 3-4 => field resets to 4.
+[COMMENT]: Can't find bug. You can always select a distance manually, but selecting PICK sets the distance to the highest number in the bracket (X-Y). Selecting a specific number inside the bracket should make no difference with respect to any targeting decisions and/or target number information, so the player should not care about selecting a specific number once the bracket is selected. If the bug reporter meant something else, reproduction steps are needed.

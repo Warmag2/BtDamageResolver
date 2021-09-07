@@ -1,0 +1,110 @@
+[
+  {
+    "Name": "Gauss Rifle",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 15
+    },
+    "DamageAerospace": {
+      "Short": 15
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 15,
+      "Long": 22,
+      "Extreme": 22
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 2,
+      "Special": 2
+    },
+    "Heat": 1,
+    "UsesAmmo": true
+  },
+  {
+    "Name": "Light Gauss Rifle",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 8
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 8,
+      "Medium": 17,
+      "Long": 25,
+      "Extreme": 25
+    },
+    "RangeAerospace": "Extreme",
+    "RangeMinimum": {
+      "Normal": 3,
+      "Special": 3
+    },
+    "Heat": 1,
+    "UsesAmmo": true,
+  },
+  {
+    "Name": "Heavy Gauss Rifle",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "PointBlank": 25,
+      "Short": 25,
+      "Medium": 20,
+      "Long": 10,
+      "Extreme": 10
+    },
+    "DamageAerospace": {
+      "PointBlank": 25,
+      "Short": 25,
+      "Medium": 20,
+      "Long": 10,
+      "Extreme": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 13,
+      "Long": 20,
+      "Extreme": 20
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 4,
+      "Special": 4
+    },
+    "Heat": 2,
+    "UsesAmmo": true
+  },
+  {
+    "Name": "Clan Gauss Rifle",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 15
+    },
+    "DamageAerospace": {
+      "Short": 15
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 15,
+      "Long": 22,
+      "Extreme": 22
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 2,
+      "Special": 2
+    },
+    "Heat": 1,
+    "UsesAmmo": true
+  }
+]

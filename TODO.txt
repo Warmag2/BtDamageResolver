@@ -1,0 +1,26 @@
+TODO: Styling (looks like shit for the most part).
+
+	Implemented
+
+[FEATURE] MASC
+[FEATURE] Unit base speed can be altered.
+[FEATURE] Heat speed effects.
+[VISUAL] Listing of heat effects.
+[VISUAL] Only show possible movement types and amounts as per unit type and penalties.
+[VISUAL] Show incorrectly input fields in red.
+
+	Implemented (internal)
+
+[FEATURE] Quirks (cannot be set yet).
+
+	Fixed
+
+	Open Bugs
+
+		Could not reproduce
+
+[BUG] Attacker heat is displayed for units other than Mech/AerospaceF
+[COMMENT]: Can't find bug. Heat is displayed only for units which can take and produce heat. Need reproduction steps.
+
+[BUG] Plasma rifle heat is not correct.
+[COMMENT]: Can't find bug. Heat values seem correct. Need reproduction steps.

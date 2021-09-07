@@ -1,0 +1,21 @@
+{
+  "Type": "Mech",
+  "AttackType": "Punch",
+  "Direction": "Rear",
+  "LocationMapping": {
+    "1": [ "RightArm" ],
+    "2": [ "RearLeftTorso" ],
+    "3": [ "RearCenterTorso" ],
+    "4": [ "RearRightTorso" ],
+    "5": [ "LeftArm" ],
+    "6": [ "Head" ]
+  },
+  "CriticalDamageMapping": {
+    "1": "None",
+    "2": "None",
+    "3": "None",
+    "4": "None",
+    "5": "None",
+    "6": "None"
+  }
+}

@@ -1,0 +1,77 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+
+@if (_clusterTable != null)
+{
+    <div class="resolver_div_componentrow">
+
+        <table class="resolver_table">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>@_clusterTable.Name</td>
+            </tr>
+        </table>
+    </div>
+        
+    <div class="resolver_div_componentrow">
+        <table class="resolver_table">
+            <tr>
+                @if (_clusterTable.Table.Length > 1)
+                {
+                    <th>Dice Roll</th>
+                }
+                <th colspan="@(_clusterTable.Table[0].Length)">
+                    Cluster value
+                </th>
+            </tr>
+            <tr>
+                @if (_clusterTable.Table.Length > 1)
+                {
+                    <th></th>
+                }
+                @for (int ii = 0; ii < _clusterTable.Table[0].Length; ii++)
+                {
+                    <th>@ii</th>
+                }
+            </tr>
+
+            @for (int ii = 0; ii < _clusterTable.Table.Length; ii++)
+            {
+                <tr>
+                    @if (_clusterTable.Table.Length > 1)
+                    {
+                        <td>
+                            @ii
+                        </td>
+                    }
+                    @for (int jj = 0; jj < _clusterTable.Table[ii].Length; jj++)
+                    {
+                        <td>@_clusterTable.Table[ii][jj]</td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+@code
+{
+    private ClusterTable _clusterTable;
+
+    [Parameter]
+    public string ClusterTableName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(ClusterTableName) && CommonData.MapClusterTable.ContainsKey(ClusterTableName))
+        {
+            _clusterTable = CommonData.MapClusterTable[ClusterTableName];
+        }
+        await base.OnInitializedAsync();
+    }
+}

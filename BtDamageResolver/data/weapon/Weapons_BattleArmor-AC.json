@@ -1,0 +1,30 @@
+[
+  {
+    "Name": "BA AC Bearhunter",
+    "Type": "Ballistic",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 0,
+      "Medium": 1,
+      "Long": 2,
+      "Extreme": 2
+    },
+    "RangeAerospace": "Short",
+    "Heat": 0,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "3d6", "Type": "Burst" } ],
+      "Special": [ { "Data": "3d6", "Type": "Burst" } ]
+    }
+  }
+]

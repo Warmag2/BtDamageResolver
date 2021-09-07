@@ -1,0 +1,83 @@
+version: "3"
+
+services:  
+  # Battletech Damage Resolver (orleans silo)
+  resolver:
+    container_name: resolver
+    hostname: resolver
+    image: resolver:latest
+    environment:
+      RESOLVER_ENVIRONMENT: Release
+    ports:
+      - 11111:11111
+      - 30000:30000
+    networks:
+      - resolvernet
+    depends_on:
+      - orleansdb # Required for actor persistence
+    restart: on-failure
+
+  # Data Importer
+  resolverdataimporter:
+    container_name: resolverdataimporter
+    hostname: resolverdataimporter
+    image: resolverdataimporter:latest
+    environment:
+      RESOLVER_ENVIRONMENT: Release
+    networks:
+      - resolvernet
+    depends_on:
+      - resolver
+
+  # Battletech Damage Resolver (blazor client)
+  resolverclient:
+    container_name: resolverclient
+    hostname: resolverclient
+    image: resolverclient:latest
+    environment:
+      RESOLVER_ENVIRONMENT: Release
+    ports:
+      - 8787:80
+    networks:
+      - resolvernet
+    depends_on:
+      - resolver             # No sense to start until the server is up
+    restart: on-failure
+
+  # Postgresql for Orleans
+  orleansdb:
+    container_name: orleansdb
+    hostname: orleansdb
+    image: orleansdb:latest
+    environment:
+      POSTGRES_DB: BtDamageResolver
+      POSTGRES_USER: faemiyah
+      POSTGRES_PASSWORD: fuRZdwzQXl98wlNH8_bE
+    ports:
+      - 65432:5432
+    volumes:
+      - orleansdb-data:/var/lib/postgresql/data
+    restart: on-failure
+    networks:
+      - resolvernet
+    restart: on-failure
+
+  # Grafana
+  grafana:
+    container_name: grafana
+    image: resolvergrafana:latest
+    ports:
+      - "3000:3000"
+#    volumes:
+#      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - resolvernet
+    depends_on:
+      - orleansdb # Data source
+    restart: on-failure
+
+networks:
+  resolvernet:
+
+volumes:
+  orleansdb-data:

@@ -1,0 +1,47 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject UserStateController UserStateController
+
+<div class="resolver_div_paperdoll_image_trooper">
+    
+    @if (DamageReport.DamagePaperDoll.DamageCollection.ContainsKey(Location.Trooper))
+    {
+        _totalDamage = DamageReport.DamagePaperDoll.DamageCollection[Location.Trooper].Sum();
+    }
+    else
+    {
+        _totalDamage = 0;
+    }
+
+    @for (int ii = 0; ii < DamageReport.InitialTroopers; ii++)
+    {
+            <svg viewBox="0 0 3800 4600">
+                <g id="Trooper">
+                    @if (ii < _totalDamage)
+                    {
+
+                        <polygon fill="#FF0000" stroke="black" stroke-width="100" stroke-linejoin="round" points="1600,1200 1600,1000 1500,900 1500,600 1700,400 2100,400 2300,600 2300,900 2200,1000 2200,1200 3200,1200 3400,1400 3400,1600 3200,1800 2200,1800 2200,2394 2400,2400 2800,2800 2800,4200 2200,4200 2200,3100 2100,3000 1700,3000 1600,3100 1600,4200 1000,4200 1000,2800 1400,2400 1600,2400 1600,1800 600,1800 400,1600 400,1400 600,1200"
+                                 onmousemove="ShowTooltip(event, 'resolver_tooltip_paperdoll', @FormPaperDoll.GetDamageText(Location.Trooper));" onmouseout="HideTooltip('resolver_tooltip_paperdoll');"/>
+                    }
+                    else
+                    {
+                        <polygon fill="#E0E0E0" stroke="black" stroke-width="100" stroke-linejoin="round" points="1600,1200 1600,1000 1500,900 1500,600 1700,400 2100,400 2300,600 2300,900 2200,1000 2200,1200 3200,1200 3400,1400 3400,1600 3200,1800 2200,1800 2200,2394 2400,2400 2800,2800 2800,4200 2200,4200 2200,3100 2100,3000 1700,3000 1600,3100 1600,4200 1000,4200 1000,2800 1400,2400 1600,2400 1600,1800 600,1800 400,1600 400,1400 600,1200"
+                                 onmousemove="ShowTooltip(event, 'resolver_tooltip_paperdoll', @FormPaperDoll.GetDamageText(Location.Trooper));" onmouseout="HideTooltip('resolver_tooltip_paperdoll');"/>
+
+                    }
+                </g>
+            </svg>
+        }
+
+</div>
+
+@code {
+    private int _totalDamage;
+
+    [Parameter]
+    public FormPaperDoll FormPaperDoll { get; set; }
+
+    [Parameter]
+    public DamageReport DamageReport { get; set; }
+}

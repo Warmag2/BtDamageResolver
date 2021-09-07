@@ -1,0 +1,98 @@
+﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData CommonData
+@inject VisualStyleController VisualStyleController
+
+<span class="resolver_distance_picker_display_only @(StyleSelectorDelegate(_selectedOption))" @onclick="Pick">@NumberToDisplay</span>
+
+<div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
+    @foreach (var option in _options)
+    {
+        var optionToSelect = option.End;
+        if (_selectedOption >= option.Begin && _selectedOption <= option.End)
+        {
+            <div class="resolver_div_pickeritem active" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
+        }
+        else
+        {
+            <div class="resolver_div_pickeritem" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
+        }
+    }
+</div>
+
+@code
+{
+    private int _selectedOption;
+    private bool _selectionBoxHidden = true;
+    private List<PickBracket> _options = new();
+
+    [Parameter]
+    public Func<List<PickBracket>> BracketCreatorDelegate { get; set; }
+
+    [Parameter]
+    public Func<int, string> StyleSelectorDelegate { get; set; }
+
+    [Parameter]
+    public int NumberToDisplay { get; set; }
+
+    [Parameter]
+    public int Min { get; set; }
+
+    [Parameter]
+    public int Max { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnChanged { get; set; }
+
+    public int SelectedOptionInternal
+    {
+        get => _selectedOption;
+        set
+        {
+            _selectedOption = value;
+            HideSelectionBox();
+            OnChanged.InvokeAsync(value);
+        }
+    }
+
+    private void Pick()
+    {
+        if (_selectionBoxHidden == false)
+        {
+            HideSelectionBox();
+        }
+        else
+        {
+            if (!Disabled)
+            {
+                _options = BracketCreatorDelegate();
+
+                ShowSelectionBox();
+            }
+        }
+    }
+
+    private void ShowSelectionBox()
+    {
+        _selectionBoxHidden = false;
+    }
+
+    private void HideSelectionBox()
+    {
+        _selectionBoxHidden = true;
+    }
+
+    protected override void OnInitialized()
+    {
+        SelectedOptionInternal = NumberToDisplay;
+        base.OnInitialized();
+    }
+
+    private void SelectOptionManual(int optionToSelect)
+    {
+        SelectedOptionInternal = optionToSelect;
+    }
+}

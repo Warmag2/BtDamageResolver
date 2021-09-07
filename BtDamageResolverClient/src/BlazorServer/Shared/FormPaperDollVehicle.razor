@@ -1,0 +1,48 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Enums
+
+<div class="resolver_div_paperdoll_image">
+
+    <svg viewBox="0 0 7200 8800">
+        <g id="Left">
+            <polygon fill="@FormPaperDoll.GetDamageColor(Location.Left)" stroke="black" stroke-width="100" points="1400,1600 1400,2400 1600,2600 1600,2800 1400,3000 1400,5800 1600,6000 1600,6200 1400,6400 1409,7176 800,8000 600,8000 400,7800 400,6800 605,6575 600,2600 400,2400 400,1200 600,1000 800,1000"
+                     onmousemove="ShowTooltip(event, 'resolver_tooltip_paperdoll', @FormPaperDoll.GetDamageText(Location.Left));" onmouseout="HideTooltip('resolver_tooltip_paperdoll');" />
+        </g>
+        <g id="Right">
+            <polygon fill="@FormPaperDoll.GetDamageColor(Location.Right)" stroke="black" stroke-width="100" points="5800,1600 5800,2400 5600,2600 5600,2800 5800,3000 5800,5800 5600,6000 5600,6200 5800,6400 5791,7176 6400,8000 6600,8000 6800,7800 6800,6800 6595,6575 6600,2600 6800,2400 6800,1200 6600,1000 6400,1000"
+                     onmousemove="ShowTooltip(event, 'resolver_tooltip_paperdoll', @FormPaperDoll.GetDamageText(Location.Right));" onmouseout="HideTooltip('resolver_tooltip_paperdoll');" />
+        </g>
+        <g id="Rear">
+            <polygon fill="@FormPaperDoll.GetDamageColor(Location.Rear)" stroke="black" stroke-width="100" points="5600,8400 5800,8200 6000,8200 6200,8000 5600,7200 5000,7200 4600,7600 2600,7600 2200,7200 1600,7200 1000,8000 1200,8200 1400,8200 1600,8400 2200,8400 2400,8200 4800,8200 5000,8400"
+                     onmousemove="ShowTooltip(event, 'resolver_tooltip_paperdoll', @FormPaperDoll.GetDamageText(Location.Rear));" onmouseout="HideTooltip('resolver_tooltip_paperdoll');" />
+        </g>
+        <g id="Front">
+            <polygon fill="@FormPaperDoll.GetDamageColor(Location.Front)" stroke="black" stroke-width="100" points="2200,1600 1600,1600 1000,1000 1000,800 1400,400 2600,400 2800,600 4400,600 4600,400 5800,400 6200,800 6200,1000 5600,1600 5000,1600 4600,1400 2600,1400"
+                     onmousemove="ShowTooltip(event, 'resolver_tooltip_paperdoll', @FormPaperDoll.GetDamageText(Location.Front));" onmouseout="HideTooltip('resolver_tooltip_paperdoll');" />
+        </g>
+        <g id="Turret">
+            <polygon fill="@FormPaperDoll.GetDamageColor(Location.Turret)" stroke="black" stroke-width="100" points="3000,4200 3400,4200 3400,3000 3200,2800 3200,2400 3400,2200 3800,2200 4000,2400 4000,2800 3800,3000 3800,4200 4200,4200 4800,4800 4800,5800 4200,6400 3000,6400 2400,5800 2400,4800"
+                     onmousemove="ShowTooltip(event, 'resolver_tooltip_paperdoll', @FormPaperDoll.GetDamageText(Location.Turret));" onmouseout="HideTooltip('resolver_tooltip_paperdoll');" />
+        </g>
+        <g id="LeftInternal">
+            <polygon fill="#A0A0A0" stroke="black" stroke-width="100" points="1600,5800 1600,3000 1800,2800 2600,2800 3000,2800 3200,3000 3200,3800 3000,4000 2800,4000 2200,4600 2200,5800 2000,6000 1800,6000"/>
+        </g>
+        <g id="RightInternal">
+            <polygon fill="#A0A0A0" stroke="black" stroke-width="100" points="5600,5800 5600,3000 5400,2800 4600,2800 4200,2800 4000,3000 4000,3800 4200,4000 4400,4000 5000,4600 5000,5800 5200,6000 5400,6000"/>
+        </g>
+        <g id="RearInternal">
+            <polygon fill="#A0A0A0" stroke="black" stroke-width="100" points="2400,6200 1800,6200 1600,6400 1600,6800 1800,7000 2200,7000 2556,7386 4600,7400 5000,7000 5400,7000 5600,6800 5600,6400 5400,6200 4800,6200 4400,6600 2800,6600"/>
+        </g>
+        <g id="FrontInternal">
+            <polygon fill="#A0A0A0" stroke="black" stroke-width="100" points="1800,1800 2200,1800 2800,1600 4400,1600 5000,1800 5400,1800 5600,2000 5600,2400 5400,2600 4400,2600 4200,2400 4200,2200 4000,2000 3200,2000 3000,2200 3000,2400 2800,2600 1800,2600 1600,2400 1600,2000"/>
+        </g>
+        <g id="TurretInternal" visibility="hidden">
+            <polygon fill="#A0A0A0" stroke="black" stroke-width="100" points="4000,4600 3200,4600 2800,5000 2800,5600 3200,6000 4000,6000 4400,5600 4400,5000"/>
+        </g>
+    </svg>
+
+</div>
+
+@code {
+    [Parameter]
+    public FormPaperDoll FormPaperDoll { get; set; }
+}

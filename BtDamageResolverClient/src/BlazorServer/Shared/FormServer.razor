@@ -1,0 +1,216 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject Blazored.LocalStorage.ILocalStorageService _localStorage
+@inject IResolverCommunicator _resolverCommunicator
+@inject UserStateController _userStateController
+@inject CommonData _commonData
+@implements IDisposable
+
+<div class="resolver_div_login">
+    @if (!_userStateController.ConnectedToServer)
+    {
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_componentcell">
+                <h3 class="resolver_header">
+                    Sign in
+                </h3>
+
+                <FormCredentials OnSubmit="@Connect">Player</FormCredentials>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_componentcell">
+                <h3 class="resolver_header">
+                    Manual connection
+                </h3>
+
+                <FormCredentials OnSubmit="@JoinGame">Game</FormCredentials>
+            </div>
+
+            <div class="resolver_div_componentcell resolver_div_alignright">
+                <button class="resolver_button" @onclick="Disconnect">Sign out</button>
+            </div>
+        </div>
+        @if (!_userStateController.ConnectedToGame && _games != null)
+        {
+            <div class="resolver_div_componentrow">
+                <h2 class="resolver_header">
+                    Games with recent activity
+                </h2>
+                <FormGameList Games="@_recentGames" OnJoin="@OnGameJoinButtonPressed" OnRefresh="@RefreshGameList"></FormGameList>
+            </div>
+
+            @if (_otherGames.Count > 0)
+            {
+                <div class="resolver_div_componentrow">
+                    <h2 class="resolver_header">
+                        Other games
+                    </h2>
+
+                    <FormGameList Games="@_otherGames" OnJoin="@OnGameJoinButtonPressed" OnRefresh="@RefreshGameList"></FormGameList>
+                </div>
+            }
+        }
+
+    }
+</div>
+
+@if (_showModal)
+{
+    <div class="resolver_modal_background">
+        <div class="resolver_modal" id="passwordModal" style="display: block" role="dialog">
+            <!-- Modal Header -->
+            <div class="resolver_modal_header resolver_header">
+                <h4 class="resolver_modal_title">Password required</h4>
+                <button type="button" class="button_modal_close" @onclick="@ModalCancel">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="resolver_modal_body">
+                <label class="resolver_label_auth">
+                    Password:
+                    <input class="resolver_input resolver_input_text" type="text" @bind="_modalPassword" />
+                </label>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="resolver_modal_footer">
+                <button type="button" class="resolver_button" @onclick=@(e => ModalCompleted(_modalPassword))>Submit</button>
+                <button type="button" class="resolver_button" @onclick="@ModalCancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code
+{
+    private static string _localStorageVariableUserCredentials = "BtDamageResolverUserCredentials";
+
+    private bool _showModal = false;
+    private string _modalName = string.Empty;
+    private string _modalPassword = string.Empty;
+    private List<GameEntry> _recentGames;
+    private List<GameEntry> _otherGames;
+    private List<GameEntry> _games;
+
+    [Parameter]
+    public EventCallback OnServerStateChanged { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshGameList();
+        _userStateController.OnUnitListChange += StateHasChanged;
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Connect(Credentials credentials)
+    {
+        var loginState = await _resolverCommunicator.Connect(credentials);
+
+        if (loginState != null)
+        {
+            _userStateController.ConnectedToServer = true;
+            _userStateController.PlayerOptions = await _resolverCommunicator.GetPlayerOptions();
+            _userStateController.PlayerName = credentials.Name;
+            await _localStorage.SetItemAsync(_localStorageVariableUserCredentials, credentials);
+
+            if (!string.IsNullOrWhiteSpace(loginState.GameId))
+            {
+                await JoinGame(new Credentials { Name = loginState.GameId, Password = loginState.GamePassword });
+            }
+        }
+    }
+
+    private async Task Disconnect()
+    {
+        if (await _resolverCommunicator.Disconnect())
+        {
+            _userStateController.ConnectedToServer = false;
+            _userStateController.GameOptions = null;
+            _userStateController.GameState = null;
+            _userStateController.PlayerName = null;
+            _userStateController.PlayerOptions = null;
+            _userStateController.DamageReportCollection.Clear();
+            await _localStorage.RemoveItemAsync(_localStorageVariableUserCredentials);
+        }
+    }
+
+    private async Task JoinGame(Credentials credentials)
+    {
+        if (await _resolverCommunicator.JoinGame(credentials))
+        {
+            _userStateController.DamageReportCollection.Clear();
+            _userStateController.GameOptions = await _resolverCommunicator.GetGameOptions();
+            await OnServerStateChanged.InvokeAsync();
+        }
+        else
+        {
+            _modalName = credentials.Name;
+            ModalShow();
+        }
+    }
+
+    public async Task LeaveGame()
+    {
+        await _resolverCommunicator.LeaveGame();
+    }
+
+    private async Task RefreshGameList()
+    {
+        _games = await _commonData.GetGameEntries();
+        _recentGames = _games.Where(g => g.TimeStamp >= DateTime.UtcNow - TimeSpan.FromHours(1)).ToList();
+        _otherGames = _games.Where(g => g.TimeStamp < DateTime.UtcNow - TimeSpan.FromHours(1)).ToList();
+    }
+
+    private async Task OnGameJoinButtonPressed(string gameName)
+    {
+        await JoinGame(new Credentials { Name = gameName, Password = string.Empty });
+    }
+
+    public void ModalShow()
+    {
+        _showModal = true;
+    }
+
+    private void ModalCancel() => _showModal = false;
+
+    private async Task ModalCompleted(string password)
+    {
+        _showModal = false;
+        await JoinGame(new Credentials { Name = _modalName, Password = password });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (await _localStorage.ContainKeyAsync(_localStorageVariableUserCredentials))
+            {
+                var userCredentials = await _localStorage.GetItemAsync<Credentials>(_localStorageVariableUserCredentials);
+
+                if (!string.IsNullOrWhiteSpace(userCredentials.Name))
+                {
+                    await Connect(userCredentials);
+                }
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task SaveUserCredentials(Credentials credentials)
+    {
+        await _localStorage.SetItemAsync(_localStorageVariableUserCredentials, credentials);
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnUnitListChange -= StateHasChanged;
+    }
+}

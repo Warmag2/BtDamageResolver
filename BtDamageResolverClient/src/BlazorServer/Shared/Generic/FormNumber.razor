@@ -1,0 +1,43 @@
+﻿<input class="resolver_input resolver_input_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+
+@code
+{
+    private int _selectedOption;
+    private DateTime _updateTimeStamp = DateTime.MinValue;
+
+    [Parameter]
+    public int SelectedOption { get; set; }
+
+    [Parameter]
+    public int Min { get; set; }
+
+    [Parameter]
+    public int Max { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public DateTime ComparisonTimeStamp { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnChanged { get; set; }
+
+    public int SelectedOptionInternal
+    {
+        get => _selectedOption;
+        set
+        {
+            _selectedOption = value;
+            _updateTimeStamp = DateTime.UtcNow;
+            OnChanged.InvokeAsync(value);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        SelectedOptionInternal = SelectedOption;
+        _updateTimeStamp = DateTime.MinValue;
+        base.OnInitialized();
+    }
+}

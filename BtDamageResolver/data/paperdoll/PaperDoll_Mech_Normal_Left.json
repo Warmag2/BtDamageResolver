@@ -1,0 +1,31 @@
+{
+  "Type": "Mech",
+  "AttackType": "Normal",
+  "Direction": "Left",
+  "LocationMapping": {
+    "2": [ "LeftTorso" ],
+    "3": [ "LeftLeg" ],
+    "4": [ "LeftArm" ],
+    "5": [ "LeftArm" ],
+    "6": [ "LeftLeg" ],
+    "7": [ "LeftTorso" ],
+    "8": [ "CenterTorso" ],
+    "9": [ "RightTorso" ],
+    "10": [ "RightArm" ],
+    "11": [ "RightLeg" ],
+    "12": [ "Head" ]
+  },
+  "CriticalDamageMapping": {
+    "2": "Critical",
+    "3": "None",
+    "4": "None",
+    "5": "None",
+    "6": "None",
+    "7": "None",
+    "8": "None",
+    "9": "None",
+    "10": "None",
+    "11": "None",
+    "12": "None"
+  }
+}

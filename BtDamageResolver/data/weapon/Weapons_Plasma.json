@@ -1,0 +1,64 @@
+[
+  {
+    "Name": "Plasma Rifle",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 10
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 10,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 10,
+    "UsesAmmo": true,
+    "SpecialDamage": {
+      "Normal": { "Data": "1d6", "Type": "Heat" },
+      "Special": { "Data": "1d6", "Type": "Heat" }
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "2d6", "Type": "Burst" }, { "Data": "2d6", "Type": "Heat" } ],
+      "Special": [ { "Data": "2d6", "Type": "Burst" }, { "Data": "2d6", "Type": "Heat" } ]
+    },
+    "ClusterDamage": 1,
+    "ClusterSize": 5
+  },
+  {
+    "Name": "Clan Plasma Cannon",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 0
+    },
+    "DamageAerospace": {
+      "Short": 0
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 6,
+      "Medium": 12,
+      "Long": 18,
+      "Extreme": 18
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 7,
+    "UsesAmmo": true,
+    "SpecialDamage": {
+      "Normal": { "Data": "2d6", "Type": "Heat" },
+      "Special": { "Data": "2d6", "Type": "Heat" }
+    },
+    "SpecialFeatures": {
+      "Normal": [ { "Data": "3d6", "Type": "Burst" }, { "Data": "3d6", "Type": "Heat" } ],
+      "Special": [ { "Data": "3d6", "Type": "Burst" }, { "Data": "3d6", "Type": "Heat" } ]
+    },
+    "ClusterDamage": 1,
+    "ClusterSize": 5
+  }
+]

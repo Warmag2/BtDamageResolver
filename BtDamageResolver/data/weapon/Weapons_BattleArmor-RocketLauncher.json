@@ -1,0 +1,157 @@
+[
+  {
+    "Name": "BA Rocket Launcher 1",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 1
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 7,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 1,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "BA Rocket Launcher 2",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 7,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 1,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "BA Rocket Launcher 3",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 7,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 1,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "BA Rocket Launcher 4",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 4
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 7,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 1,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "BA Rocket Launcher 5",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 7,
+      "Long": 12,
+      "Extreme": 12
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 2,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  }
+]

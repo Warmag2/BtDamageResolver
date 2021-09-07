@@ -1,0 +1,157 @@
+[
+  {
+    "Name": "BA MRM-1",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 1
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 1,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "BA MRM-2",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 2
+    },
+    "DamageAerospace": {
+      "Short": 1
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 1,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "BA MRM-3",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 1,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "BA MRM-4",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 4
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 2,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  },
+  {
+    "Name": "BA MRM-5",
+    "Type": "Missile",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 8,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "Heat": 2,
+    "UsesAmmo": true,
+    "HitModifier": {
+      "Normal": 1,
+      "Special": 1
+    },
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "SpecialFeatures": {
+      "Normal": [ { "Type": "Cluster" } ],
+      "Special": [ { "Type": "Cluster" } ]
+    }
+  }
+]

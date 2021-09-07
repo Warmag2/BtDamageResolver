@@ -1,0 +1,32 @@
+{
+  "Type": "VehicleVtol",
+  "AttackType": "Normal",
+  "Direction": "Top",
+  "Rules": [ "ImprovedVehicleSurvivability" ],
+  "LocationMapping": {
+    "2": [ "Front", "Rear" ],
+    "3": [ "Propulsion" ],
+    "4": [ "Propulsion" ],
+    "5": [ "Left", "Right" ],
+    "6": [ "Front", "Rear" ],
+    "7": [ "Front", "Rear" ],
+    "8": [ "Front", "Rear" ],
+    "9": [ "Left", "Right" ],
+    "10": [ "Propulsion" ],
+    "11": [ "Propulsion" ],
+    "12": [ "Propulsion" ]
+  },
+  "CriticalDamageMapping": {
+    "2": "Critical",
+    "3": "Motive",
+    "4": "Motive",
+    "5": "None",
+    "6": "None",
+    "7": "None",
+    "8": "None",
+    "9": "None",
+    "10": "Motive",
+    "11": "Motive",
+    "12": "Critical"
+  }
+}

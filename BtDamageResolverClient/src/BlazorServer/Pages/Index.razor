@@ -1,0 +1,176 @@
+﻿@page "/"
+@using Faemiyah.BtDamageResolver.Api.Compression
+@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Events
+@using Faemiyah.BtDamageResolver.Api.Options
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@using Microsoft.AspNetCore.SignalR.Client
+@using Orleans
+@inject IClusterClient _clusterClient
+@inject CommonData _commonData
+@inject NavigationManager _navigationManager
+@inject IResolverCommunicator _resolverCommunicator
+@inject UserStateController _userStateController
+@inject VisualStyleController _visualStyleController
+@implements IDisposable
+
+<div class="resolver_div_errormessage">
+    <verbatim>
+        @_errorMessage
+    </verbatim>
+</div>
+
+<div style="@VisualStyleController.HideElement(_userStateController.ConnectedToGame)">
+    <FormServer @ref="_formServer" OnServerStateChanged="@RefreshPage"></FormServer>
+</div>
+
+
+<div class="resolver_div_tabcontainer" style="@VisualStyleController.HideElement(!_userStateController.ConnectedToGame)">
+    <div class="resolver_div_tab">
+        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.Data)" @onclick="@(e => SelectTab(ResolverTab.Data))">Data</button>
+        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.Dashboard)" @onclick="@(e => SelectTab(ResolverTab.Dashboard))">Dashboard</button>
+        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.AllUnits)" @onclick="@(e => SelectTab(ResolverTab.AllUnits))">All units</button>
+        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.DamageReports)" @onclick="@(e => SelectTab(ResolverTab.DamageReports))">DamageReports</button>
+        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.Options)" @onclick="@(e => SelectTab(ResolverTab.Options))">Options</button>
+    </div>
+    <div class="resolver_div_tab resolver_div_alignright">
+        <button @onclick="@LeaveGame">Leave Game</button>
+    </div>
+</div>
+
+<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Data || !_userStateController.ConnectedToGame)">
+    <FormData></FormData>
+</div>
+
+<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Dashboard || !_userStateController.ConnectedToGame)">
+    @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
+    {
+        <FormGameState></FormGameState>
+    }
+</div>
+
+<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.AllUnits || !_userStateController.ConnectedToGame)">
+    @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
+    {
+        <ComponentGameState DisplayOwnUnits="true"></ComponentGameState>
+    }
+</div>
+
+<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.DamageReports || !_userStateController.ConnectedToGame)">
+    @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
+    {
+        <FormDamageReports OnlyNewest="false"></FormDamageReports>
+    }
+</div>
+
+<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Options || !_userStateController.ConnectedToGame)">
+    @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
+    {
+        <FormOptions @key=@_userStateController.GameOptions.TimeStamp></FormOptions>
+    }
+</div>
+
+@code
+{
+    private FormServer _formServer;
+    private ResolverTab _selectedTab = ResolverTab.Dashboard;
+    private string _errorMessage;
+    private HubConnection _hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithAutomaticReconnect()
+            .WithUrl(_navigationManager.ToAbsoluteUri("/ClientHub"))
+            .Build();
+
+        _hubConnection.On<byte[]>("ReceiveDamageReports", (damageReportData) =>
+        {
+            var damageReport = DataHelper.Unpack<List<DamageReport>>(damageReportData);
+            _userStateController.AddDamageReports(damageReport);
+        });
+
+        _hubConnection.On<string>("ReceiveErrorMessage", (errorMessage) =>
+        {
+            _errorMessage = errorMessage;
+            StateHasChanged();
+        });
+
+        _hubConnection.On<byte[]>("ReceiveGameOptions", (gameOptionsData) =>
+        {
+            var gameOptions = DataHelper.Unpack<GameOptions>(gameOptionsData);
+            _userStateController.GameOptions = gameOptions;
+            StateHasChanged();
+        });
+
+        _hubConnection.On<byte[]>("ReceiveGameState", (gameStateData) =>
+        {
+            var gameState = DataHelper.Unpack<GameState>(gameStateData);
+            _userStateController.GameState = gameState;
+        });
+
+        _hubConnection.On<byte[]>("ReceiveTargetNumberUpdates", (targetNumberUpdateData) =>
+        {
+            var targetNumberUpdates = DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData);
+            _userStateController.RecordTargetNumberUpdates(targetNumberUpdates);
+        });
+
+        await _hubConnection.StartAsync();
+
+        _resolverCommunicator.SetHubConnection(_hubConnection);
+
+        _userStateController.OnDataUpdated += UpdatePlayerState;
+        _userStateController.OnGameOptionsUpdated += UpdateGameOptions;
+        _userStateController.OnPlayerOptionsUpdated += UpdatePlayerOptions;
+        _userStateController.OnDamageRequestRequested += SendDamageRequest;
+
+        await base.OnInitializedAsync();
+    }
+
+    private void SendDamageRequest()
+    {
+        _resolverCommunicator.SendDamageRequest(_userStateController.DamageRequest);
+    }
+
+    private void UpdatePlayerState()
+    {
+        _resolverCommunicator.UpdatePlayerState(_userStateController.PlayerState);
+    }
+
+    private void UpdateGameOptions()
+    {
+        _resolverCommunicator.SetGameOptions(_userStateController.GameOptions);
+    }
+
+    private void UpdatePlayerOptions()
+    {
+        _resolverCommunicator.SetPlayerOptions(_userStateController.PlayerOptions);
+    }
+
+    private void SelectTab(ResolverTab resolverTab)
+    {
+        _selectedTab = resolverTab;
+    }
+
+    private async Task LeaveGame()
+    {
+        await _formServer.LeaveGame();
+    }
+
+    private void RefreshPage()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnDataUpdated -= UpdatePlayerState;
+        _userStateController.OnGameOptionsUpdated -= UpdateGameOptions;
+        _userStateController.OnPlayerOptionsUpdated -= UpdatePlayerOptions;
+        _userStateController.OnDamageRequestRequested -= SendDamageRequest;
+        _hubConnection?.DisposeAsync();
+    }
+
+}
