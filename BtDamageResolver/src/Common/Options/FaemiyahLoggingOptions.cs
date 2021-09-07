@@ -29,18 +29,24 @@ namespace Faemiyah.BtDamageResolver.Common.Options
         public bool LogToConsole { get; set; }
 
         /// <summary>
-        /// Are logs put into local file system
+        /// Log usage data to the local database.
         /// </summary>
+        /// <remarks>
+        /// Needed for the Grafana features to do anything. Disable if performance is poor or space is very limited.
+        /// </remarks>
         public bool LogToDatabase { get; set; }
 
         /// <summary>
-        /// Are logs put into local file system
+        /// Log to a log file in the local file system.
         /// </summary>
         public bool LogToFile { get; set;  }
 
         /// <summary>
-        /// Name of the executing program / asp.net project
+        /// Name of the executing program / asp.net project.
         /// </summary>
+        /// <remarks>
+        /// This property will be enriched onto each log line.
+        /// </remarks>
         public string ProgramName { get; set; }
 
         public FaemiyahLoggingOptions()
@@ -48,10 +54,10 @@ namespace Faemiyah.BtDamageResolver.Common.Options
             LogLevel = LogEventLevel.Debug;
             LogLevelOrleans = LogEventLevel.Debug;
             LogToConsole = true;
-            LogToDatabase = false;
+            LogToDatabase = true;
             LogToFile = false;
             ProgramName = Assembly.GetExecutingAssembly().GetName().Name;
-            LogFile = $"/log/{ProgramName}.log";
+            LogFile = $"/logs/{ProgramName}.log";
         }
     }
 }
