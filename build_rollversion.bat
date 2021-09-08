@@ -1,0 +1,1 @@
+BtDamageResolver\BuildPipeline\BuildPipeline.exe BtDamageResolver\src\Api\Api.csproj BtDamageResolver\src\Common\Common.csproj
