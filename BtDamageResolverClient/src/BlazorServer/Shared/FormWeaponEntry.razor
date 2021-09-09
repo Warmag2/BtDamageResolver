@@ -1,12 +1,12 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
-@inject VisualStyleController VisualStyleController
-@inject UserStateController UserStateController
+@inject CommonData _commonData
+@inject VisualStyleController _visualStyleController
+@inject UserStateController _userStateController
 
 @{
-    var targetNumberUpdate = UserStateController.GetTargetNumberUpdate(WeaponEntry.Id);
+    var targetNumberUpdate = _userStateController.GetTargetNumberUpdate(WeaponEntry.Id);
     var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
 }
@@ -22,12 +22,12 @@
         }
         else
         {
-            <FormComboBox Options="@CommonData.CreateMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
+            <FormComboBox Options="@_commonData.CreateMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
         }
     </td>
     <td>
-        <FormCheckbox Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : UserStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormCheckbox>
-        <FormCheckbox Checked="@(WeaponEntry.Mode == WeaponMode.Special)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : UserStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponModeChanged">@(_weaponName != null ? CommonData.MapWeapon[_weaponName].ModeDescription[WeaponEntry.Mode] : "unknown")</FormCheckbox>
+        <FormCheckbox Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormCheckbox>
+        <FormCheckbox Checked="@(WeaponEntry.Mode == WeaponMode.Special)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponModeChanged">@(_weaponName != null ? _commonData.MapWeapon[_weaponName].ModeDescription[WeaponEntry.Mode] : "unknown")</FormCheckbox>
     </td>
     <td>
         <button class="resolver_button" disabled="@Disabled" @onclick="MoveUp"><b>&uarr;</b></button>
@@ -146,20 +146,20 @@
 
     void StartDrag(WeaponEntry weaponEntry)
     {
-        UserStateController.DraggedUnitIndex = UserStateController.PlayerState.UnitEntries.IndexOf(Unit);
-        UserStateController.DraggedWeaponIndex = UserStateController.PlayerState.UnitEntries[UserStateController.DraggedUnitIndex].Weapons.IndexOf(weaponEntry);
+        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(Unit);
+        _userStateController.DraggedWeaponIndex = _userStateController.PlayerState.UnitEntries[_userStateController.DraggedUnitIndex].Weapons.IndexOf(weaponEntry);
     }
 
     void Drop(WeaponEntry weaponEntry)
     {
         if (weaponEntry != null)
         {
-            var unitIndex = UserStateController.PlayerState.UnitEntries.IndexOf(Unit);
+            var unitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(Unit);
 
-            if (unitIndex == UserStateController.DraggedUnitIndex)
+            if (unitIndex == _userStateController.DraggedUnitIndex)
             {
-                var targetWeaponIndex = UserStateController.PlayerState.UnitEntries[unitIndex].Weapons.IndexOf(weaponEntry);
-                OnSwap.InvokeAsync((UserStateController.DraggedWeaponIndex, targetWeaponIndex));
+                var targetWeaponIndex = _userStateController.PlayerState.UnitEntries[unitIndex].Weapons.IndexOf(weaponEntry);
+                OnSwap.InvokeAsync((_userStateController.DraggedWeaponIndex, targetWeaponIndex));
             }
         }
     }

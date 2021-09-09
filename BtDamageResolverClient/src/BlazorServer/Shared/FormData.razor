@@ -1,6 +1,6 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
+@inject CommonData _commonData
 
 @{
     var sortedItemDict = new SortedDictionary<string, string>();
@@ -70,19 +70,19 @@
         switch (_selectedDataType)
         {
             case ResolverDataType.ClusterTable:
-                _items = CommonData.MapClusterTable.Keys.ToList();
+                _items = _commonData.MapClusterTable.Keys.ToList();
                 break;
             case ResolverDataType.CriticalDamageTable:
-                _items = CommonData.MapCriticalDamageTable.Keys.ToList();
+                _items = _commonData.MapCriticalDamageTable.Keys.ToList();
                 break;
             case ResolverDataType.PaperDoll:
-                _items = CommonData.MapPaperDoll.Keys.ToList();
+                _items = _commonData.MapPaperDoll.Keys.ToList();
                 break;
             case ResolverDataType.Unit:
-                _items = CommonData.GetSavedUnits().Keys.ToList();
+                _items = _commonData.GetSavedUnits().Keys.ToList();
                 break;
             case ResolverDataType.Weapon:
-                _items = CommonData.MapWeapon.Keys.ToList();
+                _items = _commonData.MapWeapon.Keys.ToList();
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -104,7 +104,7 @@
 
     private async Task OnUnitDeleted(string entryName)
     {
-        await CommonData.DeleteUnit(entryName);
+        await _commonData.DeleteUnit(entryName);
         _entryName = _items.FirstOrDefault();
     }
 }

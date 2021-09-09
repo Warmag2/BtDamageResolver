@@ -1,11 +1,11 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
-@inject IResolverCommunicator ResolverCommunicator
-@inject UserStateController UserStateController
+@inject CommonData _commonData
+@inject IResolverCommunicator _resolverCommunicator
+@inject UserStateController _userStateController
 
 @{
-    var adminRights = UserStateController.PlayerState.PlayerId == UserStateController.GameState.AdminId;
+    var adminRights = _userStateController.PlayerState.PlayerId == _userStateController.GameState.AdminId;
 }
 
 <div class="resolver_div_componentlistcontainer">
@@ -35,7 +35,7 @@
 
             <!-- Modal body -->
             <div class="resolver_modal_body">
-                <FormComboBox Options="@UserStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
+                <FormComboBox Options="@_userStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
             </div>
 
             <!-- Modal footer -->
@@ -59,8 +59,8 @@
 
             <!-- Modal body -->
             <div class="resolver_modal_body">
-                <FormComboBox Options="@UserStateController.GetUnitIds()" OnChanged="(Guid unitId) => OnUnitIdChanged(unitId)"></FormComboBox>
-                <FormComboBox Options="@UserStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
+                <FormComboBox Options="@_userStateController.GetUnitIds()" OnChanged="(Guid unitId) => OnUnitIdChanged(unitId)"></FormComboBox>
+                <FormComboBox Options="@_userStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
             </div>
 
             <!-- Modal footer -->
@@ -91,19 +91,19 @@
 
     private async Task ForceReady()
     {
-        await ResolverCommunicator.ForceReady();
+        await _resolverCommunicator.ForceReady();
     }
 
     private async Task Kick()
     {
         ModalClose();
-        await ResolverCommunicator.KickPlayer(_playerName);
+        await _resolverCommunicator.KickPlayer(_playerName);
     }
 
     private async Task MoveUnit()
     {
         ModalClose();
-        await ResolverCommunicator.MoveUnit(_unitId, _playerName);
+        await _resolverCommunicator.MoveUnit(_unitId, _playerName);
     }
 
     private void ModalClose()

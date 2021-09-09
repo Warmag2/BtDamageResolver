@@ -1,6 +1,5 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData _commonData
 @inject UserStateController _userStateController
 @implements IDisposable
 
@@ -10,13 +9,13 @@
 
         @foreach (var unitEntry in _userStateController.PlayerState.UnitEntries)
         {
-            <FormUnitEntry @key=@unitEntry.Id UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry> // Removed key from here
+            <FormUnitEntry @key=@unitEntry.Id UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
         }
 
     </div>
 
     <div class="resolver_div_hr">
-        <button class="resolver_button resolver_button_insert" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">Add a new Unit</button>
+        <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">Add Unit</button>
         <button class="resolver_button resolver_button_ready" @onclick="Ready">@(_userStateController.PlayerState.IsReady ? "UnReady" : "Ready")</button>
     </div>
 
@@ -26,7 +25,6 @@
 
     <!-- This is here because we only want exactly one /-->
     <div id="resolver_tooltip_targetnumber" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
-
 }
 
 @code
@@ -68,9 +66,7 @@
 
     private void SwapUnits(int ix1, int ix2)
     {
-        var unit = _userStateController.PlayerState.UnitEntries[ix1];
-        _userStateController.PlayerState.UnitEntries[ix1] = _userStateController.PlayerState.UnitEntries[ix2];
-        _userStateController.PlayerState.UnitEntries[ix2] = unit;
+        (_userStateController.PlayerState.UnitEntries[ix1], _userStateController.PlayerState.UnitEntries[ix2]) = (_userStateController.PlayerState.UnitEntries[ix2], _userStateController.PlayerState.UnitEntries[ix1]);
         _userStateController.NotifyPlayerDataUpdated();
     }
 

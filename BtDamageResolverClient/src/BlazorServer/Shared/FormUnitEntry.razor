@@ -1,21 +1,21 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
-@inject VisualStyleController VisualStyleController
-@inject UserStateController UserStateController
+@inject CommonData _commonData
+@inject VisualStyleController _visualStyleController
+@inject UserStateController _userStateController
 
 <div class="resolver_div_componentcontainer alternatingcolors" ondragover="event.preventDefault();">
 
     <div class="resolver_div_componentrow">
         <div class="resolver_div_unitid">
             @UnitEntry.Id
-            <button class="resolver_button" @onclick="ToggleStaticData">Toggle static parameters</button>
-            <button class="resolver_button" disabled="@UserStateController.PlayerState.IsReady" @onclick="MoveUp"><b>&uarr;</b></button>
-            <button class="resolver_button" disabled="@UserStateController.PlayerState.IsReady" @onclick="MoveDown"><b>&darr;</b></button>
-            <button class="resolver_button" disabled="@UserStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalLoad">Load</button>
-            <button class="resolver_button" disabled="@UserStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalSave">Save</button>
-            <button class="resolver_button resolver_button_delete" disabled="@UserStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalDelete">Delete</button>
+            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Ams)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnStaticDataHiddenChanged">Editable</FormCheckbox>
+            <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveUp"><b>&uarr;</b></button>
+            <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveDown"><b>&darr;</b></button>
+            <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalLoad">Load</button>
+            <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalSave">Save</button>
+            <button class="resolver_button resolver_button_delete" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalDelete">Delete</button>
         </div>
     </div>
     
@@ -41,60 +41,60 @@
                 <tr>
                     <td>Name</td>
                     <td>
-                        <FormText SelectedOption="@UnitEntry.Name" OnChanged="@OnNameChanged" InvalidOptionGenerator="@GenerateInvalidNameList" Disabled="@UserStateController.PlayerState.IsReady"></FormText>
+                        <FormText SelectedOption="@UnitEntry.Name" OnChanged="@OnNameChanged" InvalidOptionGenerator="@GenerateInvalidNameList" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
                     </td>
                 </tr>
                 <tr>
                     <td>Gunnery</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSkills" SelectedOption="@UnitEntry.Gunnery" Min="0" Max="8" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnGunneryChanged"></FormNumberPicker>
+                        <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsSkills" SelectedOption="@UnitEntry.Gunnery" Min="0" Max="8" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnGunneryChanged"></FormNumberPicker>
                     </td>
                 </tr>
                 <tr>
                     <td>Piloting</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSkills" SelectedOption="@UnitEntry.Piloting" Min="0" Max="8" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnPilotingChanged"></FormNumberPicker>
+                        <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsSkills" SelectedOption="@UnitEntry.Piloting" Min="0" Max="8" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnPilotingChanged"></FormNumberPicker>
                     </td>
                 </tr>
                 <tr>
                     <td>Type</td>
                     <td>
-                        <FormSelect Options="@CommonData.MapUnitType" SelectedOption="@UnitEntry.Type" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="(UnitType unitType) => OnUnitTypeChanged(unitType)"></FormSelect>
+                        <FormSelect Options="@_commonData.MapUnitType" SelectedOption="@UnitEntry.Type" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(UnitType unitType) => OnUnitTypeChanged(unitType)"></FormSelect>
                     </td>
                 </tr>
-                <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetTonnageHidden(UnitEntry.Type)))">
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetTonnageHidden(UnitEntry.Type)))">
                     <td>Tonnage</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsTonnage" SelectedOption="@UnitEntry.Tonnage" Min="0" Max="100" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnTonnageChanged"></FormNumberPicker>
+                        <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsTonnage" SelectedOption="@UnitEntry.Tonnage" Min="0" Max="100" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnTonnageChanged"></FormNumberPicker>
                     </td>
                 </tr>
                 <tr>
                     <td>Features</td>
                     <td>
                         <div>
-                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Ams)" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnAmsChanged">AMS</FormCheckbox>
-                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Bap)" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnBapChanged">BAP</FormCheckbox>
-                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Ecm)" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnEcmChanged">ECM</FormCheckbox>
-                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Masc)" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnMascChanged">MASC</FormCheckbox>
+                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Ams)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnAmsChanged">AMS</FormCheckbox>
+                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Bap)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnBapChanged">BAP</FormCheckbox>
+                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Ecm)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnEcmChanged">ECM</FormCheckbox>
+                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Masc)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnMascChanged">MASC</FormCheckbox>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td>Quirks <button class="resolver_button resolver_button_insert" disabled="@UserStateController.PlayerState.IsReady" @onclick="() => _formPickSetQuirks.ShowAddDialog()">+</button></td>
+                    <td>Quirks <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="() => _formPickSetQuirks.ShowAddDialog()">+</button></td>
                     <td>
-                        <FormPickSet @ref="_formPickSetQuirks" Options="@CommonData.MapQuirk" ShowAddButton="@false" ContainedItems="@UnitEntry.Quirks" Editable="@(!UnitEntry.StaticDataHidden)" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="(HashSet<Quirk> quirks) => OnQuirksChanged(quirks)"></FormPickSet>
+                        <FormPickSet @ref="_formPickSetQuirks" Options="@_commonData.MapQuirk" ShowAddButton="@false" ContainedItems="@UnitEntry.Quirks" Editable="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(HashSet<Quirk> quirks) => OnQuirksChanged(quirks)"></FormPickSet>
                     </td>
                 </tr>
-                <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetSpeedHidden(UnitEntry.Type)))">
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetSpeedHidden(UnitEntry.Type)))">
                     <td>Speed</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSpeed" SelectedOption="@UnitEntry.Speed" Min="0" Max="12" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnSpeedChanged"></FormNumberPicker>
+                        <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsSpeed" SelectedOption="@UnitEntry.Speed" Min="0" Max="12" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnSpeedChanged"></FormNumberPicker>
                     </td>
                 </tr>
-                <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetJumpJetsHidden(UnitEntry.Type)))">
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetJumpJetsHidden(UnitEntry.Type)))">
                     <td>Jump Jets</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsJumpJets" SelectedOption="@UnitEntry.JumpJets" Min="0" Max="12" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnJumpJetsChanged"></FormNumberPicker>
+                        <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsJumpJets" SelectedOption="@UnitEntry.JumpJets" Min="0" Max="12" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnJumpJetsChanged"></FormNumberPicker>
                     </td>
                 </tr>
             </table>
@@ -107,28 +107,28 @@
                         Unit parameters
                     </th>
                 </tr>
-                <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetTroopersHidden(UnitEntry.Type)))">
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetTroopersHidden(UnitEntry.Type)))">
                     <td>Troopers</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsTroopers" SelectedOption="@UnitEntry.Troopers" Min="1" Max="30" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTroopersChanged"></FormNumberPicker>
+                        <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsTroopers" SelectedOption="@UnitEntry.Troopers" Min="1" Max="30" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTroopersChanged"></FormNumberPicker>
                     </td>
                 </tr>
-                <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetSinksHidden(UnitEntry.Type)))">
                     <td>Sinks</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" SelectedOption="@UnitEntry.Sinks" Min="1" Max="100" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnSinksChanged"></FormNumberPicker>
+                        <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsSinks" SelectedOption="@UnitEntry.Sinks" Min="1" Max="100" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnSinksChanged"></FormNumberPicker>
                     </td>
                 </tr>
                 <tr>
                     <td>Movement</td>
                     <td>
-                        <FormRadio Options="@CommonData.CreateMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
+                        <FormRadio Options="@_commonData.CreateMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
                     </td>
                 </tr>
                 <tr>
                     <td>Hexes moved</td>
                     <td>
-                        <FormRadio Options="@CommonData.CreateMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
+                        <FormRadio Options="@_commonData.CreateMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
                     </td>
                 </tr>
                 <tr>
@@ -137,8 +137,8 @@
                     </td>
                     <td>
                         <div>
-                            <FormCheckbox Checked="@UnitEntry.Narced" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormCheckbox>
-                            <FormCheckbox Checked="@UnitEntry.Tagged" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormCheckbox>
+                            <FormCheckbox Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormCheckbox>
+                            <FormCheckbox Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormCheckbox>
                         </div>
                     </td>
                 </tr>
@@ -151,31 +151,31 @@
                 <tr>
                     <td>Target</td>
                     <td>
-                        <FormComboBox @key="@UserStateController.UnitList" Options="@UserStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@UnitEntry.FiringSolution.TargetUnit" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
+                        <FormComboBox @key="@_userStateController.UnitList" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@UnitEntry.FiringSolution.TargetUnit" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
                     </td>
                 </tr>
                 <tr>
                     <td>Distance</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@(() => CommonData.FormPickBracketsDistance(UnitEntry))" SelectedOption="@UnitEntry.FiringSolution.Distance" Min="0" Max="50" Disabled="@(UserStateController.PlayerState.IsReady || !UnitEntry.Weapons.Any())" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnDistanceChanged"></FormNumberPicker>
+                        <FormNumberPicker BracketCreatorDelegate="@(() => _commonData.FormPickBracketsDistance(UnitEntry))" SelectedOption="@UnitEntry.FiringSolution.Distance" Min="0" Max="50" Disabled="@(_userStateController.PlayerState.IsReady || !UnitEntry.Weapons.Any())" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnDistanceChanged"></FormNumberPicker>
                     </td>
                 </tr>
                 <tr>
                     <td>Modifier</td>
                     <td>
-                        <FormRadio Options="@CommonData.MapAttackModifier" SelectedOption="@UnitEntry.FiringSolution.AttackModifier" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int attackModifier) => OnAttackModifierChanged(attackModifier)"></FormRadio>
+                        <FormRadio Options="@_commonData.MapAttackModifier" SelectedOption="@UnitEntry.FiringSolution.AttackModifier" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int attackModifier) => OnAttackModifierChanged(attackModifier)"></FormRadio>
                     </td>
                 </tr>
-                <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetDirectionHidden(UserStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))))">
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetDirectionHidden(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))))">
                     <td>Direction</td>
                     <td>
-                        <FormRadio Options="@CommonData.MapFacing" SelectedOption="@UnitEntry.FiringSolution.Direction" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
+                        <FormRadio Options="@_commonData.MapFacing" SelectedOption="@UnitEntry.FiringSolution.Direction" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
                     </td>
                 </tr>
-                <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetCoverHidden(UserStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))))">
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))))">
                     <td>Cover</td>
                     <td>
-                        <FormRadio Options="@CommonData.MapCover" SelectedOption="@UnitEntry.FiringSolution.Cover" Disabled="@UserStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
+                        <FormRadio Options="@_commonData.MapCover" SelectedOption="@UnitEntry.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
                     </td>
                 </tr>
 
@@ -183,15 +183,15 @@
         </div>
 
         <div class="resolver_div_unit resolver_div_componentcell">
-            <table style="@(VisualStyleController.HideElement(VisualStyleController.GetUnitStateHidden(UnitEntry.Type)))">
+            <table style="@(VisualStyleController.HideElement(_visualStyleController.GetUnitStateHidden(UnitEntry.Type)))">
                 <tr>
-                    <td style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">Heat</td>
-                    <td style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
-                        <FormNumberPickerDisplayOnly @key="@UnitEntry.Heat" BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" StyleSelectorDelegate="@VisualStyleController.GetStyleForHeat" NumberToDisplay="@UnitEntry.Heat" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnHeatChanged"></FormNumberPickerDisplayOnly>
+                    <td style="@(VisualStyleController.HideElement(_visualStyleController.GetSinksHidden(UnitEntry.Type)))">Heat</td>
+                    <td style="@(VisualStyleController.HideElement(_visualStyleController.GetSinksHidden(UnitEntry.Type)))">
+                        <FormNumberPickerDisplayOnly @key="@UnitEntry.Heat" BracketCreatorDelegate="@_commonData.FormPickBracketsSinks" StyleSelectorDelegate="@_visualStyleController.GetStyleForHeat" NumberToDisplay="@UnitEntry.Heat" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnHeatChanged"></FormNumberPickerDisplayOnly>
                     </td>
-                    <td style="@(VisualStyleController.HideElement(VisualStyleController.GetPenaltyHidden(UnitEntry.Type)))">Penalty</td>
-                    <td style="@(VisualStyleController.HideElement(VisualStyleController.GetPenaltyHidden(UnitEntry.Type)))">
-                        <FormNumberPickerDisplayOnly @key="@UnitEntry.Penalty" BracketCreatorDelegate="@CommonData.FormPickBracketsPenalty" StyleSelectorDelegate="@VisualStyleController.GetStyleForPenalty" NumberToDisplay="@UnitEntry.Penalty" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnPenaltyChanged"></FormNumberPickerDisplayOnly>
+                    <td style="@(VisualStyleController.HideElement(_visualStyleController.GetPenaltyHidden(UnitEntry.Type)))">Penalty</td>
+                    <td style="@(VisualStyleController.HideElement(_visualStyleController.GetPenaltyHidden(UnitEntry.Type)))">
+                        <FormNumberPickerDisplayOnly @key="@UnitEntry.Penalty" BracketCreatorDelegate="@_commonData.FormPickBracketsPenalty" StyleSelectorDelegate="@_visualStyleController.GetStyleForPenalty" NumberToDisplay="@UnitEntry.Penalty" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnPenaltyChanged"></FormNumberPickerDisplayOnly>
                     </td>
                 </tr>
                 <tr style="@(VisualStyleController.HideElement(UnitEntry.GetHeatSpeedPenalty() == 0 || !UnitEntry.IsHeatTracking()))">
@@ -206,12 +206,12 @@
             <table>
                 @foreach (var weaponEntry in UnitEntry.Weapons)
                 {
-                    <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" Unit="@UnitEntry" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnWeaponChanged" OnDeleted="@OnWeaponDeleted" OnSwap="@OnWeaponSwap"></FormWeaponEntry>
+                    <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnWeaponChanged" OnDeleted="@OnWeaponDeleted" OnSwap="@OnWeaponSwap"></FormWeaponEntry>
                 }
                 <tr>
                     <td colspan="5">
                         <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-                            <button class="resolver_button" disabled="@UserStateController.PlayerState.IsReady" @onclick="AddWeapon">Add Weapon</button>
+                            <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">Add Weapon</button>
                         </span>
                     </td>
                 </tr>
@@ -284,7 +284,7 @@
 
             <!-- Modal body -->
             <div class="resolver_modal_body">
-                <FormComboBox Options="@CommonData.GetSavedUnits()" OnChanged="(string unitName) => OnLoadedUnitNameChanged(unitName)"></FormComboBox>
+                <FormComboBox Options="@_commonData.GetSavedUnits()" OnChanged="(string unitName) => OnLoadedUnitNameChanged(unitName)"></FormComboBox>
             </div>
 
             <!-- Modal footer -->
@@ -327,12 +327,6 @@
         SendUpdate();
     }
 
-    private void ToggleStaticData()
-    {
-        UnitEntry.StaticDataHidden = !UnitEntry.StaticDataHidden;
-        SendUpdate();
-    }
-
     private void ToggleReady()
     {
         UnitEntry.Ready = !UnitEntry.Ready;
@@ -341,18 +335,18 @@
 
     public DateTime GetComparisonTime()
     {
-        return UnitEntry.Ready ? DateTime.MinValue : UserStateController.GameState.TurnTimeStamp;
+        return UnitEntry.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp;
     }
 
     private void SendUpdate()
     {
         UnitEntry.TimeStamp = DateTime.UtcNow;
-        UserStateController.NotifyPlayerDataUpdated();
+        _userStateController.NotifyPlayerDataUpdated();
     }
 
     private List<string> GenerateInvalidNameList()
     {
-        return UserStateController.PlayerState.UnitEntries.Where(u => u.Id != UnitEntry.Id).Select(u => u.Name).ToList();
+        return _userStateController.PlayerState.UnitEntries.Where(u => u.Id != UnitEntry.Id).Select(u => u.Name).ToList();
     }
 
     #region Property changing delegates
@@ -422,6 +416,15 @@
         if (UnitEntry.Speed != speed)
         {
             UnitEntry.Speed = speed;
+            SendUpdate();
+        }
+    }
+
+    private void OnStaticDataHiddenChanged(bool staticDataHidden)
+    {
+        if (UnitEntry.StaticDataHidden != staticDataHidden)
+        {
+            UnitEntry.StaticDataHidden = staticDataHidden;
             SendUpdate();
         }
     }
@@ -608,15 +611,13 @@
 
     private void SwapWeapons(int ix1, int ix2)
     {
-        var weaponEntry = UnitEntry.Weapons[ix1];
-        UnitEntry.Weapons[ix1] = UnitEntry.Weapons[ix2];
-        UnitEntry.Weapons[ix2] = weaponEntry;
+        (UnitEntry.Weapons[ix1], UnitEntry.Weapons[ix2]) = (UnitEntry.Weapons[ix2], UnitEntry.Weapons[ix1]);
         SendUpdate();
     }
 
     public void MoveUp()
     {
-        var index = UserStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+        var index = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
 
         if (index >= 1)
         {
@@ -626,9 +627,9 @@
 
     public void MoveDown()
     {
-        var index = UserStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+        var index = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
 
-        if (index < UserStateController.PlayerState.UnitEntries.Count - 1)
+        if (index < _userStateController.PlayerState.UnitEntries.Count - 1)
         {
             OnSwap.InvokeAsync((index, index + 1));
         }
@@ -640,15 +641,15 @@
 
     void StartDrag(UnitEntry unit)
     {
-        UserStateController.DraggedUnitIndex = UserStateController.PlayerState.UnitEntries.IndexOf(unit);
+        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(unit);
     }
 
     void Drop(Unit unit)
     {
         if (unit != null)
         {
-            var targetUnitIndex = UserStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-            OnSwap.InvokeAsync((UserStateController.DraggedUnitIndex, targetUnitIndex));
+            var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+            OnSwap.InvokeAsync((_userStateController.DraggedUnitIndex, targetUnitIndex));
         }
     }
 
@@ -686,13 +687,13 @@
     private async Task ModalSave()
     {
         ModalClose();
-        await CommonData.SaveUnit(UnitEntry);
+        await _commonData.SaveUnit(UnitEntry);
     }
 
     private async Task ModalLoad()
     {
         ModalClose();
-        UnitEntry.ImportFromUnit(await CommonData.GetUnitEntry(_modalUnitName));
+        UnitEntry.ImportFromUnit(await _commonData.GetUnitEntry(_modalUnitName));
         await OnLoad.InvokeAsync(UnitEntry);
     }
 

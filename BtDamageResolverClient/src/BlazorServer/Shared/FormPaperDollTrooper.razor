@@ -1,19 +1,10 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Enums
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject UserStateController UserStateController
 
 <div class="resolver_div_paperdoll_image_trooper">
-    
-    @if (DamageReport.DamagePaperDoll.DamageCollection.ContainsKey(Location.Trooper))
-    {
-        _totalDamage = DamageReport.DamagePaperDoll.DamageCollection[Location.Trooper].Sum();
+    @{
+        _totalDamage = DamageReport.DamagePaperDoll.DamageCollection.ContainsKey(Location.Trooper) ? DamageReport.DamagePaperDoll.DamageCollection[Location.Trooper].Sum() : 0;
     }
-    else
-    {
-        _totalDamage = 0;
-    }
-
     @for (int ii = 0; ii < DamageReport.InitialTroopers; ii++)
     {
             <svg viewBox="0 0 3800 4600">

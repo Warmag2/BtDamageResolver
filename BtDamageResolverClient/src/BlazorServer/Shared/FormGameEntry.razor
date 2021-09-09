@@ -2,7 +2,7 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Extensions
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject UserStateController UserStateController
+@inject UserStateController _userStateController
 
 <tr>
     <td>
@@ -35,7 +35,7 @@
         }
     </td>
     <td>
-        @if (!(UserStateController.ConnectedToGame && UserStateController.GameState.GameId == Game.Name))
+        @if (!(_userStateController.ConnectedToGame && _userStateController.GameState.GameId == Game.Name))
         {
             <button class="resolver_button" @onclick="OnGameJoin">Join</button>
         }

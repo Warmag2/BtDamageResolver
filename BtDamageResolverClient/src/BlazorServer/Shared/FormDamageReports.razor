@@ -1,9 +1,9 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject UserStateController UserStateController
-@inject VisualStyleController VisualStyleController
+@inject UserStateController _userStateController
+@inject VisualStyleController _visualStyleController
 @implements IDisposable
 
-@if (!UserStateController.DamageReportCollection.Any())
+@if (!_userStateController.DamageReportCollection.Any())
 {
     <h3>
         No damagereports available
@@ -13,11 +13,11 @@ else
 {
     @if (OnlyNewest)
     {
-        @if (UserStateController.DamageReportCollection.Any())
+        @if (_userStateController.DamageReportCollection.Any())
         {
-            @foreach (var damageReport in UserStateController.DamageReportCollection.Values.Last().DamageReports)
+            @foreach (var damageReport in _userStateController.DamageReportCollection.Values.Last().DamageReports)
             {
-                if (UserStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault || UserStateController.DamageReportConcernsPlayer(damageReport))
+                if (_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault || _userStateController.DamageReportConcernsPlayer(damageReport))
                 {
                     <div class="resolver_div_componentlistcontainer alternatingcolors">
                         <FormDamageReport @key=@damageReport.Id DamageReport=@damageReport></FormDamageReport>
@@ -28,10 +28,10 @@ else
     }
     else
     {
-        @foreach (var singleTurnDamageReports in UserStateController.DamageReportCollection.Reverse())
+        @foreach (var singleTurnDamageReports in _userStateController.DamageReportCollection.Reverse())
         {
-<button class="resolver_button_accordion @VisualStyleController.GetActiveClass(singleTurnDamageReports.Value.Visible)" @onclick="@(e => singleTurnDamageReports.Value.Visible = !singleTurnDamageReports.Value.Visible)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Turn @singleTurnDamageReports.Key</button>
-            <div class="resolver_div_accordioncontent @VisualStyleController.GetActiveClass(singleTurnDamageReports.Value.Visible)" style="@VisualStyleController.HideElement(!singleTurnDamageReports.Value.Visible)">
+<button class="resolver_button_accordion @_visualStyleController.GetActiveClass(singleTurnDamageReports.Value.Visible)" @onclick="@(e => singleTurnDamageReports.Value.Visible = !singleTurnDamageReports.Value.Visible)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Turn @singleTurnDamageReports.Key</button>
+            <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(singleTurnDamageReports.Value.Visible)" style="@VisualStyleController.HideElement(!singleTurnDamageReports.Value.Visible)">
                 @foreach (var damageReport in singleTurnDamageReports.Value.DamageReports)
                 {
                     <div class="resolver_div_componentlistcontainer alternatingcolors">
@@ -53,11 +53,11 @@ else
 
     protected override void OnInitialized()
     {
-        UserStateController.OnDamageReportChange += StateHasChanged;
+        _userStateController.OnDamageReportChange += StateHasChanged;
     }
 
     public void Dispose()
     {
-        UserStateController.OnDamageReportChange -= StateHasChanged;
+        _userStateController.OnDamageReportChange -= StateHasChanged;
     }
 }

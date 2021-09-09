@@ -1,9 +1,7 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
-@using Faemiyah.BtDamageResolver.Api.Enums
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Extensions
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject VisualStyleController VisualStyleController
-@inject UserStateController UserStateController
+@inject VisualStyleController _visualStyleController
+@inject UserStateController _userStateController
 
 <div class="resolver_div_componentcontainer">
     
@@ -40,11 +38,11 @@
                     <td class="resolver_td_unitinformation_label">Type</td>
                     <td class="resolver_td_unitinformation_data">@UnitEntry.Type</td>
             </tr>
-            <tr class="resolver_tr_unitinformation" style="@(VisualStyleController.HideElement(VisualStyleController.GetTonnageHidden(UnitEntry.Type)))">
+            <tr class="resolver_tr_unitinformation" style="@(VisualStyleController.HideElement(_visualStyleController.GetTonnageHidden(UnitEntry.Type)))">
                 <td class="resolver_td_unitinformation_label">Tonnage</td>
                 <td class="resolver_td_unitinformation_data">@UnitEntry.Tonnage</td>
             </tr>
-            <tr class="resolver_tr_unitinformation" style="@(VisualStyleController.HideElement(VisualStyleController.GetTroopersHidden(UnitEntry.Type)))">
+            <tr class="resolver_tr_unitinformation" style="@(VisualStyleController.HideElement(_visualStyleController.GetTroopersHidden(UnitEntry.Type)))">
                 <td class="resolver_td_unitinformation_label">Troopers</td>
                 <td class="resolver_td_unitinformation_data">@UnitEntry.Troopers</td>
             </tr>
@@ -88,7 +86,7 @@
             </tr>
             <tr class="resolver_tr_unitinformation">
                 <td class="resolver_td_unitinformation_label">Target</td>
-                <td class="resolver_td_unitinformation_data">@UserStateController.GetUnitName(UnitEntry.FiringSolution.TargetUnit)</td>
+                <td class="resolver_td_unitinformation_data">@_userStateController.GetUnitName(UnitEntry.FiringSolution.TargetUnit)</td>
             </tr>
             <tr class="resolver_tr_unitinformation">
                 <td class="resolver_td_unitinformation_label">Modifier</td>

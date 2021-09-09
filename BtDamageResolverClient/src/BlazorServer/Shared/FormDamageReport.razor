@@ -1,12 +1,12 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject UserStateController UserStateController
-@inject VisualStyleController VisualStyleController
+@inject UserStateController _userStateController
+@inject VisualStyleController _visualStyleController
 
 @{
-    var attackingUnitOwnedByYou = UserStateController.PlayerState.UnitEntries.Any(u => u.Id == DamageReport.FiringUnitId);
-    var defendingUnitOwnedByYou = UserStateController.PlayerState.UnitEntries.Any(u => u.Id == DamageReport.TargetUnitId);
+    var attackingUnitOwnedByYou = _userStateController.PlayerState.UnitEntries.Any(u => u.Id == DamageReport.FiringUnitId);
+    var defendingUnitOwnedByYou = _userStateController.PlayerState.UnitEntries.Any(u => u.Id == DamageReport.TargetUnitId);
 
     string unitAttackString;
     string unitDefenseString;
@@ -17,14 +17,14 @@
     }
     else 
     {
-        unitAttackString = UserStateController.UnitList.ContainsKey(DamageReport.FiringUnitId) ?
+        unitAttackString = _userStateController.UnitList.ContainsKey(DamageReport.FiringUnitId) ?
             attackingUnitOwnedByYou ?
                 $"{DamageReport.FiringUnitName}" :
-                $"{DamageReport.FiringUnitName} ({UserStateController.UnitList[DamageReport.FiringUnitId].PlayerId})"
+                $"{DamageReport.FiringUnitName} ({_userStateController.UnitList[DamageReport.FiringUnitId].PlayerId})"
             : "Unknown unit";
     }
 
-    if (!UserStateController.UnitList.ContainsKey(DamageReport.TargetUnitId))
+    if (!_userStateController.UnitList.ContainsKey(DamageReport.TargetUnitId))
     {
         unitDefenseString = "Unknown unit (Unknown player)";
     }
@@ -32,7 +32,7 @@
     {
         unitDefenseString = defendingUnitOwnedByYou ?
             $"{DamageReport.TargetUnitName}" :
-            $"{DamageReport.TargetUnitName} ({UserStateController.UnitList[DamageReport.TargetUnitId].PlayerId})";
+            $"{DamageReport.TargetUnitName} ({_userStateController.UnitList[DamageReport.TargetUnitId].PlayerId})";
     }
 }
 
@@ -60,7 +60,7 @@
 
         <FormPaperDoll DamagePaperDoll="@DamageReport.DamagePaperDoll" DamageReport="@DamageReport"></FormPaperDoll>
         
-        @switch (UserStateController.GetUnitType(DamageReport.FiringUnitId))
+        @switch (_userStateController.GetUnitType(DamageReport.FiringUnitId))
         {
             case UnitType.AerospaceFighter:
             case UnitType.Mech:
@@ -102,8 +102,8 @@
     
     <div class="resolver_div_componentrow">
 
-        <button class="resolver_button_accordion @VisualStyleController.GetActiveClass(_attackLogVisible)" @onclick="@(e => _attackLogVisible = !_attackLogVisible)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Attack log</button>
-        <div class="resolver_div_accordioncontent @VisualStyleController.GetActiveClass(_attackLogVisible)" style="@VisualStyleController.HideElement(!_attackLogVisible)">
+        <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_attackLogVisible)" @onclick="@(e => _attackLogVisible = !_attackLogVisible)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Attack log</button>
+        <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_attackLogVisible)" style="@VisualStyleController.HideElement(!_attackLogVisible)">
             <div class="resolver_div_options">
                 @foreach (var attackLogEntryType in _logLineVisibility)
                 {
@@ -136,13 +136,13 @@
 
     protected override void OnInitialized()
     {
-        _attackLogVisible = UserStateController.PlayerOptions.ShowAttackLogByDefault;
-        _logLineVisibility = UserStateController.GetAttackLogEntryVisibilityCopy();
+        _attackLogVisible = _userStateController.PlayerOptions.ShowAttackLogByDefault;
+        _logLineVisibility = _userStateController.GetAttackLogEntryVisibilityCopy();
     }
 
     public void Delete()
     {
-        UserStateController.DeleteDamageReport(DamageReport);
+        _userStateController.DeleteDamageReport(DamageReport);
     }
 
     private void OnAttackLogEntryVisibilityChanged(AttackLogEntryType attackLogEntryType, bool entryVisibility)

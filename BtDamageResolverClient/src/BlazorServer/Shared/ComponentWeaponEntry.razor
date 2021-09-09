@@ -1,11 +1,11 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
-@inject UserStateController UserStateController
+@inject CommonData _commonData
+@inject UserStateController _userStateController
 
 @{
-    var targetNumberUpdate = UserStateController.GetTargetNumberUpdate(WeaponEntry.Id);
+    var targetNumberUpdate = _userStateController.GetTargetNumberUpdate(WeaponEntry.Id);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
 }
 
@@ -17,7 +17,7 @@
         <div class="resolver_div_unitinformation_data">@WeaponEntry.WeaponName</div>
     </td>
     @{
-        var specialText = WeaponEntry?.WeaponName != null ? CommonData.MapWeapon[WeaponEntry.WeaponName].ModeDescription[WeaponEntry.Mode] : string.Empty;
+        var specialText = WeaponEntry?.WeaponName != null ? _commonData.MapWeapon[WeaponEntry.WeaponName].ModeDescription[WeaponEntry.Mode] : string.Empty;
     }
     <td>
         <div class="resolver_div_unitinformation_data">@specialText</div>

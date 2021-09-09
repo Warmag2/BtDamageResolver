@@ -1,6 +1,6 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
+@inject CommonData _commonData
 
 @if (_criticalDamageTable != null)
 {
@@ -59,9 +59,9 @@
 
         protected override async Task OnInitializedAsync()
         {
-            if (!string.IsNullOrEmpty(CriticalDamageTableName) && CommonData.MapCriticalDamageTable.ContainsKey(CriticalDamageTableName))
+            if (!string.IsNullOrEmpty(CriticalDamageTableName) && _commonData.MapCriticalDamageTable.ContainsKey(CriticalDamageTableName))
             {
-                _criticalDamageTable = CommonData.MapCriticalDamageTable[CriticalDamageTableName];
+                _criticalDamageTable = _commonData.MapCriticalDamageTable[CriticalDamageTableName];
             }
             await base.OnInitializedAsync();
         }

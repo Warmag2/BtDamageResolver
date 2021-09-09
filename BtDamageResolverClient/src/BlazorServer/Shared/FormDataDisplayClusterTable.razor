@@ -1,6 +1,6 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
+@inject CommonData _commonData
 
 @if (_clusterTable != null)
 {
@@ -68,9 +68,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (!string.IsNullOrEmpty(ClusterTableName) && CommonData.MapClusterTable.ContainsKey(ClusterTableName))
+        if (!string.IsNullOrEmpty(ClusterTableName) && _commonData.MapClusterTable.ContainsKey(ClusterTableName))
         {
-            _clusterTable = CommonData.MapClusterTable[ClusterTableName];
+            _clusterTable = _commonData.MapClusterTable[ClusterTableName];
         }
         await base.OnInitializedAsync();
     }

@@ -1,13 +1,13 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject UserStateController UserStateController
+@inject UserStateController _userStateController
 @implements IDisposable
 
 <div class="resolver_div_componentlistcontainer resolver_div_componentrow">
-    <h3 class="resolver_header @(UserStateController.GameState.Players[PlayerId].IsReady ? "ready" : string.Empty)">
-        @PlayerId @(UserStateController.GameState.Players[PlayerId].IsReady ? "[Ready]" : string.Empty)
+    <h3 class="resolver_header @(_userStateController.GameState.Players[PlayerId].IsReady ? "ready" : string.Empty)">
+        @PlayerId @(_userStateController.GameState.Players[PlayerId].IsReady ? "[Ready]" : string.Empty)
     </h3>
 
-    @foreach (var unit in UserStateController.GameState.Players[PlayerId].UnitEntries)
+    @foreach (var unit in _userStateController.GameState.Players[PlayerId].UnitEntries)
     {
         <ComponentUnit UnitEntry=@unit></ComponentUnit> // Removed key from here
     }
@@ -19,11 +19,11 @@
 
     protected override void OnInitialized()
     {
-        UserStateController.OnUnitListChange += StateHasChanged;
+        _userStateController.OnUnitListChange += StateHasChanged;
     }
 
     public void Dispose()
     {
-        UserStateController.OnUnitListChange -= StateHasChanged;
+        _userStateController.OnUnitListChange -= StateHasChanged;
     }
 }

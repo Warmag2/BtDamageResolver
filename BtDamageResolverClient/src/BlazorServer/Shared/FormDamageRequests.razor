@@ -1,9 +1,9 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Api.Events
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
-@inject VisualStyleController VisualStyleController
-@inject UserStateController UserStateController
+@inject CommonData _commonData
+@inject VisualStyleController _visualStyleController
+@inject UserStateController _userStateController
 
 <div class="resolver_div_componentcontainer">
     
@@ -16,36 +16,36 @@
             <tr>
                 <td>Target</td>
                 <td>
-                    <FormComboBox Options="@UserStateController.GetUnitIds()" SelectedOption="@_targetUnit" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
+                    <FormComboBox Options="@_userStateController.GetUnitIds()" SelectedOption="@_targetUnit" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
                 </td>
             </tr>
             <tr>
                 <td>Damage</td>
                 <td>
-                    <FormNumber SelectedOption="@_damage" Min="0" Max="1000" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="@OnDamageChanged"></FormNumber>
+                    <FormNumber SelectedOption="@_damage" Min="0" Max="1000" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnDamageChanged"></FormNumber>
                 </td>
             </tr>
             <tr>
                 <td>Clustering</td>
                 <td>
-                    <FormRadio Options="@_clusterSizeList" SelectedOption="@_clusterSize" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="(int clusterSize) => OnClusterSizeChanged(clusterSize)"></FormRadio>
+                    <FormRadio Options="@_clusterSizeList" SelectedOption="@_clusterSize" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(int clusterSize) => OnClusterSizeChanged(clusterSize)"></FormRadio>
                 </td>
             </tr>
-            <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetDirectionHidden(UserStateController.GetUnitType(_targetUnit))))">
+            <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetDirectionHidden(_userStateController.GetUnitType(_targetUnit))))">
                 <td>Direction</td>
                 <td>
-                    <FormRadio Options="@CommonData.MapFacing" SelectedOption="@_direction" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
+                    <FormRadio Options="@_commonData.MapFacing" SelectedOption="@_direction" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
                 </td>
             </tr>
-            <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetCoverHidden(UserStateController.GetUnitType(_targetUnit))))">
+            <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(_targetUnit))))">
                 <td>Cover</td>
                 <td>
-                    <FormRadio Options="@CommonData.MapCover" SelectedOption="@_cover" Disabled="@UserStateController.PlayerState.IsReady" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
+                    <FormRadio Options="@_commonData.MapCover" SelectedOption="@_cover" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
-                        <button class="resolver_button" disabled="@UserStateController.PlayerState.IsReady" @onclick="Execute">Execute</button>
+                        <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="Execute">Execute</button>
                 </td>
             </tr>
         </table>
@@ -76,7 +76,7 @@
             TimeStamp = DateTime.UtcNow
         };
 
-        UserStateController.NotifyDamageRequestCreated(damageRequest);
+        _userStateController.NotifyDamageRequestCreated(damageRequest);
     }
 
     protected override void OnInitialized()
