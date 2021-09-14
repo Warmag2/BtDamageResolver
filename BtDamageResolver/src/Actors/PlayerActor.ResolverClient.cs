@@ -95,7 +95,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             _resolverClient = client;
             _logger.LogInformation("Player {playerId} has received an observer reference from the client.", this.GetPrimaryKeyString());
-            await ClearUnsentQueues();
+            ClearUnsentQueues().Ignore();
 
             return true;
         }

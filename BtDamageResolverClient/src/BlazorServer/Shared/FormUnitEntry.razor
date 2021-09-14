@@ -15,7 +15,7 @@
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveDown"><b>&darr;</b></button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalLoad">Load</button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalSave">Save</button>
-            <button class="resolver_button resolver_button_delete" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalDelete">Delete</button>
+            <button class="resolver_button resolver_button_delete" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalDelete">X</button>
         </div>
     </div>
     
@@ -211,7 +211,7 @@
                 <tr>
                     <td colspan="5">
                         <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-                            <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">Add Weapon</button>
+                            <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
                         </span>
                     </td>
                 </tr>

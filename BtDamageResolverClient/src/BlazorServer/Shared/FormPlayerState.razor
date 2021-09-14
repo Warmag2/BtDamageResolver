@@ -15,7 +15,7 @@
     </div>
 
     <div class="resolver_div_hr">
-        <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">Add Unit</button>
+        <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">+</button>
         <button class="resolver_button resolver_button_ready" @onclick="Ready">@(_userStateController.PlayerState.IsReady ? "UnReady" : "Ready")</button>
     </div>
 

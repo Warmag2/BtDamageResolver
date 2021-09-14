@@ -29,11 +29,11 @@ namespace Faemiyah.BtDamageResolver.Silo
 {
     public static class Program
     {
-        private static readonly ManualResetEvent SiloStopped = new ManualResetEvent(false);
+        private static readonly ManualResetEvent SiloStopped = new(false);
         private static ISiloHost _siloHost;
         private static bool _siloStopping;
-        private static readonly object SyncLock = new object();
-        private static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
+        private static readonly object SyncLock = new();
+        private static readonly CancellationTokenSource CancellationTokenSource = new();
 
         public static void Main()
         {
@@ -146,7 +146,7 @@ namespace Faemiyah.BtDamageResolver.Silo
                     // The socket used by the gateway will bind to this endpoint
                     options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, siloPort);
                 })
-                .ConfigureAppConfiguration((hostingContext, config) => { config.AddConfiguration(configuration); })
+                .ConfigureAppConfiguration((_, config) => { config.AddConfiguration(configuration); })
                 .AddGrainService<LoggingService>()
                 .ConfigureServices(services =>
                 {

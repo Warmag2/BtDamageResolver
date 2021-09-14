@@ -7,11 +7,11 @@
     @if (_displayAddDialog && Editable)
     {
         <FormComboBox Options="@_sortedOptionsNameDict" SelectedOption="@string.Empty" Disabled="@Disabled" ComparisonTimeStamp="@ComparisonTimeStamp" OnChanged="(string item) => AddEntry(item)" OnOutOfFocus="@HideAddDialog"></FormComboBox>
-        <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="@HideAddDialog">Delete</button>
+        <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="@HideAddDialog">X</button>
     }
     else if(ShowAddButton)
     {
-        <button class="resolver_button resolver_button_add" disabled="@Disabled" @onclick="@ShowAddDialog">Add</button>
+        <button class="resolver_button resolver_button_add" disabled="@Disabled" @onclick="@ShowAddDialog">+</button>
     }
 </div>
 
@@ -20,7 +20,7 @@
     {
         <div class="resolver_div_unitinformation_data @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")">
             @item
-            <button class="resolver_button resolver_button_delete" style="@(VisualStyleController.HideElement(!Editable))" disabled="@Disabled" @onclick="() => DeleteEntry(item)">Delete</button>
+            <button class="resolver_button resolver_button_delete" style="@(VisualStyleController.HideElement(!Editable))" disabled="@Disabled" @onclick="() => DeleteEntry(item)">X</button>
         </div>
         <br />
     }
