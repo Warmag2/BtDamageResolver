@@ -259,7 +259,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 if (hit)
                 {
                     damageReport.Log(new AttackLogEntry {Context = "Attacker is damaged by its DFA attack", Type = AttackLogEntryType.Information});
-                    var attackerDamageDfa = _mathExpression.Parse($"{firingUnit.Tonnage}/5");
+                    var attackerDamageDfa = firingUnit.HasQuirk(Quirk.ReinforcedLegs) ?
+                        _mathExpression.Parse($"{firingUnit.Tonnage}/10") :
+                        _mathExpression.Parse($"{firingUnit.Tonnage}/5");
                     return await ResolveDamageRequest(new DamageRequest
                         {
                             AttackType = AttackType.Kick,

@@ -109,6 +109,7 @@
         {
             var gameState = DataHelper.Unpack<GameState>(gameStateData);
             _userStateController.GameState = gameState;
+            StateHasChanged();
         });
 
         _hubConnection.On<byte[]>("ReceiveTargetNumberUpdates", (targetNumberUpdateData) =>

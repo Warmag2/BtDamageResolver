@@ -6,6 +6,7 @@
         CombatComputer,         // Always generates 4 points less heat
         NarrowLowProfile,       // Half damage from glancing cluster shots (hit exactly at target value)
         NimbleJumper,           // Jumping provides 1 more evasion bonus
+        ReinforcedLegs,         // Half damage to legs from DFAs
         StabilizedWeapons,      // Running only gives -1 to hit
         TargetingAntiAir,       // Bonus of 2 to hit air units
         TargetingExtremeRange,  // Bonus of 1 to hit at extreme range
