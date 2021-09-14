@@ -5,61 +5,68 @@
 @inject VisualStyleController _visualStyleController
 
 @{
-    var adminRights = _userStateController.PlayerState.PlayerId == _userStateController.GameState.AdminId;
+    var adminRights = false;
+
+    if (_userStateController.PlayerState != null && _userStateController.GameState != null)
+    {
+        adminRights = _userStateController.PlayerState.PlayerId == _userStateController.GameState.AdminId;
+    }
 }
 
 <div class="resolver_div_componentrow">
+    
+    <h2 class="resolver_header">
+        Player options
+    </h2>
+    
+    @if (_userStateController.PlayerOptions != null)
+    {
+        <h3 class="resolver_header">
+            Default visibility of elements in the dashboard
+        </h3>
 
-    <h3 class="resolver_header">
-        Default visibility of elements in the dashboard
-    </h3>
+        <div class="resolver_div_options">
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowToolsOnMainScreenByDefault" OnChanged="@OnToolVisibilityChanged">Tools</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherUnitsOnMainScreenByDefault" OnChanged="@OnOtherUnitVisibilityChanged">Other players' units</FormCheckbox>
+        </div>
 
-    <div class="resolver_div_options">
-        <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowToolsOnMainScreenByDefault" OnChanged="@OnToolVisibilityChanged">Tools</FormCheckbox>
-        <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormCheckbox>
-        <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormCheckbox>
-        <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherUnitsOnMainScreenByDefault" OnChanged="@OnOtherUnitVisibilityChanged">Other players' units</FormCheckbox>
-    </div>
+        <h3 class="resolver_header">
+            Default visibility of other players' damage reports on the dashboard
+        </h3>
 
-</div>
+        <div class="resolver_div_options">
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Show other players' damage reports on the dashboard</FormCheckbox>
+        </div>
 
-<div class="resolver_div_componentrow">
 
-    <h3 class="resolver_header">
-        Default visibility of other players' damage reports on the dashboard
-    </h3>
+        <h3 class="resolver_header">
+            Default visibility of the attack log in damage reports
+        </h3>
 
-    <div class="resolver_div_options">
-        <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Show other players' damage reports on the dashboard</FormCheckbox>
-    </div>
+        <div class="resolver_div_options">
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Show attack logs</FormCheckbox>
+        </div>
 
-</div>
 
-<div class="resolver_div_componentrow">
+        <h3 class="resolver_header">
+            Default visibility of individual attack log entries in the attack log
+        </h3>
 
-    <h3 class="resolver_header">
-        Default visibility of the attack log in damage reports
-    </h3>
-
-    <div class="resolver_div_options">
-        <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Show attack logs</FormCheckbox>
-    </div>
-
-</div>
-
-<div class="resolver_div_componentrow">
-
-    <h3 class="resolver_header">
-        Default visibility of individual attack log entries in the attack log
-    </h3>
-
-    <div class="resolver_div_options">
-        @foreach (var attackLogEntryType in _userStateController.PlayerOptions.AttackLogEntryVisibility)
-        {
-            <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
-        }
-    </div>
-
+        <div class="resolver_div_options">
+            @foreach (var attackLogEntryType in _userStateController.PlayerOptions.AttackLogEntryVisibility)
+            {
+                <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="resolver_div_options">
+            No player options have been received from the server.
+        </div>
+    }
 </div>
 
 <div class="resolver_div_componentrow">
@@ -104,10 +111,9 @@
     else
     {
         <div class="resolver_div_options">
-            Not connected to a game.
+            Not game options have been received from the server or not connected to a game.
         </div>
     }
-
 </div>
 
 @code {
