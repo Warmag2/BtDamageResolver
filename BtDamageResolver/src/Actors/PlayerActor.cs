@@ -198,23 +198,28 @@ namespace Faemiyah.BtDamageResolver.Actors
                     }
                 }
 
-                _logger.LogInformation("Player {playerId} trying to connect to a game {oldGameId} while already connected to it. Doing nothing.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, gameId);
-
-                return true;
+                _logger.LogInformation("Player {playerId} trying to connect to a game {oldGameId} while already connected to it. Falling back to resending join request.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, gameId);
             }
 
+            return await JoinGameInternal(gameId, password);
+        }
+
+        private async Task<bool> JoinGameInternal(string gameId, string password)
+        {
             var gameActor = GrainFactory.GetGrain<IGameActor>(gameId);
 
             if (await gameActor.JoinGame(_playerActorState.State.AuthenticationToken, this.GetPrimaryKeyString(), password))
             {
-                _logger.LogInformation("Player {id} successfully connected to the game {game}.", this.GetPrimaryKeyString(), gameId);
+                _logger.LogInformation("Player {id} successfully connected to the game {game}.", this.GetPrimaryKeyString(),
+                    gameId);
                 _playerActorState.State.GameId = gameId;
                 _playerActorState.State.GamePassword = password;
                 await _playerActorState.WriteStateAsync();
 
                 // When we connect to a game, the game is not guaranteed to have our state. Send it and mark all units as updated.
-                await gameActor.UpdatePlayerState(_playerActorState.State.AuthenticationToken, await GetPlayerState(false), _playerActorState.State.UnitEntryIds.ToList());
-                
+                await gameActor.UpdatePlayerState(_playerActorState.State.AuthenticationToken, await GetPlayerState(false),
+                    _playerActorState.State.UnitEntryIds.ToList());
+
                 return true;
             }
 
@@ -290,7 +295,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <inheritdoc />
         public async Task<bool> CheckConnection(Guid authenticationToken)
         {
-            _logger.LogDebug("Player {playerId} is pinging its resolver client to check that the connection still exists.");
+            _logger.LogDebug("Player {playerId} is pinging its resolver client to check that the connection still exists.", this.GetPrimaryKeyString());
             return await SendPingToClient(authenticationToken);
         }
 

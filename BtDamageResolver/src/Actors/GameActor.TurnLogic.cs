@@ -123,10 +123,9 @@ namespace Faemiyah.BtDamageResolver.Actors
                 }
             }
 
-            // Comb through damage reports to find heat and EMP damage effects
+            // Comb through damage reports to find incoming heat damage and EMP damage effects
             foreach (var damageReport in damageReports)
             {
-                GetUnit(damageReport.FiringUnitId).Heat += damageReport.AttackerHeat;
                 var heatToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Heat);
                 var empToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Emp);
 
@@ -145,7 +144,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                 {
                     if (unit.IsHeatTracking())
                     {
-                        ProcessUnitHeat(unit);
+                        ProcessUnitHeat(damageReports, unit);
                     }
                     else
                     {
@@ -162,25 +161,46 @@ namespace Faemiyah.BtDamageResolver.Actors
             }
         }
 
-        private void ProcessUnitHeat(UnitEntry unit)
+        private void ProcessUnitHeat(List<DamageReport> damageReports, UnitEntry unit)
         {
+            var generatedDamageByThisUnit = damageReports.Where(d => d.FiringUnitId == unit.Id).Sum(damageReport => damageReport.AttackerHeat);
+
             switch (unit.MovementClass)
             {
+                case MovementClass.Immobile:
+                case MovementClass.Stationary:
+                    generatedDamageByThisUnit += 0;
+                    break;
                 case MovementClass.Normal:
-                    unit.Heat += 1;
+                    generatedDamageByThisUnit += 1;
                     break;
                 case MovementClass.Fast:
-                    unit.Heat += 2;
+                    generatedDamageByThisUnit += 2;
                     break;
                 case MovementClass.Masc:
-                    unit.Heat += 5;
+                    generatedDamageByThisUnit += 5;
                     break;
                 case MovementClass.OutOfControl:
-                    unit.Heat += 2;
+                    generatedDamageByThisUnit += 2;
                     break;
                 case MovementClass.Jump:
-                    unit.Heat += Math.Max(3, unit.Movement);
+                    generatedDamageByThisUnit += Math.Max(3, unit.Movement);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            // Combat computer sinks 4 heat by itself
+            if (unit.HasQuirk(Quirk.CombatComputer))
+            {
+                generatedDamageByThisUnit -= 4;
+            }
+
+            // Only apply heat if the generation is positive.
+            // Combat computer and other heat generation reductions never take the heat below 0.
+            if (generatedDamageByThisUnit > 0)
+            {
+                unit.Heat += generatedDamageByThisUnit;
             }
 
             unit.Heat -= unit.Sinks;

@@ -21,7 +21,8 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             if (_playerActorState.State.GameId != null)
             {
-                return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).GetGameOptions(authenticationToken);
+                var grain = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
+                return await grain.GetGameOptions(authenticationToken);
             }
 
             return null;

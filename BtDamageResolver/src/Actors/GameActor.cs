@@ -186,7 +186,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                 
                 _logger.LogInformation("In Game {gameId}, Player {playerId} successfully connected to the game.", this.GetPrimaryKeyString(), playerId);
 
-                CheckForPlayerCountEvents();
+                await CheckGameStateUpdateEvents();
 
                 // Log logins to permanent store
                 await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
@@ -228,6 +228,10 @@ namespace Faemiyah.BtDamageResolver.Actors
             {
                 _logger.LogInformation("In Game {gameId} Player {playerId}, cannot be disconnected, since the player is not in the game.", this.GetPrimaryKeyString(), playerId);
             }
+
+            // Log logins to permanent store
+            await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.LogOut, 0);
+            await GrainFactory.GetGameEntryRepository().AddOrUpdate(new GameEntry { Name = this.GetPrimaryKeyString(), Players = _gameActorState.State.PlayerStates.Count, TimeStamp = DateTime.UtcNow });
 
             return true;
         }

@@ -3,6 +3,7 @@
     public enum GameActionType
     {
         Login,
+        LogOut,
         Update,
         Turn
     }

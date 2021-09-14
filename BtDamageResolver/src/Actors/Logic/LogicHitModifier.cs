@@ -102,7 +102,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weather effects", Type = AttackLogEntryType.Calculation, Number = modifierWeather });
 
-            var modifierQuirks = GetQuirkModifier(firingUnit, targetUnit);
+            var modifierQuirks = GetQuirkModifier(firingUnit, targetUnit, weapon);
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from unit quirks", Type = AttackLogEntryType.Calculation, Number = modifierQuirks });
 
@@ -127,7 +127,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return (modifierTotal, rangeBracket);
         }
 
-        private int GetQuirkModifier(UnitEntry firingUnit, UnitEntry targetUnit)
+        private int GetQuirkModifier(UnitEntry firingUnit, UnitEntry targetUnit, Weapon weapon)
         {
             if (firingUnit.HasQuirk(Quirk.TargetingAntiAir))
             {
@@ -139,6 +139,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                     case UnitType.VehicleVtol:
                         return -2;
                 }
+            }
+
+            if (firingUnit.HasQuirk(Quirk.BattleFists) && weapon.AttackType == AttackType.Punch)
+            {
+                return -1;
             }
 
             return 0;
@@ -207,7 +212,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                             return 1;
                         case MovementClass.Fast:
                         case MovementClass.Masc:
-                            return 2;
+                            return firingUnit.HasQuirk(Quirk.StabilizedWeapons) ? 1 : 2;
                         case MovementClass.Jump:
                             return 3;
                         default:
@@ -223,7 +228,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                             return 1;
                         case MovementClass.Fast:
                         case MovementClass.Masc:
-                            return 2;
+                            return firingUnit.HasQuirk(Quirk.StabilizedWeapons) ? 1 : 2;
                         default:
                             return 0;
                     }

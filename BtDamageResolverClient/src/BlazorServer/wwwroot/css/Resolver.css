@@ -274,9 +274,10 @@
 /*******************************************************************************
     Button inputs
 *******************************************************************************/
-.resolver_button_ready {
-    margin-left: 2rem;
+
+.resolver_button_add {
     font-weight: bold;
+    content: '+';
 }
 
 .resolver_button_delete {
@@ -284,9 +285,14 @@
     content: 'X';
 }
 
-.resolver_button_add {
+.resolver_button_leave {
     font-weight: bold;
-    content: '+';
+    content: 'X';
+}
+
+.resolver_button_ready {
+    margin-left: 2rem;
+    font-weight: bold;
 }
 
 /*******************************************************************************
