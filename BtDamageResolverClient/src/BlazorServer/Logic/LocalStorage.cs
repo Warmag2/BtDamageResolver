@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices.ComTypes;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.Entities;
 

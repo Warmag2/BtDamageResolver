@@ -14,7 +14,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 {
     public class ResolverCommunicator
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<ResolverCommunicator> _logger;
         private readonly CommunicationOptions _communicationOptions;
         private HubConnection _hubConnection;
         private IClientToServerCommunicator _clientToServerCommunicator;
@@ -22,7 +22,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
         private string _playerName;
         private Guid _authenticationToken;
 
-        public ResolverCommunicator(ILogger logger, IOptions<CommunicationOptions> communicationOptions)
+        public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions)
         {
             _logger = logger;
             _communicationOptions = communicationOptions.Value;

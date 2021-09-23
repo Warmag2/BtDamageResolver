@@ -34,6 +34,14 @@ namespace Faemiyah.BtDamageResolver.Services
         }
 
         /// <inheritdoc />
+        public override Task Start()
+        {
+            _logger.LogInformation("{service} connected to redis successfully.", this.GetType());
+
+            return base.Start();
+        }
+
+        /// <inheritdoc />
         public async Task Send(string playerId, string envelopeType, object data)
         {
             _logger.LogDebug("Sending data of type {type} to player {player}", envelopeType, playerId);

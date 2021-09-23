@@ -1,9 +1,11 @@
 ﻿{
   "LoggingOptions": {
-    "LogLevel": "Debug",
-    "LogLevelOrleans": "Information"
+    "LogLevel": "Debug"
   },
   "ClusterOptions": {
     "ConnectionString": "User ID=faemiyah;Password=fuRZdwzQXl98wlNH8_bE;Host=10.2.0.3;Port=65432;Database=BtDamageResolver"
+  },
+  "CommunicationOptions": {
+    "ConnectionString": "10.2.0.3:6379"
   }
 }

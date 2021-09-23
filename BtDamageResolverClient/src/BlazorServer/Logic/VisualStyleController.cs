@@ -1,5 +1,4 @@
-﻿using System;
-using Faemiyah.BtDamageResolver.Api.Enums;
+﻿using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 {

@@ -1,12 +1,12 @@
 using System;
-using System.Threading.Tasks;
 using Blazored.LocalStorage;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
+using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
+using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer
@@ -35,16 +37,17 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
         {
             var configuration = GetConfiguration("CommunicationSettings.json");
 
-            services.Configure<FaemiyahClusterOptions>(configuration.GetSection("ClusterOptions"));
-            services.Configure<FaemiyahLoggingOptions>(configuration.GetSection("LoggingOptions"));
+            services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
+            services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
+            services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
             services.Configure<CircuitOptions>(options =>
             {
                 options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromDays(1);
             });
             services.Configure<HttpConnectionDispatcherOptions>(options =>
             {
-                options.ApplicationMaxBufferSize = 262144;
-                options.TransportMaxBufferSize = 262144;
+                options.ApplicationMaxBufferSize = 1048576;
+                options.TransportMaxBufferSize = 1048576;
             });
 
             services.AddBlazoredLocalStorage();
@@ -60,12 +63,12 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
                 options.EnableDetailedErrors = true;
                 options.MaximumReceiveMessageSize = 1048576;
             });
-            services.AddSingleton<IEntityRepository<ClusterTable, string>, SqlEntityRepository<ClusterTable>>();
-            services.AddSingleton<IEntityRepository<CriticalDamageTable, string>, SqlEntityRepository<CriticalDamageTable>>();
-            services.AddSingleton<IEntityRepository<GameEntry, string>, SqlEntityRepository<GameEntry>>();
-            services.AddSingleton<IEntityRepository<PaperDoll, string>, SqlEntityRepository<PaperDoll>>();
-            services.AddSingleton<IEntityRepository<Unit, string>, SqlEntityRepository<Unit>>();
-            services.AddSingleton<IEntityRepository<Weapon, string>, SqlEntityRepository<Weapon>>();
+            services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
+            services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
+            services.AddSingleton<IEntityRepository<GameEntry, string>>(GetRedisEntityRepository<GameEntry>);
+            services.AddSingleton<IEntityRepository<PaperDoll, string>>(GetRedisEntityRepository<PaperDoll>);
+            services.AddSingleton<IEntityRepository<Unit, string>>(GetRedisEntityRepository<Unit>);
+            services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
             services.AddSingleton<CachedEntityRepository<ClusterTable, string>>();
             services.AddSingleton<CachedEntityRepository<CriticalDamageTable, string>>();
             services.AddSingleton<CachedEntityRepository<GameEntry, string>>();
@@ -79,6 +82,31 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             services.AddScoped<ResolverCommunicator>();
             services.AddScoped<UserStateController>();
         }
+
+        private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
+        {
+            var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
+            if (options != null)
+            {
+                return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString);
+            }
+
+            throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
+        }
+
+        /*private static SqlEntityRepository<TType> GetSqlEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
+        {
+            var options = serviceProvider.GetService<IOptions<FaemiyahClusterOptions>>();
+            var connectionString = options?.Value.ConnectionString;
+            var logger = serviceProvider.GetService<ILogger<SqlEntityRepository<TType>>>();
+            if (options != null)
+            {
+                 var repository = new SqlEntityRepository<TType>(logger, connectionString);
+                 return repository;
+            }
+
+            throw new InvalidOperationException("Unable to find options class providing connection string for entity repositories.");
+        }*/
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

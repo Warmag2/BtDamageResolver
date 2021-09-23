@@ -49,6 +49,7 @@ namespace Faemiyah.BtDamageResolver.Services
         public override Task Start()
         {
             Task.Run(LogWriteLoop);
+            _logger.LogInformation("{service} running log writing loop.", this.GetType());
 
             return base.Start();
         }

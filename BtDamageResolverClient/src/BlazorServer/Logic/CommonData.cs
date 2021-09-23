@@ -33,13 +33,30 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         {
             _gameEntryRepository = gameEntryRepository;
             _unitRepository = unitRepository;
-            
+
             // Pre-bake lists used to generate options
-            MapUnitType = new List<UnitType> { UnitType.Building, UnitType.AerospaceDropship, UnitType.AerospaceFighter, UnitType.BattleArmor, UnitType.Infantry, UnitType.Mech, UnitType.VehicleTracked, UnitType.VehicleWheeled, UnitType.VehicleHover, UnitType.VehicleVtol }.ToDictionary(u => u.ToString());
-            MapMovementAmount = new Dictionary<string, int> { {"0-2", 0}, { "3-4", 3 }, { "5-6", 5 }, { "7-9", 7 }, { "10-17", 10 }, { "18-24", 18 }, { "25+", 25 } };
-            MapAttackModifier = new Dictionary<string, int> { { "-4", -4}, { "-3", -3}, { "-2", -2}, { "-1", -1}, { "+0", 0 }, { "+1", 1 }, { "+2", 2 }, { "+3", 3 }, { "+4", 4 } };
-            MapCover = new Dictionary<string, Cover> { { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right } };
-            MapFacing = new Dictionary<string, Direction> { { "Front", Direction.Front}, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top } };
+            MapUnitType = new List<UnitType>
+            {
+                UnitType.Building, UnitType.AerospaceDropship, UnitType.AerospaceFighter, UnitType.BattleArmor,
+                UnitType.Infantry, UnitType.Mech, UnitType.VehicleTracked, UnitType.VehicleWheeled,
+                UnitType.VehicleHover, UnitType.VehicleVtol
+            }.ToDictionary(u => u.ToString());
+            MapMovementAmount = new Dictionary<string, int>
+            {
+                { "0-2", 0 }, { "3-4", 3 }, { "5-6", 5 }, { "7-9", 7 }, { "10-17", 10 }, { "18-24", 18 }, { "25+", 25 }
+            };
+            MapAttackModifier = new Dictionary<string, int>
+            {
+                { "-4", -4 }, { "-3", -3 }, { "-2", -2 }, { "-1", -1 }, { "+0", 0 }, { "+1", 1 }, { "+2", 2 }, { "+3", 3 }, { "+4", 4 }
+            };
+            MapCover = new Dictionary<string, Cover>
+            {
+                { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right }
+            };
+            MapFacing = new Dictionary<string, Direction>
+            {
+                { "Front", Direction.Front }, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top }
+            };
             MapClusterTable = clusterTableRepository.GetAll().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
             MapCriticalDamageTable = criticalDamageTableRepository.GetAll().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
             MapPaperDoll = paperDollRepository.GetAll().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
