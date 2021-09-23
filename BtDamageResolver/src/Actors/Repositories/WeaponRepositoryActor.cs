@@ -1,6 +1,6 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Repositories.Base;
-using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Interfaces.Repositories;
+﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Repositories;
+using Faemiyah.BtDamageResolver.Actors.Repositories.Base;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Microsoft.Extensions.Logging;
 
 namespace Faemiyah.BtDamageResolver.Actors.Repositories

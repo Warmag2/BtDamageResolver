@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
-using Faemiyah.BtDamageResolver.Actors.Repositories.Base;
 using Faemiyah.BtDamageResolver.Api;
-using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Interfaces.ActorInterfacePrototypes;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
 using Faemiyah.BtDamageResolver.Common.Options;
@@ -57,7 +56,7 @@ namespace Faemiyah.BtDamageResolver.Silo
         private static void SetupApplicationShutdown()
         {
             // Capture the user pressing Ctrl+C
-            Console.CancelKeyPress += (s, a) =>
+            Console.CancelKeyPress += (_, a) =>
             {
                 // Prevent the application from crashing ungracefully.
                 a.Cancel = true;
@@ -151,6 +150,7 @@ namespace Faemiyah.BtDamageResolver.Silo
                 .ConfigureServices(services =>
                 {
                     services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
+                    services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
                     services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
                     services.AddLogging(conf =>
                     {

@@ -19,11 +19,5 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.Interfaces
         /// </summary>
         /// <param name="id">The id to set the base identifier to.</param>
         void SetId(TKey id);
-
-        /// <summary>
-        /// Validates the contents of the entity.
-        /// </summary>
-        /// <returns>An EntityValidationResult containing the validness status and disqualification reason, if any.</returns>
-        EntityValidationResult Validate();
     }
 }

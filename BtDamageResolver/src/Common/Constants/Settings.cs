@@ -23,6 +23,11 @@
         /// <summary>
         /// The name of the options block which contains the connection settings for RabbitMQ.
         /// </summary>
+        public const string CommunicationOptionsBlockName = "CommunicationOptions";
+
+        /// <summary>
+        /// The name of the options block which contains the connection settings for RabbitMQ.
+        /// </summary>
         public const string LoggingOptionsBlockName = "LoggingOptions";
 
         /// <summary>

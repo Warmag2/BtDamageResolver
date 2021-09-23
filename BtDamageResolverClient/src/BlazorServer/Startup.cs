@@ -1,6 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
@@ -13,11 +16,7 @@ using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Orleans;
-using Orleans.Configuration;
-using Orleans.Hosting;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
-using ConnectionOptions = Orleans.Configuration.ConnectionOptions;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer
 {
@@ -35,8 +34,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
         public void ConfigureServices(IServiceCollection services)
         {
             var configuration = GetConfiguration("CommunicationSettings.json");
-            var clusterOptions = configuration.GetSection("ClusterOptions").Get<FaemiyahClusterOptions>();
-            var client = ConnectClient(clusterOptions);
 
             services.Configure<FaemiyahClusterOptions>(configuration.GetSection("ClusterOptions"));
             services.Configure<FaemiyahLoggingOptions>(configuration.GetSection("LoggingOptions"));
@@ -61,14 +58,26 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
-                options.MaximumReceiveMessageSize = 262144;
+                options.MaximumReceiveMessageSize = 1048576;
             });
+            services.AddSingleton<IEntityRepository<ClusterTable, string>, SqlEntityRepository<ClusterTable>>();
+            services.AddSingleton<IEntityRepository<CriticalDamageTable, string>, SqlEntityRepository<CriticalDamageTable>>();
+            services.AddSingleton<IEntityRepository<GameEntry, string>, SqlEntityRepository<GameEntry>>();
+            services.AddSingleton<IEntityRepository<PaperDoll, string>, SqlEntityRepository<PaperDoll>>();
+            services.AddSingleton<IEntityRepository<Unit, string>, SqlEntityRepository<Unit>>();
+            services.AddSingleton<IEntityRepository<Weapon, string>, SqlEntityRepository<Weapon>>();
+            services.AddSingleton<CachedEntityRepository<ClusterTable, string>>();
+            services.AddSingleton<CachedEntityRepository<CriticalDamageTable, string>>();
+            services.AddSingleton<CachedEntityRepository<GameEntry, string>>();
+            services.AddSingleton<CachedEntityRepository<PaperDoll, string>>();
+            services.AddSingleton<CachedEntityRepository<Unit, string>>();
+            services.AddSingleton<CachedEntityRepository<Weapon, string>>();
             services.AddSingleton<CommonData>();
             services.AddSingleton<VisualStyleController>();
-            services.AddSingleton(client);
-            services.AddScoped<UserStateController>();
             services.AddScoped<ClientHub>();
-            services.AddScoped<IResolverCommunicator, ResolverCommunicator>();
+            services.AddScoped<LocalStorage>();
+            services.AddScoped<ResolverCommunicator>();
+            services.AddScoped<UserStateController>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,34 +102,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
                 endpoints.MapHub<ClientHub>("/ClientHub");
                 endpoints.MapFallbackToPage("/_Host");
             });
-        }
-
-        private static IClusterClient ConnectClient(FaemiyahClusterOptions clusterOptions)
-        {
-            var client = new ClientBuilder()
-                .Configure<ClusterOptions>(options =>
-                {
-                    options.ClusterId = "faemiyah";
-                    options.ServiceId = "Resolver";
-                })
-                .Configure<ConnectionOptions>(options =>
-                {
-                    options.ConnectionRetryDelay = TimeSpan.FromSeconds(30);
-                    options.OpenConnectionTimeout = TimeSpan.FromSeconds(30);
-                })
-                .Configure<MessagingOptions>(options =>
-                {
-                    options.ResponseTimeout = TimeSpan.FromMinutes(15);
-                })
-                .UseAdoNetClustering(options =>
-                {
-                    options.Invariant = clusterOptions.Invariant;
-                    options.ConnectionString = clusterOptions.ConnectionString;
-                })
-                .Build();
-
-            client.Connect(ex => Task.FromResult(true)).Wait();
-            return client;
         }
     }
 }

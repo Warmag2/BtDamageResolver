@@ -1,9 +1,9 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject Blazored.LocalStorage.ILocalStorageService _localStorage
-@inject IResolverCommunicator _resolverCommunicator
+@inject LocalStorage _localStorage
+@inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
 @inject CommonData _commonData
 @implements IDisposable
@@ -89,17 +89,12 @@
 
 @code
 {
-    private static string _localStorageVariableUserCredentials = "BtDamageResolverUserCredentials";
-
     private bool _showModal = false;
     private string _modalName = string.Empty;
     private string _modalPassword = string.Empty;
     private List<GameEntry> _recentGames;
     private List<GameEntry> _otherGames;
     private List<GameEntry> _games;
-
-    [Parameter]
-    public EventCallback OnServerStateChanged { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,49 +106,22 @@
 
     private async Task Connect(Credentials credentials)
     {
-        var loginState = await _resolverCommunicator.Connect(credentials);
-
-        if (loginState != null)
-        {
-            _userStateController.ConnectedToServer = true;
-            _userStateController.PlayerOptions = await _resolverCommunicator.GetPlayerOptions();
-            _userStateController.PlayerName = credentials.Name;
-            await _localStorage.SetItemAsync(_localStorageVariableUserCredentials, credentials);
-
-            if (!string.IsNullOrWhiteSpace(loginState.GameId))
-            {
-                await JoinGame(new Credentials { Name = loginState.GameId, Password = loginState.GamePassword });
-            }
-        }
+        await _resolverCommunicator.Connect(credentials);
     }
 
     private async Task Disconnect()
     {
-        if (await _resolverCommunicator.Disconnect())
-        {
-            _userStateController.ConnectedToServer = false;
-            _userStateController.GameOptions = null;
-            _userStateController.GameState = null;
-            _userStateController.PlayerName = null;
-            _userStateController.PlayerOptions = null;
-            _userStateController.DamageReportCollection.Clear();
-            await _localStorage.RemoveItemAsync(_localStorageVariableUserCredentials);
-        }
+        await _resolverCommunicator.Disconnect();
     }
 
     private async Task JoinGame(Credentials credentials)
     {
-        if (await _resolverCommunicator.JoinGame(credentials))
-        {
-            _userStateController.DamageReportCollection.Clear();
-            _userStateController.GameOptions = await _resolverCommunicator.GetGameOptions();
-            await OnServerStateChanged.InvokeAsync();
-        }
-        else
-        {
-            _modalName = credentials.Name;
-            ModalShow();
-        }
+        _userStateController.DamageReportCollection.Clear();
+        await _resolverCommunicator.JoinGame(credentials);
+        await _resolverCommunicator.GetGameOptions();
+
+        //_modalName = credentials.Name;
+        //ModalShow();
     }
 
     public async Task LeaveGame()
@@ -190,23 +158,15 @@
     {
         if (firstRender)
         {
-            if (await _localStorage.ContainKeyAsync(_localStorageVariableUserCredentials))
-            {
-                var userCredentials = await _localStorage.GetItemAsync<Credentials>(_localStorageVariableUserCredentials);
+            var (success, credentials) = await _localStorage.GetUserCredentials();
 
-                if (!string.IsNullOrWhiteSpace(userCredentials.Name))
-                {
-                    await Connect(userCredentials);
-                }
+            if (success)
+            {
+                await Connect(credentials);
             }
         }
 
         await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private async Task SaveUserCredentials(Credentials credentials)
-    {
-        await _localStorage.SetItemAsync(_localStorageVariableUserCredentials, credentials);
     }
 
     public void Dispose()

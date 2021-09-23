@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
-using Faemiyah.BtDamageResolver.Api.Interfaces.ActorInterfacePrototypes;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Concurrency;

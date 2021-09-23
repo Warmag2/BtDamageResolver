@@ -22,7 +22,7 @@ namespace Faemiyah.BtDamageResolver.Services
     {
         private const int LoggingDelayMilliseconds = 15000; // Check for logs to write 4 times a minute
 
-        private readonly ILogger _logger;
+        private readonly ILogger<LoggingService> _logger;
         private readonly FaemiyahLoggingOptions _loggingOptions;
         private readonly LoggingRepository _loggingRepository;
         private readonly ConcurrentQueue<GameLogEntry> _gameLogEntries;
@@ -45,6 +45,7 @@ namespace Faemiyah.BtDamageResolver.Services
             _loggingRepository = new LoggingRepository(loggerFactory.CreateLogger<LoggingRepository>(), clusterOptions.Value);
         }
 
+        /// <inheritdoc />
         public override Task Start()
         {
             Task.Run(LogWriteLoop);
@@ -52,7 +53,7 @@ namespace Faemiyah.BtDamageResolver.Services
             return base.Start();
         }
 
-        public async Task LogWriteLoop()
+        private async Task LogWriteLoop()
         {
             while (true)
             {
@@ -84,6 +85,7 @@ namespace Faemiyah.BtDamageResolver.Services
             }
         }
 
+        /// <inheritdoc />
         public Task LogGameAction(DateTime timeStamp, string gameId, GameActionType gameActionType, int actionData)
         {
             if (_loggingOptions.LogToDatabase)
@@ -94,6 +96,7 @@ namespace Faemiyah.BtDamageResolver.Services
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public Task LogPlayerAction(DateTime timeStamp, string userId, PlayerActionType playerActionType, int actionData)
         {
             if (_loggingOptions.LogToDatabase)
@@ -104,6 +107,7 @@ namespace Faemiyah.BtDamageResolver.Services
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public Task LogUnitAction(DateTime timeStamp, string unitId, UnitActionType unitActionType, int actionData)
         {
             if (_loggingOptions.LogToDatabase)

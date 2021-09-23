@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
@@ -33,18 +34,19 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task MoveUnit(Guid authenticationToken, Guid unitId, string playerId)
+        public async Task<bool> MoveUnit(Guid authenticationToken, Guid unitId, string playerId)
         {
             if (!await CheckAuthentication(authenticationToken))
             {
-                return;
+                return false;
             }
 
             _logger.LogInformation("Player {playerId} asking Game {gameId} to move Unit {unitId} to player {receivingPlayerId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, unitId, playerId);
-            GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).MoveUnit(authenticationToken, unitId, playerId).Ignore();
+            return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).MoveUnit(authenticationToken, unitId, playerId);
         }
 
         /// <inheritdoc />
+        [AlwaysInterleave]
         public async Task<bool> RemoveUnit(Guid authenticationToken, Guid unitId)
         {
             if (!await CheckAuthentication(authenticationToken))
@@ -68,6 +70,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
+        [AlwaysInterleave]
         public async Task<bool> ReceiveUnit(Guid authenticationToken, Guid unitId, string owningPlayerId, Guid ownerAuthenticationToken)
         {
             if (!await CheckAuthentication(authenticationToken))

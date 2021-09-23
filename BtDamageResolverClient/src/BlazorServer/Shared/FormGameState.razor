@@ -16,7 +16,7 @@
 {
     <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_sectionEnabledDamageRequests)" @onclick="@(e => _sectionEnabledDamageRequests = !_sectionEnabledDamageRequests)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Damage requests</button>
     <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_sectionEnabledDamageRequests)" style="@VisualStyleController.HideElement(!_sectionEnabledDamageRequests)">
-        <FormDamageRequests @key="@_userStateController.GameState.TimeStamp" DamageRequest=@_userStateController.DamageRequest></FormDamageRequests>
+        <FormDamageInstances @key="@_userStateController.GameState.TimeStamp" DamageInstance=@_userStateController.DamageInstance></FormDamageInstances>
     </div>
 
     <button @key="@_userStateController.GameState.Turn" class="resolver_button_accordion @_visualStyleController.GetActiveClass(_sectionEnabledDamageReports)" @onclick="@(e => _sectionEnabledDamageReports = !_sectionEnabledDamageReports)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>DamageReports@(_userStateController.DamageReportCollection.Any() ? $" (Turn {_userStateController.DamageReportCollection.Keys.Last()})" : string.Empty)</button>

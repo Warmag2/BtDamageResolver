@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Events;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Orleans;
 
@@ -14,12 +13,12 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
     public interface IGameActor : IGrainWithStringKey
     {
         /// <summary>
-        /// Process Damage request.
+        /// Process a damage instance.
         /// </summary>
         /// <param name="authenticationToken">The authentication token.</param>
-        /// <param name="damageRequest">The damage request.</param>
-        /// <returns>Nothing.</returns>
-        Task ProcessDamageRequest(Guid authenticationToken, DamageRequest damageRequest);
+        /// <param name="damageInstance">The damage instance.</param>
+        /// <returns><b>True</b> if processing the damage instance succeeded, <b>false</b> otherwise.</returns>
+        Task<bool> ProcessDamageInstance(Guid authenticationToken, DamageInstance damageInstance);
 
         /// <summary>
         /// Ask whether a certain unit is in this game.

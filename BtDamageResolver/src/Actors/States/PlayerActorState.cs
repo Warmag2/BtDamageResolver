@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
 
 namespace Faemiyah.BtDamageResolver.Actors.States

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Events;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Orleans;
 
@@ -35,12 +34,12 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         Task<UnitEntry> GetUnitState();
 
         /// <summary>
-        /// Processes a damage request against th unit represented by this <see cref="IUnitActor"/>.
+        /// Processes a damage instance against the unit represented by this <see cref="IUnitActor"/>.
         /// </summary>
-        /// <param name="damageRequest">The damage request to process.</param>
+        /// <param name="damageInstance">The damage instance to process.</param>
         /// <param name="gameOptions">The game options.</param>
         /// <returns>A <see cref="DamageReport"/> report corresponding to the damage request.</returns>
-        Task<DamageReport> ProcessDamageRequest(DamageRequest damageRequest, GameOptions gameOptions);
+        Task<DamageReport> ProcessDamageInstance(DamageInstance damageInstance, GameOptions gameOptions);
 
         /// <summary>
         /// Update the state of this 

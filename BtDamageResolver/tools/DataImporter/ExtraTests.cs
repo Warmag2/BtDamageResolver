@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

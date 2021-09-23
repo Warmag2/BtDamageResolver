@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Events;
 using Faemiyah.BtDamageResolver.Api.Options;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
@@ -42,7 +41,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public int DraggedWeaponIndex { get; set; }
 
-        public DamageRequest DamageRequest { get; private set; }
+        public DamageInstance DamageInstance { get; private set; }
 
         public GameOptions GameOptions { get; set; }
 
@@ -255,9 +254,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             OnDamageReportChange?.Invoke();
         }
 
-        public void NotifyDamageRequestCreated(DamageRequest damageRequest)
+        public void NotifyDamageRequestCreated(DamageInstance damageInstance)
         {
-            DamageRequest = damageRequest;
+            DamageInstance = damageInstance;
             OnDamageRequestRequested?.Invoke();
         }
 

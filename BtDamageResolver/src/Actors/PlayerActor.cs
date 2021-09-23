@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Events;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
@@ -18,6 +17,7 @@ namespace Faemiyah.BtDamageResolver.Actors
     public partial class PlayerActor : Grain, IPlayerActor
     {
         private readonly ILogger<PlayerActor> _logger;
+        private readonly ICommunicationServiceClient _communicationServiceClient;
         private readonly ILoggingServiceClient _loggingServiceClient;
         private readonly IPersistentState<PlayerActorState> _playerActorState;
 
@@ -25,20 +25,19 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// Constructor for a Player actor.
         /// </summary>
         /// <param name="logger">The logger.</param>
+        /// <param name="communicationServiceClient">The communication service client.</param>
         /// <param name="loggingServiceClient">The logging service client.</param>
         /// <param name="playerActorState">The state object for this actor.</param>
         public PlayerActor(
             ILogger<PlayerActor> logger,
+            ICommunicationServiceClient communicationServiceClient,
             ILoggingServiceClient loggingServiceClient,
             [PersistentState(nameof(PlayerActorState), Settings.ActorStateStoreName)]IPersistentState<PlayerActorState> playerActorState)
         {
             _logger = logger;
+            _communicationServiceClient = communicationServiceClient;
             _loggingServiceClient = loggingServiceClient;
             _playerActorState = playerActorState;
-
-            _unsentDamageReports = new Queue<DamageReport>();
-            _unsentErrorMessages = new Queue<string>();
-            _unsentTargetNumberUpdates = new Queue<TargetNumberUpdate>();
         }
 
         /// <inheritdoc />
@@ -89,11 +88,11 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task UpdateState(Guid authenticationToken, PlayerState playerState)
+        public async Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState)
         {
             if (!await CheckAuthentication(authenticationToken))
             {
-                return;
+                return false;
             }
 
             try
@@ -141,10 +140,12 @@ namespace Faemiyah.BtDamageResolver.Actors
             {
                 await SendErrorMessageToClient($"{ex.Message}\n{ex.StackTrace}");
             }
+
+            return true;
         }
 
         /// <inheritdoc />
-        public async Task<bool> RequestDamageReports(Guid authenticationToken)
+        public async Task<bool> GetDamageReports(Guid authenticationToken)
         {
             if (!await CheckAuthentication(authenticationToken))
             {
@@ -160,7 +161,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             return false;
         }
 
-        public async Task<bool> RequestGameState(Guid authenticationToken)
+        public async Task<bool> GetGameState(Guid authenticationToken)
         {
             if (!await CheckAuthentication(authenticationToken))
             {
@@ -170,11 +171,13 @@ namespace Faemiyah.BtDamageResolver.Actors
             if (ConnectedToGame())
             {
                 await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).RequestGameState(authenticationToken);
-                return true;
+            }
+            else
+            {
+                await SendOnlyThisPlayerGameStateToClient();
             }
 
-            await SendOnlyOwnDataToClient();
-            return false;
+            return true;
         }
 
         /// <inheritdoc />
@@ -198,7 +201,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                     }
                 }
 
-                _logger.LogInformation("Player {playerId} trying to connect to a game {oldGameId} while already connected to it. Falling back to resending join request.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, gameId);
+                _logger.LogInformation("Player {playerId} trying to connect to a game {oldGameId} while already connected to it. Falling back to resending join request.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
             }
 
             return await JoinGameInternal(gameId, password);
@@ -258,30 +261,30 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task ProcessDamageRequest(Guid authenticationToken, DamageRequest damageRequest)
+        public async Task<bool> SendDamageInstance(Guid authenticationToken, DamageInstance damageInstance)
         {
             if (!await CheckAuthentication(authenticationToken))
             {
-                return;
+                return false;
             }
-
-            var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
 
             if (ConnectedToGame())
             {
-                if (await gameActor.IsUnitInGame(_playerActorState.State.AuthenticationToken, damageRequest.UnitId))
+                var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
+
+                if (await gameActor.IsUnitInGame(_playerActorState.State.AuthenticationToken, damageInstance.UnitId))
                 {
-                    await gameActor.ProcessDamageRequest(_playerActorState.State.AuthenticationToken, damageRequest);
+                    return await gameActor.ProcessDamageInstance(_playerActorState.State.AuthenticationToken, damageInstance);
                 }
-                else
-                {
-                    _logger.LogWarning("Player {playerId} asked for a damage request against unit {unitId}, but the said unit is not in the game.", this.GetPrimaryKeyString(), damageRequest.UnitId);
-                }
+
+                _logger.LogWarning("Player {playerId} asked for a damage request against unit {unitId}, but the said unit is not in the game.", this.GetPrimaryKeyString(), damageInstance.UnitId);
+                
+                return false;
             }
-            else
-            {
-                _logger.LogWarning("Player {playerId} asked for a damage request, but is not connected to a game.", this.GetPrimaryKeyString());
-            }
+
+            _logger.LogWarning("Player {playerId} asked for a damage request, but is not connected to a game.", this.GetPrimaryKeyString());
+
+            return false;
         }
 
         /// <inheritdoc />
@@ -292,19 +295,12 @@ namespace Faemiyah.BtDamageResolver.Actors
             await _playerActorState.WriteStateAsync();
         }
 
-        /// <inheritdoc />
-        public async Task<bool> CheckConnection(Guid authenticationToken)
-        {
-            _logger.LogDebug("Player {playerId} is pinging its resolver client to check that the connection still exists.", this.GetPrimaryKeyString());
-            return await SendPingToClient(authenticationToken);
-        }
-
         private async Task MarkDisconnectedStateAndSendToClient()
         {
             _playerActorState.State.GameId = null;
             _playerActorState.State.GamePassword = null;
             _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
-            await SendOnlyOwnDataToClient();
+            await SendOnlyThisPlayerGameStateToClient();
         }
 
         private bool ConnectedToGame()

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Exceptions;
-using Faemiyah.BtDamageResolver.Api.Interfaces.ActorInterfacePrototypes;
 using Microsoft.Extensions.Logging;
 
 namespace Faemiyah.BtDamageResolver.Actors.Repositories.Base

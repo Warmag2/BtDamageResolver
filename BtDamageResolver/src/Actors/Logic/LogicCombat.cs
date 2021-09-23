@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Events;
 using Faemiyah.BtDamageResolver.Api.Extensions;
-using Faemiyah.BtDamageResolver.Api.Interfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Orleans;
 
@@ -99,11 +99,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return weaponPhase;
         }
 
-        public async Task<DamageReport> ResolveDamageRequest(DamageRequest damageRequest, GameOptions gameOptions)
+        public async Task<DamageReport> ResolveDamageInstance(DamageInstance damageInstance, GameOptions gameOptions)
         {
-            var targetUnit = await _grainFactory.GetGrain<IUnitActor>(damageRequest.UnitId).GetUnitState();
+            var targetUnit = await _grainFactory.GetGrain<IUnitActor>(damageInstance.UnitId).GetUnitState();
 
-            var paperDollName = GetPaperDollNameFromAttackParameters(targetUnit.Type, AttackType.Normal, damageRequest.Direction, gameOptions);
+            var paperDollName = GetPaperDollNameFromAttackParameters(targetUnit.Type, AttackType.Normal, damageInstance.Direction, gameOptions);
             var paperDoll = await _grainFactory.GetPaperDollRepository().Get(paperDollName);
 
             var damageReport = new DamageReport
@@ -115,13 +115,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 InitialTroopers = targetUnit.Troopers
             };
 
-            damageReport.Log(new AttackLogEntry { Context = "Damage request total damage", Number = damageRequest.Damage, Type = AttackLogEntryType.Calculation });
+            damageReport.Log(new AttackLogEntry { Context = "Damage request total damage", Number = damageInstance.Damage, Type = AttackLogEntryType.Calculation });
 
-            damageReport.Log(new AttackLogEntry { Context = "Damage request cluster size", Number = damageRequest.ClusterSize, Type = AttackLogEntryType.Calculation });
+            damageReport.Log(new AttackLogEntry { Context = "Damage request cluster size", Number = damageInstance.ClusterSize, Type = AttackLogEntryType.Calculation });
 
-            var damagePackets = _logicDamage.ResolveDamageRequest(damageRequest);
+            var damagePackets = _logicDamage.ResolveDamageInstance(damageInstance);
             
-            await _logicHits.ResolveHits(damageReport, gameOptions.Rules, new FiringSolution {AttackModifier = 0, Cover = damageRequest.Cover, Direction = damageRequest.Direction, TargetUnit = damageRequest.UnitId}, 999, targetUnit, null, WeaponMode.Normal, damagePackets);
+            await _logicHits.ResolveHits(damageReport, gameOptions.Rules, new FiringSolution {AttackModifier = 0, Cover = damageInstance.Cover, Direction = damageInstance.Direction, TargetUnit = damageInstance.UnitId}, 999, targetUnit, null, WeaponMode.Normal, damagePackets);
 
             return damageReport;
         }
@@ -241,7 +241,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                 var attackerDamageCharge = _mathExpression.Parse(attackerDamageStringCharge);
 
-                return await ResolveDamageRequest(new DamageRequest
+                return await ResolveDamageInstance(new DamageInstance
                     {
                         AttackType = AttackType.Normal,
                         ClusterSize = 5,
@@ -262,7 +262,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                     var attackerDamageDfa = firingUnit.HasQuirk(Quirk.ReinforcedLegs) ?
                         _mathExpression.Parse($"{firingUnit.Tonnage}/10") :
                         _mathExpression.Parse($"{firingUnit.Tonnage}/5");
-                    return await ResolveDamageRequest(new DamageRequest
+                    return await ResolveDamageInstance(new DamageInstance
                         {
                             AttackType = AttackType.Kick,
                             ClusterSize = 5,
@@ -278,7 +278,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 {
                     damageReport.Log(new AttackLogEntry { Context = "Attacker falls onto its back due to a failed DFA attack", Type = AttackLogEntryType.Information });
                     var attackerDamageDfa = _mathExpression.Parse($"2*{firingUnit.Tonnage}/5");
-                    return await ResolveDamageRequest(new DamageRequest
+                    return await ResolveDamageInstance(new DamageInstance
                         {
                             AttackType = AttackType.Normal,
                             ClusterSize = 5,

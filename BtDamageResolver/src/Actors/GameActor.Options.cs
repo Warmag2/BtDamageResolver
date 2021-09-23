@@ -31,7 +31,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             await _gameActorState.WriteStateAsync();
             _logger.LogInformation("Game {gameId} options successfully set by player {playerId}", this.GetPrimaryKeyString(), _gameActorState.State.AdminId);
 
-            DistributeGameOptionsToPlayers();
+            await DistributeGameOptionsToPlayers();
 
             return true;
         }

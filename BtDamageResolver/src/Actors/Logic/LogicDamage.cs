@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Events;
 using Faemiyah.BtDamageResolver.Api.Extensions;
-using Faemiyah.BtDamageResolver.Api.Interfaces.Extensions;
 using Orleans;
 
 using static Faemiyah.BtDamageResolver.Actors.Logic.LogicCombatHelpers;
@@ -61,9 +61,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return damagePackets;
         }
 
-        public List<(int damage, List<SpecialDamageEntry> specialDamageEntries)> ResolveDamageRequest(DamageRequest damageRequest)
+        public List<(int damage, List<SpecialDamageEntry> specialDamageEntries)> ResolveDamageInstance(DamageInstance damageInstance)
         {
-            return Clusterize(damageRequest.Damage, damageRequest.ClusterSize, 1, new SpecialDamageEntry { Type = SpecialDamageType.None});
+            return Clusterize(damageInstance.Damage, damageInstance.ClusterSize, 1, new SpecialDamageEntry { Type = SpecialDamageType.None});
         }
 
         #region Outgoing damage calculation
