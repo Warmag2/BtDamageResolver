@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
@@ -24,7 +23,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="connectionResponse">The connection response.</param>
         /// <param name="correlationId">The correlation ID this event is related to (if any).</param>
         /// <returns><b>True</b> if the connection response was successfully handled, <b>false</b> otherwise.</returns>
-        public Task<bool> HandleConnectionResponse(ConnectionResponse connectionResponse, Guid correlationId);
+        public Task<bool> HandleConnectionResponse(byte[] connectionResponse, Guid correlationId);
 
         /// <summary>
         /// Handle incoming <see cref="DamageReport"/>s.
@@ -32,7 +31,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="damageReports">The damage reports.</param>
         /// <param name="correlationId">The correlation ID this event is related to (if any).</param>
         /// <returns><b>True</b> if the damage reports were successfully handled, <b>false</b> otherwise.</returns>
-        public Task<bool> HandleDamageReports(List<DamageReport> damageReports, Guid correlationId);
+        public Task<bool> HandleDamageReports(byte[] damageReports, Guid correlationId);
 
         /// <summary>
         /// Handle an incoming error message.
@@ -40,7 +39,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="errorMessage">The error message.</param>
         /// <param name="correlationId">The correlation ID this event is related to (if any).</param>
         /// <returns><b>True</b> if the error message was successfully handled, <b>false</b> otherwise.</returns>
-        public Task<bool> HandleErrorMessage(string errorMessage, Guid correlationId);
+        public Task<bool> HandleErrorMessage(byte[] errorMessage, Guid correlationId);
 
         /// <summary>
         /// Handle incoming <see cref="GameOptions"/>.
@@ -48,7 +47,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="gameOptions">The game options.</param>
         /// <param name="correlationId">The correlation ID this event is related to (if any).</param>
         /// <returns><b>True</b> if the game options were successfully handled, <b>false</b> otherwise.</returns>
-        public Task<bool> HandleGameOptions(GameOptions gameOptions, Guid correlationId);
+        public Task<bool> HandleGameOptions(byte[] gameOptions, Guid correlationId);
 
         /// <summary>
         /// Handle an incoming <see cref="GameState"/>.
@@ -56,7 +55,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="gameState">The game state.</param>
         /// <param name="correlationId">The correlation ID this event is related to (if any).</param>
         /// <returns><b>True</b> if the game state was successfully handled, <b>false</b> otherwise.</returns>
-        public Task<bool> HandleGameState(GameState gameState, Guid correlationId);
+        public Task<bool> HandleGameState(byte[] gameState, Guid correlationId);
 
         /// <summary>
         /// Handle incoming <see cref="PlayerOptions"/>.
@@ -64,7 +63,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="playerOptions">The player options.</param>
         /// <param name="correlationId">The correlation ID this event is related to (if any).</param>
         /// <returns><b>True</b> if the player options were successfully handled, <b>false</b> otherwise.</returns>
-        public Task<bool> HandlePlayerOptions(PlayerOptions playerOptions, Guid correlationId);
+        public Task<bool> HandlePlayerOptions(byte[] playerOptions, Guid correlationId);
 
         /// <summary>
         /// Handle incoming <see cref="TargetNumberUpdate"/>s.
@@ -72,6 +71,6 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="targetNumbers">The target numbers.</param>
         /// <param name="correlationId">The correlation ID this event is related to (if any).</param>
         /// <returns><b>True</b> if the target numbers were successfully handled, <b>false</b> otherwise.</returns>
-        public Task<bool> HandleTargetNumberUpdates(List<TargetNumberUpdate> targetNumbers, Guid correlationId);
+        public Task<bool> HandleTargetNumberUpdates(byte[] targetNumbers, Guid correlationId);
     }
 }

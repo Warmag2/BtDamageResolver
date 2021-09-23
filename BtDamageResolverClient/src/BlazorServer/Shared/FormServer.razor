@@ -118,7 +118,7 @@
     {
         _userStateController.DamageReportCollection.Clear();
         await _resolverCommunicator.JoinGame(credentials);
-        await _resolverCommunicator.GetGameOptions();
+        //await _resolverCommunicator.GetGameOptions();
 
         //_modalName = credentials.Name;
         //ModalShow();
@@ -156,7 +156,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        /*if (firstRender)
         {
             var (success, credentials) = await _localStorage.GetUserCredentials();
 
@@ -164,7 +164,7 @@
             {
                 await Connect(credentials);
             }
-        }
+        }*/
 
         await base.OnAfterRenderAsync(firstRender);
     }

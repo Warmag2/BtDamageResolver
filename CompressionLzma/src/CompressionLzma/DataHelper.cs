@@ -1,4 +1,7 @@
-﻿namespace SevenZip.Compression.LZMA
+﻿using System.Text;
+using Newtonsoft.Json;
+
+namespace SevenZip.Compression.LZMA
 {
     /// <summary>
     /// Static easy-to-use compression helping methods for compressing complex types through JSON serialization.
@@ -13,7 +16,7 @@
         /// <returns>The serialized byte array.</returns>
         private static byte[] Serialize<TType>(TType input) where TType : class
         {
-            return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(input);
+            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(input));
         }
 
         /// <summary>
@@ -24,7 +27,7 @@
         /// <returns>The deserialized object.</returns>
         private static TType Deserialize<TType>(byte[] input) where TType : class
         {
-            return System.Text.Json.JsonSerializer.Deserialize<TType>(input);
+            return JsonConvert.DeserializeObject<TType>(Encoding.UTF8.GetString(input));
         }
 
         /// <summary>

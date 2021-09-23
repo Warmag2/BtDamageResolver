@@ -5,7 +5,7 @@
     <RootNamespace>SevenZip.Compression.LZMA</RootNamespace>
     <AssemblyName>SevenZip.Compression.LZMA</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.3</Version>
+    <Version>0.0.4</Version>
     <Description>A small nuget package containing the LZMA compression and decompression files from 7-Zip libraries and accompanied with a simple in-memory compression helper class for simplified usage.</Description>
     <Copyright>Igor Pavlov</Copyright>
     <Authors>Igor Pavlov</Authors>
@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>

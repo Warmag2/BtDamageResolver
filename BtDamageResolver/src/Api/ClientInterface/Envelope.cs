@@ -28,7 +28,6 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface
         public Envelope(string dataTypeHint, object data)
         {
             Data = Pack(data);
-            DataType = data.GetType();
             CorrelationId = Guid.NewGuid();
             TimeStamp = DateTime.UtcNow;
             Type = dataTypeHint;
@@ -46,11 +45,6 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface
         /// The data in this event.
         /// </summary>
         public byte[] Data { get; set; }
-
-        /// <summary>
-        /// The type of data in this event.
-        /// </summary>
-        public Type DataType { get; set; }
 
         /// <summary>
         /// The envelope type.

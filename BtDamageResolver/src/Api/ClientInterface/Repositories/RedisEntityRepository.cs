@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Exceptions;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using StackExchange.Redis;
-using static System.Text.Json.JsonSerializer;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 {
@@ -60,7 +59,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
             try
             {
                 var connection = GetConnection();
-                await connection.StringSetAsync(GetKey(entity), JsonSerializer.Serialize(entity));
+                await connection.StringSetAsync(GetKey(entity), JsonConvert.SerializeObject(entity));
             }
             catch (DbException ex)
             {
@@ -111,7 +110,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
                 if (value != RedisValue.Null)
                 {
-                    return Deserialize<TEntity>(value);
+                    return JsonConvert.DeserializeObject<TEntity>(value);
                 }
 
                 return null;

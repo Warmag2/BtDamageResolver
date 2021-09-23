@@ -44,10 +44,10 @@
 
     protected override void OnInitialized()
     {
-        _sectionEnabledTools = _userStateController.PlayerOptions.ShowToolsOnMainScreenByDefault;
-        _sectionEnabledDamageReports = _userStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault;
-        _sectionEnabledDamageRequests = _userStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault;
-        _sectionEnabledOtherUnits = _userStateController.PlayerOptions.ShowOtherUnitsOnMainScreenByDefault;
+        _sectionEnabledTools = _userStateController.PlayerOptions?.ShowToolsOnMainScreenByDefault ?? false;
+        _sectionEnabledDamageReports = _userStateController.PlayerOptions?.ShowDamageReportsOnMainScreenByDefault ?? true;
+        _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.ShowDamageRequestGeneratorOnMainScreenByDefault ?? false;
+        _sectionEnabledOtherUnits = _userStateController.PlayerOptions?.ShowOtherUnitsOnMainScreenByDefault ?? false;
         _userStateController.OnUnitListChange += StateHasChanged;
     }
 

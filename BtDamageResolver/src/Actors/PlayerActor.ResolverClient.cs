@@ -40,9 +40,12 @@ namespace Faemiyah.BtDamageResolver.Actors
                 };
 
                 await SendDataToClient(EventNames.ConnectionResponse, connectionResponse);
+                await SendDataToClient(EventNames.PlayerOptions, _playerActorState.State.Options);
 
                 // Log the login to permanent store
                 await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Login, 0);
+
+                return true;
             }
 
             _logger.LogWarning("Player {playerId} has received a failed connection request from a client. Incorrect password.", this.GetPrimaryKeyString());

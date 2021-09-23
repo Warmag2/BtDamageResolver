@@ -173,17 +173,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task SendPlayerState(PlayerState playerState)
-        {
-            await SendRequest(RequestNames.SendPlayerState,
-                new SendPlayerStateRequest
-                {
-                    AuthenticationToken = _authenticationToken,
-                    PlayerName = _playerName,
-                    PlayerState = playerState
-                });
-        }
-
         public async Task SendGameOptions(GameOptions gameOptions)
         {
             await SendRequest(RequestNames.SendGameOptions,
@@ -203,6 +192,17 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                     AuthenticationToken = _authenticationToken,
                     PlayerName = _playerName,
                     PlayerOptions = playerOptions
+                });
+        }
+
+        public async Task SendPlayerState(PlayerState playerState)
+        {
+            await SendRequest(RequestNames.SendPlayerState,
+                new SendPlayerStateRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName,
+                    PlayerState = playerState
                 });
         }
 

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using StackExchange.Redis;
-using static System.Text.Json.JsonSerializer;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 {
@@ -18,7 +18,9 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 
         protected readonly ILogger Logger;
         private readonly string _connectionString;
+        private readonly string _listenTarget;
         private ConnectionMultiplexer _redisConnectionMultiplexer;
+        private ChannelMessageQueue _listenedMessageQueue;
 
         protected ISubscriber RedisSubscriber;
 
@@ -27,18 +29,20 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// </summary>
         /// <param name="logger">The logging interface</param>
         /// <param name="connectionString">The server connection string.</param>
-        protected RedisCommunicator(ILogger logger, string connectionString)
+        /// <param name="listenTarget">The target channel to listen to.</param>
+        protected RedisCommunicator(ILogger logger, string connectionString, string listenTarget)
         {
             Logger = logger;
             _connectionString = connectionString;
+            _listenTarget = listenTarget;
 
-            Init();
+            Start();
         }
 
         /// <summary>
         /// Initialize.
         /// </summary>
-        private void Init()
+        public void Start()
         {
             _redisConnectionMultiplexer = ConnectionMultiplexer.Connect(_connectionString);
             RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
@@ -46,9 +50,19 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         }
 
         /// <summary>
+        /// The processor method to run on the listened queue.
+        /// </summary>
+        /// <param name="envelope">The envelope to process.</param>
+        protected abstract Task RunProcessorMethod(Envelope envelope);
+
+        /// <summary>
         /// Subscribe to the necessary communication endpoints.
         /// </summary>
-        protected abstract void Subscribe();
+        private void Subscribe()
+        {
+            _listenedMessageQueue = RedisSubscriber.Subscribe(_listenTarget);
+            _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)));
+        }
 
         /// <summary>
         /// Checks connection to channel and resubscribes if the connection has been lost.
@@ -73,7 +87,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         protected async Task SendEnvelope(string target, Envelope data)
         {
             CheckChannelConnection(target);
-            await RedisSubscriber.PublishAsync(target, Serialize(data));
+            await RedisSubscriber.PublishAsync(target, JsonConvert.SerializeObject(data));
         }
 
         /// <summary>

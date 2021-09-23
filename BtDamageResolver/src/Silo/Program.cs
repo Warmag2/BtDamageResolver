@@ -3,8 +3,6 @@ using System.Globalization;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Repositories;
 using Faemiyah.BtDamageResolver.Actors.Logic;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
@@ -186,18 +184,6 @@ namespace Faemiyah.BtDamageResolver.Silo
                     services.AddSingleton<CachedEntityRepository<Unit, string>>();
                     services.AddSingleton<CachedEntityRepository<Weapon, string>>();
                 });
-                /*.AddStartupTask(
-                    async (IServiceProvider services, CancellationToken cancellation) =>
-                    {
-                        // Use the service provider to get the grain factory.
-                        var grainFactory = services.GetRequiredService<IGrainFactory>();
-
-                        // Get a reference to a grain and call a method on it.
-                        var grain = grainFactory.GetClusterTableRepository();
-
-                        var table = await grain.Get("jurpo");
-                        table.GetDamage(1, 5);
-                    });*/
 
             return siloHostBuilder.Build();
         }
@@ -213,7 +199,7 @@ namespace Faemiyah.BtDamageResolver.Silo
             throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
         }
 
-        private static SqlEntityRepository<TType> GetSqlEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
+        /*private static SqlEntityRepository<TType> GetSqlEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
         {
             var options = serviceProvider.GetService<IOptions<FaemiyahClusterOptions>>();
             if (options != null)
@@ -222,7 +208,7 @@ namespace Faemiyah.BtDamageResolver.Silo
             }
 
             throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
-        }
+        }*/
 
         private static ISiloHostBuilder AddGrainStorage(this ISiloHostBuilder siloHostBuilder, string name, FaemiyahClusterOptions clusterOptions)
         {
