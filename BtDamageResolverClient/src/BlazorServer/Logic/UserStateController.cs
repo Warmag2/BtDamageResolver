@@ -295,7 +295,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             }
         }
 
-        public TargetNumberUpdate GetTargetNumberUpdate(Guid weaponEntryId)
+        public TargetNumberUpdate GetTargetNumber(Guid weaponEntryId)
         {
             return _targetNumbers.TryGetValue(weaponEntryId, out var targetNumberUpdate) ? targetNumberUpdate : null;
         }
