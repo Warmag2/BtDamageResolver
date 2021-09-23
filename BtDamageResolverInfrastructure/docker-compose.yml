@@ -14,7 +14,8 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - orleansdb # Data source
+      - orleansdb   # Data source
+      - redis       # Communication bus
     restart: on-failure
 
   # Data Importer
@@ -41,7 +42,7 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - resolver             # No sense to start until the server is up
+      - resolver    # No sense to start until the server is up
     restart: on-failure
 
   # Postgresql for Orleans
@@ -76,8 +77,22 @@ services:
       - orleansdb # Data source
     restart: on-failure
 
+  # Redis
+  redis:
+    container_name: redis
+    image: redislabs/redismod:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - resolvernet
+    restart: on-failure
+
+
 networks:
   resolvernet:
 
 volumes:
   orleansdb-data:
+  redis-data:
