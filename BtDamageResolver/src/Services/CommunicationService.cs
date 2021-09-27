@@ -29,8 +29,7 @@ namespace Faemiyah.BtDamageResolver.Services
             ILoggerFactory loggerFactory) : base(grainId, silo, loggerFactory)
         {
             _logger = logger;
-            var communicationOptions1 = communicationOptions.Value;
-            _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), communicationOptions1.ConnectionString, grainFactory);
+            _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), communicationOptions.Value.ConnectionString, grainFactory);
         }
 
         /// <inheritdoc />
