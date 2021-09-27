@@ -1,5 +1,4 @@
 ﻿using System;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -14,24 +13,22 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
     public class ResolverCommunicator
     {
         private readonly ILogger<ResolverCommunicator> _logger;
-        private readonly ClientToServerCommunicatorContainer _clientToServerCommunicatorContainer;
         private readonly CommunicationOptions _communicationOptions;
         private HubConnection _hubConnection;
-        private IClientToServerCommunicator _clientToServerCommunicator;
 
         private string _playerName;
         private Guid _authenticationToken;
+        private ClientToServerCommunicator _clientToServerCommunicator;
 
-        public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, ClientToServerCommunicatorContainer clientToServerCommunicatorContainer)
+        public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions)
         {
             _logger = logger;
-            _clientToServerCommunicatorContainer = clientToServerCommunicatorContainer;
             _communicationOptions = communicationOptions.Value;
         }
 
         private void Reset()
         {
-            _clientToServerCommunicatorContainer.Subscribe(_playerName, _hubConnection);
+            _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _communicationOptions.ConnectionString, _playerName, _hubConnection);
         }
 
         public void SetAuthenticationToken(Guid authenticationToken)
@@ -55,7 +52,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
             }
             catch (Exception ex)
             {
-                SendErrorMessage(ex.Message);
+                SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
             }
         }
 
@@ -67,6 +64,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                     AuthenticationToken = _authenticationToken,
                     PlayerName = _playerName
                 });
+            _clientToServerCommunicator = null;
         }
 
         public void ForceReady()
@@ -220,7 +218,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
             }
             catch (Exception ex)
             {
-                SendErrorMessage(ex.Message);
+                SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
             }
         }
 

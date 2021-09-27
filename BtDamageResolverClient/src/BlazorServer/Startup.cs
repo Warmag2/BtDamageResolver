@@ -75,7 +75,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             services.AddSingleton<CachedEntityRepository<PaperDoll, string>>();
             services.AddSingleton<CachedEntityRepository<Unit, string>>();
             services.AddSingleton<CachedEntityRepository<Weapon, string>>();
-            services.AddSingleton<ClientToServerCommunicatorContainer>();
             services.AddSingleton<CommonData>();
             services.AddSingleton<VisualStyleController>();
             services.AddScoped<ClientHub>();

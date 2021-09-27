@@ -177,12 +177,12 @@ namespace Faemiyah.BtDamageResolver.Silo
                     services.AddSingleton<IEntityRepository<PaperDoll, string>>(GetRedisEntityRepository<PaperDoll>);
                     services.AddSingleton<IEntityRepository<Unit, string>>(GetRedisEntityRepository<Unit>);
                     services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
-                    services.AddSingleton<CachedEntityRepository<ClusterTable, string>, CachedEntityRepository<ClusterTable, string>>();
-                    services.AddSingleton<CachedEntityRepository<CriticalDamageTable, string>, CachedEntityRepository<CriticalDamageTable, string>>();
-                    services.AddSingleton<CachedEntityRepository<GameEntry, string>, CachedEntityRepository<GameEntry, string>>();
-                    services.AddSingleton<CachedEntityRepository<PaperDoll, string>, CachedEntityRepository<PaperDoll, string>>();
-                    services.AddSingleton<CachedEntityRepository<Unit, string>, CachedEntityRepository<Unit, string>>();
-                    services.AddSingleton<CachedEntityRepository<Weapon, string>, CachedEntityRepository<Weapon, string>>();
+                    services.AddSingleton<CachedEntityRepository<ClusterTable, string>>();
+                    services.AddSingleton<CachedEntityRepository<CriticalDamageTable, string>>();
+                    services.AddSingleton<CachedEntityRepository<GameEntry, string>>();
+                    services.AddSingleton<CachedEntityRepository<PaperDoll, string>>();
+                    services.AddSingleton<CachedEntityRepository<Unit, string>>();
+                    services.AddSingleton<CachedEntityRepository<Weapon, string>>();
                 });
 
             return siloHostBuilder.Build();

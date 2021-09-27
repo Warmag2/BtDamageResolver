@@ -26,6 +26,16 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
             _communicators = new ConcurrentDictionary<string, ClientToServerCommunicator>();
         }
 
+        public ClientToServerCommunicator Get(string playerId)
+        {
+            if (_communicators.TryGetValue(playerId, out var communicator))
+            {
+                return communicator;
+            }
+
+            return null;
+        }
+
         public void Subscribe(string playerId, HubConnection hubConnection)
         {
             var newCommunicator = new ClientToServerCommunicator(_logger, _connectionString, playerId, hubConnection);
