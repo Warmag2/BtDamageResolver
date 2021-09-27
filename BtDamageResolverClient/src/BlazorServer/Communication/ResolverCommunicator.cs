@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
@@ -15,6 +14,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
     public class ResolverCommunicator
     {
         private readonly ILogger<ResolverCommunicator> _logger;
+        private readonly ClientToServerCommunicatorContainer _clientToServerCommunicatorContainer;
         private readonly CommunicationOptions _communicationOptions;
         private HubConnection _hubConnection;
         private IClientToServerCommunicator _clientToServerCommunicator;
@@ -22,15 +22,16 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
         private string _playerName;
         private Guid _authenticationToken;
 
-        public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions)
+        public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, ClientToServerCommunicatorContainer clientToServerCommunicatorContainer)
         {
             _logger = logger;
+            _clientToServerCommunicatorContainer = clientToServerCommunicatorContainer;
             _communicationOptions = communicationOptions.Value;
         }
 
         private void Reset()
         {
-            _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _communicationOptions.ConnectionString, _playerName, _hubConnection);
+            _clientToServerCommunicatorContainer.Subscribe(_playerName, _hubConnection);
         }
 
         public void SetAuthenticationToken(Guid authenticationToken)
@@ -43,24 +44,24 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
             _hubConnection = hubConnection;
         }
 
-        public async Task Connect(Credentials credentials)
+        public void Connect(Credentials credentials)
         {
             _playerName = credentials.Name;
             Reset();
 
             try
             {
-                await _clientToServerCommunicator.Send(RequestNames.Connect, new ConnectRequest { PlayerName = credentials.Name, Credentials = credentials });
+                _clientToServerCommunicator.Send(RequestNames.Connect, new ConnectRequest { PlayerName = credentials.Name, Credentials = credentials });
             }
             catch (Exception ex)
             {
-                await SendErrorMessage(ex.Message);
+                SendErrorMessage(ex.Message);
             }
         }
 
-        public async Task Disconnect()
+        public void Disconnect()
         {
-            await SendRequest(RequestNames.Disconnect,
+            SendRequest(RequestNames.Disconnect,
                 new DisconnectRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -68,9 +69,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task ForceReady()
+        public void ForceReady()
         {
-            await SendRequest(RequestNames.ForceReady,
+            SendRequest(RequestNames.ForceReady,
                 new ForceReadyRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -78,9 +79,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task GetDamageReports()
+        public void GetDamageReports()
         {
-            await SendRequest(RequestNames.GetDamageReports,
+            SendRequest(RequestNames.GetDamageReports,
                 new GetDamageReportsRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -88,9 +89,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task GetGameOptions()
+        public void GetGameOptions()
         {
-            await SendRequest(RequestNames.GetGameOptions,
+            SendRequest(RequestNames.GetGameOptions,
                 new GetGameOptionsRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -98,9 +99,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task GetGameState()
+        public void GetGameState()
         {
-            await SendRequest(RequestNames.GetGameState,
+            SendRequest(RequestNames.GetGameState,
                 new GetGameStateRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -108,9 +109,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task GetPlayerOptions()
+        public void GetPlayerOptions()
         {
-            await SendRequest(RequestNames.GetPlayerOptions,
+            SendRequest(RequestNames.GetPlayerOptions,
                 new GetPlayerOptionsRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -118,9 +119,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task JoinGame(Credentials credentials)
+        public void JoinGame(Credentials credentials)
         {
-            await SendRequest(RequestNames.JoinGame,
+            SendRequest(RequestNames.JoinGame,
                 new JoinGameRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -129,9 +130,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task KickPlayer(string playerId)
+        public void KickPlayer(string playerId)
         {
-            await SendRequest(RequestNames.KickPlayer,
+            SendRequest(RequestNames.KickPlayer,
                 new KickPlayerRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -140,9 +141,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task LeaveGame()
+        public void LeaveGame()
         {
-            await SendRequest(RequestNames.LeaveGame,
+            SendRequest(RequestNames.LeaveGame,
                 new LeaveGameRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -150,9 +151,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task MoveUnit(Guid unitId, string playerId)
+        public void MoveUnit(Guid unitId, string playerId)
         {
-            await SendRequest(RequestNames.MoveUnit,
+            SendRequest(RequestNames.MoveUnit,
                 new MoveUnitRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -162,9 +163,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task SendDamageInstance(DamageInstance damageInstance)
+        public void SendDamageInstance(DamageInstance damageInstance)
         {
-            await SendRequest(RequestNames.SendDamageInstanceRequest,
+            SendRequest(RequestNames.SendDamageInstanceRequest,
                 new SendDamageInstanceRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -173,9 +174,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task SendGameOptions(GameOptions gameOptions)
+        public void SendGameOptions(GameOptions gameOptions)
         {
-            await SendRequest(RequestNames.SendGameOptions,
+            SendRequest(RequestNames.SendGameOptions,
                 new SendGameOptionsRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -184,9 +185,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task SendPlayerOptions(PlayerOptions playerOptions)
+        public void SendPlayerOptions(PlayerOptions playerOptions)
         {
-            await SendRequest(RequestNames.SendPlayerOptions,
+            SendRequest(RequestNames.SendPlayerOptions,
                 new SendPlayerOptionsRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -195,9 +196,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        public async Task SendPlayerState(PlayerState playerState)
+        public void SendPlayerState(PlayerState playerState)
         {
-            await SendRequest(RequestNames.SendPlayerState,
+            SendRequest(RequestNames.SendPlayerState,
                 new SendPlayerStateRequest
                 {
                     AuthenticationToken = _authenticationToken,
@@ -206,37 +207,37 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
                 });
         }
 
-        private async Task SendRequest(string requestType, RequestBase requestBase)
+        private void SendRequest(string requestType, RequestBase requestBase)
         {
-            if (!await CheckAuthentication(requestType))
+            if (!CheckAuthentication(requestType))
             {
                 return;
             }
 
             try
             {
-                await _clientToServerCommunicator.Send(requestType, requestBase);
+                _clientToServerCommunicator.Send(requestType, requestBase);
             }
             catch (Exception ex)
             {
-                await SendErrorMessage(ex.Message);
+                SendErrorMessage(ex.Message);
             }
         }
 
-        private async Task<bool> CheckAuthentication(string requestType)
+        private bool CheckAuthentication(string requestType)
         {
             if (_authenticationToken == Guid.Empty)
             {
-                await SendErrorMessage($"Tried to send a request of type {requestType}, but no server authentication is available");
+                SendErrorMessage($"Tried to send a request of type {requestType}, but no server authentication is available");
                 return false;
             }
             
             return true;
         }
 
-        private async Task SendErrorMessage(string errorMessage)
+        private void SendErrorMessage(string errorMessage)
         {
-            await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage);
+            _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage).Ignore();
         }
     }
 }

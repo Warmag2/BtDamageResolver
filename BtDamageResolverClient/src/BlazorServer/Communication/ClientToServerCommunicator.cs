@@ -20,84 +20,84 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
             _hubConnection = hubConnection;
         }
 
-        public override async Task<bool> HandleConnectionResponse(byte[] connectionResponse, Guid correlationId)
+        public override Task<bool> HandleConnectionResponse(byte[] connectionResponse, Guid correlationId)
         {
-            await _hubConnection.SendAsync(
+            _hubConnection.SendAsync(
                 "DebugMessage",
                 _hubConnection.ConnectionId,
-                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<ConnectionResponse>(connectionResponse)));
+                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<ConnectionResponse>(connectionResponse))).Ignore();
 
-            await _hubConnection.SendAsync(EventNames.ConnectionResponse, _hubConnection.ConnectionId, connectionResponse);
+            _hubConnection.SendAsync(EventNames.ConnectionResponse, _hubConnection.ConnectionId, connectionResponse).Ignore();
 
-            return true;
+            return Task.FromResult(true);
         }
 
-        public override async Task<bool> HandleDamageReports(byte[] damageReports, Guid correlationId)
+        public override Task<bool> HandleDamageReports(byte[] damageReports, Guid correlationId)
         {
-            await _hubConnection.SendAsync(
+            _hubConnection.SendAsync(
                 "DebugMessage",
                 _hubConnection.ConnectionId,
-                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<List<DamageReport>>(damageReports)));
+                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<List<DamageReport>>(damageReports))).Ignore();
 
-            await _hubConnection.SendAsync(EventNames.DamageReports, _hubConnection.ConnectionId, damageReports);
-            
-            return true;
+            _hubConnection.SendAsync(EventNames.DamageReports, _hubConnection.ConnectionId, damageReports).Ignore();
+
+            return Task.FromResult(true);
         }
 
-        public override async Task<bool> HandleErrorMessage(byte[] errorMessage, Guid correlationId)
+        public override Task<bool> HandleErrorMessage(byte[] errorMessage, Guid correlationId)
         {
-            await _hubConnection.SendAsync(EventNames.ErrorMessage, _hubConnection.ConnectionId, errorMessage);
+            _hubConnection.SendAsync(EventNames.ErrorMessage, _hubConnection.ConnectionId, errorMessage).Ignore();
 
-            return true;
+            return Task.FromResult(true);
         }
 
-        public override async Task<bool> HandleGameOptions(byte[] gameOptions, Guid correlationId)
+        public override Task<bool> HandleGameOptions(byte[] gameOptions, Guid correlationId)
         {
-            await _hubConnection.SendAsync(
+            _hubConnection.SendAsync(
                 "DebugMessage",
                 _hubConnection.ConnectionId,
-                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<GameOptions>(gameOptions)));
+                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<GameOptions>(gameOptions))).Ignore();
 
-            await _hubConnection.SendAsync(EventNames.GameOptions, _hubConnection.ConnectionId, gameOptions);
-            
-            return true;
+            _hubConnection.SendAsync(EventNames.GameOptions, _hubConnection.ConnectionId, gameOptions).Ignore();
+
+            return Task.FromResult(true);
         }
 
-        public override async Task<bool> HandleGameState(byte[] gameState, Guid correlationId)
+        public override Task<bool> HandleGameState(byte[] gameState, Guid correlationId)
         {
-            await _hubConnection.SendAsync(
+            _hubConnection.SendAsync(
                 "DebugMessage",
                 _hubConnection.ConnectionId,
-                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<GameState>(gameState)));
+                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<GameState>(gameState))).Ignore();
 
-            await _hubConnection.SendAsync(EventNames.GameState, _hubConnection.ConnectionId, gameState);
-            
-            return true;
+            _hubConnection.SendAsync(EventNames.GameState, _hubConnection.ConnectionId, gameState).Ignore();
+
+            return Task.FromResult(true);
         }
 
-        public override async Task<bool> HandlePlayerOptions(byte[] playerOptions, Guid correlationId)
+        public override Task<bool> HandlePlayerOptions(byte[] playerOptions, Guid correlationId)
         {
-            await _hubConnection.SendAsync(
+            _hubConnection.SendAsync(
                 "DebugMessage",
                 _hubConnection.ConnectionId,
-                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<PlayerOptions>(playerOptions)));
+                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<PlayerOptions>(playerOptions))).Ignore();
 
-            await _hubConnection.SendAsync(EventNames.PlayerOptions, _hubConnection.ConnectionId, playerOptions);
+            _hubConnection.SendAsync(EventNames.PlayerOptions, _hubConnection.ConnectionId, playerOptions).Ignore();
 
-            return true;
+            return Task.FromResult(true);
 
         }
 
-        public override async Task<bool> HandleTargetNumberUpdates(byte[] targetNumbers, Guid correlationId)
+        public override Task<bool> HandleTargetNumberUpdates(byte[] targetNumbers, Guid correlationId)
         {
-            await _hubConnection.SendAsync(
+            _hubConnection.SendAsync(
                 "DebugMessage",
                 _hubConnection.ConnectionId,
-                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumbers)));
+                JsonConvert.SerializeObject(SevenZip.Compression.LZMA.DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumbers))).Ignore();
 
-            await _hubConnection.SendAsync(EventNames.TargetNumbers, _hubConnection.ConnectionId, targetNumbers);
-            
-            return true;
+            _hubConnection.SendAsync(EventNames.TargetNumbers, _hubConnection.ConnectionId, targetNumbers).Ignore();
+
+            return Task.FromResult(true);
         }
     }
 }

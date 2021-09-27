@@ -42,10 +42,12 @@ namespace Faemiyah.BtDamageResolver.Services
         }
 
         /// <inheritdoc />
-        public async Task Send(string playerId, string envelopeType, object data)
+        public Task Send(string playerId, string envelopeType, object data)
         {
             _logger.LogDebug("Sending data of type {type} to player {player}", envelopeType, playerId);
-            await _serverToClientCommunicator.Send(playerId, envelopeType, data);
+            _serverToClientCommunicator.Send(playerId, envelopeType, data);
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -30,18 +30,18 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
         private async Task FillCache()
         {
-            foreach (var item in await _repository.GetAll())
+            foreach (var item in await _repository.GetAllAsync())
             {
                 _cache.Add(item.GetId(), item);
             }
         }
 
         /// <inheritdoc />
-        public async Task Add(TEntity entity)
+        public async Task AddAsync(TEntity entity)
         {
             try
             {
-                await _repository.Add(entity);
+                await _repository.AddAsync(entity);
                 _cache.Add(entity.GetId(), entity);
             }
             catch (Exception ex)
@@ -52,11 +52,11 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task AddOrUpdate(TEntity entity)
+        public async Task AddOrUpdateAsync(TEntity entity)
         {
             try
             {
-                await _repository.AddOrUpdate(entity);
+                await _repository.AddOrUpdateAsync(entity);
                 if (_cache.ContainsKey(entity.GetId()))
                 {
                     _cache[entity.GetId()] = entity;
@@ -74,13 +74,13 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task Delete(TKey key)
+        public async Task DeleteAsync(TKey key)
         {
             try
             {
                 if (_cache.ContainsKey(key))
                 {
-                    await _repository.Delete(key);
+                    await _repository.DeleteAsync(key);
                     _cache.Remove(key);
                 }
             }
@@ -92,23 +92,23 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public Task<TEntity> Get(TKey key)
+        public Task<TEntity> GetAsync(TKey key)
         {
             return _cache.TryGetValue(key, out var entity) ? Task.FromResult(entity) : Task.FromResult((TEntity) null);
         }
 
         /// <inheritdoc />
-        public Task<List<TEntity>> GetAll()
+        public Task<List<TEntity>> GetAllAsync()
         {
             return Task.FromResult(_cache.Values.ToList());
         }
 
         /// <inheritdoc />
-        public async Task Update(TEntity entity)
+        public async Task UpdateAsync(TEntity entity)
         {
             try
             {
-                await _repository.Update(entity);
+                await _repository.UpdateAsync(entity);
                 _cache[entity.GetId()] = entity;
             }
             catch (Exception ex)

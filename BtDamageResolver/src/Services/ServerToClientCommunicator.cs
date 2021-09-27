@@ -35,14 +35,14 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!connectResult)
             {
-                await SendErrorMessage(connectRequest.PlayerName, $"Errors: {string.Join(", ", connectValidationResult.Where(v => v.ErrorMessage != null).Select(v => v.ErrorMessage))}");
+                SendErrorMessage(connectRequest.PlayerName, $"Errors: {string.Join(", ", connectValidationResult.Where(v => v.ErrorMessage != null).Select(v => v.ErrorMessage))}");
 
                 return false;
             }
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(connectRequest.Credentials.Name).Connect(connectRequest.Credentials.Password))
             {
-                await LogWarning(connectRequest);
+                LogWarning(connectRequest);
             }
           
             return true;
@@ -55,7 +55,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(disconnectRequest.PlayerName).Disconnect(disconnectRequest.AuthenticationToken))
             {
-                await LogWarning(disconnectRequest);
+                LogWarning(disconnectRequest);
             }
             
             return true;
@@ -68,7 +68,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(getDamageReportsRequest.PlayerName).GetDamageReports(getDamageReportsRequest.AuthenticationToken))
             {
-                await LogWarning(getDamageReportsRequest);
+                LogWarning(getDamageReportsRequest);
             }
 
             return true;
@@ -81,7 +81,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(getGameOptionsRequest.PlayerName).GetGameOptions(getGameOptionsRequest.AuthenticationToken))
             {
-                await LogWarning(getGameOptionsRequest);
+                LogWarning(getGameOptionsRequest);
             }
 
             return true;
@@ -94,7 +94,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(getGameStateRequest.PlayerName).GetGameState(getGameStateRequest.AuthenticationToken))
             {
-                await LogWarning(getGameStateRequest);
+                LogWarning(getGameStateRequest);
             }
 
             return true;
@@ -107,7 +107,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(getPlayerOptionsRequest.PlayerName).GetPlayerOptions(getPlayerOptionsRequest.AuthenticationToken))
             {
-                await LogWarning(getPlayerOptionsRequest);
+                LogWarning(getPlayerOptionsRequest);
             }
 
             return true;
@@ -120,7 +120,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(forceReadyRequest.PlayerName).ForceReady(forceReadyRequest.AuthenticationToken))
             {
-                await LogWarning(forceReadyRequest);
+                LogWarning(forceReadyRequest);
             }
             
             return true;
@@ -134,14 +134,14 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!joinGameRequestResult)
             {
-                await SendErrorMessage(joinGameRequest.PlayerName, $"Errors: {string.Join(", ", joinGameRequestValidationResult.Where(v => v.ErrorMessage != null).Select(v => v.ErrorMessage))}");
+                SendErrorMessage(joinGameRequest.PlayerName, $"Errors: {string.Join(", ", joinGameRequestValidationResult.Where(v => v.ErrorMessage != null).Select(v => v.ErrorMessage))}");
 
                 return false;
             }
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(joinGameRequest.PlayerName).JoinGame(joinGameRequest.AuthenticationToken, joinGameRequest.Credentials.Name, joinGameRequest.Credentials.Password))
             {
-                await LogWarning(joinGameRequest);
+                LogWarning(joinGameRequest);
             }
 
             return true;
@@ -154,7 +154,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(kickPlayerRequest.PlayerName).KickPlayer(kickPlayerRequest.AuthenticationToken, kickPlayerRequest.PlayerToKickName))
             {
-                await LogWarning(kickPlayerRequest);
+                LogWarning(kickPlayerRequest);
             }
 
             return true;
@@ -167,7 +167,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(leaveGameRequest.PlayerName).LeaveGame(leaveGameRequest.AuthenticationToken))
             {
-                await LogWarning(leaveGameRequest);
+                LogWarning(leaveGameRequest);
             }
 
             return true;
@@ -180,7 +180,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(moveUnitRequest.PlayerName).MoveUnit(moveUnitRequest.AuthenticationToken, moveUnitRequest.UnitId, moveUnitRequest.ReceivingPlayer))
             {
-                await LogWarning(moveUnitRequest);
+                LogWarning(moveUnitRequest);
             }
 
             return true;
@@ -193,7 +193,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(sendDamageInstanceRequest.PlayerName).SendDamageInstance(sendDamageInstanceRequest.AuthenticationToken, sendDamageInstanceRequest.DamageInstance))
             {
-                await LogWarning(sendDamageInstanceRequest);
+                LogWarning(sendDamageInstanceRequest);
             }
 
             return true;
@@ -206,7 +206,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(sendGameOptionsRequest.PlayerName).SendGameOptions(sendGameOptionsRequest.AuthenticationToken, sendGameOptionsRequest.GameOptions))
             {
-                await LogWarning(sendGameOptionsRequest);
+                LogWarning(sendGameOptionsRequest);
             }
 
             return true;
@@ -219,7 +219,7 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(sendPlayerOptionsRequest.PlayerName).SendPlayerOptions(sendPlayerOptionsRequest.AuthenticationToken, sendPlayerOptionsRequest.PlayerOptions))
             {
-                await LogWarning(sendPlayerOptionsRequest);
+                LogWarning(sendPlayerOptionsRequest);
             }
 
             return true;
@@ -232,16 +232,16 @@ namespace Faemiyah.BtDamageResolver.Services
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(sendPlayerStateRequest.PlayerName).SendPlayerState(sendPlayerStateRequest.AuthenticationToken, sendPlayerStateRequest.PlayerState))
             {
-                await LogWarning(sendPlayerStateRequest);
+                LogWarning(sendPlayerStateRequest);
             }
 
             return true;
         }
 
-        private async Task LogWarning(RequestBase request)
+        private void LogWarning(RequestBase request)
         {
             _logger.LogWarning("Failed to handle a {type} for player {playerId}", request.GetType(), request.PlayerName);
-            await Send(request.PlayerName, EventNames.ErrorMessage, $"Failed to handle a {request.GetType()} for player {request.PlayerName}.");
+            Send(request.PlayerName, EventNames.ErrorMessage, $"Failed to handle a {request.GetType()} for player {request.PlayerName}.");
         }
 
         private static (bool, List<ValidationResult>) ValidateObject(object validatedObject)

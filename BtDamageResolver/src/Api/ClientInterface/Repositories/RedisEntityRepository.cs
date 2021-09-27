@@ -54,12 +54,12 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task Add(TEntity entity)
+        public async Task AddAsync(TEntity entity)
         {
             try
             {
                 var connection = GetConnection();
-                await connection.StringSetAsync(GetKey(entity), JsonConvert.SerializeObject(entity));
+                await connection.StringSetAsync(GetKey(entity), JsonConvert.SerializeObject(entity)).ConfigureAwait(false);
             }
             catch (DbException ex)
             {
@@ -74,19 +74,19 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task AddOrUpdate(TEntity entity)
+        public async Task AddOrUpdateAsync(TEntity entity)
         {
             // We do not have to delete the old one while using Redis.
-            await Add(entity);
+            await AddAsync(entity).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
-        public async Task Delete(string key)
+        public async Task DeleteAsync(string key)
         {
             try
             {
                 var connection = GetConnection();
-                await connection.KeyDeleteAsync(GetKey(key));
+                await connection.KeyDeleteAsync(GetKey(key)).ConfigureAwait(false);
             }
             catch (DbException ex)
             {
@@ -101,12 +101,12 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<TEntity> Get(string key)
+        public async Task<TEntity> GetAsync(string key)
         {
             try
             {
                 var connection = GetConnection();
-                var value = await connection.StringGetAsync(GetKey(key));
+                var value = await connection.StringGetAsync(GetKey(key)).ConfigureAwait(false);
 
                 if (value != RedisValue.Null)
                 {
@@ -128,7 +128,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<List<TEntity>> GetAll()
+        public async Task<List<TEntity>> GetAllAsync()
         {
             try
             {
@@ -137,7 +137,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
                 foreach (var key in server.Keys(pattern: $"{_keyPrefix}*"))
                 {
-                    entities.Add(await Get(key));
+                    entities.Add(await GetAsync(key).ConfigureAwait(false));
                 }
 
                 return entities;
@@ -155,14 +155,14 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task Update(TEntity entity)
+        public async Task UpdateAsync(TEntity entity)
         {
             try
             {
                 var connection = GetConnection();
                 if (connection.KeyExists(GetKey(entity)))
                 {
-                    await Add(entity);
+                    await AddAsync(entity).ConfigureAwait(false);
                 }
                 else
                 {

@@ -104,29 +104,29 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task Connect(Credentials credentials)
+    private void Connect(Credentials credentials)
     {
-        await _resolverCommunicator.Connect(credentials);
+        _resolverCommunicator.Connect(credentials);
     }
 
-    private async Task Disconnect()
+    private void Disconnect()
     {
-        await _resolverCommunicator.Disconnect();
+        _resolverCommunicator.Disconnect();
     }
 
-    private async Task JoinGame(Credentials credentials)
+    private void JoinGame(Credentials credentials)
     {
         _userStateController.DamageReportCollection.Clear();
-        await _resolverCommunicator.JoinGame(credentials);
+        _resolverCommunicator.JoinGame(credentials);
         //await _resolverCommunicator.GetGameOptions();
 
         //_modalName = credentials.Name;
         //ModalShow();
     }
 
-    public async Task LeaveGame()
+    public void LeaveGame()
     {
-        await _resolverCommunicator.LeaveGame();
+        _resolverCommunicator.LeaveGame();
     }
 
     private async Task RefreshGameList()
@@ -136,9 +136,9 @@
         _otherGames = _games.Where(g => g.TimeStamp < DateTime.UtcNow - TimeSpan.FromHours(1)).ToList();
     }
 
-    private async Task OnGameJoinButtonPressed(string gameName)
+    private void OnGameJoinButtonPressed(string gameName)
     {
-        await JoinGame(new Credentials { Name = gameName, Password = string.Empty });
+        JoinGame(new Credentials { Name = gameName, Password = string.Empty });
     }
 
     public void ModalShow()
@@ -148,10 +148,10 @@
 
     private void ModalCancel() => _showModal = false;
 
-    private async Task ModalCompleted(string password)
+    private void ModalCompleted(string password)
     {
         _showModal = false;
-        await JoinGame(new Credentials { Name = _modalName, Password = password });
+        JoinGame(new Credentials { Name = _modalName, Password = password });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -49,9 +49,9 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         }
 
         /// <inheritdoc />
-        public async Task Send<TType>(string envelopeType, TType data)
+        public void Send<TType>(string envelopeType, TType data)
         {
-            await SendEnvelope(ServerStreamAddress, new Envelope(envelopeType, data));
+            SendEnvelope(ServerStreamAddress, new Envelope(envelopeType, data));
         }
 
         /// <inheritdoc />

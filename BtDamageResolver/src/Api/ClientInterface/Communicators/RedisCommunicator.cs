@@ -18,7 +18,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 
         protected readonly ILogger Logger;
         private readonly string _connectionString;
-        private readonly string _listenTarget;
+        protected readonly string ListenTarget;
         private ConnectionMultiplexer _redisConnectionMultiplexer;
         private ChannelMessageQueue _listenedMessageQueue;
 
@@ -34,7 +34,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         {
             Logger = logger;
             _connectionString = connectionString;
-            _listenTarget = listenTarget;
+            ListenTarget = listenTarget;
 
             Start();
         }
@@ -45,7 +45,6 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         public void Start()
         {
             _redisConnectionMultiplexer = ConnectionMultiplexer.Connect(_connectionString);
-            RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
             Subscribe();
         }
 
@@ -60,8 +59,19 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// </summary>
         private void Subscribe()
         {
-            _listenedMessageQueue = RedisSubscriber.Subscribe(_listenTarget);
-            _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)));
+            RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
+            _listenedMessageQueue = RedisSubscriber.Subscribe(ListenTarget);
+            _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
+        }
+
+        /// <summary>
+        /// Unsubscribe from the necessary communication endpoints.
+        /// </summary>
+        private void Unsubscribe()
+        {
+            RedisSubscriber.Unsubscribe(ListenTarget);
+            _listenedMessageQueue = null;
+            RedisSubscriber = null;
         }
 
         /// <summary>
@@ -73,8 +83,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
             if (!RedisSubscriber.IsConnected(channel))
             {
                 Logger.LogWarning("Not connected to server. Reconnecting.");
-                RedisSubscriber.UnsubscribeAll();
-                RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
+                Unsubscribe();
                 Subscribe();
             }
         }
@@ -84,10 +93,10 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// </summary>
         /// <param name="target">The target where to send data.</param>
         /// <param name="data">The data to send.</param>
-        protected async Task SendEnvelope(string target, Envelope data)
+        protected void SendEnvelope(string target, Envelope data)
         {
             CheckChannelConnection(target);
-            await RedisSubscriber.PublishAsync(target, JsonConvert.SerializeObject(data));
+            RedisSubscriber.Publish(target, JsonConvert.SerializeObject(data), CommandFlags.FireAndForget);
         }
 
         /// <summary>
@@ -95,9 +104,9 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// </summary>
         /// <param name="target">The target where to send data.</param>
         /// <param name="errorMessage">The error message.</param>
-        protected async Task SendErrorMessage(string target, string errorMessage)
+        protected void SendErrorMessage(string target, string errorMessage)
         {
-            await SendEnvelope(target, new Envelope(EventNames.ErrorMessage, errorMessage));
+            SendEnvelope(target, new Envelope(EventNames.ErrorMessage, errorMessage));
         }
     }
 }

@@ -57,11 +57,11 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             {
                 { "Front", Direction.Front }, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top }
             };
-            MapClusterTable = clusterTableRepository.GetAll().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
-            MapCriticalDamageTable = criticalDamageTableRepository.GetAll().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
-            MapPaperDoll = paperDollRepository.GetAll().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
+            MapClusterTable = clusterTableRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
+            MapCriticalDamageTable = criticalDamageTableRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
+            MapPaperDoll = paperDollRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
             MapQuirk = new SortedDictionary<string, Quirk>(Enum.GetValues<Quirk>().ToDictionary(q => q.ToString()));
-            MapWeapon = weaponRepository.GetAll().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
+            MapWeapon = weaponRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
             _mapWeaponNamesNormal = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix) && !w.StartsWith(MeleeWeaponPrefix)).ToDictionary(w => w));
             _mapWeaponNamesBattleArmor = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(BattleArmorWeaponPrefix)).ToDictionary(w => w.Substring(BattleArmorWeaponPrefix.Length), w => w));
             _mapWeaponNamesInfantry = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w.Substring(InfantryWeaponPrefix.Length), w => w));
@@ -217,29 +217,29 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public async Task SaveUnit(UnitEntry unit)
         {
-            await _unitRepository.AddOrUpdate(unit.ToUnit());
+            await _unitRepository.AddOrUpdateAsync(unit.ToUnit());
         }
 
         public SortedDictionary<string, string> GetSavedUnits()
         {
             var sortedUnitList = new SortedDictionary<string, string>();
-            _unitRepository.GetAll().Result.ForEach(u => sortedUnitList.Add(u.Name, u.Name));
+            _unitRepository.GetAllAsync().Result.ForEach(u => sortedUnitList.Add(u.Name, u.Name));
             return sortedUnitList;
         }
 
         public async Task<List<GameEntry>> GetGameEntries()
         {
-            return await _gameEntryRepository.GetAll();
+            return await _gameEntryRepository.GetAllAsync();
         }
 
         public async Task<Unit> GetUnitEntry(string unitName)
         {
-            return await _unitRepository.Get(unitName);
+            return await _unitRepository.GetAsync(unitName);
         }
 
         public async Task DeleteUnit(string unitName)
         {
-            await _unitRepository.Delete(unitName);
+            await _unitRepository.DeleteAsync(unitName);
         }
 
         public List<PickBracket> FormPickBracketsDistance(UnitEntry unit)

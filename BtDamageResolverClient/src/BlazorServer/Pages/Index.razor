@@ -46,7 +46,9 @@
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Data || !_userStateController.ConnectedToGame)">
+    <!--
     <FormData></FormData>
+    -->
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Dashboard || !_userStateController.ConnectedToGame)">
@@ -59,150 +61,150 @@
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
 <ComponentGameState DisplayOwnUnits="true"></ComponentGameState>}
+
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.DamageReports || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
 <FormDamageReports OnlyNewest="false"></FormDamageReports>}
+
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Options || !_userStateController.ConnectedToGame)">
     @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
     {
 <FormOptions @key=@_userStateController.GameOptions.TimeStamp></FormOptions>}
+
 </div>
 
 @code
-{
-    private FormServer _formServer;
-    private ResolverTab _selectedTab = ResolverTab.Dashboard;
-    private string _debugMessage;
-    private string _errorMessage;
-    private HubConnection _hubConnection;
+{ private FormServer _formServer;
+            private ResolverTab _selectedTab = ResolverTab.Dashboard;
+            private string _debugMessage;
+            private string _errorMessage;
+            private HubConnection _hubConnection;
 
-    protected override async Task OnInitializedAsync()
-    {
-        _hubConnection = new HubConnectionBuilder()
-            .WithAutomaticReconnect()
-            .WithUrl(_navigationManager.ToAbsoluteUri("/ClientHub"))
-            .Build();
-
-        _hubConnection.On<string>("DebugMessage", message =>
-        {
-            _debugMessage = message;
-            StateHasChanged();
-        });
-
-        _hubConnection.On<byte[]>(EventNames.ConnectionResponse, (connectionResponseData) =>
-        {
-            var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
-
-            if (connectionResponse.IsConnected)
+            protected override async Task OnInitializedAsync()
             {
-                _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
-                _userStateController.ConnectedToServer = true;
-                _userStateController.PlayerName = connectionResponse.PlayerId;
-    //_localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
-    //_resolverCommunicator.GetPlayerOptions().Wait();
+                _hubConnection = new HubConnectionBuilder()
+                    .WithAutomaticReconnect()
+                    .WithUrl(_navigationManager.ToAbsoluteUri("/ClientHub"))
+                    .Build();
+
+                _hubConnection.On<string>("DebugMessage", message =>
+                {
+                    _debugMessage = message;
+                    StateHasChanged();
+                });
+
+                _hubConnection.On<byte[]>(EventNames.ConnectionResponse, (connectionResponseData) =>
+                {
+                    var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
+
+                    if (connectionResponse.IsConnected)
+                    {
+                        _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
+                        _userStateController.ConnectedToServer = true;
+                        _userStateController.PlayerName = connectionResponse.PlayerId;
+                    //_localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
+                    //_resolverCommunicator.GetPlayerOptions().Wait();
+                }
+                    else
+                    {
+                        _resolverCommunicator.SetAuthenticationToken(Guid.Empty);
+                        _userStateController.ConnectedToServer = false;
+                        _userStateController.GameOptions = null;
+                        _userStateController.GameState = null;
+                        _userStateController.PlayerName = null;
+                        _userStateController.PlayerOptions = null;
+                        _userStateController.DamageReportCollection.Clear();
+                    //_localStorage.RemoveUserCredentials().Wait();
+                }
+                });
+
+                _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
+                {
+                    _userStateController.AddDamageReports(DataHelper.Unpack<List<DamageReport>>(damageReportData));
+                    StateHasChanged();
+                });
+
+                _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
+                {
+                    _errorMessage = DataHelper.Unpack<string>(errorMessage);
+                    StateHasChanged();
+                });
+
+                _hubConnection.On<byte[]>(EventNames.GameOptions, gameOptionsData =>
+                {
+                    _userStateController.GameOptions = DataHelper.Unpack<GameOptions>(gameOptionsData);
+                    StateHasChanged();
+                });
+
+                _hubConnection.On<byte[]>(EventNames.GameState, gameStateData =>
+                {
+                    _userStateController.GameState = DataHelper.Unpack<GameState>(gameStateData);
+                    StateHasChanged();
+                });
+
+                _hubConnection.On<byte[]>(EventNames.PlayerOptions, playerOptionsData =>
+                {
+                    _userStateController.PlayerOptions = DataHelper.Unpack<PlayerOptions>(playerOptionsData);
+                    StateHasChanged();
+                });
+
+                _hubConnection.On<byte[]>(EventNames.TargetNumbers, targetNumberUpdateData =>
+                {
+                    _userStateController.RecordTargetNumberUpdates(DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
+                    StateHasChanged();
+                });
+
+                _resolverCommunicator.SetHubConnection(_hubConnection);
+                await _hubConnection.StartAsync();
+
+                _userStateController.OnDataUpdated += UpdatePlayerState;
+                _userStateController.OnGameOptionsUpdated += UpdateGameOptions;
+                _userStateController.OnPlayerOptionsUpdated += UpdatePlayerOptions;
+                _userStateController.OnDamageInstanceRequested += SendDamageInstance;
+
+                await base.OnInitializedAsync();
             }
-            else
+
+            private void SendDamageInstance()
             {
-                _resolverCommunicator.SetAuthenticationToken(Guid.Empty);
-                _userStateController.ConnectedToServer = false;
-                _userStateController.GameOptions = null;
-                _userStateController.GameState = null;
-                _userStateController.PlayerName = null;
-                _userStateController.PlayerOptions = null;
-                _userStateController.DamageReportCollection.Clear();
-    //_localStorage.RemoveUserCredentials().Wait();
+                _resolverCommunicator.SendDamageInstance(_userStateController.DamageInstance);
             }
-        });
 
-        _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
-        {
-            _userStateController.AddDamageReports(DataHelper.Unpack<List<DamageReport>>(damageReportData));
-            StateHasChanged();
-        });
+            private void UpdatePlayerState()
+            {
+                _resolverCommunicator.SendPlayerState(_userStateController.PlayerState);
+            }
 
-        _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
-        {
-            _errorMessage = DataHelper.Unpack<string>(errorMessage);
-            StateHasChanged();
-        });
+            private void UpdateGameOptions()
+            {
+                _resolverCommunicator.SendGameOptions(_userStateController.GameOptions);
+            }
 
-        _hubConnection.On<byte[]>(EventNames.GameOptions, gameOptionsData =>
-        {
-            _userStateController.GameOptions = DataHelper.Unpack<GameOptions>(gameOptionsData);
-            StateHasChanged();
-        });
+            private void UpdatePlayerOptions()
+            {
+                _resolverCommunicator.SendPlayerOptions(_userStateController.PlayerOptions);
+            }
 
-        _hubConnection.On<byte[]>(EventNames.GameState, gameStateData =>
-        {
-            _userStateController.GameState = DataHelper.Unpack<GameState>(gameStateData);
-            StateHasChanged();
-        });
+            private void SelectTab(ResolverTab resolverTab)
+            {
+                _selectedTab = resolverTab;
+            }
 
-        _hubConnection.On<byte[]>(EventNames.PlayerOptions, playerOptionsData =>
-        {
-            _userStateController.PlayerOptions = DataHelper.Unpack<PlayerOptions>(playerOptionsData);
-            StateHasChanged();
-        });
+            private void LeaveGame()
+            {
+                _formServer.LeaveGame();
+            }
 
-        _hubConnection.On<byte[]>(EventNames.TargetNumbers, targetNumberUpdateData =>
-        {
-            _userStateController.RecordTargetNumberUpdates(DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
-            StateHasChanged();
-        });
-
-        await _hubConnection.StartAsync();
-
-        _resolverCommunicator.SetHubConnection(_hubConnection);
-
-        _userStateController.OnDataUpdated += UpdatePlayerState;
-        _userStateController.OnGameOptionsUpdated += UpdateGameOptions;
-        _userStateController.OnPlayerOptionsUpdated += UpdatePlayerOptions;
-        _userStateController.OnDamageInstanceRequested += SendDamageInstance;
-
-        await base.OnInitializedAsync();
-    }
-
-    private void SendDamageInstance()
-    {
-        _resolverCommunicator.SendDamageInstance(_userStateController.DamageInstance).Wait();
-    }
-
-    private void UpdatePlayerState()
-    {
-        _resolverCommunicator.SendPlayerState(_userStateController.PlayerState).Wait();
-    }
-
-    private void UpdateGameOptions()
-    {
-        _resolverCommunicator.SendGameOptions(_userStateController.GameOptions).Wait();
-    }
-
-    private void UpdatePlayerOptions()
-    {
-        _resolverCommunicator.SendPlayerOptions(_userStateController.PlayerOptions).Wait();
-    }
-
-    private void SelectTab(ResolverTab resolverTab)
-    {
-        _selectedTab = resolverTab;
-    }
-
-    private async Task LeaveGame()
-    {
-        await _formServer.LeaveGame();
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnDataUpdated -= UpdatePlayerState;
-        _userStateController.OnGameOptionsUpdated -= UpdateGameOptions;
-        _userStateController.OnPlayerOptionsUpdated -= UpdatePlayerOptions;
-        _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
-        _hubConnection?.DisposeAsync();
-    }
-}
+            public void Dispose()
+            {
+                _userStateController.OnDataUpdated -= UpdatePlayerState;
+                _userStateController.OnGameOptionsUpdated -= UpdateGameOptions;
+                _userStateController.OnPlayerOptionsUpdated -= UpdatePlayerOptions;
+                _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
+                _hubConnection?.DisposeAsync();
+            } }

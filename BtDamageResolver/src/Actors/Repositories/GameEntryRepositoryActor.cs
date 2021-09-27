@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces.Repositories;
-using Faemiyah.BtDamageResolver.Actors.Repositories.Base;
+using Faemiyah.BtDamageResolver.Actors.Repositories.Prototypes;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;

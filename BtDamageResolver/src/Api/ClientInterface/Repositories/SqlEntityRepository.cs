@@ -71,7 +71,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task Add(TEntity entity)
+        public async Task AddAsync(TEntity entity)
         {
             try
             {
@@ -94,14 +94,14 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task AddOrUpdate(TEntity entity)
+        public async Task AddOrUpdateAsync(TEntity entity)
         {
-            await Delete(entity.GetId());
-            await Add(entity);
+            await DeleteAsync(entity.GetId());
+            await AddAsync(entity);
         }
 
         /// <inheritdoc />
-        public async Task Delete(string key)
+        public async Task DeleteAsync(string key)
         {
             try
             {
@@ -123,7 +123,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<TEntity> Get(string key)
+        public async Task<TEntity> GetAsync(string key)
         {
             try
             {
@@ -152,7 +152,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<List<TEntity>> GetAll()
+        public async Task<List<TEntity>> GetAllAsync()
         {
             try
             {
@@ -164,7 +164,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
                 while(await reader.ReadAsync())
                 {
-                    returnValue.Add(Deserialize<TEntity>(reader.GetString(0)));
+                    returnValue.AddAsync(Deserialize<TEntity>(reader.GetString(0)));
                 }
 
                 return returnValue;
@@ -182,7 +182,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task Update(TEntity entity)
+        public async Task UpdateAsync(TEntity entity)
         {
             try
             {
