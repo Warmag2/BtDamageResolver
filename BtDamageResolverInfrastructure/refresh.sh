@@ -5,6 +5,8 @@ cd ../grafana
 chmod -R o+rx dashboards/
 chmod -R o+rx datasources/
 docker build --tag resolvergrafana .
+cd ../redis
+docker build --tag resolverredis .
 cd ../../CustomNugets
 docker build --tag resolversdk .
 cd ../BtDamageResolver
