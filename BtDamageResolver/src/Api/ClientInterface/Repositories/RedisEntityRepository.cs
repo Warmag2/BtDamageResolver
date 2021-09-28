@@ -110,7 +110,8 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
                 if (value != RedisValue.Null)
                 {
-                    return JsonConvert.DeserializeObject<TEntity>(value);
+                    var entity =  JsonConvert.DeserializeObject<TEntity>(value);
+                    return entity;
                 }
 
                 return null;

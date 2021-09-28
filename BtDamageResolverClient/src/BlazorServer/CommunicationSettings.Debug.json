@@ -6,6 +6,6 @@
     "ConnectionString": "User ID=faemiyah;Password=fuRZdwzQXl98wlNH8_bE;Host=10.2.0.3;Port=65432;Database=BtDamageResolver"
   },
   "CommunicationOptions": {
-    "ConnectionString": "10.2.0.3:6379"
+    "ConnectionString": "10.2.0.3:6379,user=faemiyah,password=fuRZdwzQXl98wlNH8_bE"
   }
 }

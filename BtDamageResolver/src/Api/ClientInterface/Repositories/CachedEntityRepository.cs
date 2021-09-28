@@ -30,7 +30,8 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
         private async Task FillCache()
         {
-            foreach (var item in await _repository.GetAllAsync())
+            var items = await _repository.GetAllAsync();
+            foreach (var item in items)
             {
                 _cache.Add(item.GetId(), item);
             }
