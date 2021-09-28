@@ -59,7 +59,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories.Prototypes
         /// <inheritdoc />
         public virtual async Task<List<TEntity>> GetAll()
         {
-            return await Repository.GetAllAsync();
+             var all = await Repository.GetAllAsync();
+             return all;
         }
 
         /// <inheritdoc />

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 {
@@ -17,7 +18,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         {
         }
 
-        protected override async Task RunProcessorMethod(Envelope incomingEnvelope)
+        public override async Task RunProcessorMethod(Envelope incomingEnvelope)
         {
             switch (incomingEnvelope.Type)
             {
@@ -75,6 +76,16 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         public void Send<TType>(string clientName, string envelopeType, TType data)
         {
             SendEnvelope(clientName, new Envelope(envelopeType, data));
+        }
+
+        /// <summary>
+        /// Subscribe to the necessary communication endpoints.
+        /// </summary>
+        protected override void Subscribe()
+        {
+            RedisSubscriber = RedisConnectionMultiplexer.GetSubscriber();
+            ListenedMessageQueue = RedisSubscriber.Subscribe(ListenTarget);
+            ListenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
         }
 
         /// <inheritdoc />

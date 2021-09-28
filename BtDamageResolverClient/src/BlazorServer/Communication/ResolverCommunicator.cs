@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Timers;
+using Faemiyah.BtDamageResolver.Api.ClientInterface;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -24,6 +27,16 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
         {
             _logger = logger;
             _communicationOptions = communicationOptions.Value;
+        }
+
+        public void ProcessIncomingData(object sender, ElapsedEventArgs e)
+        {
+            var result = _clientToServerCommunicator?.FetchData();
+            
+            if (result != null)
+            {
+                _clientToServerCommunicator.RunProcessorMethod(result).Ignore();
+            }
         }
 
         private void Reset()

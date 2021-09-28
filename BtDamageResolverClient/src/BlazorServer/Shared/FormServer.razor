@@ -6,7 +6,6 @@
 @inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
 @inject CommonData _commonData
-@implements IDisposable
 
 <div class="resolver_div_login">
     @if (!_userStateController.ConnectedToServer)
@@ -99,8 +98,6 @@
     protected override async Task OnInitializedAsync()
     {
         await RefreshGameList();
-        _userStateController.OnUnitListChange += StateHasChanged;
-
         await base.OnInitializedAsync();
     }
 
@@ -167,10 +164,5 @@
         }*/
 
         await base.OnAfterRenderAsync(firstRender);
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnUnitListChange -= StateHasChanged;
     }
 }

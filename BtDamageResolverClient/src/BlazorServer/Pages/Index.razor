@@ -7,6 +7,8 @@
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
 @using Faemiyah.BtDamageResolver.Api.Options
+@using System.Timers
+@inject CommonData _commonData
 @inject LocalStorage _localStorage
 @inject NavigationManager _navigationManager
 @inject ResolverCommunicator _resolverCommunicator
@@ -53,16 +55,16 @@
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Dashboard || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormGameState></FormGameState>
+        <FormGameState @key="_userStateController.GameState?.TimeStamp"></FormGameState>
     }
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.AllUnits || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-<!--
-<ComponentGameState DisplayOwnUnits="true"></ComponentGameState>
--->
+        <!--
+        <ComponentGameState DisplayOwnUnits="true"></ComponentGameState>
+        -->
     }
 </div>
 
@@ -70,8 +72,8 @@
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
         <!--
-<FormDamageReports OnlyNewest="false"></FormDamageReports>
-        -->
+        <FormDamageReports OnlyNewest="false"></FormDamageReports>
+                -->
     }
 </div>
 
@@ -79,7 +81,7 @@
     @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
     {
         <!--
-<FormOptions @key=@_userStateController.GameOptions.TimeStamp></FormOptions>
+        <FormOptions @key="_userStateController.GameOptions.TimeStamp"></FormOptions>
         -->
     }
 </div>
@@ -91,6 +93,7 @@
     private string _debugMessage;
     private string _errorMessage;
     private HubConnection _hubConnection;
+    private Timer _timer;
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,9 +117,9 @@
                 _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
                 _userStateController.ConnectedToServer = true;
                 _userStateController.PlayerName = connectionResponse.PlayerId;
-                //_localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
-                //_resolverCommunicator.GetPlayerOptions().Wait();
-            }
+            //_localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
+            //_resolverCommunicator.GetPlayerOptions().Wait();
+        }
             else
             {
                 _resolverCommunicator.SetAuthenticationToken(Guid.Empty);
@@ -126,8 +129,8 @@
                 _userStateController.PlayerName = null;
                 _userStateController.PlayerOptions = null;
                 _userStateController.DamageReportCollection.Clear();
-                //_localStorage.RemoveUserCredentials().Wait();
-            }
+            //_localStorage.RemoveUserCredentials().Wait();
+        }
         });
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
@@ -205,6 +208,20 @@
     private void LeaveGame()
     {
         _formServer.LeaveGame();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _timer = new Timer();
+            _timer.Interval = 1000;
+            _timer.Elapsed += _resolverCommunicator.ProcessIncomingData;
+            _timer.AutoReset = true;
+            // Start the timer
+            _timer.Enabled = true;
+        }
+        base.OnAfterRender(firstRender);
     }
 
     public void Dispose()

@@ -1,7 +1,6 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @inject VisualStyleController _visualStyleController
-@implements IDisposable
 
 <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_sectionEnabledYourUnits)" @onclick="@(e => _sectionEnabledYourUnits = !_sectionEnabledYourUnits)">Your Units</button>
 <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_sectionEnabledYourUnits)" style="@VisualStyleController.HideElement(!_sectionEnabledYourUnits)">
@@ -48,11 +47,5 @@
         _sectionEnabledDamageReports = _userStateController.PlayerOptions?.ShowDamageReportsOnMainScreenByDefault ?? true;
         _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.ShowDamageRequestGeneratorOnMainScreenByDefault ?? false;
         _sectionEnabledOtherUnits = _userStateController.PlayerOptions?.ShowOtherUnitsOnMainScreenByDefault ?? false;
-        _userStateController.OnUnitListChange += StateHasChanged;
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnUnitListChange -= StateHasChanged;
     }
 }

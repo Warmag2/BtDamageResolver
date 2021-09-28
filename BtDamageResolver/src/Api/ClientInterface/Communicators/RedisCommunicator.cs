@@ -19,9 +19,9 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         protected readonly ILogger Logger;
         private readonly string _connectionString;
         protected readonly string ListenTarget;
-        private ConnectionMultiplexer _redisConnectionMultiplexer;
-        private ChannelMessageQueue _listenedMessageQueue;
-
+        protected ChannelMessageQueue ListenedMessageQueue;
+        protected ConnectionMultiplexer RedisConnectionMultiplexer;
+        
         protected ISubscriber RedisSubscriber;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// </summary>
         public void Start()
         {
-            _redisConnectionMultiplexer = ConnectionMultiplexer.Connect(_connectionString);
+            RedisConnectionMultiplexer = ConnectionMultiplexer.Connect(_connectionString);
             Subscribe();
         }
 
@@ -52,17 +52,12 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// The processor method to run on the listened queue.
         /// </summary>
         /// <param name="envelope">The envelope to process.</param>
-        protected abstract Task RunProcessorMethod(Envelope envelope);
+        public abstract Task RunProcessorMethod(Envelope envelope);
 
         /// <summary>
         /// Subscribe to the necessary communication endpoints.
         /// </summary>
-        private void Subscribe()
-        {
-            RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
-            _listenedMessageQueue = RedisSubscriber.Subscribe(ListenTarget);
-            _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
-        }
+        protected abstract void Subscribe();
 
         /// <summary>
         /// Unsubscribe from the necessary communication endpoints.
@@ -70,7 +65,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         private void Unsubscribe()
         {
             RedisSubscriber.Unsubscribe(ListenTarget);
-            _listenedMessageQueue = null;
+            ListenedMessageQueue = null;
             RedisSubscriber = null;
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
@@ -18,6 +19,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Orleans;
+using Orleans.Configuration;
+using Orleans.Hosting;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer
@@ -36,6 +40,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
         public void ConfigureServices(IServiceCollection services)
         {
             var configuration = GetConfiguration("CommunicationSettings.json");
+            var clusterOptions = configuration.GetSection("ClusterOptions").Get<FaemiyahClusterOptions>();
+            var client = ConnectClient(clusterOptions);
+            var commonData = new CommonData(client);
 
             services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
             services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
@@ -75,8 +82,10 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             services.AddSingleton<CachedEntityRepository<PaperDoll, string>>();
             services.AddSingleton<CachedEntityRepository<Unit, string>>();
             services.AddSingleton<CachedEntityRepository<Weapon, string>>();
-            services.AddSingleton<CommonData>();
+            //services.AddSingleton<CommonData>();
             services.AddSingleton<VisualStyleController>();
+            //services.AddSingleton(client);
+            services.AddSingleton(commonData);
             services.AddScoped<ClientHub>();
             services.AddScoped<LocalStorage>();
             services.AddScoped<ResolverCommunicator>();
@@ -130,6 +139,34 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
                 endpoints.MapHub<ClientHub>("/ClientHub");
                 endpoints.MapFallbackToPage("/_Host");
             });
+        }
+
+        private static IClusterClient ConnectClient(FaemiyahClusterOptions clusterOptions)
+        {
+            var client = new ClientBuilder()
+                .Configure<ClusterOptions>(options =>
+                {
+                    options.ClusterId = "faemiyah";
+                    options.ServiceId = "Resolver";
+                })
+                .Configure<Orleans.Configuration.ConnectionOptions>(options =>
+                {
+                    options.ConnectionRetryDelay = TimeSpan.FromSeconds(30);
+                    options.OpenConnectionTimeout = TimeSpan.FromSeconds(30);
+                })
+                .Configure<MessagingOptions>(options =>
+                {
+                    options.ResponseTimeout = TimeSpan.FromMinutes(15);
+                })
+                .UseAdoNetClustering(options =>
+                {
+                    options.Invariant = clusterOptions.Invariant;
+                    options.ConnectionString = clusterOptions.ConnectionString;
+                })
+                .Build();
+
+            client.Connect(ex => Task.FromResult(true)).Wait();
+            return client;
         }
     }
 }

@@ -33,8 +33,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public event Action OnDamageReportChange;
 
-        public event Action OnUnitListChange;
-
         public int DebugPlayerStateChanges { get; set; }
 
         public int DraggedUnitIndex { get; set; }
@@ -76,8 +74,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                 UpdateUnitList();
 
                 StateUpdateSemaphore.Release();
-
-                NotifyUnitListChange();
             }
         }
 
@@ -103,7 +99,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         public void RemoveUnit(UnitEntry unit)
         {
             PlayerState.UnitEntries.Remove(unit);
-            NotifyUnitListChange();
             NotifyPlayerDataUpdated();
         }
 
@@ -240,13 +235,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                 DebugPlayerStateChanges++;
                 PlayerState.TimeStamp = DateTime.UtcNow;
                 OnDataUpdated?.Invoke();
-                NotifyUnitListChange();
             }
-        }
-
-        public void NotifyUnitListChange()
-        {
-            OnUnitListChange?.Invoke();
         }
 
         public void NotifyDamageReportChange()

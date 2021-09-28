@@ -1,7 +1,6 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
-@implements IDisposable
 
 @if (_userStateController.PlayerState != null)
 {
@@ -29,11 +28,6 @@
 
 @code
 {
-    protected override void OnInitialized()
-    {
-        _userStateController.OnUnitListChange += StateHasChanged;
-    }
-
     private void AddUnit()
     {
         _userStateController.AddUnit();
@@ -68,10 +62,5 @@
     {
         (_userStateController.PlayerState.UnitEntries[ix1], _userStateController.PlayerState.UnitEntries[ix2]) = (_userStateController.PlayerState.UnitEntries[ix2], _userStateController.PlayerState.UnitEntries[ix1]);
         _userStateController.NotifyPlayerDataUpdated();
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnUnitListChange -= StateHasChanged;
     }
 }
