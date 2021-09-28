@@ -12,6 +12,6 @@
     "ConnectionString": "User ID=faemiyah;Password=fuRZdwzQXl98wlNH8_bE;Host=orleansdb;Port=5432;Database=BtDamageResolver"
   },
   "CommunicationOptions": {
-    "ConnectionString": "redis:6379"
+    "ConnectionString": "redis:6379,user=faemiyah,password=fuRZdwzQXl98wlNH8_bE"
   }
 }
