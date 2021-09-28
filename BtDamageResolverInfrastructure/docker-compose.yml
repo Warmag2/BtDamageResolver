@@ -80,7 +80,7 @@ services:
   # Redis
   redis:
     container_name: redis
-    image: redislabs/redismod:latest
+    image: redis:latest
     ports:
       - "6379:6379"
     volumes:
