@@ -68,7 +68,7 @@ services:
     container_name: grafana
     image: resolvergrafana:latest
     ports:
-      - "3000:3000"
+      - "63000:3000"
 #    volumes:
 #      - ./grafana/provisioning:/etc/grafana/provisioning
     networks:
@@ -80,9 +80,9 @@ services:
   # Redis
   redis:
     container_name: redis
-    image: redis:latest
+    image: resolverredis:latest
     ports:
-      - "6379:6379"
+      - "63790:6379"
     volumes:
       - redis-data:/data
     networks:
