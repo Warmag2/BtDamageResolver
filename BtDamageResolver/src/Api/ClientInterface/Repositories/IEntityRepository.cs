@@ -47,11 +47,18 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         Task<TEntity> GetAsync(TKey key);
 
         /// <summary>
-        /// GetAsync all entities from the repository.
+        /// Get all entities from the repository.
         /// </summary>
         /// <returns>A list of <see cref="TEntity"/> containing all entities from the database, or an empty list, if none could be found.</returns>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
         Task<List<TEntity>> GetAllAsync();
+
+        /// <summary>
+        /// Get keys for all entities from the repository.
+        /// </summary>
+        /// <returns>A list of <see cref="TKey"/> containing all keys from the database, or an empty list, if none could be found.</returns>
+        /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
+        Task<List<TKey>> GetAllKeysAsync();
 
         /// <summary>
         /// Updates a <see cref="TEntity"/> in the repository.

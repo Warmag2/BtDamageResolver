@@ -85,7 +85,6 @@
     private string _debugMessage;
     private string _errorMessage;
     private HubConnection _hubConnection;
-    private Timer _timer;
 
     protected override async Task OnInitializedAsync()
     {
@@ -200,20 +199,6 @@
     private void LeaveGame()
     {
         _formServer.LeaveGame();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _timer = new Timer();
-            _timer.Interval = 1000;
-            _timer.Elapsed += _resolverCommunicator.ProcessIncomingData;
-            _timer.AutoReset = true;
-            // Start the timer
-            _timer.Enabled = true;
-        }
-        base.OnAfterRender(firstRender);
     }
 
     public void Dispose()

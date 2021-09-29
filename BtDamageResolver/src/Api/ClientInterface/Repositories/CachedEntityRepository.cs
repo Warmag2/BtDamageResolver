@@ -105,6 +105,21 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
+        public async Task<List<TKey>> GetAllKeysAsync()
+        {
+            var keys = await _repository.GetAllKeysAsync();
+            
+            // Update cache in this situation
+            foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
+            {
+                var item = await _repository.GetAsync(key);
+                _cache.Add(item.GetId(), item);
+            }
+
+            return keys;
+        }
+
+        /// <inheritdoc />
         public async Task UpdateAsync(TEntity entity)
         {
             try

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 {
@@ -18,23 +17,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         {
         }
 
-        public Envelope FetchData()
-        {
-            if (ListenedMessageQueue.TryRead(out var readResult))
-            {
-                return JsonConvert.DeserializeObject<Envelope>(readResult.Message);
-            }
-
-            return null;
-        }
-
-        protected override void Subscribe()
-        {
-            RedisSubscriber = RedisConnectionMultiplexer.GetSubscriber();
-            ListenedMessageQueue = RedisSubscriber.Subscribe(ListenTarget);
-        }
-
-        public override async Task RunProcessorMethod(Envelope incomingEnvelope)
+        protected override async Task RunProcessorMethod(Envelope incomingEnvelope)
         {
             switch (incomingEnvelope.Type)
             {

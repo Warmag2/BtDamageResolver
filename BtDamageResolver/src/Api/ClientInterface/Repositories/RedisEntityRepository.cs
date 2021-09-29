@@ -104,15 +104,10 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         /// <inheritdoc />
         public async Task<TEntity> GetAsync(string key)
         {
-            return await GetInternalAsync(GetKey(key)).ConfigureAwait(false);
-        }
-
-        private async Task<TEntity> GetInternalAsync(string key)
-        {
             try
             {
                 var connection = GetConnection();
-                var value = await connection.StringGetAsync(key).ConfigureAwait(false);
+                var value = await connection.StringGetAsync(GetKey(key)).ConfigureAwait(false);
 
                 if (value != RedisValue.Null)
                 {
@@ -139,15 +134,18 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         {
             try
             {
-                var server = GetServer();
                 var entities = new List<TEntity>();
 
-                foreach (var key in server.Keys(pattern: $"{_keyPrefix}*"))
+                foreach (var key in await GetAllKeysAsync().ConfigureAwait(false))
                 {
-                    entities.Add(await GetInternalAsync(key).ConfigureAwait(false));
+                    entities.Add(await GetAsync(key).ConfigureAwait(false));
                 }
 
                 return entities;
+            }
+            catch (DataAccessException)
+            {
+                throw;
             }
             catch (DbException ex)
             {
@@ -157,6 +155,27 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Could not get all entities of type {entityType}. Unknown failure.", typeof(TEntity));
+                throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            }
+        }
+
+        /// <inheritdoc />
+        public Task<List<string>> GetAllKeysAsync()
+        {
+            try
+            {
+                var server = GetServer();
+                var keys = server.Keys(pattern: $"{_keyPrefix}*");
+                return Task.FromResult(keys.Select(k => k.ToString().Substring($"{_keyPrefix}_".Length)).ToList());
+            }
+            catch (DbException ex)
+            {
+                _logger.LogError(ex, "Could not get keys for all entities of type {entityType}. Database failure with error code {code}.", typeof(TEntity), ex.ErrorCode);
+                throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not get keys for all entities of type {entityType}. Unknown failure.", typeof(TEntity));
                 throw new DataAccessException(DataAccessErrorCode.OperationFailure);
             }
         }

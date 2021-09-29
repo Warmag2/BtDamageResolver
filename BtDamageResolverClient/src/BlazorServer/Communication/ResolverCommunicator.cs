@@ -29,16 +29,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
             _communicationOptions = communicationOptions.Value;
         }
 
-        public void ProcessIncomingData(object sender, ElapsedEventArgs e)
-        {
-            var result = _clientToServerCommunicator?.FetchData();
-            
-            if (result != null)
-            {
-                _clientToServerCommunicator.RunProcessorMethod(result).Ignore();
-            }
-        }
-
         private void Reset()
         {
             _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _communicationOptions.ConnectionString, _playerName, _hubConnection);
