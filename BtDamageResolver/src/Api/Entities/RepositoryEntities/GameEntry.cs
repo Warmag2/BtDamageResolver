@@ -8,6 +8,8 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
     {
         public DateTime TimeStamp { get; set; }
 
+        public bool PasswordProtected { get; set; }
+
         public int Players { get; set; }
     }
 }

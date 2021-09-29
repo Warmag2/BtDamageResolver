@@ -9,17 +9,19 @@
             Players
         </th>
         <th>
+            Password
+        </th>
+        <th>
             Last activity
         </th>
         <th>
-            <button class="resolver_button" @onclick="RefreshGameList">Refresh</button>
         </th>
     </tr>
     @if (Games != null)
     {
         @foreach (var game in Games)
         {
-            <FormGameEntry Game="@game" OnJoin="@OnGameJoin"></FormGameEntry>
+            <FormGameEntry @key="game.GetId()" Game="@game" OnJoin="@OnGameJoin"></FormGameEntry>
         }
     }
 </table>
@@ -32,16 +34,8 @@
     [Parameter]
     public EventCallback<string> OnJoin { get; set; }
 
-    [Parameter]
-    public EventCallback<object> OnRefresh { get; set; }
-
     private void OnGameJoin(string gameName)
     {
         OnJoin.InvokeAsync(gameName);
-    }
-
-    private void RefreshGameList()
-    {
-        OnRefresh.InvokeAsync(new object());
     }
 }

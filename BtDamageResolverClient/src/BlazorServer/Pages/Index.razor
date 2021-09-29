@@ -15,12 +15,6 @@
 @inject VisualStyleController _visualStyleController
 @implements IDisposable
 
-<div class="resolver_div_debugmessage">
-    <verbatim>
-        @_debugMessage
-    </verbatim>
-</div>
-
 <div class="resolver_div_errormessage">
     <verbatim>
         @_errorMessage
@@ -82,7 +76,6 @@
 {
     private FormServer _formServer;
     private ResolverTab _selectedTab = ResolverTab.Dashboard;
-    private string _debugMessage;
     private string _errorMessage;
     private HubConnection _hubConnection;
 
@@ -93,12 +86,6 @@
             .WithUrl(_navigationManager.ToAbsoluteUri("/ClientHub"))
             .Build();
 
-        _hubConnection.On<string>("DebugMessage", message =>
-        {
-            _debugMessage = message;
-            StateHasChanged();
-        });
-
         _hubConnection.On<byte[]>(EventNames.ConnectionResponse, (connectionResponseData) =>
         {
             var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
@@ -108,9 +95,8 @@
                 _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
                 _userStateController.ConnectedToServer = true;
                 _userStateController.PlayerName = connectionResponse.PlayerId;
-            //_localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
-            //_resolverCommunicator.GetPlayerOptions().Wait();
-        }
+                _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
+            }
             else
             {
                 _resolverCommunicator.SetAuthenticationToken(Guid.Empty);
@@ -120,8 +106,9 @@
                 _userStateController.PlayerName = null;
                 _userStateController.PlayerOptions = null;
                 _userStateController.DamageReportCollection.Clear();
-            //_localStorage.RemoveUserCredentials().Wait();
-        }
+                _localStorage.RemoveUserCredentials().Wait();
+            }
+            StateHasChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>

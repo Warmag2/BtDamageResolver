@@ -40,12 +40,14 @@ namespace Faemiyah.BtDamageResolver.Actors
             // Log update to permanent store
             await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
             // Remark game existence 
-            await GrainFactory.GetGameEntryRepository().AddOrUpdate(new GameEntry
-            {
-                Name = this.GetPrimaryKeyString(),
-                Players = _gameActorState.State.PlayerStates.Count,
-                TimeStamp = DateTime.UtcNow
-            });
+            await GrainFactory.GetGameEntryRepository().AddOrUpdate(
+                new GameEntry
+                {
+                    Name = this.GetPrimaryKeyString(),
+                    PasswordProtected = _gameActorState.State.Password != null,
+                    Players = _gameActorState.State.PlayerStates.Count,
+                    TimeStamp = DateTime.UtcNow
+                });
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 @using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@using System.Timers
 @inject LocalStorage _localStorage
 @inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
@@ -35,25 +36,15 @@
                 <button class="resolver_button resolver_button_leave" @onclick="Disconnect">X</button>
             </div>
         </div>
+
         @if (!_userStateController.ConnectedToGame && _games != null)
         {
             <div class="resolver_div_componentrow">
                 <h2 class="resolver_header">
                     Games with recent activity
                 </h2>
-                <FormGameList Games="@_recentGames" OnJoin="@OnGameJoinButtonPressed" OnRefresh="@RefreshGameList"></FormGameList>
+                <FormGameList @key="_games" Games="@_games.Values.ToList()" OnJoin="@OnGameJoinButtonPressed"></FormGameList>
             </div>
-
-            @if (_otherGames.Count > 0)
-            {
-                <div class="resolver_div_componentrow">
-                    <h2 class="resolver_header">
-                        Other games
-                    </h2>
-
-                    <FormGameList Games="@_otherGames" OnJoin="@OnGameJoinButtonPressed" OnRefresh="@RefreshGameList"></FormGameList>
-                </div>
-            }
         }
 
     }
@@ -91,14 +82,42 @@
     private bool _showModal = false;
     private string _modalName = string.Empty;
     private string _modalPassword = string.Empty;
-    private List<GameEntry> _recentGames;
-    private List<GameEntry> _otherGames;
-    private List<GameEntry> _games;
+    private Dictionary<string, GameEntry> _games;
+    private Timer _timer;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _timer = new Timer();
+            _timer.Interval = 5000;
+            _timer.Elapsed += OnTimerInterval;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+        }
+
+        if (firstRender)
+        {
+            var (success, credentials) = await _localStorage.GetUserCredentials();
+
+            if (success)
+            {
+                Connect(credentials);
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshGameList();
         await base.OnInitializedAsync();
+    }
+
+    private void OnTimerInterval(object sender, ElapsedEventArgs e)
+    {
+        RefreshGameList().Wait();
     }
 
     private void Connect(Credentials credentials)
@@ -115,10 +134,6 @@
     {
         _userStateController.DamageReportCollection.Clear();
         _resolverCommunicator.JoinGame(credentials);
-        //await _resolverCommunicator.GetGameOptions();
-
-        //_modalName = credentials.Name;
-        //ModalShow();
     }
 
     public void LeaveGame()
@@ -128,14 +143,26 @@
 
     private async Task RefreshGameList()
     {
-        _games = await _commonData.GetGameEntries();
-        _recentGames = _games.Where(g => g.TimeStamp >= DateTime.UtcNow - TimeSpan.FromHours(1)).ToList();
-        _otherGames = _games.Where(g => g.TimeStamp < DateTime.UtcNow - TimeSpan.FromHours(1)).ToList();
+        var games = await _commonData.GetGameEntries();
+        _games.Clear();
+        foreach (var game in games)
+        {
+            _games.Add(game.GetId(), game);
+        }
+
+        StateHasChanged();
     }
 
     private void OnGameJoinButtonPressed(string gameName)
     {
-        JoinGame(new Credentials { Name = gameName, Password = string.Empty });
+        if (_games[gameName].PasswordProtected)
+        {
+            ModalShow();
+        }
+        else
+        {
+            JoinGame(new Credentials { Name = gameName, Password = string.Empty });
+        }
     }
 
     public void ModalShow()
@@ -149,20 +176,5 @@
     {
         _showModal = false;
         JoinGame(new Credentials { Name = _modalName, Password = password });
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        /*if (firstRender)
-        {
-            var (success, credentials) = await _localStorage.GetUserCredentials();
-
-            if (success)
-            {
-                await Connect(credentials);
-            }
-        }*/
-
-        await base.OnAfterRenderAsync(firstRender);
     }
 }

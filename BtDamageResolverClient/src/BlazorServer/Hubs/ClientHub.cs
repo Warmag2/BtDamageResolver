@@ -6,11 +6,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs
 {
     public class ClientHub : Hub
     {
-        public async Task DebugMessage(string connectionId, string message)
-        {
-            await Clients.Client(connectionId).SendAsync("DebugMessage", message);
-        }
-
         public async Task ConnectionResponse(string connectionId, byte[] connectionResponse)
         {
             await Clients.Client(connectionId).SendAsync(EventNames.ConnectionResponse, connectionResponse);
