@@ -1,6 +1,7 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @inject VisualStyleController _visualStyleController
+@implements IDisposable
 
 <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_sectionEnabledYourUnits)" @onclick="@(e => _sectionEnabledYourUnits = !_sectionEnabledYourUnits)">Your Units</button>
 <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_sectionEnabledYourUnits)" style="@VisualStyleController.HideElement(!_sectionEnabledYourUnits)">
@@ -20,32 +21,32 @@
 
     <button @key="@_userStateController.GameState.Turn" class="resolver_button_accordion @_visualStyleController.GetActiveClass(_sectionEnabledDamageReports)" @onclick="@(e => _sectionEnabledDamageReports = !_sectionEnabledDamageReports)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>DamageReports@(!_userStateController.DamageReportCollection.IsEmpty() ? $" (Turn {_userStateController.DamageReportCollection.DamageReports.Keys.Last()})" : string.Empty)</button>
     <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_sectionEnabledDamageReports)" style="@VisualStyleController.HideElement(!_sectionEnabledDamageReports)">
-        <FormDamageReports OnlyNewest="true"></FormDamageReports>
+        <FormDamageReports @key="_userStateController.DamageReportCollection.TimeStamp" OnlyNewest="true"></FormDamageReports>
     </div>
 
     <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_sectionEnabledTools)" @onclick="@(e => _sectionEnabledTools = !_sectionEnabledTools)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Tools</button>
     <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_sectionEnabledTools)" style="@VisualStyleController.HideElement(!_sectionEnabledTools)">
         <FormTools @key="@_userStateController.GameState.TimeStamp"></FormTools>
     </div>
-
-    <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_sectionEnabledOtherUnits)" @onclick="@(e => _sectionEnabledOtherUnits = !_sectionEnabledOtherUnits)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Other Units</button>
-    <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_sectionEnabledOtherUnits)" style="@VisualStyleController.HideElement(!_sectionEnabledOtherUnits)">
-        <ComponentGameState DisplayOwnUnits="false"></ComponentGameState>
-    </div>
 }
 
-@code {
+@code
+{
     private bool _sectionEnabledTools = true;
     private bool _sectionEnabledYourUnits = true;
     private bool _sectionEnabledDamageReports = true;
     private bool _sectionEnabledDamageRequests = true;
-    private bool _sectionEnabledOtherUnits = true;
 
     protected override void OnInitialized()
     {
         _sectionEnabledTools = _userStateController.PlayerOptions?.ShowToolsOnMainScreenByDefault ?? false;
         _sectionEnabledDamageReports = _userStateController.PlayerOptions?.ShowDamageReportsOnMainScreenByDefault ?? true;
         _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.ShowDamageRequestGeneratorOnMainScreenByDefault ?? false;
-        _sectionEnabledOtherUnits = _userStateController.PlayerOptions?.ShowOtherUnitsOnMainScreenByDefault ?? false;
+        _userStateController.OnPlayerUnitListChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnPlayerUnitListChanged -= StateHasChanged;
     }
 }

@@ -119,13 +119,11 @@
 @code {
     private void NotifyPlayerOptionsChanged()
     {
-        _userStateController.PlayerOptions.TimeStamp = DateTime.UtcNow;
         _userStateController.NotifyPlayerOptionsChanged();
     }
 
     private void NotifyGameOptionsChanged()
     {
-        _userStateController.GameOptions.TimeStamp = DateTime.UtcNow;
         _userStateController.NotifyGameOptionsChanged();
     }
 

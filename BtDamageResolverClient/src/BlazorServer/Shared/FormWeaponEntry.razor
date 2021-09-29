@@ -4,12 +4,11 @@
 @inject CommonData _commonData
 @inject VisualStyleController _visualStyleController
 @inject UserStateController _userStateController
+@implements IDisposable
 
-@{
-    var targetNumberUpdate = _userStateController.GetTargetNumber(WeaponEntry.Id);
-    var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
-    var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
-}
+@{ var targetNumberUpdate = _userStateController.GetTargetNumber(WeaponEntry.Id);
+                var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
+                var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A"; }
 
 <tr class="resolver_tr_weaponentry @(WeaponEntry.State == WeaponState.Active ? "active" : string.Empty)">
     <td class="resolver_td_targetnumber draggable" draggable="true" @ondrag="@(()=> StartDrag(WeaponEntry))" @ondrop="@(()=> Drop(WeaponEntry))" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', @calculationLog);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
@@ -18,12 +17,10 @@
     <td class="resolver_td_weaponname">
         @if (Unit.StaticDataHidden)
         {
-            <b>@WeaponEntry.WeaponName</b>
-        }
-        else
-        {
-            <FormComboBox Options="@_commonData.CreateMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
-        }
+<b>@WeaponEntry.WeaponName</b> }
+            else
+            {
+<FormComboBox Options="@_commonData.CreateMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>}
     </td>
     <td>
         <FormCheckbox Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormCheckbox>
@@ -68,6 +65,7 @@
         _weaponMode = WeaponEntry.Mode;
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
+        _userStateController.OnTargetNumbersReceived += StateHasChanged;
 
         base.OnInitialized();
     }
@@ -174,5 +172,10 @@
         }
 
         return "'No target number calculation log available.'";
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnTargetNumbersReceived -= StateHasChanged;
     }
 }

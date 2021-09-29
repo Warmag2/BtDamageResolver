@@ -1,33 +1,32 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
+@implements IDisposable
 
 @if (_userStateController.PlayerState != null)
 {
     <div class="resolver_div_componentlistcontainer">
-
         @foreach (var unitEntry in _userStateController.PlayerState.UnitEntries)
         {
             <FormUnitEntry @key=@unitEntry.Id UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
         }
-
     </div>
-
+    
     <div class="resolver_div_hr">
         <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">+</button>
         <button class="resolver_button resolver_button_ready" @onclick="Ready">@(_userStateController.PlayerState.IsReady ? "UnReady" : "Ready")</button>
-    </div>
-
-    <div class="resolver_div_hr">
-        DEBUG - Player state change events so far: @_userStateController.DebugPlayerStateChanges
-    </div>
-
-    <!-- This is here because we only want exactly one /-->
+    </div> <!-- This is here because we only want exactly one /-->
+    
     <div id="resolver_tooltip_targetnumber" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
 }
 
 @code
 {
+    protected override void OnInitialized()
+    {
+        _userStateController.OnPlayerUnitListChanged += StateHasChanged;
+    }
+
     private void AddUnit()
     {
         _userStateController.AddUnit();
@@ -62,5 +61,10 @@
     {
         (_userStateController.PlayerState.UnitEntries[ix1], _userStateController.PlayerState.UnitEntries[ix2]) = (_userStateController.PlayerState.UnitEntries[ix2], _userStateController.PlayerState.UnitEntries[ix1]);
         _userStateController.NotifyPlayerDataUpdated();
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnPlayerUnitListChanged -= StateHasChanged;
     }
 }

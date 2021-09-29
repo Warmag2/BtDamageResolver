@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
@@ -14,7 +13,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         private GameState _gameState;
         private ConcurrentDictionary<Guid, (string playerId, UnitEntry unit)> _unitList;
         private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers;
-        private static readonly SemaphoreSlim StateUpdateSemaphore = new SemaphoreSlim(1, 1);
+        //private static readonly SemaphoreSlim StateUpdateSemaphore = new SemaphoreSlim(1, 1);
         
         public UserStateController()
         {
@@ -23,15 +22,17 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             _targetNumbers = new ConcurrentDictionary<Guid, TargetNumberUpdate>();
         }
 
-        public event Action OnDataUpdated;
-
         public event Action OnGameOptionsUpdated;
 
         public event Action OnPlayerOptionsUpdated;
 
+        public event Action OnPlayerStateUpdated;
+
         public event Action OnDamageInstanceRequested;
 
-        public int DebugPlayerStateChanges { get; set; }
+        public event Action OnTargetNumbersReceived;
+        
+        public event Action OnPlayerUnitListChanged;
 
         public int DraggedUnitIndex { get; set; }
 
@@ -55,7 +56,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             get => _gameState;
             set
             {
-                StateUpdateSemaphore.Wait();
+                //StateUpdateSemaphore.Wait();
 
                 if (_gameState == null || value == null)
                 {
@@ -71,7 +72,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
                 UpdateUnitList();
 
-                StateUpdateSemaphore.Release();
+                //StateUpdateSemaphore.Release();
+                OnPlayerUnitListChanged?.Invoke();
             }
         }
 
@@ -123,8 +125,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
             newUnitList.TryAdd(Guid.Empty, ("N/A", new UnitEntry {Id = Guid.Empty, Name = "NO TARGET"}));
 
-            // TODO: Be careful about this optimization. Might be wisest to always change the unit list.
             // Only perform dictionary swap if the list has actually changed
+            // TODO: Be careful about this optimization. Might be wisest to always change the unit list.
             if (_unitList.Any(u => !newUnitList.ContainsKey(u.Key)) || newUnitList.Any(u => !_unitList.ContainsKey(u.Key)))
             {
                 _unitList = newUnitList;
@@ -192,9 +194,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         {
             if (PlayerState != null)
             {
-                DebugPlayerStateChanges++;
                 PlayerState.TimeStamp = DateTime.UtcNow;
-                OnDataUpdated?.Invoke();
+                OnPlayerStateUpdated?.Invoke();
+                OnPlayerUnitListChanged?.Invoke();
             }
         }
 
@@ -206,11 +208,13 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public void NotifyGameOptionsChanged()
         {
+            GameOptions.TimeStamp = DateTime.UtcNow;
             OnGameOptionsUpdated?.Invoke();
         }
 
         public void NotifyPlayerOptionsChanged()
         {
+            PlayerOptions.TimeStamp = DateTime.UtcNow;
             OnPlayerOptionsUpdated?.Invoke();
         }
 
@@ -237,6 +241,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             {
                 _targetNumbers.AddOrUpdate(targetNumberUpdate.WeaponEntryId, targetNumberUpdate, (_, update) => update.TimeStamp > targetNumberUpdate.TimeStamp ? update : targetNumberUpdate);
             }
+
+            OnTargetNumbersReceived?.Invoke();
         }
 
         public TargetNumberUpdate GetTargetNumber(Guid weaponEntryId)

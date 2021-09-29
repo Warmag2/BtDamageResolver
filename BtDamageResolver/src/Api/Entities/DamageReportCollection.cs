@@ -14,6 +14,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         {
             TimeStamp = DateTime.UtcNow;
             DamageReports = new SortedDictionary<int, List<DamageReport>>();
+            Visibility = new SortedDictionary<int, bool>();
         }
 
         /// <summary>

@@ -28,7 +28,7 @@
 </div>
 
 <div style="@VisualStyleController.HideElement(_userStateController.ConnectedToGame)">
-    <FormServer @ref="_formServer"></FormServer>
+    <FormServer @key="_userStateController.PlayerName" @ref="_formServer"></FormServer>
 </div>
 
 
@@ -52,7 +52,8 @@
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Dashboard || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormGameState @key="_userStateController.GameState?.TimeStamp"></FormGameState>
+        // We have to include this here, since the player state pages are updated by other methods, but this should always refresh when new damage reports arrive
+        <FormGameState @key="_userStateController.DamageReportCollection.TimeStamp"></FormGameState>
     }
 </div>
 
@@ -162,7 +163,7 @@
         _resolverCommunicator.SetHubConnection(_hubConnection);
         await _hubConnection.StartAsync();
 
-        _userStateController.OnDataUpdated += UpdatePlayerState;
+        _userStateController.OnPlayerStateUpdated += UpdatePlayerState;
         _userStateController.OnGameOptionsUpdated += UpdateGameOptions;
         _userStateController.OnPlayerOptionsUpdated += UpdatePlayerOptions;
         _userStateController.OnDamageInstanceRequested += SendDamageInstance;
@@ -202,7 +203,7 @@
 
     public void Dispose()
     {
-        _userStateController.OnDataUpdated -= UpdatePlayerState;
+        _userStateController.OnPlayerStateUpdated -= UpdatePlayerState;
         _userStateController.OnGameOptionsUpdated -= UpdateGameOptions;
         _userStateController.OnPlayerOptionsUpdated -= UpdatePlayerOptions;
         _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
