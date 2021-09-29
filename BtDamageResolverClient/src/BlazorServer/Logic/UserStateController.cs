@@ -18,7 +18,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         
         public UserStateController()
         {
-            DamageReportCollection = new SortedDictionary<int, DamageReportList>();
+            DamageReportCollection = new DamageReportCollection();
             _unitList = new ConcurrentDictionary<Guid, (string playerId, UnitEntry unit)>();
             _targetNumbers = new ConcurrentDictionary<Guid, TargetNumberUpdate>();
         }
@@ -30,8 +30,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         public event Action OnPlayerOptionsUpdated;
 
         public event Action OnDamageInstanceRequested;
-
-        public event Action OnDamageReportChange;
 
         public int DebugPlayerStateChanges { get; set; }
 
@@ -102,45 +100,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             NotifyPlayerDataUpdated();
         }
 
-        public SortedDictionary<int, DamageReportList> DamageReportCollection { get; }
-
-        public void AddDamageReports(List<DamageReport> damageReports)
-        {
-            StateUpdateSemaphore.Wait();
-            foreach (var damageReport in damageReports)
-            {
-                if (DamageReportCollection.ContainsKey(damageReport.Turn))
-                {
-                    DamageReportCollection[damageReport.Turn].Add(damageReport);
-                }
-                else
-                {
-                    DamageReportCollection.Add(damageReport.Turn, new DamageReportList(damageReport));
-                }
-            }
-
-            StateUpdateSemaphore.Release();
-
-            NotifyDamageReportChange();
-        }
-
-        public void DeleteDamageReport(DamageReport damageReport)
-        {
-            DamageReportCollection[damageReport.Turn].Remove(damageReport);
-
-            if (DamageReportCollection[damageReport.Turn].Empty())
-            {
-                DeleteDamageReports(damageReport.Turn);
-            }
-
-            NotifyDamageReportChange();
-        }
-
-        public void DeleteDamageReports(int turn)
-        {
-            DamageReportCollection.Remove(turn);
-            NotifyDamageReportChange();
-        }
+        public DamageReportCollection DamageReportCollection { get; }
 
         private void UpdateUnitList()
         {
@@ -236,11 +196,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                 PlayerState.TimeStamp = DateTime.UtcNow;
                 OnDataUpdated?.Invoke();
             }
-        }
-
-        public void NotifyDamageReportChange()
-        {
-            OnDamageReportChange?.Invoke();
         }
 
         public void NotifyDamageRequestCreated(DamageInstance damageInstance)

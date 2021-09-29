@@ -316,7 +316,11 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// <returns>An <see cref="Unit"/> based on this unit.</returns>
         public Unit ToUnit()
         {
-            return Copy();
+            var copy = Copy();
+            // We want to keep the name because Copy() generates a new one
+            copy.Name = Name;
+
+            return copy;
         }
 
         /// <summary>

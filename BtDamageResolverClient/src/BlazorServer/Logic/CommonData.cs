@@ -10,10 +10,10 @@ using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 {
-    public class CommonDataNew
+    public class CommonData
     {
-        private readonly CachedEntityRepository<GameEntry, string> _gameEntryRepository;
-        private readonly CachedEntityRepository<Unit, string> _unitRepository;
+        private readonly IEntityRepository<GameEntry, string> _gameEntryRepository;
+        private readonly IEntityRepository<Unit, string> _unitRepository;
         private readonly SortedDictionary<string, string> _mapWeaponNamesNormal;
         private readonly SortedDictionary<string, string> _mapWeaponNamesBattleArmor;
         private readonly SortedDictionary<string, string> _mapWeaponNamesInfantry;
@@ -23,13 +23,13 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         private const string InfantryWeaponPrefix = "Infantry ";
         private const string MeleeWeaponPrefix = "Melee ";
 
-        public CommonDataNew(
-            CachedEntityRepository<ClusterTable, string> clusterTableRepository,
-            CachedEntityRepository<CriticalDamageTable, string> criticalDamageTableRepository,
-            CachedEntityRepository<GameEntry, string> gameEntryRepository,
-            CachedEntityRepository<PaperDoll, string> paperDollRepository,
-            CachedEntityRepository<Unit, string> unitRepository,
-            CachedEntityRepository<Weapon, string> weaponRepository)
+        public CommonData(
+            IEntityRepository<ClusterTable, string> clusterTableRepository,
+            IEntityRepository<CriticalDamageTable, string> criticalDamageTableRepository,
+            IEntityRepository<GameEntry, string> gameEntryRepository,
+            IEntityRepository<PaperDoll, string> paperDollRepository,
+            IEntityRepository<Unit, string> unitRepository,
+            IEntityRepository<Weapon, string> weaponRepository)
         {
             _gameEntryRepository = gameEntryRepository;
             _unitRepository = unitRepository;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -16,7 +17,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <param name="playerAuthenticationToken">The authentication token of the player to send the damage reports to.</param>
         private async Task DistributeAllDamageReportsToPlayer(Guid playerAuthenticationToken)
         {
-            await _communicationServiceClient.Send(_gameActorState.State.AuthenticationTokens[playerAuthenticationToken], EventNames.DamageReports, _gameActorState.State.DamageReports);
+            await _communicationServiceClient.Send(_gameActorState.State.AuthenticationTokens[playerAuthenticationToken], EventNames.DamageReports, _gameActorState.State.DamageReports.GetAll());
         }
 
         /// <summary>

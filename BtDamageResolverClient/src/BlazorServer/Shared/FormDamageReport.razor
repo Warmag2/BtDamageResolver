@@ -142,7 +142,7 @@
 
     public void Delete()
     {
-        _userStateController.DeleteDamageReport(DamageReport);
+        _userStateController.DamageReportCollection.Remove(DamageReport);
     }
 
     private void OnAttackLogEntryVisibilityChanged(AttackLogEntryType attackLogEntryType, bool entryVisibility)

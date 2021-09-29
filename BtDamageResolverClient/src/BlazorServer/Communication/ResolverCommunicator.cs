@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Timers;
-using Faemiyah.BtDamageResolver.Api.ClientInterface;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Entities;

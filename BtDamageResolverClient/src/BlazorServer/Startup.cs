@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
@@ -19,9 +18,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orleans;
-using Orleans.Configuration;
-using Orleans.Hosting;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer
@@ -40,9 +36,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
         public void ConfigureServices(IServiceCollection services)
         {
             var configuration = GetConfiguration("CommunicationSettings.json");
-            var clusterOptions = configuration.GetSection("ClusterOptions").Get<FaemiyahClusterOptions>();
-            var client = ConnectClient(clusterOptions);
-            var commonData = new CommonData(client);
+            //var clusterOptions = configuration.GetSection("ClusterOptions").Get<FaemiyahClusterOptions>();
+            //var client = ConnectClient(clusterOptions);
+            //var commonData = new CommonData(client);
 
             services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
             services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
@@ -76,16 +72,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             services.AddSingleton<IEntityRepository<PaperDoll, string>>(GetRedisEntityRepository<PaperDoll>);
             services.AddSingleton<IEntityRepository<Unit, string>>(GetRedisEntityRepository<Unit>);
             services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
-            services.AddSingleton<CachedEntityRepository<ClusterTable, string>>();
-            services.AddSingleton<CachedEntityRepository<CriticalDamageTable, string>>();
-            services.AddSingleton<CachedEntityRepository<GameEntry, string>>();
-            services.AddSingleton<CachedEntityRepository<PaperDoll, string>>();
-            services.AddSingleton<CachedEntityRepository<Unit, string>>();
-            services.AddSingleton<CachedEntityRepository<Weapon, string>>();
-            //services.AddSingleton<CommonData>();
+            services.AddSingleton<CommonData>();
             services.AddSingleton<VisualStyleController>();
-            //services.AddSingleton(client);
-            services.AddSingleton(commonData);
             services.AddScoped<ClientHub>();
             services.AddScoped<LocalStorage>();
             services.AddScoped<ResolverCommunicator>();
@@ -141,7 +129,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             });
         }
 
-        private static IClusterClient ConnectClient(FaemiyahClusterOptions clusterOptions)
+        /*private static IClusterClient ConnectClient(FaemiyahClusterOptions clusterOptions)
         {
             var client = new ClientBuilder()
                 .Configure<ClusterOptions>(options =>
@@ -167,6 +155,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
 
             client.Connect(ex => Task.FromResult(true)).Wait();
             return client;
-        }
+        }*/
     }
 }

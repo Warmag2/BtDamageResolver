@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>Faemiyah.BtDamageResolver.ActorInterfaces</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.ActorInterfaces</AssemblyName>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>0.0.1</Version>
   </PropertyGroup>
 

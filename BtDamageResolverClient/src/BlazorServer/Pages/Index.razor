@@ -7,7 +7,6 @@
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
 @using Faemiyah.BtDamageResolver.Api.Options
-@using System.Timers
 @inject CommonData _commonData
 @inject LocalStorage _localStorage
 @inject NavigationManager _navigationManager
@@ -67,14 +66,14 @@
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.DamageReports || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormDamageReports OnlyNewest="false"></FormDamageReports>
+        <FormDamageReports @key="_userStateController.DamageReportCollection?.TimeStamp" OnlyNewest="false"></FormDamageReports>
     }
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Options || !_userStateController.ConnectedToGame)">
     @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
     {
-        <FormOptions @key="_userStateController.GameOptions.TimeStamp"></FormOptions>
+        <FormOptions @key=@($"{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>
     }
 </div>
 
@@ -126,7 +125,7 @@
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
         {
-            _userStateController.AddDamageReports(DataHelper.Unpack<List<DamageReport>>(damageReportData));
+            _userStateController.DamageReportCollection.AddRange(DataHelper.Unpack<List<DamageReport>>(damageReportData));
             StateHasChanged();
         });
 
