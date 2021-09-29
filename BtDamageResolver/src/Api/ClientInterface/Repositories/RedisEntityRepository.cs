@@ -104,10 +104,15 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         /// <inheritdoc />
         public async Task<TEntity> GetAsync(string key)
         {
+            return await GetInternalAsync(GetKey(key)).ConfigureAwait(false);
+        }
+
+        private async Task<TEntity> GetInternalAsync(string key)
+        {
             try
             {
                 var connection = GetConnection();
-                var value = await connection.StringGetAsync(GetKey(key)).ConfigureAwait(false);
+                var value = await connection.StringGetAsync(key).ConfigureAwait(false);
 
                 if (value != RedisValue.Null)
                 {
@@ -139,7 +144,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
                 foreach (var key in server.Keys(pattern: $"{_keyPrefix}*"))
                 {
-                    entities.Add(await GetAsync(key).ConfigureAwait(false));
+                    entities.Add(await GetInternalAsync(key).ConfigureAwait(false));
                 }
 
                 return entities;

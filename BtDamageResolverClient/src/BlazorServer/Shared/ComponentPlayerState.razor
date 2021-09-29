@@ -8,7 +8,7 @@
 
     @foreach (var unit in _userStateController.GameState.Players[PlayerId].UnitEntries)
     {
-        <ComponentUnit UnitEntry=@unit></ComponentUnit> // Removed key from here
+        <ComponentUnit @key="unit.TimeStamp" UnitEntry=@unit></ComponentUnit> // Removed key from here
     }
 </div>
 

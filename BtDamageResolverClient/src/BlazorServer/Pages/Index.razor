@@ -47,9 +47,7 @@
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Data || !_userStateController.ConnectedToGame)">
-    <!--
     <FormData></FormData>
-    -->
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Dashboard || !_userStateController.ConnectedToGame)">
@@ -62,27 +60,21 @@
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.AllUnits || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <!--
-        <ComponentGameState DisplayOwnUnits="true"></ComponentGameState>
-        -->
+        <ComponentGameState @key="_userStateController.GameState?.TimeStamp" DisplayOwnUnits="true"></ComponentGameState>
     }
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.DamageReports || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <!--
         <FormDamageReports OnlyNewest="false"></FormDamageReports>
-                -->
     }
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Options || !_userStateController.ConnectedToGame)">
     @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
     {
-        <!--
         <FormOptions @key="_userStateController.GameOptions.TimeStamp"></FormOptions>
-        -->
     }
 </div>
 
