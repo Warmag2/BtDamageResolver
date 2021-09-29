@@ -157,3 +157,7 @@ __pycache__/
 
 # Mac folder properties
 .DS_Store
+
+# BuildPipeline executables
+BuildPipeline.exe
+BuildPipeline.dll
