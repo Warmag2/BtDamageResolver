@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Enums;
@@ -50,7 +51,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
         private IServer GetServer()
         {
-            return _redisConnectionMultiplexer.GetServer(_connectionString);
+            return _redisConnectionMultiplexer.GetServer(_connectionString.Split(',').First());
         }
 
         /// <inheritdoc />
