@@ -136,7 +136,7 @@
 
     protected override void OnInitialized()
     {
-        _attackLogVisible = _userStateController.PlayerOptions.ShowAttackLogByDefault;
+        _attackLogVisible = _userStateController.PlayerOptions?.ShowAttackLogByDefault ?? false;
         _logLineVisibility = _userStateController.GetAttackLogEntryVisibilityCopy();
     }
 

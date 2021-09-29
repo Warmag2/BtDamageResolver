@@ -220,8 +220,9 @@ namespace Faemiyah.BtDamageResolver.Actors
                 await _playerActorState.WriteStateAsync();
 
                 // When we connect to a game, the game is not guaranteed to have our state. Send it and mark all units as updated.
-                await gameActor.UpdatePlayerState(_playerActorState.State.AuthenticationToken, await GetPlayerState(false),
-                    _playerActorState.State.UnitEntryIds.ToList());
+                await gameActor.UpdatePlayerState(_playerActorState.State.AuthenticationToken, await GetPlayerState(false), _playerActorState.State.UnitEntryIds.ToList());
+                // Fetch game options on join
+                await GetGameOptions(_playerActorState.State.AuthenticationToken);
 
                 return true;
             }

@@ -54,21 +54,21 @@
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.AllUnits || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <ComponentGameState @key="_userStateController.GameState?.TimeStamp" DisplayOwnUnits="true"></ComponentGameState>
+        <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>
     }
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.DamageReports || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormDamageReports @key="_userStateController.DamageReportCollection?.TimeStamp" OnlyNewest="false"></FormDamageReports>
+        <FormDamageReports @key=@($"{_userStateController.PlayerName}_{_userStateController.DamageReportCollection?.TimeStamp}") OnlyNewest="false"></FormDamageReports>
     }
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Options || !_userStateController.ConnectedToGame)">
     @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
     {
-        <FormOptions @key=@($"{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>
+        <FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>
     }
 </div>
 
@@ -95,7 +95,7 @@
                 _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
                 _userStateController.ConnectedToServer = true;
                 _userStateController.PlayerName = connectionResponse.PlayerId;
-                _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
+                //_localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
             }
             else
             {
@@ -106,7 +106,7 @@
                 _userStateController.PlayerName = null;
                 _userStateController.PlayerOptions = null;
                 _userStateController.DamageReportCollection.Clear();
-                _localStorage.RemoveUserCredentials().Wait();
+                //_localStorage.RemoveUserCredentials().Wait();
             }
             StateHasChanged();
         });

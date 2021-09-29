@@ -223,13 +223,13 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         public SortedDictionary<string, string> GetSavedUnits()
         {
             var sortedUnitList = new SortedDictionary<string, string>();
-            _unitRepository.GetAllKeysAsync().Result.ForEach(u => sortedUnitList.Add(u, u));
+            _unitRepository.GetAllKeys().ForEach(u => sortedUnitList.Add(u, u));
             return sortedUnitList;
         }
 
-        public async Task<List<GameEntry>> GetGameEntries()
+        public List<GameEntry> GetGameEntries()
         {
-            return await _gameEntryRepository.GetAllAsync();
+            return _gameEntryRepository.GetAll();
         }
 
         public async Task<Unit> GetUnitEntry(string unitName)

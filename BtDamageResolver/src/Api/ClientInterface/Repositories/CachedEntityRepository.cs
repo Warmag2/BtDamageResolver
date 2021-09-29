@@ -93,9 +93,21 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
+        public TEntity Get(TKey key)
+        {
+            return _cache.TryGetValue(key, out var entity) ? entity : null;
+        }
+
+        /// <inheritdoc />
         public Task<TEntity> GetAsync(TKey key)
         {
             return _cache.TryGetValue(key, out var entity) ? Task.FromResult(entity) : Task.FromResult((TEntity) null);
+        }
+
+        /// <inheritdoc />
+        public List<TEntity> GetAll()
+        {
+            return _cache.Values.ToList();
         }
 
         /// <inheritdoc />
@@ -105,14 +117,14 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<List<TKey>> GetAllKeysAsync()
+        public List<TKey> GetAllKeys()
         {
-            var keys = await _repository.GetAllKeysAsync();
+            var keys = _repository.GetAllKeys();
             
             // Update cache in this situation
             foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
             {
-                var item = await _repository.GetAsync(key);
+                var item = _repository.Get(key);
                 _cache.Add(item.GetId(), item);
             }
 

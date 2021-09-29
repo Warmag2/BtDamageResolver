@@ -44,7 +44,22 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         /// <param name="key">The key of the entity to get.</param>
         /// <returns>The entity, or null, if none could be found.</returns>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
+        TEntity Get(TKey key);
+
+        /// <summary>
+        /// Gets a <see cref="TEntity"/> with the given key from the repository.
+        /// </summary>
+        /// <param name="key">The key of the entity to get.</param>
+        /// <returns>The entity, or null, if none could be found.</returns>
+        /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
         Task<TEntity> GetAsync(TKey key);
+
+        /// <summary>
+        /// Get all entities from the repository.
+        /// </summary>
+        /// <returns>A list of <see cref="TEntity"/> containing all entities from the database, or an empty list, if none could be found.</returns>
+        /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
+        List<TEntity> GetAll();
 
         /// <summary>
         /// Get all entities from the repository.
@@ -58,7 +73,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         /// </summary>
         /// <returns>A list of <see cref="TKey"/> containing all keys from the database, or an empty list, if none could be found.</returns>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
-        Task<List<TKey>> GetAllKeysAsync();
+        List<TKey> GetAllKeys();
 
         /// <summary>
         /// Updates a <see cref="TEntity"/> in the repository.

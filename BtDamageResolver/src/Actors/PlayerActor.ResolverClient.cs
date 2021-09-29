@@ -27,6 +27,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                 // Ask for state
                 await GetGameState(_playerActorState.State.AuthenticationToken);
+                await GetGameOptions(_playerActorState.State.AuthenticationToken);
                 await GetDamageReports(_playerActorState.State.AuthenticationToken);
 
                 var connectionResponse = new ConnectionResponse

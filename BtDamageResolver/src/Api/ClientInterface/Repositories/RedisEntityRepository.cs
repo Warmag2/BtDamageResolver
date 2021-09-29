@@ -102,6 +102,34 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
+        public TEntity Get(string key)
+        {
+            try
+            {
+                var connection = GetConnection();
+                var value =  connection.StringGet(GetKey(key));
+
+                if (value != RedisValue.Null)
+                {
+                    var entity = JsonConvert.DeserializeObject<TEntity>(value);
+                    return entity;
+                }
+
+                return null;
+            }
+            catch (DbException ex)
+            {
+                _logger.LogError(ex, "Could not get entity {entityName} of type {entityType}. Database failure with error code {code}.", key, typeof(TEntity), ex.ErrorCode);
+                throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not get entity {entityName} of type {entityType}. Unknown failure.", key, typeof(TEntity));
+                throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            }
+        }
+
+        /// <inheritdoc />
         public async Task<TEntity> GetAsync(string key)
         {
             try
@@ -130,13 +158,43 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
+        public List<TEntity> GetAll()
+        {
+            try
+            {
+                var entities = new List<TEntity>();
+
+                foreach (var key in GetAllKeys())
+                {
+                    entities.Add(Get(key));
+                }
+
+                return entities;
+            }
+            catch (DataAccessException)
+            {
+                throw;
+            }
+            catch (DbException ex)
+            {
+                _logger.LogError(ex, "Could not get all entities of type {entityType}. Database failure with error code {code}.", typeof(TEntity), ex.ErrorCode);
+                throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not get all entities of type {entityType}. Unknown failure.", typeof(TEntity));
+                throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            }
+        }
+
+        /// <inheritdoc />
         public async Task<List<TEntity>> GetAllAsync()
         {
             try
             {
                 var entities = new List<TEntity>();
 
-                foreach (var key in await GetAllKeysAsync().ConfigureAwait(false))
+                foreach (var key in GetAllKeys())
                 {
                     entities.Add(await GetAsync(key).ConfigureAwait(false));
                 }
@@ -160,13 +218,13 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public Task<List<string>> GetAllKeysAsync()
+        public List<string> GetAllKeys()
         {
             try
             {
                 var server = GetServer();
                 var keys = server.Keys(pattern: $"{_keyPrefix}*");
-                return Task.FromResult(keys.Select(k => k.ToString().Substring($"{_keyPrefix}_".Length)).ToList());
+                return keys.Select(k => k.ToString().Substring($"{_keyPrefix}_".Length)).ToList();
             }
             catch (DbException ex)
             {

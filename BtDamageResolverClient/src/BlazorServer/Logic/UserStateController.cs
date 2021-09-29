@@ -6,6 +6,8 @@ using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 
+using static Faemiyah.BtDamageResolver.Api.Extensions.EnumExtensions;
+
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 {
     public class UserStateController
@@ -220,7 +222,12 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public Dictionary<AttackLogEntryType, bool> GetAttackLogEntryVisibilityCopy()
         {
-            return PlayerOptions.AttackLogEntryVisibility.ToDictionary(entry => entry.Key, entry => entry.Value);
+            if (PlayerOptions != null)
+            {
+                return PlayerOptions.AttackLogEntryVisibility.ToDictionary(entry => entry.Key, entry => entry.Value);
+            }
+
+            return GetEnumValueList<AttackLogEntryType>().ToDictionary(enumValue => enumValue, _ => true);
         }
 
         public SortedDictionary<string, string> GetPlayerIds()

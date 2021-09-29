@@ -7,6 +7,7 @@
 @inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
 @inject CommonData _commonData
+@implements IDisposable
 
 <div class="resolver_div_login">
     @if (!_userStateController.ConnectedToServer)
@@ -43,10 +44,9 @@
                 <h2 class="resolver_header">
                     Games with recent activity
                 </h2>
-                <FormGameList @key="_games" Games="@_games.Values.ToList()" OnJoin="@OnGameJoinButtonPressed"></FormGameList>
+                <FormGameList @key=@($"{_userStateController.PlayerName}_{_gameListTimeStamp}") Games="@_games.Values.ToList()" OnJoin="@OnGameJoinButtonPressed" OnRefresh="@RefreshGameList"></FormGameList>
             </div>
         }
-
     }
 </div>
 
@@ -82,21 +82,22 @@
     private bool _showModal = false;
     private string _modalName = string.Empty;
     private string _modalPassword = string.Empty;
-    private Dictionary<string, GameEntry> _games;
+    private Dictionary<string, GameEntry> _games = new();
     private Timer _timer;
+    private DateTime _gameListTimeStamp;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
             _timer = new Timer();
-            _timer.Interval = 5000;
+            _timer.Interval = 10000;
             _timer.Elapsed += OnTimerInterval;
             _timer.AutoReset = true;
             _timer.Enabled = true;
         }
 
-        if (firstRender)
+        /*if (firstRender)
         {
             var (success, credentials) = await _localStorage.GetUserCredentials();
 
@@ -104,20 +105,21 @@
             {
                 Connect(credentials);
             }
-        }
+        }*/
 
-        await base.OnAfterRenderAsync(firstRender);
+        base.OnAfterRender(firstRender);
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await RefreshGameList();
-        await base.OnInitializedAsync();
+        RefreshGameList();
+
+        base.OnInitialized();
     }
 
     private void OnTimerInterval(object sender, ElapsedEventArgs e)
     {
-        RefreshGameList().Wait();
+        RefreshGameList();
     }
 
     private void Connect(Credentials credentials)
@@ -141,16 +143,20 @@
         _resolverCommunicator.LeaveGame();
     }
 
-    private async Task RefreshGameList()
+    private void RefreshGameList()
     {
-        var games = await _commonData.GetGameEntries();
-        _games.Clear();
-        foreach (var game in games)
+        if (!_userStateController.ConnectedToGame)
         {
-            _games.Add(game.GetId(), game);
-        }
+            var games = _commonData.GetGameEntries();
+            _games.Clear();
+            foreach (var game in games)
+            {
+                _games.Add(game.GetId(), game);
+            }
+            _gameListTimeStamp = DateTime.UtcNow;
 
-        StateHasChanged();
+            StateHasChanged();
+        }
     }
 
     private void OnGameJoinButtonPressed(string gameName)
@@ -176,5 +182,14 @@
     {
         _showModal = false;
         JoinGame(new Credentials { Name = _modalName, Password = password });
+    }
+
+    public void Dispose()
+    {
+        if (_timer != null)
+        {
+            _timer.Elapsed -= OnTimerInterval;
+            _timer.Dispose();
+        }
     }
 }

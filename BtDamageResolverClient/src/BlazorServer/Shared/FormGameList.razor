@@ -15,27 +15,37 @@
             Last activity
         </th>
         <th>
+            <button class="resolver_button" @onclick="RefreshGameList">Refresh</button>
         </th>
     </tr>
     @if (Games != null)
     {
         @foreach (var game in Games)
         {
-            <FormGameEntry @key="game.GetId()" Game="@game" OnJoin="@OnGameJoin"></FormGameEntry>
+            <FormGameEntry Game="@game" OnJoin="@OnGameJoin"></FormGameEntry>
         }
     }
 </table>
 
 
-@code {
+@code
+{
     [Parameter]
     public List<GameEntry> Games { get; set; }
 
     [Parameter]
     public EventCallback<string> OnJoin { get; set; }
 
+    [Parameter]
+    public EventCallback<object> OnRefresh { get; set; }
+
     private void OnGameJoin(string gameName)
     {
         OnJoin.InvokeAsync(gameName);
+    }
+
+    private void RefreshGameList()
+    {
+        OnRefresh.InvokeAsync(new object());
     }
 }

@@ -9,7 +9,8 @@
 
     @foreach(var player in playerStateList)
     {
-        <ComponentPlayerState @key="_userStateController.GameState?.Players[player.PlayerId].TimeStamp" PlayerId = "@player.PlayerId" ></ComponentPlayerState>
+        //@key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.Players[player.PlayerId].TimeStamp}")
+        <ComponentPlayerState PlayerId = "@player.PlayerId" ></ComponentPlayerState>
     }
 }
 

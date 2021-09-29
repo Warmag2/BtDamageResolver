@@ -44,7 +44,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                 new GameEntry
                 {
                     Name = this.GetPrimaryKeyString(),
-                    PasswordProtected = _gameActorState.State.Password != null,
+                    PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
                     Players = _gameActorState.State.PlayerStates.Count,
                     TimeStamp = DateTime.UtcNow
                 });
