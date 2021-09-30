@@ -25,23 +25,14 @@ namespace Faemiyah.BtDamageResolver.Actors
                 await _playerActorState.WriteStateAsync();
                 _logger.LogInformation("Player {playerId} received a successful connection request from a client.", this.GetPrimaryKeyString());
 
-                // Ask for state
+                // Send personal state objects
+                await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
+                await SendDataToClient(EventNames.PlayerOptions, _playerActorState.State.Options);
+
+                // Ask for game-related state objects
                 await GetGameState(_playerActorState.State.AuthenticationToken);
                 await GetGameOptions(_playerActorState.State.AuthenticationToken);
                 await GetDamageReports(_playerActorState.State.AuthenticationToken);
-
-                var connectionResponse = new ConnectionResponse
-                {
-                    AuthenticationToken = _playerActorState.State.AuthenticationToken,
-                    GameId = _playerActorState.State.GameId,
-                    GamePassword = _playerActorState.State.GamePassword,
-                    IsConnected = true,
-                    PlayerId = this.GetPrimaryKeyString(),
-                    PlayerPassword = _playerActorState.State.Password
-                };
-
-                await SendDataToClient(EventNames.ConnectionResponse, connectionResponse);
-                await SendDataToClient(EventNames.PlayerOptions, _playerActorState.State.Options);
 
                 // Log the login to permanent store
                 await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Login, 0);
@@ -74,18 +65,27 @@ namespace Faemiyah.BtDamageResolver.Actors
                 }
             }
 
-            var connectionResponse = new ConnectionResponse
-            {
-                IsConnected = false,
-            };
-
-            await SendDataToClient(EventNames.ConnectionResponse, connectionResponse);
+            await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(false));
 
             // Log the logout to permanent store
             await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Logout, 0);
             await _playerActorState.WriteStateAsync();
             
             return true;
+        }
+
+        private ConnectionResponse GetConnectionResponse(bool isConnected)
+        {
+            var connectionResponse = new ConnectionResponse
+            {
+                AuthenticationToken = _playerActorState.State.AuthenticationToken,
+                GameId = _playerActorState.State.GameId,
+                GamePassword = _playerActorState.State.GamePassword,
+                IsConnected = isConnected,
+                PlayerId = this.GetPrimaryKeyString(),
+                PlayerPassword = _playerActorState.State.Password
+            };
+            return connectionResponse;
         }
 
         private async Task SendOnlyThisPlayerGameStateToClient()

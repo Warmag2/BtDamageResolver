@@ -17,8 +17,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         private GameState _gameState;
         private ConcurrentDictionary<Guid, (string playerId, UnitEntry unit)> _unitList;
         private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers;
-
-        //private static readonly SemaphoreSlim StateUpdateSemaphore = new SemaphoreSlim(1, 1);
         
         public UserStateController()
         {
@@ -60,12 +58,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public GameState GameState
         {
-            // ReSharper disable once InconsistentlySynchronizedField
             get => _gameState;
             set
             {
-                //StateUpdateSemaphore.Wait();
-
                 if (_gameState == null || value == null)
                 {
                     _gameState = value;
@@ -80,7 +75,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
                 UpdateUnitList();
 
-                //StateUpdateSemaphore.Release();
                 OnPlayerUnitListChanged?.Invoke();
             }
         }

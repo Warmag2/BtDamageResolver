@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.Actors.States;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
@@ -223,6 +224,8 @@ namespace Faemiyah.BtDamageResolver.Actors
                 await gameActor.UpdatePlayerState(_playerActorState.State.AuthenticationToken, await GetPlayerState(false), _playerActorState.State.UnitEntryIds.ToList());
                 // Fetch game options on join
                 await GetGameOptions(_playerActorState.State.AuthenticationToken);
+                // Connection state has been updated, so send it
+                await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
 
                 return true;
             }
@@ -302,6 +305,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             _playerActorState.State.GamePassword = null;
             _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
             await SendOnlyThisPlayerGameStateToClient();
+            await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
         }
 
         private bool ConnectedToGame()

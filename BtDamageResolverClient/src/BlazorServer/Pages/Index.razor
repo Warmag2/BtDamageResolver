@@ -91,6 +91,13 @@
         {
             var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
+            // If we have disconnected from a game, clear damage reports and game options to make sure
+            if (connectionResponse.GameId == null)
+            {
+                _userStateController.GameOptions = null;
+                _userStateController.DamageReportCollection.Clear();
+            }
+
             if (connectionResponse.IsConnected)
             {
                 _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
@@ -102,13 +109,12 @@
             {
                 _resolverCommunicator.SetAuthenticationToken(Guid.Empty);
                 _userStateController.ConnectedToServer = false;
+                _userStateController.GameState = null;
                 _userStateController.PlayerName = null;
                 _userStateController.PlayerOptions = null;
-                _userStateController.GameOptions = null;
-                _userStateController.GameState = null;
-                _userStateController.DamageReportCollection.Clear();
                 //_localStorage.RemoveUserCredentials().Wait();
             }
+
             StateHasChanged();
         });
 
