@@ -1,9 +1,7 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
-@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @using System.Timers
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
 @inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
 @inject CommonData _commonData
@@ -42,7 +40,7 @@
             <h2 class="resolver_header">
                 Games with recent activity
             </h2>
-            <FormGameList Games="@_userStateController.GameEntries.Values.ToList()" OnJoin="@OnGameJoinButtonPressed" OnRefresh="@RefreshGameList"></FormGameList>
+            <FormGameList Games="@_userStateController.GameEntries.Values.ToList()" OnJoin="@OnGameJoinButtonPressed"></FormGameList>
         </div>
     }
 </div>

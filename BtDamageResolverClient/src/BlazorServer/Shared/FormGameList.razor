@@ -19,7 +19,6 @@
             Last activity
         </th>
         <th>
-            <button class="resolver_button" @onclick="RefreshGameList">Refresh</button>
         </th>
     </tr>
     @if (Games.Any())
@@ -48,16 +47,8 @@
     [Parameter]
     public EventCallback<string> OnJoin { get; set; }
 
-    [Parameter]
-    public EventCallback<object> OnRefresh { get; set; }
-
     private void OnGameJoin(string gameName)
     {
         OnJoin.InvokeAsync(gameName);
-    }
-
-    private void RefreshGameList()
-    {
-        OnRefresh.InvokeAsync(new object());
     }
 }
