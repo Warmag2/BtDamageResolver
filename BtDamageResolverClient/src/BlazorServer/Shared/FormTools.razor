@@ -1,11 +1,20 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
-@inject IResolverCommunicator _resolverCommunicator
+@inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
 
 @{
-    var adminRights = _userStateController.PlayerState.PlayerId == _userStateController.GameState.AdminId;
+    bool adminRights;
+
+    if (_userStateController.PlayerState != null && _userStateController.GameState != null)
+    {
+        adminRights = _userStateController.PlayerState.PlayerId == _userStateController.GameState.AdminId;
+    }
+    else
+    {
+        adminRights = false;
+    }
 }
 
 <div class="resolver_div_componentlistcontainer">
@@ -89,21 +98,21 @@
         _unitId = unitId;
     }
 
-    private async Task ForceReady()
+    private void ForceReady()
     {
-        await _resolverCommunicator.ForceReady();
+        _resolverCommunicator.ForceReady();
     }
 
-    private async Task Kick()
+    private void Kick()
     {
         ModalClose();
-        await _resolverCommunicator.KickPlayer(_playerName);
+        _resolverCommunicator.KickPlayer(_playerName);
     }
 
-    private async Task MoveUnit()
+    private void MoveUnit()
     {
         ModalClose();
-        await _resolverCommunicator.MoveUnit(_unitId, _playerName);
+        _resolverCommunicator.MoveUnit(_unitId, _playerName);
     }
 
     private void ModalClose()

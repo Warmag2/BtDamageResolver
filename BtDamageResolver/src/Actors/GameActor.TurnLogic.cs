@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Interfaces.Extensions;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -30,20 +31,23 @@ namespace Faemiyah.BtDamageResolver.Actors
                 ? await ProcessTargetNumberUpdatesForUnits()
                 : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
 
-            DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
-            DistributeGameStateToPlayers();
+            await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
+            await DistributeGameStateToPlayers();
             
+            // Save game actor state
             await _gameActorState.WriteStateAsync();
 
-            // Log turns to permanent store
+            // Log update to permanent store
             await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
             // Remark game existence 
-            await GrainFactory.GetGameEntryRepository().AddOrUpdate(new GameEntry
-            {
-                Name = this.GetPrimaryKeyString(),
-                Players = _gameActorState.State.PlayerStates.Count,
-                TimeStamp = DateTime.UtcNow
-            });
+            await GrainFactory.GetGameEntryRepository().AddOrUpdate(
+                new GameEntry
+                {
+                    Name = this.GetPrimaryKeyString(),
+                    PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
+                    Players = _gameActorState.State.PlayerStates.Count,
+                    TimeStamp = DateTime.UtcNow
+                });
         }
 
         /// <summary>
@@ -52,18 +56,18 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <returns><b>True</b> if a fire event happened, <b>false</b> otherwise.</returns>
         private async Task<bool> CheckForFireEvent()
         {
-            if (_gameActorState.State.PlayerStates.All(p => p.Value.IsReady))
+            if (_gameActorState.State.PlayerStates.Any() && _gameActorState.State.PlayerStates.All(p => p.Value.IsReady))
             {
-                _gameActorStateEthereal.Turn++;
-                _gameActorStateEthereal.TurnTimeStamp = DateTime.UtcNow;
+                _gameActorState.State.Turn++;
+                _gameActorState.State.TurnTimeStamp = DateTime.UtcNow;
 
-                _logger.LogInformation("All players in game {gameId} are ready. Incrementing turn to {turn} and performing fire event.", this.GetPrimaryKeyString(), _gameActorStateEthereal.Turn);
+                _logger.LogInformation("All players in game {gameId} are ready. Incrementing turn to {turn} and performing fire event.", this.GetPrimaryKeyString(), _gameActorState.State.Turn);
 
                 // Mark all units not ready
                 foreach (var unit in _gameActorState.State.PlayerStates.Values.SelectMany(p => p.UnitEntries))
                 {
                     unit.Ready = false;
-                    unit.TimeStamp = _gameActorStateEthereal.TurnTimeStamp;
+                    unit.TimeStamp = _gameActorState.State.TurnTimeStamp;
                 }
 
                 var damageReports = new List<DamageReport>();
@@ -85,10 +89,10 @@ namespace Faemiyah.BtDamageResolver.Actors
                 }
 
                 // Mark that the damage reports happened during this turn
-                damageReports.ForEach(d => d.Turn = _gameActorStateEthereal.Turn);
+                damageReports.ForEach(d => d.Turn = _gameActorState.State.Turn);
 
-                _gameActorStateEthereal.DamageReports.AddRange(damageReports);
-                DistributeDamageReportsToPlayers(damageReports);
+                _gameActorState.State.DamageReports.AddRange(damageReports);
+                await DistributeDamageReportsToPlayers(damageReports);
 
                 // Unmark ready in local memory and for the actors themselves
                 foreach (var playerState in _gameActorState.State.PlayerStates.Values)
@@ -102,9 +106,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                 await ModifyGameStateBasedOnDamageReports(damageReports);
 
                 // Log turns to permanent store
-                await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Turn, _gameActorStateEthereal.Turn);
-                // Remark game existence 
-                await GrainFactory.GetGameEntryRepository().AddOrUpdate(new GameEntry { Name = this.GetPrimaryKeyString(), Players = _gameActorState.State.PlayerStates.Count, TimeStamp = DateTime.UtcNow });
+                await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Turn, _gameActorState.State.Turn);
 
                 return true;
             }

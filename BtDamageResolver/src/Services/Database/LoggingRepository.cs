@@ -44,7 +44,7 @@ namespace Faemiyah.BtDamageResolver.Services.Database
             {
                 await RefreshConnection();
 
-                await using var transaction = _connection.BeginTransaction();
+                await using var transaction = await _connection.BeginTransactionAsync();
 
                 while (!entries.IsEmpty)
                 {
@@ -104,7 +104,7 @@ namespace Faemiyah.BtDamageResolver.Services.Database
             {
                 await RefreshConnection();
 
-                await using var transaction = _connection.BeginTransaction();
+                await using var transaction = await _connection.BeginTransactionAsync();
 
                 while (!entries.IsEmpty)
                 {

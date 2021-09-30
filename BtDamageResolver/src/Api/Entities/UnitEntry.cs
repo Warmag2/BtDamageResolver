@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
 
@@ -315,7 +316,11 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// <returns>An <see cref="Unit"/> based on this unit.</returns>
         public Unit ToUnit()
         {
-            return Copy();
+            var copy = Copy();
+            // We want to keep the name because Copy() generates a new one
+            copy.Name = Name;
+
+            return copy;
         }
 
         /// <summary>
@@ -336,13 +341,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
             Tonnage = unit.Tonnage;
             Troopers = unit.Troopers;
             Weapons = Weapons.Select(w => w.Copy()).ToList();
-        }
-
-        /// <inheritdoc />
-        protected override void EntitySpecificValidate(EntityValidationResult validationResult)
-        {
-            // UnitEntries are not directly saved to repositories, so this won't be called.
-            throw new NotImplementedException();
         }
     }
 }

@@ -55,7 +55,7 @@
 @code
 {
     private ResolverDataType _selectedDataType = ResolverDataType.ClusterTable;
-    private List<string> _items = new List<string>();
+    private List<string> _items = new();
     private string _entryName;
 
     protected override void OnInitialized()
@@ -105,6 +105,6 @@
     private async Task OnUnitDeleted(string entryName)
     {
         await _commonData.DeleteUnit(entryName);
-        _entryName = _items.FirstOrDefault();
+        RefreshDataList();
     }
 }

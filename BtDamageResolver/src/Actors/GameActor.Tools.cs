@@ -12,21 +12,28 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <inheritdoc />
         public Task<bool> KickPlayer(Guid authenticationToken, string playerId)
         {
-            if (CheckAuthentication(authenticationToken, _gameActorState.State.AdminId))
+            if (!CheckAuthentication(authenticationToken, _gameActorState.State.AdminId))
             {
-                var playerActor = GrainFactory.GetGrain<IPlayerActor>(playerId);
-
-                // Perform the disconnect through the player actor, since the game knows his authentication token
-                playerActor.LeaveGame(_gameActorState.State.AuthenticationTokens.SingleOrDefault(a => a.Value == playerId).Key).Ignore();
-
-                _logger.LogInformation("In Game {gameId}, Player {playerId} successfully kicked player.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken], playerId);
-
-                return Task.FromResult(true);
+                _logger.LogWarning("In Game {gameId}, Player {playerId} failed to kick player {playerToKickId}.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken], playerId);
+                return Task.FromResult(false);
             }
 
-            _logger.LogWarning("In Game {gameId}, Player {playerId} failed to kick player.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken], playerId);
+            if (_gameActorState.State.AuthenticationTokens[authenticationToken] == playerId)
+            {
+                _logger.LogWarning("In Game {gameId}, Player {playerId} tried to kick himself. Disallowing.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
+                return Task.FromResult(false);
+            }
 
-            return Task.FromResult(false);
+            var playerActor = GrainFactory.GetGrain<IPlayerActor>(playerId);
+
+            // Perform the disconnect through the player actor, since the game knows his authentication token
+            playerActor.LeaveGame(_gameActorState.State.AuthenticationTokens.SingleOrDefault(a => a.Value == playerId).Key).Ignore();
+
+            _logger.LogInformation("In Game {gameId}, Player {playerId} successfully kicked player {playerToKickId}.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken], playerId);
+
+            return Task.FromResult(true);
+
+            
         }
 
         /// <inheritdoc />

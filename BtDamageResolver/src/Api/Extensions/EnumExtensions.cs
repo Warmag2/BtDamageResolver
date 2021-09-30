@@ -1,4 +1,6 @@
-﻿using Faemiyah.BtDamageResolver.Api.Enums;
+﻿using System;
+using System.Collections.Generic;
+using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Extensions
 {
@@ -16,6 +18,18 @@ namespace Faemiyah.BtDamageResolver.Api.Extensions
                 default:
                     return false;
             }
+        }
+
+        public static List<TEnum> GetEnumValueList<TEnum>() where TEnum : System.Enum
+        {
+            var returnValue = new List<TEnum>();
+
+            foreach (var enumValue in Enum.GetValues(typeof(TEnum)))
+            {
+                returnValue.Add((TEnum)enumValue);
+            }
+
+            return returnValue;
         }
     }
 }

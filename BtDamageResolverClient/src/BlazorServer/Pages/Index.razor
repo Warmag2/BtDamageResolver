@@ -1,17 +1,17 @@
 ﻿@page "/"
-@using Faemiyah.BtDamageResolver.Api.Compression
-@using Faemiyah.BtDamageResolver.Api.Entities
-@using Faemiyah.BtDamageResolver.Api.Events
-@using Faemiyah.BtDamageResolver.Api.Options
+@using SevenZip.Compression.LZMA
+@using Microsoft.AspNetCore.SignalR.Client
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@using Microsoft.AspNetCore.SignalR.Client
-@using Orleans
-@inject IClusterClient _clusterClient
+@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
+@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
+@using Faemiyah.BtDamageResolver.Api.Options
 @inject CommonData _commonData
+@inject LocalStorage _localStorage
 @inject NavigationManager _navigationManager
-@inject IResolverCommunicator _resolverCommunicator
+@inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
 @inject VisualStyleController _visualStyleController
 @implements IDisposable
@@ -23,7 +23,7 @@
 </div>
 
 <div style="@VisualStyleController.HideElement(_userStateController.ConnectedToGame)">
-    <FormServer @ref="_formServer" OnServerStateChanged="@RefreshPage"></FormServer>
+    <FormServer @key="_userStateController.PlayerName" @ref="_formServer"></FormServer>
 </div>
 
 
@@ -47,28 +47,29 @@
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Dashboard || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormGameState></FormGameState>
+        // We have to include this here, since the player state pages are updated by other methods, but this should always refresh when new damage reports arrive
+        <FormGameState @key="_userStateController.DamageReportCollection.TimeStamp"></FormGameState>
     }
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.AllUnits || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <ComponentGameState DisplayOwnUnits="true"></ComponentGameState>
+        <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>
     }
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.DamageReports || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormDamageReports OnlyNewest="false"></FormDamageReports>
+        <FormDamageReports @key=@($"{_userStateController.PlayerName}_{_userStateController.DamageReportCollection?.TimeStamp}") OnlyNewest="false"></FormDamageReports>
     }
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Options || !_userStateController.ConnectedToGame)">
     @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
     {
-        <FormOptions @key=@_userStateController.GameOptions.TimeStamp></FormOptions>
+        <FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>
     }
 </div>
 
@@ -86,68 +87,108 @@
             .WithUrl(_navigationManager.ToAbsoluteUri("/ClientHub"))
             .Build();
 
-        _hubConnection.On<byte[]>("ReceiveDamageReports", (damageReportData) =>
+        _hubConnection.On<byte[]>(EventNames.ConnectionResponse, (connectionResponseData) =>
         {
-            var damageReport = DataHelper.Unpack<List<DamageReport>>(damageReportData);
-            _userStateController.AddDamageReports(damageReport);
-        });
+            var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
-        _hubConnection.On<string>("ReceiveErrorMessage", (errorMessage) =>
-        {
-            _errorMessage = errorMessage;
+            // If we have disconnected from a game, clear damage reports and game options to make sure
+            if (connectionResponse.GameId == null)
+            {
+                _userStateController.GameOptions = null;
+                _userStateController.DamageReportCollection.Clear();
+            }
+
+            if (connectionResponse.IsConnected)
+            {
+                _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
+                _userStateController.ConnectedToServer = true;
+                _userStateController.PlayerName = connectionResponse.PlayerId;
+                //_localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
+            }
+            else
+            {
+                _resolverCommunicator.SetAuthenticationToken(Guid.Empty);
+                _userStateController.ConnectedToServer = false;
+                _userStateController.GameState = null;
+                _userStateController.PlayerName = null;
+                _userStateController.PlayerOptions = null;
+                //_localStorage.RemoveUserCredentials().Wait();
+            }
+
             StateHasChanged();
         });
 
-        _hubConnection.On<byte[]>("ReceiveGameOptions", (gameOptionsData) =>
+        _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
         {
-            var gameOptions = DataHelper.Unpack<GameOptions>(gameOptionsData);
-            _userStateController.GameOptions = gameOptions;
+            _userStateController.DamageReportCollection.AddRange(DataHelper.Unpack<List<DamageReport>>(damageReportData));
             StateHasChanged();
         });
 
-        _hubConnection.On<byte[]>("ReceiveGameState", (gameStateData) =>
+        _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
         {
-            var gameState = DataHelper.Unpack<GameState>(gameStateData);
-            _userStateController.GameState = gameState;
+            _errorMessage = DataHelper.Unpack<string>(errorMessage);
             StateHasChanged();
         });
 
-        _hubConnection.On<byte[]>("ReceiveTargetNumberUpdates", (targetNumberUpdateData) =>
+        _hubConnection.On<byte[]>(EventNames.GameEntries, gameEntries =>
         {
-            var targetNumberUpdates = DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData);
-            _userStateController.RecordTargetNumberUpdates(targetNumberUpdates);
+            _userStateController.GameEntries = DataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetId(), g => g);
+            StateHasChanged();
         });
 
-        await _hubConnection.StartAsync();
+        _hubConnection.On<byte[]>(EventNames.GameOptions, gameOptionsData =>
+        {
+            _userStateController.GameOptions = DataHelper.Unpack<GameOptions>(gameOptionsData);
+            StateHasChanged();
+        });
+
+        _hubConnection.On<byte[]>(EventNames.GameState, gameStateData =>
+        {
+            _userStateController.GameState = DataHelper.Unpack<GameState>(gameStateData);
+            StateHasChanged();
+        });
+
+        _hubConnection.On<byte[]>(EventNames.PlayerOptions, playerOptionsData =>
+        {
+            _userStateController.PlayerOptions = DataHelper.Unpack<PlayerOptions>(playerOptionsData);
+            StateHasChanged();
+        });
+
+        _hubConnection.On<byte[]>(EventNames.TargetNumbers, targetNumberUpdateData =>
+        {
+            _userStateController.RecordTargetNumberUpdates(DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
+            StateHasChanged();
+        });
 
         _resolverCommunicator.SetHubConnection(_hubConnection);
+        await _hubConnection.StartAsync();
 
-        _userStateController.OnDataUpdated += UpdatePlayerState;
+        _userStateController.OnPlayerStateUpdated += UpdatePlayerState;
         _userStateController.OnGameOptionsUpdated += UpdateGameOptions;
         _userStateController.OnPlayerOptionsUpdated += UpdatePlayerOptions;
-        _userStateController.OnDamageRequestRequested += SendDamageRequest;
+        _userStateController.OnDamageInstanceRequested += SendDamageInstance;
 
         await base.OnInitializedAsync();
     }
 
-    private void SendDamageRequest()
+    private void SendDamageInstance()
     {
-        _resolverCommunicator.SendDamageRequest(_userStateController.DamageRequest);
+        _resolverCommunicator.SendDamageInstance(_userStateController.DamageInstance);
     }
 
     private void UpdatePlayerState()
     {
-        _resolverCommunicator.UpdatePlayerState(_userStateController.PlayerState);
+        _resolverCommunicator.SendPlayerState(_userStateController.PlayerState);
     }
 
     private void UpdateGameOptions()
     {
-        _resolverCommunicator.SetGameOptions(_userStateController.GameOptions);
+        _resolverCommunicator.SendGameOptions(_userStateController.GameOptions);
     }
 
     private void UpdatePlayerOptions()
     {
-        _resolverCommunicator.SetPlayerOptions(_userStateController.PlayerOptions);
+        _resolverCommunicator.SendPlayerOptions(_userStateController.PlayerOptions);
     }
 
     private void SelectTab(ResolverTab resolverTab)
@@ -155,23 +196,17 @@
         _selectedTab = resolverTab;
     }
 
-    private async Task LeaveGame()
+    private void LeaveGame()
     {
-        await _formServer.LeaveGame();
-    }
-
-    private void RefreshPage()
-    {
-        StateHasChanged();
+        _formServer.LeaveGame();
     }
 
     public void Dispose()
     {
-        _userStateController.OnDataUpdated -= UpdatePlayerState;
+        _userStateController.OnPlayerStateUpdated -= UpdatePlayerState;
         _userStateController.OnGameOptionsUpdated -= UpdateGameOptions;
         _userStateController.OnPlayerOptionsUpdated -= UpdatePlayerOptions;
-        _userStateController.OnDamageRequestRequested -= SendDamageRequest;
+        _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
         _hubConnection?.DisposeAsync();
     }
-
 }

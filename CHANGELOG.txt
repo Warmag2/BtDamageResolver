@@ -1,5 +1,14 @@
 	Implemented
 
+[FEATURE] Multiple quirks implemented.
+[FEATURE] Show password protection in game list.
+[FEATURE] Redis -based API and client communication.
+[FEATURE] Only show possible movement types and amounts as per unit type and penalties.
+[FEATURE] Display incorrectly input fields in red.
+[FEATURE] MASC
+[FEATURE] Unit base speed can be altered.
+[FEATURE] Heat speed effects.
+[FEATURE] Listing of heat effects.
 [FEATURE] Heat tracking and hit probability effects.
 [FEATURE] EMP tracking and hit probability effects.
 [FEATURE] Floating Critical Rule
@@ -27,6 +36,7 @@
 
 	Implemented (internal)
 
+[FEATURE] Quirks (cannot be set yet).
 [FEATURE] Faster and stabler repositories.
 [FEATURE] Better parser
 [FEATURE] Data sent over network is compressed with LZMA.
@@ -48,6 +58,9 @@
 [FEATURE] Proper single missile attack handling.
 
 	Fixed
+
+[BUG] Unit name is not saved correctly when saving into unit repository.
+[BUG] Game list does not refresh automatically / at all.
 
 [BUG] Task for resolving a turn was ignored so exceptions could not be caught. User received no information at all about errors.
 

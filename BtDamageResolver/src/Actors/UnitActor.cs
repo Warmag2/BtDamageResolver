@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Events;
-using Faemiyah.BtDamageResolver.Api.Interfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
@@ -115,9 +114,9 @@ namespace Faemiyah.BtDamageResolver.Actors
             return Task.FromResult(_unitActorState.State.UnitEntry);
         }
 
-        public async Task<DamageReport> ProcessDamageRequest(DamageRequest damageRequest, GameOptions gameOptions)
+        public async Task<DamageReport> ProcessDamageInstance(DamageInstance damageInstance, GameOptions gameOptions)
         {
-            return await _logicCombat.ResolveDamageRequest(damageRequest, gameOptions);
+            return await _logicCombat.ResolveDamageInstance(damageInstance, gameOptions);
         }
 
         /// <inheritdoc />

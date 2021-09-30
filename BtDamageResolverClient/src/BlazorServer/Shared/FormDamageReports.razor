@@ -1,9 +1,13 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @inject VisualStyleController _visualStyleController
-@implements IDisposable
 
-@if (!_userStateController.DamageReportCollection.Any())
+@{
+    var showOtherPlayers = _userStateController.PlayerOptions?.ShowOtherPlayersDamageReportsOnMainScreenByDefault ?? true;
+    //@key=damageReport 
+}
+
+@if (_userStateController.DamageReportCollection.IsEmpty())
 {
     <h3>
         No damagereports available
@@ -13,29 +17,26 @@ else
 {
     @if (OnlyNewest)
     {
-        @if (_userStateController.DamageReportCollection.Any())
+        @foreach (var damageReport in _userStateController.DamageReportCollection.DamageReports.Last().Value)
         {
-            @foreach (var damageReport in _userStateController.DamageReportCollection.Values.Last().DamageReports)
+            if (showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport))
             {
-                if (_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault || _userStateController.DamageReportConcernsPlayer(damageReport))
-                {
-                    <div class="resolver_div_componentlistcontainer alternatingcolors">
-                        <FormDamageReport @key=@damageReport.Id DamageReport=@damageReport></FormDamageReport>
-                    </div>
-                }
+                <div class="resolver_div_componentlistcontainer alternatingcolors">
+                    <FormDamageReport DamageReport=@damageReport></FormDamageReport>
+                </div>
             }
         }
     }
     else
     {
-        @foreach (var singleTurnDamageReports in _userStateController.DamageReportCollection.Reverse())
+        @foreach (var singleTurnDamageReports in _userStateController.DamageReportCollection.DamageReports.Reverse())
         {
-<button class="resolver_button_accordion @_visualStyleController.GetActiveClass(singleTurnDamageReports.Value.Visible)" @onclick="@(e => singleTurnDamageReports.Value.Visible = !singleTurnDamageReports.Value.Visible)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Turn @singleTurnDamageReports.Key</button>
-            <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(singleTurnDamageReports.Value.Visible)" style="@VisualStyleController.HideElement(!singleTurnDamageReports.Value.Visible)">
-                @foreach (var damageReport in singleTurnDamageReports.Value.DamageReports)
+            <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))" @onclick="@(e => _userStateController.DamageReportCollection.ToggleVisible(singleTurnDamageReports.Key))"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Turn @singleTurnDamageReports.Key</button>
+            <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))" style="@VisualStyleController.HideElement(!_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))">
+                @foreach (var damageReport in singleTurnDamageReports.Value)
                 {
                     <div class="resolver_div_componentlistcontainer alternatingcolors">
-                        <FormDamageReport @key=@damageReport.Id DamageReport=@damageReport></FormDamageReport>
+                        <FormDamageReport DamageReport=@damageReport></FormDamageReport>
                     </div>
                 }
             </div>
@@ -50,14 +51,4 @@ else
 {
     [Parameter]
     public bool OnlyNewest { get; set; }
-
-    protected override void OnInitialized()
-    {
-        _userStateController.OnDamageReportChange += StateHasChanged;
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnDamageReportChange -= StateHasChanged;
-    }
 }

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Events;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Interfaces
 {
@@ -24,8 +24,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Interfaces
         /// <summary>
         /// Resolves the damage packets from a damage request.
         /// </summary>
-        /// <param name="damageRequest">The damage request to resolve.</param>
+        /// <param name="damageInstance">The damage request to resolve.</param>
         /// <returns>The damage packets.</returns>
-        List<(int damage, List<SpecialDamageEntry> specialDamageEntries)> ResolveDamageRequest(DamageRequest damageRequest);
+        List<(int damage, List<SpecialDamageEntry> specialDamageEntries)> ResolveDamageInstance(DamageInstance damageInstance);
     }
 }

@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Interfaces.Extensions;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 {
     public class CommonData
     {
-        private readonly IClusterClient _clusterClient;
-
+        private readonly IEntityRepository<GameEntry, string> _gameEntryRepository;
+        private readonly IEntityRepository<Unit, string> _unitRepository;
         private readonly SortedDictionary<string, string> _mapWeaponNamesNormal;
         private readonly SortedDictionary<string, string> _mapWeaponNamesBattleArmor;
         private readonly SortedDictionary<string, string> _mapWeaponNamesInfantry;
@@ -23,21 +23,45 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         private const string InfantryWeaponPrefix = "Infantry ";
         private const string MeleeWeaponPrefix = "Melee ";
 
-        public CommonData(IClusterClient clusterClient)
+        public CommonData(
+            IEntityRepository<ClusterTable, string> clusterTableRepository,
+            IEntityRepository<CriticalDamageTable, string> criticalDamageTableRepository,
+            IEntityRepository<GameEntry, string> gameEntryRepository,
+            IEntityRepository<PaperDoll, string> paperDollRepository,
+            IEntityRepository<Unit, string> unitRepository,
+            IEntityRepository<Weapon, string> weaponRepository)
         {
-            _clusterClient = clusterClient;
+            _gameEntryRepository = gameEntryRepository;
+            _unitRepository = unitRepository;
 
             // Pre-bake lists used to generate options
-            MapUnitType = new List<UnitType> { UnitType.Building, UnitType.AerospaceDropship, UnitType.AerospaceFighter, UnitType.BattleArmor, UnitType.Infantry, UnitType.Mech, UnitType.VehicleTracked, UnitType.VehicleWheeled, UnitType.VehicleHover, UnitType.VehicleVtol }.ToDictionary(u => u.ToString());
-            MapMovementAmount = new Dictionary<string, int> { {"0-2", 0}, { "3-4", 3 }, { "5-6", 5 }, { "7-9", 7 }, { "10-17", 10 }, { "18-24", 18 }, { "25+", 25 } };
-            MapAttackModifier = new Dictionary<string, int> { { "-4", -4}, { "-3", -3}, { "-2", -2}, { "-1", -1}, { "+0", 0 }, { "+1", 1 }, { "+2", 2 }, { "+3", 3 }, { "+4", 4 } };
-            MapCover = new Dictionary<string, Cover> { { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right } };
-            MapFacing = new Dictionary<string, Direction> { { "Front", Direction.Front}, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top } };
-            MapClusterTable = _clusterClient.GetClusterTableRepository().GetAll().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
-            MapCriticalDamageTable = _clusterClient.GetCriticalDamageTableRepository().GetAll().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
-            MapPaperDoll = _clusterClient.GetPaperDollRepository().GetAll().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
+            MapUnitType = new List<UnitType>
+            {
+                UnitType.Building, UnitType.AerospaceDropship, UnitType.AerospaceFighter, UnitType.BattleArmor,
+                UnitType.Infantry, UnitType.Mech, UnitType.VehicleTracked, UnitType.VehicleWheeled,
+                UnitType.VehicleHover, UnitType.VehicleVtol
+            }.ToDictionary(u => u.ToString());
+            MapMovementAmount = new Dictionary<string, int>
+            {
+                { "0-2", 0 }, { "3-4", 3 }, { "5-6", 5 }, { "7-9", 7 }, { "10-17", 10 }, { "18-24", 18 }, { "25+", 25 }
+            };
+            MapAttackModifier = new Dictionary<string, int>
+            {
+                { "-4", -4 }, { "-3", -3 }, { "-2", -2 }, { "-1", -1 }, { "+0", 0 }, { "+1", 1 }, { "+2", 2 }, { "+3", 3 }, { "+4", 4 }
+            };
+            MapCover = new Dictionary<string, Cover>
+            {
+                { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right }
+            };
+            MapFacing = new Dictionary<string, Direction>
+            {
+                { "Front", Direction.Front }, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top }
+            };
+            MapClusterTable = clusterTableRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
+            MapCriticalDamageTable = criticalDamageTableRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
+            MapPaperDoll = paperDollRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
             MapQuirk = new SortedDictionary<string, Quirk>(Enum.GetValues<Quirk>().ToDictionary(q => q.ToString()));
-            MapWeapon = _clusterClient.GetWeaponRepository().GetAll().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
+            MapWeapon = weaponRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
             _mapWeaponNamesNormal = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix) && !w.StartsWith(MeleeWeaponPrefix)).ToDictionary(w => w));
             _mapWeaponNamesBattleArmor = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(BattleArmorWeaponPrefix)).ToDictionary(w => w.Substring(BattleArmorWeaponPrefix.Length), w => w));
             _mapWeaponNamesInfantry = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w.Substring(InfantryWeaponPrefix.Length), w => w));
@@ -193,29 +217,29 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public async Task SaveUnit(UnitEntry unit)
         {
-            await _clusterClient.GetUnitRepository().AddOrUpdate(unit.ToUnit());
+            await _unitRepository.AddOrUpdateAsync(unit.ToUnit());
         }
 
         public SortedDictionary<string, string> GetSavedUnits()
         {
             var sortedUnitList = new SortedDictionary<string, string>();
-            _clusterClient.GetUnitRepository().GetAll().Result.ForEach(u => sortedUnitList.Add(u.Name, u.Name));
+            _unitRepository.GetAllKeys().ForEach(u => sortedUnitList.Add(u, u));
             return sortedUnitList;
         }
 
-        public async Task<List<GameEntry>> GetGameEntries()
+        public List<GameEntry> GetGameEntries()
         {
-            return await _clusterClient.GetGameEntryRepository().GetAll();
+            return _gameEntryRepository.GetAll();
         }
 
         public async Task<Unit> GetUnitEntry(string unitName)
         {
-            return await _clusterClient.GetUnitRepository().Get(unitName);
+            return await _unitRepository.GetAsync(unitName);
         }
 
         public async Task DeleteUnit(string unitName)
         {
-            await _clusterClient.GetUnitRepository().Delete(unitName);
+            await _unitRepository.DeleteAsync(unitName);
         }
 
         public List<PickBracket> FormPickBracketsDistance(UnitEntry unit)

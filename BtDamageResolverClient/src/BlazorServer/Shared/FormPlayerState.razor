@@ -6,24 +6,17 @@
 @if (_userStateController.PlayerState != null)
 {
     <div class="resolver_div_componentlistcontainer">
-
         @foreach (var unitEntry in _userStateController.PlayerState.UnitEntries)
         {
             <FormUnitEntry @key=@unitEntry.Id UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
         }
-
     </div>
-
+    
     <div class="resolver_div_hr">
         <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">+</button>
         <button class="resolver_button resolver_button_ready" @onclick="Ready">@(_userStateController.PlayerState.IsReady ? "UnReady" : "Ready")</button>
-    </div>
-
-    <div class="resolver_div_hr">
-        DEBUG - Player state change events so far: @_userStateController.DebugPlayerStateChanges
-    </div>
-
-    <!-- This is here because we only want exactly one /-->
+    </div> <!-- This is here because we only want exactly one /-->
+    
     <div id="resolver_tooltip_targetnumber" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
 }
 
@@ -31,7 +24,7 @@
 {
     protected override void OnInitialized()
     {
-        _userStateController.OnUnitListChange += StateHasChanged;
+        _userStateController.OnPlayerUnitListChanged += StateHasChanged;
     }
 
     private void AddUnit()
@@ -72,6 +65,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnUnitListChange -= StateHasChanged;
+        _userStateController.OnPlayerUnitListChanged -= StateHasChanged;
     }
 }

@@ -1,9 +1,12 @@
 using System;
-using System.Threading.Tasks;
 using Blazored.LocalStorage;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
+using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
+using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.AspNetCore.Builder;
@@ -13,11 +16,9 @@ using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Orleans;
-using Orleans.Configuration;
-using Orleans.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
-using ConnectionOptions = Orleans.Configuration.ConnectionOptions;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer
 {
@@ -35,19 +36,21 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
         public void ConfigureServices(IServiceCollection services)
         {
             var configuration = GetConfiguration("CommunicationSettings.json");
-            var clusterOptions = configuration.GetSection("ClusterOptions").Get<FaemiyahClusterOptions>();
-            var client = ConnectClient(clusterOptions);
+            //var clusterOptions = configuration.GetSection("ClusterOptions").Get<FaemiyahClusterOptions>();
+            //var client = ConnectClient(clusterOptions);
+            //var commonData = new CommonData(client);
 
-            services.Configure<FaemiyahClusterOptions>(configuration.GetSection("ClusterOptions"));
-            services.Configure<FaemiyahLoggingOptions>(configuration.GetSection("LoggingOptions"));
+            services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
+            services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
+            services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
             services.Configure<CircuitOptions>(options =>
             {
                 options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromDays(1);
             });
             services.Configure<HttpConnectionDispatcherOptions>(options =>
             {
-                options.ApplicationMaxBufferSize = 262144;
-                options.TransportMaxBufferSize = 262144;
+                options.ApplicationMaxBufferSize = 1048576;
+                options.TransportMaxBufferSize = 1048576;
             });
 
             services.AddBlazoredLocalStorage();
@@ -61,15 +64,46 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
-                options.MaximumReceiveMessageSize = 262144;
+                options.MaximumReceiveMessageSize = 1048576;
             });
+            services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
+            services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
+            services.AddSingleton<IEntityRepository<GameEntry, string>>(GetRedisEntityRepository<GameEntry>);
+            services.AddSingleton<IEntityRepository<PaperDoll, string>>(GetRedisEntityRepository<PaperDoll>);
+            services.AddSingleton<IEntityRepository<Unit, string>>(GetRedisEntityRepository<Unit>);
+            services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
             services.AddSingleton<CommonData>();
             services.AddSingleton<VisualStyleController>();
-            services.AddSingleton(client);
-            services.AddScoped<UserStateController>();
             services.AddScoped<ClientHub>();
-            services.AddScoped<IResolverCommunicator, ResolverCommunicator>();
+            services.AddScoped<LocalStorage>();
+            services.AddScoped<ResolverCommunicator>();
+            services.AddScoped<UserStateController>();
         }
+
+        private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
+        {
+            var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
+            if (options != null)
+            {
+                return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString);
+            }
+
+            throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
+        }
+
+        /*private static SqlEntityRepository<TType> GetSqlEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
+        {
+            var options = serviceProvider.GetService<IOptions<FaemiyahClusterOptions>>();
+            var connectionString = options?.Value.ConnectionString;
+            var logger = serviceProvider.GetService<ILogger<SqlEntityRepository<TType>>>();
+            if (options != null)
+            {
+                 var repository = new SqlEntityRepository<TType>(logger, connectionString);
+                 return repository;
+            }
+
+            throw new InvalidOperationException("Unable to find options class providing connection string for entity repositories.");
+        }*/
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -95,7 +129,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             });
         }
 
-        private static IClusterClient ConnectClient(FaemiyahClusterOptions clusterOptions)
+        /*private static IClusterClient ConnectClient(FaemiyahClusterOptions clusterOptions)
         {
             var client = new ClientBuilder()
                 .Configure<ClusterOptions>(options =>
@@ -103,7 +137,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
                     options.ClusterId = "faemiyah";
                     options.ServiceId = "Resolver";
                 })
-                .Configure<ConnectionOptions>(options =>
+                .Configure<Orleans.Configuration.ConnectionOptions>(options =>
                 {
                     options.ConnectionRetryDelay = TimeSpan.FromSeconds(30);
                     options.OpenConnectionTimeout = TimeSpan.FromSeconds(30);
@@ -121,6 +155,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
 
             client.Connect(ex => Task.FromResult(true)).Wait();
             return client;
-        }
+        }*/
     }
 }

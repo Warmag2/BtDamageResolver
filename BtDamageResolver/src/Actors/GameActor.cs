@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Events;
-using Faemiyah.BtDamageResolver.Api.Interfaces.Extensions;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
@@ -19,25 +19,27 @@ namespace Faemiyah.BtDamageResolver.Actors
     public partial class GameActor : Grain, IGameActor
     {
         private readonly ILogger<GameActor> _logger;
+        private readonly ICommunicationServiceClient _communicationServiceClient;
         private readonly ILoggingServiceClient _loggingServiceClient;
         private readonly IPersistentState<GameActorState> _gameActorState;
-        private readonly GameActorStateEthereal _gameActorStateEthereal;
 
         /// <summary>
         /// Constructor for a Game actor.
         /// </summary>
         /// <param name="logger">The logger.</param>
+        /// <param name="communicationServiceClient">The communication service client.</param>
         /// <param name="loggingServiceClient">The logging service client.</param>
         /// <param name="gameActorState">The state object for this actor.</param>
         public GameActor(
             ILogger<GameActor> logger,
+            ICommunicationServiceClient communicationServiceClient,
             ILoggingServiceClient loggingServiceClient,
             [PersistentState(nameof(GameActorState), Settings.ActorStateStoreName)]IPersistentState<GameActorState> gameActorState)
         {
             _logger = logger;
+            _communicationServiceClient = communicationServiceClient;
             _loggingServiceClient = loggingServiceClient;
             _gameActorState = gameActorState;
-            _gameActorStateEthereal = new GameActorStateEthereal();
         }
 
         /// <inheritdoc />
@@ -60,8 +62,8 @@ namespace Faemiyah.BtDamageResolver.Actors
                 GameId = this.GetPrimaryKeyString(),
                 Players = _gameActorState.State.PlayerStates,
                 TimeStamp = _gameActorState.State.TimeStamp,
-                Turn = _gameActorStateEthereal.Turn,
-                TurnTimeStamp = _gameActorStateEthereal.TurnTimeStamp
+                Turn = _gameActorState.State.Turn,
+                TurnTimeStamp = _gameActorState.State.TurnTimeStamp
             };
         }
 
@@ -115,47 +117,49 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public Task<bool> RequestDamageReports(Guid authenticationToken)
+        public async Task<bool> RequestDamageReports(Guid authenticationToken)
         {
             if (!CheckAuthentication(authenticationToken))
             {
-                return Task.FromResult(false);
+                return false;
             }
 
             _logger.LogInformation("Game {gameId} is delivering a list of all damage reports to player actor {playerId}", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
 
-            DistributeAllDamageReportsToPlayer(authenticationToken);
+            await DistributeAllDamageReportsToPlayer(authenticationToken);
 
-            return Task.FromResult(true);
+            return true;
         }
 
         /// <inheritdoc />
-        public Task<bool> RequestGameState(Guid authenticationToken)
+        public async Task<bool> RequestGameState(Guid authenticationToken)
         {
             if (!CheckAuthentication(authenticationToken))
             {
-                return Task.FromResult(false);
+                return false;
             }
 
             _logger.LogInformation("Game {gameId} is delivering the game state to player actor {playerId}", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
 
-            DistributeGameStateToPlayer(authenticationToken);
+            await DistributeGameStateToPlayer(authenticationToken);
 
-            return Task.FromResult(true);
+            return true;
         }
 
         /// <inheritdoc />
-        public async Task ProcessDamageRequest(Guid authenticationToken, DamageRequest damageRequest)
+        public async Task<bool> ProcessDamageInstance(Guid authenticationToken, DamageInstance damageInstance)
         {
             if (!CheckAuthentication(authenticationToken))
             {
-                return;
+                return false;
             }
 
-            var damageReport = await GrainFactory.GetGrain<IUnitActor>(damageRequest.UnitId).ProcessDamageRequest(damageRequest, _gameActorState.State.Options);
-            damageReport.Turn = _gameActorStateEthereal.Turn;
+            var damageReport = await GrainFactory.GetGrain<IUnitActor>(damageInstance.UnitId).ProcessDamageInstance(damageInstance, _gameActorState.State.Options);
+            damageReport.Turn = _gameActorState.State.Turn;
 
-            DistributeDamageReportsToPlayers(new List<DamageReport> {damageReport});
+            await DistributeDamageReportsToPlayers(new List<DamageReport> {damageReport});
+
+            return true;
         }
 
         /// <inheritdoc />>
@@ -190,7 +194,14 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                 // Log logins to permanent store
                 await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
-                await GrainFactory.GetGameEntryRepository().AddOrUpdate(new GameEntry {Name = this.GetPrimaryKeyString(), Players = _gameActorState.State.PlayerStates.Count, TimeStamp = DateTime.UtcNow});
+                await GrainFactory.GetGameEntryRepository().AddOrUpdate(
+                    new GameEntry
+                    {
+                        Name = this.GetPrimaryKeyString(),
+                        PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
+                        Players = _gameActorState.State.PlayerStates.Count,
+                        TimeStamp = DateTime.UtcNow
+                    });
 
                 return true;
             }
@@ -231,17 +242,24 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             // Log logins to permanent store
             await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.LogOut, 0);
-            await GrainFactory.GetGameEntryRepository().AddOrUpdate(new GameEntry { Name = this.GetPrimaryKeyString(), Players = _gameActorState.State.PlayerStates.Count, TimeStamp = DateTime.UtcNow });
+            await GrainFactory.GetGameEntryRepository().AddOrUpdate(
+                new GameEntry
+                {
+                    Name = this.GetPrimaryKeyString(),
+                    PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
+                    Players = _gameActorState.State.PlayerStates.Count,
+                    TimeStamp = DateTime.UtcNow
+                });
 
             return true;
         }
 
         private void CheckForPlayerCountEvents()
         {
-            // If we have no players, reset turn
+            // If we have no players, reset turn and erase damage reports
             if (_gameActorState.State.PlayerStates.Count == 0)
             {
-                _gameActorStateEthereal.Reset();
+                _gameActorState.State.Reset();
                 _logger.LogInformation("Game {gameId} has lost all of its players. Resetting to turn 0 and clearing damage reports.", this.GetPrimaryKeyString());
             }
 

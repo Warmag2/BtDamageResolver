@@ -136,13 +136,13 @@
 
     protected override void OnInitialized()
     {
-        _attackLogVisible = _userStateController.PlayerOptions.ShowAttackLogByDefault;
+        _attackLogVisible = _userStateController.PlayerOptions?.ShowAttackLogByDefault ?? false;
         _logLineVisibility = _userStateController.GetAttackLogEntryVisibilityCopy();
     }
 
     public void Delete()
     {
-        _userStateController.DeleteDamageReport(DamageReport);
+        _userStateController.DamageReportCollection.Remove(DamageReport);
     }
 
     private void OnAttackLogEntryVisibilityChanged(AttackLogEntryType attackLogEntryType, bool entryVisibility)

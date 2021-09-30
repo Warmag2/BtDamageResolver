@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
-using Faemiyah.BtDamageResolver.Actors.Repositories.Base;
 using Faemiyah.BtDamageResolver.Api;
-using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Interfaces.ActorInterfacePrototypes;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
+using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
 using Faemiyah.BtDamageResolver.Common.Options;
@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Orleans;
 using Orleans.Configuration;
@@ -57,7 +58,7 @@ namespace Faemiyah.BtDamageResolver.Silo
         private static void SetupApplicationShutdown()
         {
             // Capture the user pressing Ctrl+C
-            Console.CancelKeyPress += (s, a) =>
+            Console.CancelKeyPress += (_, a) =>
             {
                 // Prevent the application from crashing ungracefully.
                 a.Cancel = true;
@@ -99,7 +100,7 @@ namespace Faemiyah.BtDamageResolver.Silo
             var configuration = GetConfiguration("SiloSettings.json");
 
             var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>();
-            //var loggingOptions = configuration.GetSection(Settings.LoggingOptionsBlockName).Get<FaemiyahLoggingOptions>();
+            //var loggingOptions = configuration.GetSection(Settings.LoggingOptionsBlockName).GetAsync<FaemiyahLoggingOptions>();
 
             var siloHostBuilder = new SiloHostBuilder()
                 .Configure<ClusterOptions>(options =>
@@ -147,9 +148,11 @@ namespace Faemiyah.BtDamageResolver.Silo
                     options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, siloPort);
                 })
                 .ConfigureAppConfiguration((_, config) => { config.AddConfiguration(configuration); })
+                .AddGrainService<CommunicationService>()
                 .AddGrainService<LoggingService>()
                 .ConfigureServices(services =>
                 {
+                    services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
                     services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
                     services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
                     services.AddLogging(conf =>
@@ -158,31 +161,54 @@ namespace Faemiyah.BtDamageResolver.Silo
                         conf.AddFilter("DeploymentLoadPublisher", LogLevel.Warning);
                     });
                     services.Configure<ConsoleLifetimeOptions>(opt => opt.SuppressStatusMessages = true);
-                    services.AddSingleton<IResolverRandom, ResolverRandom>();
                     services.AddSingleton<ILogicAmmo, LogicAmmo>();
                     services.AddSingleton<ILogicCombat, LogicCombat>();
                     services.AddSingleton<ILogicDamage, LogicDamage>();
                     services.AddSingleton<ILogicHeat, LogicHeat>();
                     services.AddSingleton<ILogicHitModifier, LogicHitModifier>();
                     services.AddSingleton<ILogicHits, LogicHits>();
+                    services.AddSingleton<IResolverRandom, ResolverRandom>();
                     services.AddSingleton<IMathExpression, MathExpression>();
+                    services.AddSingleton<ICommunicationServiceClient, CommunicationServiceClient>();
                     services.AddSingleton<ILoggingServiceClient, LoggingServiceClient>();
-                    services.AddSingleton<IEntityRepository<ClusterTable, string>, SqlEntityRepository<ClusterTable>>();
-                    services.AddSingleton<IEntityRepository<CriticalDamageTable, string>, SqlEntityRepository<CriticalDamageTable>>();
-                    services.AddSingleton<IEntityRepository<GameEntry, string>, SqlEntityRepository<GameEntry>>();
-                    services.AddSingleton<IEntityRepository<PaperDoll, string>, SqlEntityRepository<PaperDoll>>();
-                    services.AddSingleton<IEntityRepository<Unit, string>, SqlEntityRepository<Unit>>();
-                    services.AddSingleton<IEntityRepository<Weapon, string>, SqlEntityRepository<Weapon>>();
-                    services.AddSingleton<CachedEntityRepository<ClusterTable, string>>();
-                    services.AddSingleton<CachedEntityRepository<CriticalDamageTable, string>>();
-                    services.AddSingleton<CachedEntityRepository<GameEntry, string>>();
-                    services.AddSingleton<CachedEntityRepository<PaperDoll, string>>();
-                    services.AddSingleton<CachedEntityRepository<Unit, string>>();
-                    services.AddSingleton<CachedEntityRepository<Weapon, string>>();
+                    services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
+                    services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
+                    services.AddSingleton<IEntityRepository<GameEntry, string>>(GetRedisEntityRepository<GameEntry>);
+                    services.AddSingleton<IEntityRepository<PaperDoll, string>>(GetRedisEntityRepository<PaperDoll>);
+                    services.AddSingleton<IEntityRepository<Unit, string>>(GetRedisEntityRepository<Unit>);
+                    services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
+                    services.AddSingleton<CachedEntityRepository<ClusterTable, string>, CachedEntityRepository<ClusterTable, string>>();
+                    services.AddSingleton<CachedEntityRepository<CriticalDamageTable, string>, CachedEntityRepository<CriticalDamageTable, string>>();
+                    services.AddSingleton<CachedEntityRepository<GameEntry, string>, CachedEntityRepository<GameEntry, string>>();
+                    services.AddSingleton<CachedEntityRepository<PaperDoll, string>, CachedEntityRepository<PaperDoll, string>>();
+                    services.AddSingleton<CachedEntityRepository<Unit, string>, CachedEntityRepository<Unit, string>>();
+                    services.AddSingleton<CachedEntityRepository<Weapon, string>, CachedEntityRepository<Weapon, string>>();
                 });
 
             return siloHostBuilder.Build();
         }
+
+        private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
+        {
+            var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
+            if (options != null)
+            {
+                return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString);
+            }
+
+            throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
+        }
+
+        /*private static SqlEntityRepository<TType> GetSqlEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
+        {
+            var options = serviceProvider.GetService<IOptions<FaemiyahClusterOptions>>();
+            if (options != null)
+            {
+                return new SqlEntityRepository<TType>(serviceProvider.GetService<ILogger<SqlEntityRepository<TType>>>(), options.Value.ConnectionString);
+            }
+
+            throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
+        }*/
 
         private static ISiloHostBuilder AddGrainStorage(this ISiloHostBuilder siloHostBuilder, string name, FaemiyahClusterOptions clusterOptions)
         {

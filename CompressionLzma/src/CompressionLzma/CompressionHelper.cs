@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using System.Text;
 
 namespace SevenZip.Compression.LZMA
 {
@@ -95,16 +94,6 @@ namespace SevenZip.Compression.LZMA
             var b = outStream.ToArray();
 
             return b;
-        }
-
-        public static byte[] CompressString(string input)
-        {
-            return Compress(Encoding.UTF8.GetBytes(input));
-        }
-
-        public static string DecompressString(byte[] input)
-        {
-            return Encoding.UTF8.GetString(Decompress(input));
         }
     }
 }

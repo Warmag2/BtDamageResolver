@@ -2,47 +2,49 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Events;
 using Faemiyah.BtDamageResolver.Api.Options;
+
+using static Faemiyah.BtDamageResolver.Api.Extensions.EnumExtensions;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 {
     public class UserStateController
     {
+        private Dictionary<string, GameEntry> _gameEntries;
         private GameState _gameState;
         private ConcurrentDictionary<Guid, (string playerId, UnitEntry unit)> _unitList;
         private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers;
-        private static readonly SemaphoreSlim StateUpdateSemaphore = new SemaphoreSlim(1, 1);
         
         public UserStateController()
         {
-            DamageReportCollection = new SortedDictionary<int, DamageReportList>();
+            DamageReportCollection = new DamageReportCollection();
+            _gameEntries = new Dictionary<string, GameEntry>();
             _unitList = new ConcurrentDictionary<Guid, (string playerId, UnitEntry unit)>();
             _targetNumbers = new ConcurrentDictionary<Guid, TargetNumberUpdate>();
         }
-
-        public event Action OnDataUpdated;
 
         public event Action OnGameOptionsUpdated;
 
         public event Action OnPlayerOptionsUpdated;
 
-        public event Action OnDamageRequestRequested;
+        public event Action OnPlayerStateUpdated;
 
-        public event Action OnDamageReportChange;
+        public event Action OnDamageInstanceRequested;
 
-        public event Action OnUnitListChange;
+        public event Action OnPlayerUnitListChanged;
 
-        public int DebugPlayerStateChanges { get; set; }
+        public event Action OnGameEntriesReceived;
 
+        public event Action OnTargetNumbersReceived;
+        
         public int DraggedUnitIndex { get; set; }
 
         public int DraggedWeaponIndex { get; set; }
 
-        public DamageRequest DamageRequest { get; private set; }
+        public DamageInstance DamageInstance { get; private set; }
 
         public GameOptions GameOptions { get; set; }
 
@@ -56,12 +58,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public GameState GameState
         {
-            // ReSharper disable once InconsistentlySynchronizedField
             get => _gameState;
             set
             {
-                StateUpdateSemaphore.Wait();
-
                 if (_gameState == null || value == null)
                 {
                     _gameState = value;
@@ -76,9 +75,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
                 UpdateUnitList();
 
-                StateUpdateSemaphore.Release();
-
-                NotifyUnitListChange();
+                OnPlayerUnitListChanged?.Invoke();
             }
         }
 
@@ -104,48 +101,19 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         public void RemoveUnit(UnitEntry unit)
         {
             PlayerState.UnitEntries.Remove(unit);
-            NotifyUnitListChange();
             NotifyPlayerDataUpdated();
         }
 
-        public SortedDictionary<int, DamageReportList> DamageReportCollection { get; }
+        public DamageReportCollection DamageReportCollection { get; }
 
-        public void AddDamageReports(List<DamageReport> damageReports)
+        public Dictionary<string, GameEntry> GameEntries
         {
-            StateUpdateSemaphore.Wait();
-            foreach (var damageReport in damageReports)
+            get => _gameEntries;
+            set
             {
-                if (DamageReportCollection.ContainsKey(damageReport.Turn))
-                {
-                    DamageReportCollection[damageReport.Turn].Add(damageReport);
-                }
-                else
-                {
-                    DamageReportCollection.Add(damageReport.Turn, new DamageReportList(damageReport));
-                }
+                _gameEntries = value;
+                OnGameEntriesReceived?.Invoke();
             }
-
-            StateUpdateSemaphore.Release();
-
-            NotifyDamageReportChange();
-        }
-
-        public void DeleteDamageReport(DamageReport damageReport)
-        {
-            DamageReportCollection[damageReport.Turn].Remove(damageReport);
-
-            if (DamageReportCollection[damageReport.Turn].Empty())
-            {
-                DeleteDamageReports(damageReport.Turn);
-            }
-
-            NotifyDamageReportChange();
-        }
-
-        public void DeleteDamageReports(int turn)
-        {
-            DamageReportCollection.Remove(turn);
-            NotifyDamageReportChange();
         }
 
         private void UpdateUnitList()
@@ -169,8 +137,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
             newUnitList.TryAdd(Guid.Empty, ("N/A", new UnitEntry {Id = Guid.Empty, Name = "NO TARGET"}));
 
-            // TODO: Be careful about this optimization. Might be wisest to always change the unit list.
             // Only perform dictionary swap if the list has actually changed
+            // TODO: Be careful about this optimization. Might be wisest to always change the unit list.
             if (_unitList.Any(u => !newUnitList.ContainsKey(u.Key)) || newUnitList.Any(u => !_unitList.ContainsKey(u.Key)))
             {
                 _unitList = newUnitList;
@@ -238,42 +206,38 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         {
             if (PlayerState != null)
             {
-                DebugPlayerStateChanges++;
                 PlayerState.TimeStamp = DateTime.UtcNow;
-                OnDataUpdated?.Invoke();
-                NotifyUnitListChange();
+                OnPlayerStateUpdated?.Invoke();
+                OnPlayerUnitListChanged?.Invoke();
             }
         }
 
-        public void NotifyUnitListChange()
+        public void NotifyDamageRequestCreated(DamageInstance damageInstance)
         {
-            OnUnitListChange?.Invoke();
-        }
-
-        public void NotifyDamageReportChange()
-        {
-            OnDamageReportChange?.Invoke();
-        }
-
-        public void NotifyDamageRequestCreated(DamageRequest damageRequest)
-        {
-            DamageRequest = damageRequest;
-            OnDamageRequestRequested?.Invoke();
+            DamageInstance = damageInstance;
+            OnDamageInstanceRequested?.Invoke();
         }
 
         public void NotifyGameOptionsChanged()
         {
+            GameOptions.TimeStamp = DateTime.UtcNow;
             OnGameOptionsUpdated?.Invoke();
         }
 
         public void NotifyPlayerOptionsChanged()
         {
+            PlayerOptions.TimeStamp = DateTime.UtcNow;
             OnPlayerOptionsUpdated?.Invoke();
         }
 
         public Dictionary<AttackLogEntryType, bool> GetAttackLogEntryVisibilityCopy()
         {
-            return PlayerOptions.AttackLogEntryVisibility.ToDictionary(entry => entry.Key, entry => entry.Value);
+            if (PlayerOptions != null)
+            {
+                return PlayerOptions.AttackLogEntryVisibility.ToDictionary(entry => entry.Key, entry => entry.Value);
+            }
+
+            return GetEnumValueList<AttackLogEntryType>().ToDictionary(enumValue => enumValue, _ => true);
         }
 
         public SortedDictionary<string, string> GetPlayerIds()
@@ -294,9 +258,11 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             {
                 _targetNumbers.AddOrUpdate(targetNumberUpdate.WeaponEntryId, targetNumberUpdate, (_, update) => update.TimeStamp > targetNumberUpdate.TimeStamp ? update : targetNumberUpdate);
             }
+
+            OnTargetNumbersReceived?.Invoke();
         }
 
-        public TargetNumberUpdate GetTargetNumberUpdate(Guid weaponEntryId)
+        public TargetNumberUpdate GetTargetNumber(Guid weaponEntryId)
         {
             return _targetNumbers.TryGetValue(weaponEntryId, out var targetNumberUpdate) ? targetNumberUpdate : null;
         }

@@ -1,6 +1,5 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
-@implements IDisposable
 
 @if (_userStateController.GameState != null)
 {
@@ -10,6 +9,7 @@
 
     @foreach(var player in playerStateList)
     {
+        //@key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.Players[player.PlayerId].TimeStamp}")
         <ComponentPlayerState PlayerId = "@player.PlayerId" ></ComponentPlayerState>
     }
 }
@@ -17,14 +17,4 @@
 @code {
     [Parameter]
     public bool DisplayOwnUnits { get; set; }
-
-    protected override void OnInitialized()
-    {
-        _userStateController.OnUnitListChange += StateHasChanged;
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnUnitListChange -= StateHasChanged;
-    }
 }

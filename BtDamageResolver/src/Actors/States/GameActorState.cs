@@ -15,14 +15,17 @@ namespace Faemiyah.BtDamageResolver.Actors.States
         {
             TimeStamp = DateTime.UtcNow;
             AuthenticationTokens = new Dictionary<Guid, string>();
+            DamageReports = new DamageReportCollection();
             Options = new GameOptions();
-            PlayerStates = new SortedDictionary<string, PlayerState>();
             Password = string.Empty;
+            PlayerStates = new SortedDictionary<string, PlayerState>();
         }
 
         public string AdminId { get; set; }
 
         public Dictionary<Guid, string> AuthenticationTokens { get; set; }
+
+        public DamageReportCollection DamageReports { get; set; }
 
         public GameOptions Options { get; set; }
 
@@ -31,5 +34,16 @@ namespace Faemiyah.BtDamageResolver.Actors.States
         public SortedDictionary<string, PlayerState> PlayerStates { get; set; }
 
         public DateTime TimeStamp { get; set; }
+
+        public int Turn { get; set; }
+
+        public DateTime TurnTimeStamp { get; set; }
+
+        public void Reset()
+        {
+            DamageReports.Clear();
+            TurnTimeStamp = DateTime.UtcNow;
+            Turn = 0;
+        }
     }
 }

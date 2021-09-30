@@ -1,28 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Events;
-using Faemiyah.BtDamageResolver.Api.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Options;
-using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities;
+using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.AspNetCore.SignalR.Client;
-using Orleans;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 {
-    public class ResolverCommunicator : IResolverCommunicator, IResolverClient
+    public class ResolverCommunicator
     {
-        private readonly IClusterClient _clusterClient;
+        private readonly ILogger<ResolverCommunicator> _logger;
+        private readonly CommunicationOptions _communicationOptions;
         private HubConnection _hubConnection;
-        private IClientInterface _playerActor;
 
         private string _playerName;
         private Guid _authenticationToken;
+        private ClientToServerCommunicator _clientToServerCommunicator;
 
-        public ResolverCommunicator(IClusterClient clusterClient)
+        public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions)
         {
-            _clusterClient = clusterClient;
+            _logger = logger;
+            _communicationOptions = communicationOptions.Value;
+        }
+
+        private void Reset()
+        {
+            _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _communicationOptions.ConnectionString, _playerName, _hubConnection);
+        }
+
+        public void SetAuthenticationToken(Guid authenticationToken)
+        {
+            _authenticationToken = authenticationToken;
         }
 
         public void SetHubConnection(HubConnection hubConnection)
@@ -30,317 +41,201 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
             _hubConnection = hubConnection;
         }
 
-        public async Task<LoginState> Connect(Credentials credentials)
+        public void Connect(Credentials credentials)
         {
-            try
-            {
-                return await ConnectPlayer(credentials.Name, credentials.Password);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-
-            return null;
-        }
-
-        public async Task<bool> Disconnect()
-        {
-            try
-            {
-                await _playerActor.Disconnect(_authenticationToken);
-                _playerName = null;
-                _playerActor = null;
-                _authenticationToken = Guid.Empty;
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-
-            return false;
-        }
-
-        public async Task<bool> JoinGame(Credentials credentials)
-        {
-            await CheckConnectionStateAndRefresh();
+            _playerName = credentials.Name;
+            Reset();
 
             try
             {
-                return await _playerActor.JoinGame(_authenticationToken, credentials.Name, credentials.Password);
+                _clientToServerCommunicator.Send(RequestNames.Connect, new ConnectRequest { PlayerName = credentials.Name, Credentials = credentials });
             }
             catch (Exception ex)
             {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-
-            return false;
-        }
-
-        public async Task<bool> LeaveGame()
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                return await _playerActor.LeaveGame(_authenticationToken);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-
-            return false;
-        }
-
-        public async Task UpdatePlayerState(PlayerState state)
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                await _playerActor.UpdateState(_authenticationToken, state);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
+                SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
             }
         }
 
-        public async Task<GameOptions> GetGameOptions()
+        public void Disconnect()
         {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                return await _playerActor.GetGameOptions(_authenticationToken);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-
-            return new GameOptions(); // So that the UI does not crash.
-        }
-
-        public async Task<bool> SetGameOptions(GameOptions gameOptions)
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                return await _playerActor.SetGameOptions(_authenticationToken, gameOptions);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-
-            return false;
-        }
-
-        public async Task<PlayerOptions> GetPlayerOptions()
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                return await _playerActor.GetPlayerOptions(_authenticationToken);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-
-            return new PlayerOptions(); // So that the UI does not crash.
-        }
-
-        public async Task<bool> SetPlayerOptions(PlayerOptions playerOptions)
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                return await _playerActor.SetPlayerOptions(_authenticationToken, playerOptions);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-
-            return false;
-        }
-
-        public async Task SendDamageRequest(DamageRequest damageRequest)
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                await _playerActor.ProcessDamageRequest(_authenticationToken, damageRequest);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-        }
-
-        public async Task RequestDamageReports()
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                await _playerActor.RequestDamageReports(_authenticationToken);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-        }
-
-        public async Task RequestGameState()
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                await _playerActor.RequestGameState(_authenticationToken);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-        }
-
-        public async Task ForceReady()
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                await _playerActor.ForceReady(_authenticationToken);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-        }
-
-        public async Task KickPlayer(string playerId)
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                await _playerActor.KickPlayer(_authenticationToken, playerId);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-        }
-
-        public async Task MoveUnit(Guid unitId, string playerId)
-        {
-            await CheckConnectionStateAndRefresh();
-
-            try
-            {
-                await _playerActor.MoveUnit(_authenticationToken, unitId, playerId);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-            }
-        }
-
-        private async Task CheckConnectionStateAndRefresh()
-        {
-            bool resubscriptionNeeded;
-
-            try
-            {
-                resubscriptionNeeded = !await _playerActor.CheckConnection(_authenticationToken);
-            }
-            catch (Exception ex)
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
-                resubscriptionNeeded = true;
-            }
-
-            if (resubscriptionNeeded && !await ConnectSubscriber())
-            {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, "Problem reconnecting subscriber. System is in an unrecoverable state.");
-            }
-        }
-
-        private async Task<LoginState> ConnectPlayer(string playerName, string password)
-        {
-            _playerName = playerName;
-            _playerActor = _clusterClient.GetGrain<IClientInterface>(_playerName);
-            var loginState = await _playerActor.Connect(password);
-            
-            if (loginState != null)
-            {
-                _authenticationToken = loginState.AuthenticationToken;
-
-                if (await ConnectSubscriber())
+            SendRequest(RequestNames.Disconnect,
+                new DisconnectRequest
                 {
-                    return loginState;
-                }
-            }
-
-            return null;
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName
+                });
+            _clientToServerCommunicator = null;
         }
 
-        private async Task<bool> ConnectSubscriber()
+        public void ForceReady()
         {
+            SendRequest(RequestNames.ForceReady,
+                new ForceReadyRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName
+                });
+        }
+
+        public void GetDamageReports()
+        {
+            SendRequest(RequestNames.GetDamageReports,
+                new GetDamageReportsRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName
+                });
+        }
+
+        public void GetGameOptions()
+        {
+            SendRequest(RequestNames.GetGameOptions,
+                new GetGameOptionsRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName
+                });
+        }
+
+        public void GetGameState()
+        {
+            SendRequest(RequestNames.GetGameState,
+                new GetGameStateRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName
+                });
+        }
+
+        public void GetPlayerOptions()
+        {
+            SendRequest(RequestNames.GetPlayerOptions,
+                new GetPlayerOptionsRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName
+                });
+        }
+
+        public void JoinGame(Credentials credentials)
+        {
+            SendRequest(RequestNames.JoinGame,
+                new JoinGameRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName,
+                    Credentials = credentials
+                });
+        }
+
+        public void KickPlayer(string playerId)
+        {
+            SendRequest(RequestNames.KickPlayer,
+                new KickPlayerRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName,
+                    PlayerToKickName = playerId
+                });
+        }
+
+        public void LeaveGame()
+        {
+            SendRequest(RequestNames.LeaveGame,
+                new LeaveGameRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName
+                });
+        }
+
+        public void MoveUnit(Guid unitId, string playerId)
+        {
+            SendRequest(RequestNames.MoveUnit,
+                new MoveUnitRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName,
+                    ReceivingPlayer = playerId,
+                    UnitId = unitId
+                });
+        }
+
+        public void SendDamageInstance(DamageInstance damageInstance)
+        {
+            SendRequest(RequestNames.SendDamageInstanceRequest,
+                new SendDamageInstanceRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName,
+                    DamageInstance = damageInstance
+                });
+        }
+
+        public void SendGameOptions(GameOptions gameOptions)
+        {
+            SendRequest(RequestNames.SendGameOptions,
+                new SendGameOptionsRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName,
+                    GameOptions = gameOptions
+                });
+        }
+
+        public void SendPlayerOptions(PlayerOptions playerOptions)
+        {
+            SendRequest(RequestNames.SendPlayerOptions,
+                new SendPlayerOptionsRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName,
+                    PlayerOptions = playerOptions
+                });
+        }
+
+        public void SendPlayerState(PlayerState playerState)
+        {
+            SendRequest(RequestNames.SendPlayerState,
+                new SendPlayerStateRequest
+                {
+                    AuthenticationToken = _authenticationToken,
+                    PlayerName = _playerName,
+                    PlayerState = playerState
+                });
+        }
+
+        private void SendRequest(string requestType, RequestBase requestBase)
+        {
+            if (!CheckAuthentication(requestType))
+            {
+                return;
+            }
+
             try
             {
-                var clientObject = _clusterClient.CreateObjectReference<IResolverClient>(this).Result;
-                return await _playerActor.ConnectSubscriber(_authenticationToken, clientObject);
+                _clientToServerCommunicator.Send(requestType, requestBase);
             }
             catch (Exception ex)
             {
-                await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, ex.Message);
+                SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
+            }
+        }
+
+        private bool CheckAuthentication(string requestType)
+        {
+            if (_authenticationToken == Guid.Empty)
+            {
+                SendErrorMessage($"Tried to send a request of type {requestType}, but no server authentication is available");
                 return false;
             }
+            
+            return true;
         }
 
-        public async Task SendCompressedData(byte[] data, Type dataType)
+        private void SendErrorMessage(string errorMessage)
         {
-            if(dataType == typeof(List<DamageReport>))
-            {
-                await _hubConnection.SendAsync("ReceiveDamageReport", _hubConnection.ConnectionId, data);
-            }
-            else if (dataType == typeof(GameOptions))
-            {
-                await _hubConnection.SendAsync("ReceiveGameOptions", _hubConnection.ConnectionId, data);
-            }
-            else if (dataType == typeof(GameState))
-            {
-                await _hubConnection.SendAsync("ReceiveGameState", _hubConnection.ConnectionId, data);
-            }
-            else if (dataType == typeof(List<TargetNumberUpdate>))
-            {
-                await _hubConnection.SendAsync("ReceiveTargetNumberUpdates", _hubConnection.ConnectionId, data);
-            }
-            else if (dataType == typeof(Ping))
-            {
-                // Do nothing. If we get here, we received the data.
-            }
-            else
-            {
-                await SendErrorMessage($"Server is sending unknown data to this client. Data type: {dataType.Name}");
-            }
-        }
-
-        public async Task SendErrorMessage(string errorMessage)
-        {
-            await _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage);
+            _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage).Ignore();
         }
     }
 }

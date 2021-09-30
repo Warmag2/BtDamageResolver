@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
-using Faemiyah.BtDamageResolver.Api.Events;
+using Faemiyah.BtDamageResolver.Api.Entities;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
