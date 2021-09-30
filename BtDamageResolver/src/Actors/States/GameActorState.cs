@@ -41,7 +41,7 @@ namespace Faemiyah.BtDamageResolver.Actors.States
 
         public void Reset()
         {
-            DamageReports = new DamageReportCollection();
+            DamageReports.Clear();
             TurnTimeStamp = DateTime.UtcNow;
             Turn = 0;
         }

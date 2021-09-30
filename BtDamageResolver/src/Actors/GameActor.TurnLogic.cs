@@ -56,7 +56,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <returns><b>True</b> if a fire event happened, <b>false</b> otherwise.</returns>
         private async Task<bool> CheckForFireEvent()
         {
-            if (_gameActorState.State.PlayerStates.All(p => p.Value.IsReady))
+            if (_gameActorState.State.PlayerStates.Any() && _gameActorState.State.PlayerStates.All(p => p.Value.IsReady))
             {
                 _gameActorState.State.Turn++;
                 _gameActorState.State.TurnTimeStamp = DateTime.UtcNow;
