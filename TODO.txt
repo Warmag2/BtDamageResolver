@@ -1,21 +1,12 @@
 TODO: Styling (looks like shit for the most part).
 
-	Implemented
+	Visual
 
-[FEATURE] MASC
-[FEATURE] Unit base speed can be altered.
-[FEATURE] Heat speed effects.
-[VISUAL] Listing of heat effects.
-[VISUAL] Only show possible movement types and amounts as per unit type and penalties.
-[VISUAL] Show incorrectly input fields in red.
-
-	Implemented (internal)
-
-[FEATURE] Quirks (cannot be set yet).
-
-	Fixed
+[FEATURE] Move adding deleting buttons around so that they are not outside the visual components they need to delete and/or not in strange places.
 
 	Open Bugs
+
+[BUG] Deleting a damage report does not refresh.
 
 		Could not reproduce
 
