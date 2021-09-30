@@ -41,6 +41,14 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
         }
 
         /// <inheritdoc />
+        public override async Task<bool> HandleGameEntries(byte[] gameList, Guid correlationId)
+        {
+            await _hubConnection.SendAsync(EventNames.GameEntries, _hubConnection.ConnectionId, gameList);
+
+            return true;
+        }
+
+        /// <inheritdoc />
         public override async Task<bool> HandleGameOptions(byte[] gameOptions, Guid correlationId)
         {
             await _hubConnection.SendAsync(EventNames.GameOptions, _hubConnection.ConnectionId, gameOptions);

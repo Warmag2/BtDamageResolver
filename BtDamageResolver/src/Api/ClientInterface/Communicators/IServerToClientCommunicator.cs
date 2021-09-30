@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 
@@ -7,7 +8,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
     public interface IServerToClientCommunicator
     {
         /// <summary>
-        /// Sends data to the selected communication endpoint.
+        /// Sends data to the selected client.
         /// </summary>
         /// <param name="clientName">The target client where to send data.</param>
         /// <param name="envelopeType">The envelope type.</param>
@@ -16,6 +17,27 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// Envelope type is a processing hint for the recipient.
         /// </remarks>
         public void Send<TType>(string clientName, string envelopeType, TType data);
+
+        /// <summary>
+        /// Sends data to all clients.
+        /// </summary>
+        /// <param name="envelopeType">The envelope type.</param>
+        /// <param name="data">The data to send.</param>
+        /// <remarks>
+        /// Envelope type is a processing hint for the recipient.
+        /// </remarks>
+        public void SendToAll<TType>(string envelopeType, TType data);
+
+        /// <summary>
+        /// Sends data to many clients.
+        /// </summary>
+        /// <param name="clientNames">The target clients where to send data.</param>
+        /// <param name="envelopeType">The envelope type.</param>
+        /// <param name="data">The data to send.</param>
+        /// <remarks>
+        /// Envelope type is a processing hint for the recipient.
+        /// </remarks>
+        public void SendToMany<TType>(List<string> clientNames, string envelopeType, TType data);
 
         /// <summary>
         /// Handle an incoming <see cref="ConnectRequest"/>.

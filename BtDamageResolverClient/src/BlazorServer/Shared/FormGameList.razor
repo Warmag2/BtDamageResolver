@@ -1,5 +1,9 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 
+@{
+    Games.Sort((x, y) => y.TimeStamp.CompareTo(x.TimeStamp));
+}
+
 <table class="resolver_table resolver_table_gamelist">
     <tr>
         <th>
@@ -18,12 +22,20 @@
             <button class="resolver_button" @onclick="RefreshGameList">Refresh</button>
         </th>
     </tr>
-    @if (Games != null)
+    @if (Games.Any())
     {
         @foreach (var game in Games)
         {
             <FormGameEntry Game="@game" OnJoin="@OnGameJoin"></FormGameEntry>
         }
+    }
+    else
+    {
+        <tr>
+            <td colspan="5">
+                No recent games
+            </td>
+        </tr>
     }
 </table>
 

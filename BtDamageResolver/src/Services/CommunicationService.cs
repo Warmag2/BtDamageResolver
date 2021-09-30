@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
@@ -45,6 +46,24 @@ namespace Faemiyah.BtDamageResolver.Services
         {
             _logger.LogDebug("Sending data of type {type} to player {player}", envelopeType, playerId);
             _serverToClientCommunicator.Send(playerId, envelopeType, data);
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public Task SendToMany(List<string> playerIds, string envelopeType, object data)
+        {
+            _logger.LogDebug("Sending data of type {type} to players: {playerList}", envelopeType, string.Join(", ", playerIds));
+            _serverToClientCommunicator.SendToMany(playerIds, envelopeType, data);
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public Task SendToAllClients(string envelopeType, object data)
+        {
+            _logger.LogDebug("Sending data of type {type} to all players", envelopeType);
+            _serverToClientCommunicator.SendToAll(envelopeType, data);
 
             return Task.CompletedTask;
         }

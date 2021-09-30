@@ -3,7 +3,7 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @using System.Timers
-@inject LocalStorage _localStorage
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
 @inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
 @inject CommonData _commonData
@@ -38,15 +38,12 @@
             </div>
         </div>
 
-        @if (!_userStateController.ConnectedToGame && _games != null)
-        {
-            <div class="resolver_div_componentrow">
-                <h2 class="resolver_header">
-                    Games with recent activity
-                </h2>
-                <FormGameList @key=@($"{_userStateController.PlayerName}_{_gameListTimeStamp}") Games="@_games.Values.ToList()" OnJoin="@OnGameJoinButtonPressed" OnRefresh="@RefreshGameList"></FormGameList>
-            </div>
-        }
+        <div class="resolver_div_componentrow">
+            <h2 class="resolver_header">
+                Games with recent activity
+            </h2>
+            <FormGameList Games="@_userStateController.GameEntries.Values.ToList()" OnJoin="@OnGameJoinButtonPressed" OnRefresh="@RefreshGameList"></FormGameList>
+        </div>
     }
 </div>
 
@@ -82,36 +79,10 @@
     private bool _showModal = false;
     private string _modalName = string.Empty;
     private string _modalPassword = string.Empty;
-    private Dictionary<string, GameEntry> _games = new();
-    private Timer _timer;
-    private DateTime _gameListTimeStamp;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _timer = new Timer();
-            _timer.Interval = 10000;
-            _timer.Elapsed += OnTimerInterval;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
-        }
-
-        /*if (firstRender)
-        {
-            var (success, credentials) = await _localStorage.GetUserCredentials();
-
-            if (success)
-            {
-                Connect(credentials);
-            }
-        }*/
-
-        base.OnAfterRender(firstRender);
-    }
 
     protected override void OnInitialized()
     {
+        _userStateController.OnGameEntriesReceived += StateHasChanged;
         RefreshGameList();
 
         base.OnInitialized();
@@ -122,7 +93,7 @@
         RefreshGameList();
     }
 
-    private void Connect(Credentials credentials)
+    public void Connect(Credentials credentials)
     {
         _resolverCommunicator.Connect(credentials);
     }
@@ -134,7 +105,6 @@
 
     private void JoinGame(Credentials credentials)
     {
-        _userStateController.DamageReportCollection.Clear();
         _resolverCommunicator.JoinGame(credentials);
     }
 
@@ -148,12 +118,8 @@
         if (!_userStateController.ConnectedToGame)
         {
             var games = _commonData.GetGameEntries();
-            _games.Clear();
-            foreach (var game in games)
-            {
-                _games.Add(game.GetId(), game);
-            }
-            _gameListTimeStamp = DateTime.UtcNow;
+
+            _userStateController.GameEntries = games.ToDictionary(s => s.GetId(), s => s);
 
             StateHasChanged();
         }
@@ -161,7 +127,7 @@
 
     private void OnGameJoinButtonPressed(string gameName)
     {
-        if (_games[gameName].PasswordProtected)
+        if (_userStateController.GameEntries.TryGetValue(gameName, out var entry) && entry.PasswordProtected)
         {
             ModalShow();
         }
@@ -171,10 +137,7 @@
         }
     }
 
-    public void ModalShow()
-    {
-        _showModal = true;
-    }
+    public void ModalShow() => _showModal = true;
 
     private void ModalCancel() => _showModal = false;
 
@@ -186,10 +149,6 @@
 
     public void Dispose()
     {
-        if (_timer != null)
-        {
-            _timer.Elapsed -= OnTimerInterval;
-            _timer.Dispose();
-        }
+        _userStateController.OnGameEntriesReceived -= StateHasChanged;
     }
 }

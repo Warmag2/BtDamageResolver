@@ -75,7 +75,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task DeleteAsync(TKey key)
+        public async Task<bool> DeleteAsync(TKey key)
         {
             try
             {
@@ -83,7 +83,11 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
                 {
                     await _repository.DeleteAsync(key);
                     _cache.Remove(key);
+                    
+                    return true;
                 }
+
+                return false;
             }
             catch (Exception ex)
             {

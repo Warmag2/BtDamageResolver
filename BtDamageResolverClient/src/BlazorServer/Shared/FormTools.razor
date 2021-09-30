@@ -5,7 +5,16 @@
 @inject UserStateController _userStateController
 
 @{
-    var adminRights = _userStateController.PlayerState.PlayerId == _userStateController.GameState.AdminId;
+    bool adminRights;
+
+    if (_userStateController.PlayerState != null && _userStateController.GameState != null)
+    {
+        adminRights = _userStateController.PlayerState.PlayerId == _userStateController.GameState.AdminId;
+    }
+    else
+    {
+        adminRights = false;
+    }
 }
 
 <div class="resolver_div_componentlistcontainer">

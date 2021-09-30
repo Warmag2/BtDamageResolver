@@ -11,6 +11,8 @@
 
         public const string ErrorMessage = nameof(ErrorMessage);
 
+        public const string GameEntries = nameof(GameEntries);
+
         public const string GameOptions = nameof(GameOptions);
 
         public const string GameState = nameof(GameState);

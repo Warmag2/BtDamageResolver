@@ -93,7 +93,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             await SendDataToClient(EventNames.GameState,
                 new GameState
                 {
-                    GameId = null,
+                    GameId = _playerActorState.State.GameId,
                     Players = new SortedDictionary<string, PlayerState> { { this.GetPrimaryKeyString(), await GetPlayerState(false) } },
                     TimeStamp = _playerActorState.State.UpdateTimeStamp
                 });

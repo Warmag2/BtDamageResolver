@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Options;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
@@ -40,6 +41,14 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="correlationId">The correlation ID this event is related to (if any).</param>
         /// <returns><b>True</b> if the error message was successfully handled, <b>false</b> otherwise.</returns>
         public Task<bool> HandleErrorMessage(byte[] errorMessage, Guid correlationId);
+
+        /// <summary>
+        /// Handle incoming list of <see cref="GameEntry"/>ies.
+        /// </summary>
+        /// <param name="gameEntries">The game entries.</param>
+        /// <param name="correlationId">The correlation ID this event is related to (if any).</param>
+        /// <returns><b>True</b> if the game entries were successfully handled, <b>false</b> otherwise.</returns>
+        public Task<bool> HandleGameEntries(byte[] gameEntries, Guid correlationId);
 
         /// <summary>
         /// Handle incoming <see cref="GameOptions"/>.

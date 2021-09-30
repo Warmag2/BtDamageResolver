@@ -21,6 +21,11 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs
             await Clients.Client(connectionId).SendAsync(EventNames.ErrorMessage, errorMessage);
         }
 
+        public async Task GameEntries(string connectionId, byte[] gameEntries)
+        {
+            await Clients.Client(connectionId).SendAsync(EventNames.GameEntries, gameEntries);
+        }
+
         public async Task GameOptions(string connectionId, byte[] gameOptions)
         {
             await Clients.Client(connectionId).SendAsync(EventNames.GameOptions, gameOptions);

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 {
@@ -17,6 +20,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         {
         }
 
+        /// <inheritdoc />
         protected override async Task RunProcessorMethod(Envelope incomingEnvelope)
         {
             switch (incomingEnvelope.Type)
@@ -75,6 +79,22 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         public void Send<TType>(string clientName, string envelopeType, TType data)
         {
             SendEnvelope(clientName, new Envelope(envelopeType, data));
+        }
+
+        /// <inheritdoc />
+        public void SendToAll<TType>(string envelopeType, TType data)
+        {
+            SendEnvelope(ClientStreamAddress, new Envelope(envelopeType, data));
+        }
+
+        /// <inheritdoc />
+        public void SendToMany<TType>(List<string> clientNames, string envelopeType, TType data)
+        {
+            var envelope = new Envelope(envelopeType, data);
+            foreach (var clientName in clientNames)
+            {
+                SendEnvelope(clientName, envelope);
+            }
         }
 
         /// <inheritdoc />

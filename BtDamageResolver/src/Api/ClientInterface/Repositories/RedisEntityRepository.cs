@@ -82,12 +82,12 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         }
 
         /// <inheritdoc />
-        public async Task DeleteAsync(string key)
+        public async Task<bool> DeleteAsync(string key)
         {
             try
             {
                 var connection = GetConnection();
-                await connection.KeyDeleteAsync(GetKey(key)).ConfigureAwait(false);
+                return await connection.KeyDeleteAsync(GetKey(key)).ConfigureAwait(false);
             }
             catch (DbException ex)
             {

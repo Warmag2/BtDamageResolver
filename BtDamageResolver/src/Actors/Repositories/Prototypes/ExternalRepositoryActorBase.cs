@@ -44,10 +44,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories.Prototypes
         }
 
         /// <inheritdoc />
-        public virtual async Task Delete(TKey key)
+        public virtual async Task<bool> Delete(TKey key)
         {
-            await Repository.DeleteAsync(key);
+            var result = await Repository.DeleteAsync(key);
             Logger.LogInformation("{entity} with key {key} deleted from {repository}.", typeof(TEntity), key, GetType());
+            return result;
         }
 
         /// <inheritdoc />

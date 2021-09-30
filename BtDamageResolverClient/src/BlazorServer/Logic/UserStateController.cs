@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 
@@ -12,14 +13,17 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 {
     public class UserStateController
     {
+        private Dictionary<string, GameEntry> _gameEntries;
         private GameState _gameState;
         private ConcurrentDictionary<Guid, (string playerId, UnitEntry unit)> _unitList;
         private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers;
+
         //private static readonly SemaphoreSlim StateUpdateSemaphore = new SemaphoreSlim(1, 1);
         
         public UserStateController()
         {
             DamageReportCollection = new DamageReportCollection();
+            _gameEntries = new Dictionary<string, GameEntry>();
             _unitList = new ConcurrentDictionary<Guid, (string playerId, UnitEntry unit)>();
             _targetNumbers = new ConcurrentDictionary<Guid, TargetNumberUpdate>();
         }
@@ -32,10 +36,12 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public event Action OnDamageInstanceRequested;
 
-        public event Action OnTargetNumbersReceived;
-        
         public event Action OnPlayerUnitListChanged;
 
+        public event Action OnGameEntriesReceived;
+
+        public event Action OnTargetNumbersReceived;
+        
         public int DraggedUnitIndex { get; set; }
 
         public int DraggedWeaponIndex { get; set; }
@@ -105,6 +111,16 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         }
 
         public DamageReportCollection DamageReportCollection { get; }
+
+        public Dictionary<string, GameEntry> GameEntries
+        {
+            get => _gameEntries;
+            set
+            {
+                _gameEntries = value;
+                OnGameEntriesReceived?.Invoke();
+            }
+        }
 
         private void UpdateUnitList()
         {

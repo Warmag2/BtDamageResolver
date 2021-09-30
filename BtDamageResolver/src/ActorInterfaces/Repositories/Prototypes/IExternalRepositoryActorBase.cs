@@ -35,8 +35,9 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Repositories.Prototypes
         /// </summary>
         /// <param name="key">The key of the entity to delete.</param>
         /// <remarks>If the entity does not exist, this is simply accepted.</remarks>
+        /// <returns><b>True</b> if the entity existed before this deletion, <b>false</b> otherwise.</returns>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
-        Task Delete(TKey key);
+        Task<bool> Delete(TKey key);
 
         /// <summary>
         /// Gets a <see cref="TEntity"/> with the given key from the repository governed by this repository actor.

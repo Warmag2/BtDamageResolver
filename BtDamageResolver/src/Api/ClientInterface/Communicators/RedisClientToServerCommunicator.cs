@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 {
@@ -10,6 +12,8 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
     /// </summary>
     public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClientToServerCommunicator
     {
+        private ChannelMessageQueue _listenedClientQueue;
+
         /// <summary>
         /// Constructor for the Redis implementation of BtDamageResolver client-to-server communicator.
         /// </summary>
@@ -17,6 +21,16 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         {
         }
 
+        /// <inheritdoc />
+        protected override void SubscribeAdditional()
+        {
+            _listenedClientQueue = RedisSubscriber.Subscribe(ClientStreamAddress);
+            _listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
+
+            base.SubscribeAdditional();
+        }
+
+        /// <inheritdoc />
         protected override async Task RunProcessorMethod(Envelope incomingEnvelope)
         {
             switch (incomingEnvelope.Type)
@@ -29,6 +43,9 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
                     break;
                 case EventNames.ErrorMessage:
                     await HandleErrorMessage(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
+                    break;
+                case EventNames.GameEntries:
+                    await HandleGameEntries(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
                     break;
                 case EventNames.GameOptions:
                     await HandleGameOptions(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
@@ -62,6 +79,9 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 
         /// <inheritdoc />
         public abstract Task<bool> HandleErrorMessage(byte[] errorMessage, Guid correlationId);
+
+        /// <inheritdoc />
+        public abstract Task<bool> HandleGameEntries(byte[] gameList, Guid correlationId);
 
         /// <inheritdoc />
         public abstract Task<bool> HandleGameOptions(byte[] gameOptions, Guid correlationId);
