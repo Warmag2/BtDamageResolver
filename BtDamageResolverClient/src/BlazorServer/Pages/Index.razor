@@ -35,7 +35,7 @@
         <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.DamageReports)" @onclick="@(e => SelectTab(ResolverTab.DamageReports))">DamageReports</button>
         <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.Options)" @onclick="@(e => SelectTab(ResolverTab.Options))">Options</button>
     </div>
-    <div class="resolver_div_tab resolver_div_alignright">
+    <div class="resolver_div_tab resolver_style_alignright">
         <button @onclick="@LeaveGame" class="resolver_button_leave">X</button>
     </div>
 </div>
@@ -47,8 +47,7 @@
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Dashboard || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        // We have to include this here, since the player state pages are updated by other methods, but this should always refresh when new damage reports arrive
-        <FormGameState @key="_userStateController.DamageReportCollection.TimeStamp"></FormGameState>
+        <FormGameState></FormGameState>
     }
 </div>
 
@@ -62,7 +61,7 @@
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.DamageReports || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormDamageReports @key=@($"{_userStateController.PlayerName}_{_userStateController.DamageReportCollection?.TimeStamp}") OnlyNewest="false"></FormDamageReports>
+        <FormDamageReports OnlyNewest="false"></FormDamageReports>
     }
 </div>
 
@@ -96,6 +95,7 @@
             {
                 _userStateController.GameOptions = null;
                 _userStateController.DamageReportCollection.Clear();
+                _userStateController.NotifyDamageReportsChanged();
             }
 
             if (connectionResponse.IsConnected)
@@ -121,7 +121,7 @@
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
         {
             _userStateController.DamageReportCollection.AddRange(DataHelper.Unpack<List<DamageReport>>(damageReportData));
-            StateHasChanged();
+            _userStateController.NotifyDamageReportsChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>

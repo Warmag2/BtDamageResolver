@@ -34,6 +34,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public event Action OnDamageInstanceRequested;
 
+        public event Action OnDamageReportsChanged;
+
         public event Action OnPlayerUnitListChanged;
 
         public event Action OnGameEntriesReceived;
@@ -212,10 +214,15 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             }
         }
 
-        public void NotifyDamageRequestCreated(DamageInstance damageInstance)
+        public void NotifyDamageInstanceCreated(DamageInstance damageInstance)
         {
             DamageInstance = damageInstance;
             OnDamageInstanceRequested?.Invoke();
+        }
+
+        public void NotifyDamageReportsChanged()
+        {
+            OnDamageReportsChanged?.Invoke();
         }
 
         public void NotifyGameOptionsChanged()

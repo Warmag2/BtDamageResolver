@@ -498,8 +498,6 @@
 
 .resolver_div_componentcell { float: left; }
 
-.resolver_div_alignright { float: right !important; }
-
 .resolver_div_unitid
 {
     margin-top: 0.2rem;
@@ -609,6 +607,10 @@
     font-family: Tahoma;
 }
 
+.resolver_style_alignright {
+    float: right !important;
+}
+
 /*******************************************************************************
     Damage report
 *******************************************************************************/
@@ -642,6 +644,11 @@
     background-color: var(--color_bg_ammo);
     color: var(--color_text_ammo);
     font-size: 16px;
+    padding-left: 1rem;
+}
+
+.resolver_div_damagereportheader {
+    font-size: 24px;
     padding-left: 1rem;
 }
 

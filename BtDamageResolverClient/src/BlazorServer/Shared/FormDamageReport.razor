@@ -41,11 +41,20 @@
     <div class="resolver_div_damagereportcontainer @(defendingUnitOwnedByYou ? "incomingdamage" : "outgoingdamage")">
         
         <div class="resolver_div_componentrow">
-            <h3 class="resolver_header">
-                @unitAttackString &rArr; @unitDefenseString
-            </h3>
+            <div class="resolver_div_componentcell resolver_div_damagereportheader">
+                <b>
+                    @unitAttackString
+                </b>
+                &rArr;
+                <b>
+                    @unitDefenseString
+                </b>
+            </div>
+            <div class="resolver_div_componentcell resolver_style_alignright">
+                <button class="resolver_button resolver_button_delete" @onclick="Delete">X</button>
+            </div>
         </div>
-        
+         
         <div class="resolver_div_componentrow">
             <div class="resolver_div_phase">
                 Phase: <b>@DamageReport.Phase</b>
@@ -119,11 +128,6 @@
             }
         </div>
     </div>
-
-    <div class="resolver_div_componentrow">
-        <button @onclick="Delete">X</button>
-    </div>
-
 </div>
 
 @code
@@ -143,6 +147,7 @@
     public void Delete()
     {
         _userStateController.DamageReportCollection.Remove(DamageReport);
+        _userStateController.NotifyDamageReportsChanged();
     }
 
     private void OnAttackLogEntryVisibilityChanged(AttackLogEntryType attackLogEntryType, bool entryVisibility)
