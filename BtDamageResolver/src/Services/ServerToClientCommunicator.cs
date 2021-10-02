@@ -66,7 +66,7 @@ namespace Faemiyah.BtDamageResolver.Services
         {
             var getDamageReportsRequest = Unpack<GetDamageReportsRequest>(getDamageReportsRequestData);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(getDamageReportsRequest.PlayerName).GetDamageReports(getDamageReportsRequest.AuthenticationToken))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(getDamageReportsRequest.PlayerName).RequestDamageReports(getDamageReportsRequest.AuthenticationToken))
             {
                 LogWarning(getDamageReportsRequest);
             }
@@ -79,7 +79,7 @@ namespace Faemiyah.BtDamageResolver.Services
         {
             var getGameOptionsRequest = Unpack<GetGameOptionsRequest>(getGameOptionsRequestData);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(getGameOptionsRequest.PlayerName).GetGameOptions(getGameOptionsRequest.AuthenticationToken))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(getGameOptionsRequest.PlayerName).RequestGameOptions(getGameOptionsRequest.AuthenticationToken))
             {
                 LogWarning(getGameOptionsRequest);
             }
@@ -92,7 +92,7 @@ namespace Faemiyah.BtDamageResolver.Services
         {
             var getGameStateRequest = Unpack<GetGameStateRequest>(getGameStateRequestData);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(getGameStateRequest.PlayerName).GetGameState(getGameStateRequest.AuthenticationToken))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(getGameStateRequest.PlayerName).RequestGameState(getGameStateRequest.AuthenticationToken))
             {
                 LogWarning(getGameStateRequest);
             }
@@ -105,7 +105,7 @@ namespace Faemiyah.BtDamageResolver.Services
         {
             var getPlayerOptionsRequest = Unpack<GetPlayerOptionsRequest>(getPlayerOptionsRequestData);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(getPlayerOptionsRequest.PlayerName).GetPlayerOptions(getPlayerOptionsRequest.AuthenticationToken))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(getPlayerOptionsRequest.PlayerName).RequestPlayerOptions(getPlayerOptionsRequest.AuthenticationToken))
             {
                 LogWarning(getPlayerOptionsRequest);
             }

@@ -60,7 +60,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<List<DamageReport>> Fire(GameOptions gameOptions)
+        public async Task<List<DamageReport>> ProcessFireEvent(GameOptions gameOptions)
         {
             _logger.LogInformation("Unit {unit} performing fire event.", this.GetPrimaryKey());
 
@@ -70,7 +70,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             return await _logicCombat.Fire(gameOptions, _unitActorState.State.UnitEntry);
         }
 
-        public async Task<List<TargetNumberUpdate>> UpdateTargetNumbers(GameOptions gameOptions, bool setBlankNumbers)
+        public async Task<List<TargetNumberUpdate>> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers)
         {
             var targetNumberUpdates = new List<TargetNumberUpdate>();
 
@@ -120,7 +120,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<bool> UpdateState(UnitEntry unit)
+        public async Task<bool> SendState(UnitEntry unit)
         {
             if (unit.TimeStamp > _unitActorState.State.UpdateTimeStamp)
             {

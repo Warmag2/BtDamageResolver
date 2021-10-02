@@ -9,18 +9,7 @@ namespace Faemiyah.BtDamageResolver.Actors
     public partial class GameActor
     {
         /// <inheritdoc />
-        public Task<GameOptions> GetGameOptions(Guid authenticationToken)
-        {
-            if (!CheckAuthentication(authenticationToken))
-            {
-                return null;
-            }
-
-            return Task.FromResult(_gameActorState.State.Options);
-        }
-
-        /// <inheritdoc />
-        public async Task<bool> SetGameOptions(Guid authenticationToken, GameOptions gameOptions)
+        public async Task<bool> SendGameOptions(Guid authenticationToken, GameOptions gameOptions)
         {
             if (!CheckAuthentication(authenticationToken, _gameActorState.State.AdminId))
             {

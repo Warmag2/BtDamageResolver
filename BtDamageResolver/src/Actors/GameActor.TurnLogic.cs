@@ -80,7 +80,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                     // Do not fire at an unit which is not in the game
                     if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGameInternal(unit.FiringSolution.TargetUnit))
                     {
-                        damageReports.AddRange(await unitActor.Fire(_gameActorState.State.Options));
+                        damageReports.AddRange(await unitActor.ProcessFireEvent(_gameActorState.State.Options));
                     }
                     else
                     {
@@ -158,7 +158,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                     // Upload this update to the unit itself
                     var unitActor = GrainFactory.GetGrain<IUnitActor>(unit.Id);
-                    await unitActor.UpdateState(unit);
+                    await unitActor.SendState(unit);
                 }
             }
         }

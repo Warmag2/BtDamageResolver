@@ -16,6 +16,9 @@ using Orleans.Runtime;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
+    /// <summary>
+    /// Main implementation of the game actor.
+    /// </summary>
     public partial class GameActor : Grain, IGameActor
     {
         private readonly ILogger<GameActor> _logger;
@@ -79,11 +82,11 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task UpdatePlayerState(Guid authenticationToken, PlayerState playerState, List<Guid> updatedUnits)
+        public async Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState, List<Guid> updatedUnits)
         {
             if (!CheckAuthentication(authenticationToken))
             {
-                return;
+                return false;
             }
 
             var updated = false;
@@ -113,41 +116,14 @@ namespace Faemiyah.BtDamageResolver.Actors
             if (updated)
             {
                 await CheckGameStateUpdateEvents(updatedUnits);
+                return true;
             }
+
+            return false;
         }
 
         /// <inheritdoc />
-        public async Task<bool> RequestDamageReports(Guid authenticationToken)
-        {
-            if (!CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
-
-            _logger.LogInformation("Game {gameId} is delivering a list of all damage reports to player actor {playerId}", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
-
-            await DistributeAllDamageReportsToPlayer(authenticationToken);
-
-            return true;
-        }
-
-        /// <inheritdoc />
-        public async Task<bool> RequestGameState(Guid authenticationToken)
-        {
-            if (!CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
-
-            _logger.LogInformation("Game {gameId} is delivering the game state to player actor {playerId}", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
-
-            await DistributeGameStateToPlayer(authenticationToken);
-
-            return true;
-        }
-
-        /// <inheritdoc />
-        public async Task<bool> ProcessDamageInstance(Guid authenticationToken, DamageInstance damageInstance)
+        public async Task<bool> SendDamageInstance(Guid authenticationToken, DamageInstance damageInstance)
         {
             if (!CheckAuthentication(authenticationToken))
             {

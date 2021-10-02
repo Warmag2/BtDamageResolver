@@ -91,20 +91,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
         }
 
-        /*private static SqlEntityRepository<TType> GetSqlEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
-        {
-            var options = serviceProvider.GetService<IOptions<FaemiyahClusterOptions>>();
-            var connectionString = options?.Value.ConnectionString;
-            var logger = serviceProvider.GetService<ILogger<SqlEntityRepository<TType>>>();
-            if (options != null)
-            {
-                 var repository = new SqlEntityRepository<TType>(logger, connectionString);
-                 return repository;
-            }
-
-            throw new InvalidOperationException("Unable to find options class providing connection string for entity repositories.");
-        }*/
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -128,33 +114,5 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
                 endpoints.MapFallbackToPage("/_Host");
             });
         }
-
-        /*private static IClusterClient ConnectClient(FaemiyahClusterOptions clusterOptions)
-        {
-            var client = new ClientBuilder()
-                .Configure<ClusterOptions>(options =>
-                {
-                    options.ClusterId = "faemiyah";
-                    options.ServiceId = "Resolver";
-                })
-                .Configure<Orleans.Configuration.ConnectionOptions>(options =>
-                {
-                    options.ConnectionRetryDelay = TimeSpan.FromSeconds(30);
-                    options.OpenConnectionTimeout = TimeSpan.FromSeconds(30);
-                })
-                .Configure<MessagingOptions>(options =>
-                {
-                    options.ResponseTimeout = TimeSpan.FromMinutes(15);
-                })
-                .UseAdoNetClustering(options =>
-                {
-                    options.Invariant = clusterOptions.Invariant;
-                    options.ConnectionString = clusterOptions.ConnectionString;
-                })
-                .Build();
-
-            client.Connect(ex => Task.FromResult(true)).Wait();
-            return client;
-        }*/
     }
 }

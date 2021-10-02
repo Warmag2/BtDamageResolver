@@ -103,7 +103,7 @@
                 _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
                 _userStateController.ConnectedToServer = true;
                 _userStateController.PlayerName = connectionResponse.PlayerId;
-                //_localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).Wait();
+                _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).RunSynchronously();
             }
             else
             {
@@ -112,7 +112,7 @@
                 _userStateController.GameState = null;
                 _userStateController.PlayerName = null;
                 _userStateController.PlayerOptions = null;
-                //_localStorage.RemoveUserCredentials().Wait();
+                _localStorage.RemoveUserCredentials().RunSynchronously();
             }
 
             StateHasChanged();
@@ -169,6 +169,19 @@
         _userStateController.OnDamageInstanceRequested += SendDamageInstance;
 
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var (credentialsFound, credentials) = await _localStorage.GetUserCredentials();
+
+            if (credentialsFound)
+            {
+                _formServer.Connect(credentials);
+            }
+        }
     }
 
     private void SendDamageInstance()

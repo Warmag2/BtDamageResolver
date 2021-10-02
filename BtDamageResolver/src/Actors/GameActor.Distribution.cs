@@ -51,6 +51,16 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <summary>
+        /// Sends the game options to a players.
+        /// </summary>
+        private async Task DistributeGameOptionsToPlayer(string playerId)
+        {
+            _logger.LogInformation("Game {id} is sending an options update to player {player}.", this.GetPrimaryKeyString(), playerId);
+
+            await _communicationServiceClient.Send(playerId, EventNames.GameOptions, _gameActorState.State.Options);
+        }
+
+        /// <summary>
         /// Sends the game options to all players.
         /// </summary>
         private async Task DistributeGameOptionsToPlayers()
@@ -58,6 +68,16 @@ namespace Faemiyah.BtDamageResolver.Actors
             _logger.LogInformation("Game {id} is sending an options update to all players.", this.GetPrimaryKeyString());
 
             await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerStates.Keys.ToList(), EventNames.GameOptions, _gameActorState.State.Options);
+        }
+
+        /// <summary>
+        /// Sends the target number updates to a players.
+        /// </summary>
+        private async Task DistributeTargetNumberUpdatesToPlayer(string playerId, List<TargetNumberUpdate> targetNumberUpdates)
+        {
+            _logger.LogInformation("Game {id} is sending target number updates to player {player}.", this.GetPrimaryKeyString(), playerId);
+
+            await _communicationServiceClient.Send(playerId, EventNames.TargetNumbers, targetNumberUpdates);
         }
 
         /// <summary>
