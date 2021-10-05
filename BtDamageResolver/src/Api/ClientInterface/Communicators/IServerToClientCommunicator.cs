@@ -16,7 +16,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <remarks>
         /// Envelope type is a processing hint for the recipient.
         /// </remarks>
-        public void Send<TType>(string clientName, string envelopeType, TType data);
+        public void Send<TType>(string clientName, string envelopeType, TType data) where TType : class;
 
         /// <summary>
         /// Sends data to all clients.
@@ -26,7 +26,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <remarks>
         /// Envelope type is a processing hint for the recipient.
         /// </remarks>
-        public void SendToAll<TType>(string envelopeType, TType data);
+        public void SendToAll<TType>(string envelopeType, TType data) where TType : class;
 
         /// <summary>
         /// Sends data to many clients.
@@ -37,7 +37,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <remarks>
         /// Envelope type is a processing hint for the recipient.
         /// </remarks>
-        public void SendToMany<TType>(List<string> clientNames, string envelopeType, TType data);
+        public void SendToMany<TType>(List<string> clientNames, string envelopeType, TType data) where TType : class;
 
         /// <summary>
         /// Handle an incoming <see cref="ConnectRequest"/>.

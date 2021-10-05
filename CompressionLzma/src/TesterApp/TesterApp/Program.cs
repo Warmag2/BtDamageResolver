@@ -5,14 +5,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SevenZip.Compression.LZMA
 {
+    public enum TestEnum
+    {
+        FirstItem,
+        AnotherItem
+    }
+
     public class ComplexType
     {
         public Guid Uuid { get; set; }
 
         public Dictionary<string,int> Dict { get; set; }
+
+        public DateTime Date { get; set; }
+
+        public TestEnum Enum { get; set; }
     }
 
     class Program
@@ -34,12 +46,17 @@ smoother than a V6, while being considerably less expensive than a V12 engine.
 Racing V8s continue to use the single plane crankshaft because it allows faster
 acceleration and more efficient exhaust system designs.";
 
+            var jsonSerializerOptions = new JsonSerializerOptions();
+            jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+            var dataHelper = new DataHelper(jsonSerializerOptions);
+
             // Compress it
-            var compressed = DataHelper.Pack(OriginalText);
+            var compressed = dataHelper.Pack(OriginalText);
             Console.WriteLine("Compressed data is {0} bytes", compressed.Length);
 
             // Decompress it
-            var decompressed = DataHelper.Unpack<string>(compressed);
+            var decompressed = dataHelper.Unpack<string>(compressed);
             Console.WriteLine("Decompressed data is {0} bytes", decompressed.Length);
 
             Console.WriteLine("Is the decompressed text the same as the original? {0}", decompressed == OriginalText);
@@ -55,16 +72,23 @@ acceleration and more efficient exhaust system designs.";
                 {
                     { "nakki", 715517 },
                     { "vahvero", 666 }
-                }
+                },
+                Date = DateTime.UtcNow,
+                Enum = TestEnum.AnotherItem
             };
 
-            var originalComplexTypeCompressed = DataHelper.Pack(originalComplexType);
-            var originalComplexTypeUncompressed = DataHelper.Unpack<ComplexType>(originalComplexTypeCompressed);
-            var originalAsText = System.Text.Json.JsonSerializer.Serialize(originalComplexType);
-            var uncompressedAsText = System.Text.Json.JsonSerializer.Serialize(originalComplexTypeUncompressed);
+            var serializedComplexType = @"{ ""Uuid"":""4f0735d7-e978-44df-9dcd-9239219253e8"", ""Dict"":{ ""nakki"":715517, ""vahvero"":666}, ""Date"": ""2020-01-01T00:00:00.001000Z"", ""TEnum"":""AnotherItem"" }";
+
+            var originalComplexTypeCompressed = dataHelper.Pack(originalComplexType);
+            var originalComplexTypeUncompressed = dataHelper.Unpack<ComplexType>(originalComplexTypeCompressed);
+            var serializedComplexTypeDeserialized = dataHelper.Deserialize<ComplexType>(serializedComplexType);
+            var originalAsText = dataHelper.Serialize(originalComplexType);
+            var uncompressedAsText = dataHelper.Serialize(originalComplexTypeUncompressed);
+            var serializedAsText = dataHelper.Serialize(serializedComplexTypeDeserialized);
             Console.WriteLine(originalAsText);
             Console.WriteLine(uncompressedAsText);
             Console.WriteLine(originalAsText.Equals(uncompressedAsText));
+            Console.WriteLine(serializedAsText);
         }
     }
 }

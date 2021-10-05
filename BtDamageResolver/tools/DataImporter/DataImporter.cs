@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
+using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
+using SevenZip.Compression.LZMA;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Tools.DataImporter
@@ -22,6 +23,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
     public class DataImporter
     {
         private readonly ILogger _logger;
+        private readonly DataHelper _dataHelper;
 
         /// <summary>
         /// Constructor for device actor importer.
@@ -30,6 +32,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
         public DataImporter(ILogger logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dataHelper = new DataHelper(JsonSerializerOptionsGenerator.Generate());
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
 
             foreach (var dataObject in data)
             {
-                _logger.LogInformation(JsonConvert.SerializeObject(dataObject));
+                _logger.LogInformation(_dataHelper.Serialize(dataObject));
             }
 
             if (options.Import)
@@ -191,13 +194,15 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
             switch (fileNamePrefix)
             {
                 case "ClusterTable":
-                    return new object[] { JsonConvert.DeserializeObject<ClusterTable>(fileData) };
+                    return new object[] { _dataHelper.Deserialize<ClusterTable>(fileData) };
                 case "CriticalDamageTable":
-                    return new object[] { JsonConvert.DeserializeObject<CriticalDamageTable>(fileData) };
+                    return new object[] { _dataHelper.Deserialize<CriticalDamageTable>(fileData) };
                 case "PaperDoll":
-                    return new object[] { JsonConvert.DeserializeObject<PaperDoll>(fileData) };
+                    return new object[] { _dataHelper.Deserialize<PaperDoll>(fileData) };
+                case "Unit":
+                    return new object[] { _dataHelper.Deserialize<Unit>(fileData) };
                 case "Weapons":
-                    return JsonConvert.DeserializeObject<List<Weapon>>(fileData).Select(r => r as object);
+                    return _dataHelper.Deserialize<List<Weapon>>(fileData).Select(r => r as object);
                 default:
                     throw new InvalidOperationException($"Cannot infer file type from file name for file: {path}");
             }

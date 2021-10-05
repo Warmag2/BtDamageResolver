@@ -25,9 +25,9 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface
         /// <remarks>
         /// The data type hint is a hint for the recipient on how to process the data.
         /// </remarks>
-        public Envelope(string dataTypeHint, object data)
+        public Envelope(string dataTypeHint, byte[] data)
         {
-            Data = Pack(data);
+            Data = data;
             CorrelationId = Guid.NewGuid();
             TimeStamp = DateTime.UtcNow;
             Type = dataTypeHint;

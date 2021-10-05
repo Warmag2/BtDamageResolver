@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Exceptions;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
@@ -22,13 +22,15 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         where TEntity : class, IEntity<string>
     {
         private readonly ILogger<RedisEntityRepository<TEntity>> _logger;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly string _connectionString;
         private readonly string _keyPrefix;
         private readonly IConnectionMultiplexer _redisConnectionMultiplexer;
 
-        public RedisEntityRepository(ILogger<RedisEntityRepository<TEntity>> logger, string connectionString)
+        public RedisEntityRepository(ILogger<RedisEntityRepository<TEntity>> logger, JsonSerializerOptions jsonSerializerOptions, string connectionString)
         {
             _logger = logger;
+            _jsonSerializerOptions = jsonSerializerOptions;
             _connectionString = connectionString;
             _keyPrefix = $"Resolver{typeof(TEntity).Name}";
             _redisConnectionMultiplexer = ConnectionMultiplexer.Connect(_connectionString);
@@ -60,7 +62,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
             try
             {
                 var connection = GetConnection();
-                await connection.StringSetAsync(GetKey(entity), JsonConvert.SerializeObject(entity)).ConfigureAwait(false);
+                await connection.StringSetAsync(GetKey(entity), JsonSerializer.Serialize(entity, _jsonSerializerOptions)).ConfigureAwait(false);
             }
             catch (DbException ex)
             {
@@ -111,7 +113,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
                 if (value != RedisValue.Null)
                 {
-                    var entity = JsonConvert.DeserializeObject<TEntity>(value);
+                    var entity = JsonSerializer.Deserialize<TEntity>(value, _jsonSerializerOptions);
                     return entity;
                 }
 
@@ -139,7 +141,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
                 if (value != RedisValue.Null)
                 {
-                    var entity =  JsonConvert.DeserializeObject<TEntity>(value);
+                    var entity =  JsonSerializer.Deserialize<TEntity>(value, _jsonSerializerOptions);
                     return entity;
                 }
 

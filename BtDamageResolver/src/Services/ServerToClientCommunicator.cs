@@ -10,8 +10,7 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Microsoft.Extensions.Logging;
 using Orleans;
-
-using static SevenZip.Compression.LZMA.DataHelper;
+using SevenZip.Compression.LZMA;
 
 namespace Faemiyah.BtDamageResolver.Services
 {
@@ -21,7 +20,7 @@ namespace Faemiyah.BtDamageResolver.Services
         private readonly IGrainFactory _grainFactory;
 
         /// <inheritdoc />
-        public ServerToClientCommunicator(ILogger<ServerToClientCommunicator> logger, string connectionString, IGrainFactory grainFactory) : base(logger, connectionString)
+        public ServerToClientCommunicator(ILogger<ServerToClientCommunicator> logger, DataHelper dataHelper, IGrainFactory grainFactory, string connectionString) : base(logger, dataHelper, connectionString)
         {
             _logger = logger;
             _grainFactory = grainFactory;
@@ -30,7 +29,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleConnectRequest(byte[] connectRequestData, Guid correlationId)
         {
-            var connectRequest = Unpack<ConnectRequest>(connectRequestData);
+            var connectRequest = DataHelper.Unpack<ConnectRequest>(connectRequestData);
             var (connectResult, connectValidationResult) = ValidateObject(connectRequest);
 
             if (!connectResult)
@@ -51,7 +50,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleDisconnectRequest(byte[] disconnectRequestData, Guid correlationId)
         {
-            var disconnectRequest = Unpack<DisconnectRequest>(disconnectRequestData);
+            var disconnectRequest = DataHelper.Unpack<DisconnectRequest>(disconnectRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(disconnectRequest.PlayerName).Disconnect(disconnectRequest.AuthenticationToken))
             {
@@ -64,7 +63,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleGetDamageReportsRequest(byte[] getDamageReportsRequestData, Guid correlationId)
         {
-            var getDamageReportsRequest = Unpack<GetDamageReportsRequest>(getDamageReportsRequestData);
+            var getDamageReportsRequest = DataHelper.Unpack<GetDamageReportsRequest>(getDamageReportsRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(getDamageReportsRequest.PlayerName).RequestDamageReports(getDamageReportsRequest.AuthenticationToken))
             {
@@ -77,7 +76,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleGetGameOptionsRequest(byte[] getGameOptionsRequestData, Guid correlationId)
         {
-            var getGameOptionsRequest = Unpack<GetGameOptionsRequest>(getGameOptionsRequestData);
+            var getGameOptionsRequest = DataHelper.Unpack<GetGameOptionsRequest>(getGameOptionsRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(getGameOptionsRequest.PlayerName).RequestGameOptions(getGameOptionsRequest.AuthenticationToken))
             {
@@ -90,7 +89,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleGetGameStateRequest(byte[] getGameStateRequestData, Guid correlationId)
         {
-            var getGameStateRequest = Unpack<GetGameStateRequest>(getGameStateRequestData);
+            var getGameStateRequest = DataHelper.Unpack<GetGameStateRequest>(getGameStateRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(getGameStateRequest.PlayerName).RequestGameState(getGameStateRequest.AuthenticationToken))
             {
@@ -103,7 +102,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleGetPlayerOptionsRequest(byte[] getPlayerOptionsRequestData, Guid correlationId)
         {
-            var getPlayerOptionsRequest = Unpack<GetPlayerOptionsRequest>(getPlayerOptionsRequestData);
+            var getPlayerOptionsRequest = DataHelper.Unpack<GetPlayerOptionsRequest>(getPlayerOptionsRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(getPlayerOptionsRequest.PlayerName).RequestPlayerOptions(getPlayerOptionsRequest.AuthenticationToken))
             {
@@ -116,7 +115,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleForceReadyRequest(byte[] forceReadyRequestData, Guid correlationId)
         {
-            var forceReadyRequest = Unpack<ForceReadyRequest>(forceReadyRequestData);
+            var forceReadyRequest = DataHelper.Unpack<ForceReadyRequest>(forceReadyRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(forceReadyRequest.PlayerName).ForceReady(forceReadyRequest.AuthenticationToken))
             {
@@ -129,7 +128,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleJoinGameRequest(byte[] joinGameRequestData, Guid correlationId)
         {
-            var joinGameRequest = Unpack<JoinGameRequest>(joinGameRequestData);
+            var joinGameRequest = DataHelper.Unpack<JoinGameRequest>(joinGameRequestData);
             var (joinGameRequestResult, joinGameRequestValidationResult) = ValidateObject(joinGameRequest);
 
             if (!joinGameRequestResult)
@@ -150,7 +149,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleKickPlayerRequest(byte[] kickPlayerRequestData, Guid correlationId)
         {
-            var kickPlayerRequest = Unpack<KickPlayerRequest>(kickPlayerRequestData);
+            var kickPlayerRequest = DataHelper.Unpack<KickPlayerRequest>(kickPlayerRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(kickPlayerRequest.PlayerName).KickPlayer(kickPlayerRequest.AuthenticationToken, kickPlayerRequest.PlayerToKickName))
             {
@@ -163,7 +162,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleLeaveGameRequest(byte[] leaveGameRequestData, Guid correlationId)
         {
-            var leaveGameRequest = Unpack<LeaveGameRequest>(leaveGameRequestData);
+            var leaveGameRequest = DataHelper.Unpack<LeaveGameRequest>(leaveGameRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(leaveGameRequest.PlayerName).LeaveGame(leaveGameRequest.AuthenticationToken))
             {
@@ -176,7 +175,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleMoveUnitRequest(byte[] moveUnitRequestData, Guid correlationId)
         {
-            var moveUnitRequest = Unpack<MoveUnitRequest>(moveUnitRequestData);
+            var moveUnitRequest = DataHelper.Unpack<MoveUnitRequest>(moveUnitRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(moveUnitRequest.PlayerName).MoveUnit(moveUnitRequest.AuthenticationToken, moveUnitRequest.UnitId, moveUnitRequest.ReceivingPlayer))
             {
@@ -189,7 +188,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleSendDamageRequest(byte[] sendDamageInstanceRequestData, Guid correlationId)
         {
-            var sendDamageInstanceRequest = Unpack<SendDamageInstanceRequest>(sendDamageInstanceRequestData);
+            var sendDamageInstanceRequest = DataHelper.Unpack<SendDamageInstanceRequest>(sendDamageInstanceRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(sendDamageInstanceRequest.PlayerName).SendDamageInstance(sendDamageInstanceRequest.AuthenticationToken, sendDamageInstanceRequest.DamageInstance))
             {
@@ -202,7 +201,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleSendGameOptionsRequest(byte[] sendGameOptionsRequestData, Guid correlationId)
         {
-            var sendGameOptionsRequest = Unpack<SendGameOptionsRequest>(sendGameOptionsRequestData);
+            var sendGameOptionsRequest = DataHelper.Unpack<SendGameOptionsRequest>(sendGameOptionsRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(sendGameOptionsRequest.PlayerName).SendGameOptions(sendGameOptionsRequest.AuthenticationToken, sendGameOptionsRequest.GameOptions))
             {
@@ -215,7 +214,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleSendPlayerOptionsRequest(byte[] sendPlayerOptionsRequestData, Guid correlationId)
         {
-            var sendPlayerOptionsRequest = Unpack<SendPlayerOptionsRequest>(sendPlayerOptionsRequestData);
+            var sendPlayerOptionsRequest = DataHelper.Unpack<SendPlayerOptionsRequest>(sendPlayerOptionsRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(sendPlayerOptionsRequest.PlayerName).SendPlayerOptions(sendPlayerOptionsRequest.AuthenticationToken, sendPlayerOptionsRequest.PlayerOptions))
             {
@@ -228,7 +227,7 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override async Task<bool> HandleSendPlayerStateRequest(byte[] sendPlayerStateRequestData, Guid correlationId)
         {
-            var sendPlayerStateRequest = Unpack<SendPlayerStateRequest>(sendPlayerStateRequestData);
+            var sendPlayerStateRequest = DataHelper.Unpack<SendPlayerStateRequest>(sendPlayerStateRequestData);
 
             if (!await _grainFactory.GetGrain<IPlayerActor>(sendPlayerStateRequest.PlayerName).SendPlayerState(sendPlayerStateRequest.AuthenticationToken, sendPlayerStateRequest.PlayerState))
             {

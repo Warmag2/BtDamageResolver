@@ -1,8 +1,10 @@
 using System;
+using System.Text.Json;
 using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
+using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
@@ -18,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SevenZip.Compression.LZMA;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer
@@ -66,6 +69,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
                 options.EnableDetailedErrors = true;
                 options.MaximumReceiveMessageSize = 1048576;
             });
+            services.AddSingleton(JsonSerializerOptionsGenerator.Generate());
+            services.AddSingleton<DataHelper>();
             services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
             services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
             services.AddSingleton<IEntityRepository<GameEntry, string>>(GetRedisEntityRepository<GameEntry>);
@@ -85,7 +90,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
             if (options != null)
             {
-                return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString);
+                return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<JsonSerializerOptions>(), options.Value.ConnectionString);
             }
 
             throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");

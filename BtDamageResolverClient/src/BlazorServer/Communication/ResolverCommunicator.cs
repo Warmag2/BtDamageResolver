@@ -7,12 +7,14 @@ using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SevenZip.Compression.LZMA;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 {
     public class ResolverCommunicator
     {
         private readonly ILogger<ResolverCommunicator> _logger;
+        private readonly DataHelper _dataHelper;
         private readonly CommunicationOptions _communicationOptions;
         private HubConnection _hubConnection;
 
@@ -20,15 +22,16 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
         private Guid _authenticationToken;
         private ClientToServerCommunicator _clientToServerCommunicator;
 
-        public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions)
+        public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, DataHelper dataHelper)
         {
             _logger = logger;
+            _dataHelper = dataHelper;
             _communicationOptions = communicationOptions.Value;
         }
 
         private void Reset()
         {
-            _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _communicationOptions.ConnectionString, _playerName, _hubConnection);
+            _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _dataHelper, _communicationOptions.ConnectionString, _playerName, _hubConnection);
         }
 
         public void SetAuthenticationToken(Guid authenticationToken)

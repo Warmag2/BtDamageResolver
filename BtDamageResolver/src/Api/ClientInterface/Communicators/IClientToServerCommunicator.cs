@@ -16,7 +16,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <remarks>
         /// Envelope type is a processing hint for the recipient.
         /// </remarks>
-        public void Send<TType>(string envelopeType, TType data);
+        public void Send<TType>(string envelopeType, TType data) where TType : class;
 
         /// <summary>
         /// Handle an incoming <see cref="ConnectionResponse"/>.

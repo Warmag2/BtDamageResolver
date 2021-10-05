@@ -9,6 +9,7 @@
 @using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Api.Options
 @inject CommonData _commonData
+@inject DataHelper _dataHelper
 @inject LocalStorage _localStorage
 @inject NavigationManager _navigationManager
 @inject ResolverCommunicator _resolverCommunicator
@@ -47,29 +48,25 @@
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Dashboard || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormGameState></FormGameState>
-    }
+<FormGameState></FormGameState>}
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.AllUnits || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>
-    }
+<ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>}
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.DamageReports || !_userStateController.ConnectedToGame)">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormDamageReports OnlyNewest="false"></FormDamageReports>
-    }
+<FormDamageReports OnlyNewest="false"></FormDamageReports>}
 </div>
 
 <div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Options || !_userStateController.ConnectedToGame)">
     @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
     {
-        <FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>
-    }
+<FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>}
 </div>
 
 @code
@@ -88,7 +85,7 @@
 
         _hubConnection.On<byte[]>(EventNames.ConnectionResponse, (connectionResponseData) =>
         {
-            var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
+            var connectionResponse = _dataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
             // If we have disconnected from a game, clear damage reports and game options to make sure
             if (connectionResponse.GameId == null)
@@ -120,43 +117,43 @@
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
         {
-            _userStateController.DamageReportCollection.AddRange(DataHelper.Unpack<List<DamageReport>>(damageReportData));
+            _userStateController.DamageReportCollection.AddRange(_dataHelper.Unpack<List<DamageReport>>(damageReportData));
             _userStateController.NotifyDamageReportsChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
         {
-            _errorMessage = DataHelper.Unpack<string>(errorMessage);
+            _errorMessage = _dataHelper.Unpack<string>(errorMessage);
             StateHasChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.GameEntries, gameEntries =>
         {
-            _userStateController.GameEntries = DataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetId(), g => g);
+            _userStateController.GameEntries = _dataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetId(), g => g);
             StateHasChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.GameOptions, gameOptionsData =>
         {
-            _userStateController.GameOptions = DataHelper.Unpack<GameOptions>(gameOptionsData);
+            _userStateController.GameOptions = _dataHelper.Unpack<GameOptions>(gameOptionsData);
             StateHasChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.GameState, gameStateData =>
         {
-            _userStateController.GameState = DataHelper.Unpack<GameState>(gameStateData);
+            _userStateController.GameState = _dataHelper.Unpack<GameState>(gameStateData);
             StateHasChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.PlayerOptions, playerOptionsData =>
         {
-            _userStateController.PlayerOptions = DataHelper.Unpack<PlayerOptions>(playerOptionsData);
+            _userStateController.PlayerOptions = _dataHelper.Unpack<PlayerOptions>(playerOptionsData);
             StateHasChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.TargetNumbers, targetNumberUpdateData =>
         {
-            _userStateController.RecordTargetNumberUpdates(DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
+            _userStateController.RecordTargetNumberUpdates(_dataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
             StateHasChanged();
         });
 

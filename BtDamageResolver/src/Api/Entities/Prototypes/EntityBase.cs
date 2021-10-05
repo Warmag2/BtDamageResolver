@@ -1,6 +1,5 @@
 ﻿using System;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
-using Newtonsoft.Json;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.Prototypes
 {
@@ -13,11 +12,5 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.Prototypes
 
         /// <inheritdoc />
         public abstract void SetId(TKey id);
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this);
-        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using SevenZip.Compression.LZMA;
 using StackExchange.Redis;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
@@ -22,6 +22,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         protected const string ClientStreamAddress = "BtDamageResolverClient";
 
         protected readonly ILogger Logger;
+        protected readonly DataHelper DataHelper;
         private readonly string _connectionString;
         private readonly string _listenTarget;
         private ChannelMessageQueue _listenedMessageQueue;
@@ -32,11 +33,13 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// Redis implementation of a server-client communication interface.
         /// </summary>
         /// <param name="logger">The logging interface</param>
+        /// <param name="dataHelper">The data helper.</param>
         /// <param name="connectionString">The server connection string.</param>
         /// <param name="listenTarget">The target channel to listen to.</param>
-        protected RedisCommunicator(ILogger logger, string connectionString, string listenTarget)
+        protected RedisCommunicator(ILogger logger, DataHelper dataHelper, string connectionString, string listenTarget)
         {
             Logger = logger;
+            DataHelper = dataHelper;
             _connectionString = connectionString;
             _listenTarget = listenTarget;
 
@@ -65,7 +68,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         {
             RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
             _listenedMessageQueue = RedisSubscriber.Subscribe(_listenTarget);
-            _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
+            _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(DataHelper.Deserialize<Envelope>(channelMessage.Message)).ConfigureAwait(false));
             SubscribeAdditional();
         }
 
@@ -108,7 +111,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         protected void SendEnvelope(string target, Envelope data)
         {
             CheckChannelConnection(target);
-            RedisSubscriber.Publish(target, JsonConvert.SerializeObject(data), CommandFlags.FireAndForget);
+            RedisSubscriber.Publish(target, DataHelper.Serialize(data), CommandFlags.FireAndForget);
         }
 
         /// <summary>
@@ -118,7 +121,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="errorMessage">The error message.</param>
         protected void SendErrorMessage(string target, string errorMessage)
         {
-            SendEnvelope(target, new Envelope(EventNames.ErrorMessage, errorMessage));
+            SendEnvelope(target, new Envelope(EventNames.ErrorMessage, DataHelper.Pack(errorMessage)));
         }
     }
 }

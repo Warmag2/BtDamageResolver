@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 using Faemiyah.BtDamageResolver.Common.Options;
@@ -9,6 +10,7 @@ using Orleans;
 using Orleans.Concurrency;
 using Orleans.Core;
 using Orleans.Runtime;
+using SevenZip.Compression.LZMA;
 
 namespace Faemiyah.BtDamageResolver.Services
 {
@@ -24,13 +26,14 @@ namespace Faemiyah.BtDamageResolver.Services
         public CommunicationService(
             ILogger<CommunicationService> logger,
             IOptions<CommunicationOptions> communicationOptions,
+            DataHelper dataHelper,
             IGrainFactory grainFactory,
             IGrainIdentity grainId,
             Silo silo,
             ILoggerFactory loggerFactory) : base(grainId, silo, loggerFactory)
         {
             _logger = logger;
-            _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), communicationOptions.Value.ConnectionString, grainFactory);
+            _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), dataHelper, grainFactory, communicationOptions.Value.ConnectionString);
         }
 
         /// <inheritdoc />

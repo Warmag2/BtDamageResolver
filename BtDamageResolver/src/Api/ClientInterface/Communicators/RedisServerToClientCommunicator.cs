@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Microsoft.Extensions.Logging;
+using SevenZip.Compression.LZMA;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 {
@@ -14,7 +15,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <summary>
         /// Constructor for the Redis implementation of BtDamageResolver server-to-client communicator.
         /// </summary>
-        protected RedisServerToClientCommunicator(ILogger logger, string connectionString) : base(logger, connectionString, ServerStreamAddress)
+        protected RedisServerToClientCommunicator(ILogger logger, DataHelper dataHelper, string connectionString) : base(logger, dataHelper, connectionString, ServerStreamAddress)
         {
         }
 
@@ -74,21 +75,21 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         }
 
         /// <inheritdoc />
-        public void Send<TType>(string clientName, string envelopeType, TType data)
+        public void Send<TType>(string clientName, string envelopeType, TType data) where TType : class
         {
-            SendEnvelope(clientName, new Envelope(envelopeType, data));
+            SendEnvelope(clientName, new Envelope(envelopeType, DataHelper.Pack(data)));
         }
 
         /// <inheritdoc />
-        public void SendToAll<TType>(string envelopeType, TType data)
+        public void SendToAll<TType>(string envelopeType, TType data) where TType : class
         {
-            SendEnvelope(ClientStreamAddress, new Envelope(envelopeType, data));
+            SendEnvelope(ClientStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
         }
 
         /// <inheritdoc />
-        public void SendToMany<TType>(List<string> clientNames, string envelopeType, TType data)
+        public void SendToMany<TType>(List<string> clientNames, string envelopeType, TType data) where TType : class
         {
-            var envelope = new Envelope(envelopeType, data);
+            var envelope = new Envelope(envelopeType, DataHelper.Pack(data));
             foreach (var clientName in clientNames)
             {
                 SendEnvelope(clientName, envelope);

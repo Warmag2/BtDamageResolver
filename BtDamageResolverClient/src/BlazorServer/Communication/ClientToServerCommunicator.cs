@@ -4,6 +4,7 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
+using SevenZip.Compression.LZMA;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 {
@@ -11,7 +12,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
     {
         private readonly HubConnection _hubConnection;
 
-        public ClientToServerCommunicator(ILogger logger, string connectionString, string playerId, HubConnection hubConnection) : base(logger, connectionString, playerId)
+        public ClientToServerCommunicator(ILogger logger, DataHelper dataHelper, string connectionString, string playerId, HubConnection hubConnection) : base(logger, dataHelper, connectionString, playerId)
         {
             _hubConnection = hubConnection;
         }

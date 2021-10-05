@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic;
@@ -10,6 +11,7 @@ using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
+using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
 using Faemiyah.BtDamageResolver.Common.Options;
@@ -24,6 +26,7 @@ using Newtonsoft.Json;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
+using SevenZip.Compression.LZMA;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Silo
@@ -161,6 +164,8 @@ namespace Faemiyah.BtDamageResolver.Silo
                         conf.AddFilter("DeploymentLoadPublisher", LogLevel.Warning);
                     });
                     services.Configure<ConsoleLifetimeOptions>(opt => opt.SuppressStatusMessages = true);
+                    services.AddSingleton(JsonSerializerOptionsGenerator.Generate());
+                    services.AddSingleton<DataHelper>();
                     services.AddSingleton<ILogicAmmo, LogicAmmo>();
                     services.AddSingleton<ILogicCombat, LogicCombat>();
                     services.AddSingleton<ILogicDamage, LogicDamage>();
@@ -193,7 +198,7 @@ namespace Faemiyah.BtDamageResolver.Silo
             var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
             if (options != null)
             {
-                return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString);
+                return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<JsonSerializerOptions>(), options.Value.ConnectionString);
             }
 
             throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using SevenZip.Compression.LZMA;
 using StackExchange.Redis;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
@@ -17,7 +17,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <summary>
         /// Constructor for the Redis implementation of BtDamageResolver client-to-server communicator.
         /// </summary>
-        protected RedisClientToServerCommunicator(ILogger logger, string connectionString, string playerId) : base(logger, connectionString, playerId)
+        protected RedisClientToServerCommunicator(ILogger logger, DataHelper dataHelper, string connectionString, string playerId) : base(logger, dataHelper, connectionString, playerId)
         {
         }
 
@@ -25,7 +25,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         protected override void SubscribeAdditional()
         {
             _listenedClientQueue = RedisSubscriber.Subscribe(ClientStreamAddress);
-            _listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
+            _listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(DataHelper.Deserialize<Envelope>(channelMessage.Message)).ConfigureAwait(false));
 
             base.SubscribeAdditional();
         }
@@ -66,9 +66,9 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         }
 
         /// <inheritdoc />
-        public void Send<TType>(string envelopeType, TType data)
+        public void Send<TType>(string envelopeType, TType data) where  TType : class
         {
-            SendEnvelope(ServerStreamAddress, new Envelope(envelopeType, data));
+            SendEnvelope(ServerStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
         }
 
         /// <inheritdoc />
