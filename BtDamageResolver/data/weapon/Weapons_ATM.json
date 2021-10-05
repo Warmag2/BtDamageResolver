@@ -157,7 +157,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": 1,
+      "Special": 1
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -200,7 +200,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": 1,
+      "Special": 1
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -243,7 +243,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": 1,
+      "Special": 1
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -286,7 +286,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": 1,
+      "Special": 1
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -329,7 +329,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": 1,
+      "Special": 1
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -372,7 +372,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": 1,
+      "Special": 1
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -415,7 +415,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": 1,
+      "Special": 1
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -458,7 +458,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": 1,
+      "Special": 1
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,

@@ -196,8 +196,10 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
                     return new object[] { JsonConvert.DeserializeObject<CriticalDamageTable>(fileData) };
                 case "PaperDoll":
                     return new object[] { JsonConvert.DeserializeObject<PaperDoll>(fileData) };
+                case "Unit":
+                    return new object[] { JsonConvert.DeserializeObject<Unit>(fileData) };
                 case "Weapons":
-                    return JsonConvert.DeserializeObject<List<Weapon>>(fileData).Select(r => r as object);
+                    return (JsonConvert.DeserializeObject<List<Weapon>>(fileData) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object);
                 default:
                     throw new InvalidOperationException($"Cannot infer file type from file name for file: {path}");
             }

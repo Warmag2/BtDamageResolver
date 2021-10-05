@@ -29,7 +29,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": -1,
+      "Special": -1
     },
     "SpecialFeatures": {
       "Normal": [ { "Type": "None" } ],
@@ -68,7 +68,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": -1,
+      "Special": -1
     },
     "SpecialFeatures": {
       "Normal": [ { "Type": "None" } ],
@@ -107,7 +107,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": -1,
+      "Special": -1
     },
     "SpecialFeatures": {
       "Normal": [ { "Type": "None" } ],
@@ -146,7 +146,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": -1,
+      "Special": -1
     },
     "SpecialFeatures": {
       "Normal": [ { "Type": "None" } ],
@@ -185,7 +185,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": -1,
+      "Special": -1
     },
     "SpecialFeatures": {
       "Normal": [ { "Type": "None" } ],
@@ -224,7 +224,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": -1,
+      "Special": -1
     },
     "SpecialFeatures": {
       "Normal": [ { "Type": "None" } ],
@@ -263,7 +263,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": -1,
+      "Special": -1
     },
     "SpecialFeatures": {
       "Normal": [ { "Type": "None" } ],
@@ -302,7 +302,7 @@
     },
     "HitModifier": {
       "Normal": 0,
-      "Special": -1,
+      "Special": -1
     },
     "SpecialFeatures": {
       "Normal": [ { "Type": "None" } ],
