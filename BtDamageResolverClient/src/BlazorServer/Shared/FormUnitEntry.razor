@@ -11,7 +11,7 @@
     <div class="resolver_div_componentrow">
         <div class="resolver_div_unitid">
             @UnitEntry.Id
-            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Ams)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnStaticDataHiddenChanged">Editable</FormCheckbox>
+            <FormCheckbox Checked="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnStaticDataHiddenChanged">Editable</FormCheckbox>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveUp"><b>&uarr;</b></button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveDown"><b>&darr;</b></button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalLoad">Load</button>
@@ -423,9 +423,9 @@
 
     private void OnStaticDataHiddenChanged(bool staticDataHidden)
     {
-        if (UnitEntry.StaticDataHidden != staticDataHidden)
+        if (UnitEntry.StaticDataHidden != !staticDataHidden)
         {
-            UnitEntry.StaticDataHidden = staticDataHidden;
+            UnitEntry.StaticDataHidden = !staticDataHidden;
             SendUpdate();
         }
     }
