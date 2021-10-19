@@ -23,7 +23,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
             
             Features = new HashSet<UnitFeature>();
             FiringSolution = new FiringSolution();
-            Quirks = new HashSet<Quirk>();
             Weapons = new List<WeaponEntry>();
 
             Troopers = 1; // In practice, 0 is illegal in many situations and this is never bad.
@@ -250,20 +249,32 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// <summary>
         /// The current ground or air speed of this unit, when moving at normal speed.
         /// </summary>
-        public int GetCurrentSpeed(bool accountHeat = true)
+        public int GetCurrentSpeed(MovementClass movementClass, bool accountForHeat = true)
         {
-            return accountHeat ? Math.Max(Speed - GetHeatSpeedPenalty(), 1) : Speed;
+            switch (movementClass)
+            {
+                case MovementClass.Immobile:
+                case MovementClass.Stationary:
+                    return 0;
+                case MovementClass.Normal:
+                    return GetCurrentSpeedInternal(accountForHeat);
+                case MovementClass.Fast:
+                    return (int)Math.Ceiling(GetCurrentSpeedInternal(accountForHeat) * 1.5m);
+                case MovementClass.Masc:
+                    return GetCurrentSpeedInternal(accountForHeat) * 2;
+                case MovementClass.Jump:
+                    return JumpJets;
+                case MovementClass.OutOfControl:
+                    return (int)Math.Ceiling(GetCurrentSpeedInternal(accountForHeat) * 1.5m);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(movementClass), movementClass, null);
+            }
         }
 
-        /// <summary>
-        /// The current ground or air speed of this unit, when moving on flanking or running speed.
-        /// </summary>
-        public int GetCurrentSpeedFast(bool accountHeat = true) => (int)Math.Ceiling(GetCurrentSpeed(accountHeat) * 1.5m);
-
-        /// <summary>
-        /// The current ground or air speed of this unit, when supercharger or MASC is active.
-        /// </summary>
-        public int GetCurrentSpeedMasc(bool accountHeat = true) => GetCurrentSpeed(accountHeat) * 2;
+        private int GetCurrentSpeedInternal(bool accountForHeat = true)
+        {
+            return accountForHeat ? Math.Max(Speed - GetHeatSpeedPenalty(), 1) : Speed;
+        }
 
         /// <summary>
         /// Provides a true copy of the unit.
@@ -271,7 +282,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// <remarks>
         /// No references are copied, all entities in the new object are new ones.
         /// A new Guid is generated.
-        /// A new Name is generated.
+        /// A new Name is generated based on the existing name.
         /// The TimeStamp is marked as the present.
         /// </remarks>
         /// <returns>A copy of the unit in question.</returns>
@@ -285,7 +296,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
                 Gunnery = Gunnery,
                 JumpJets = JumpJets,
                 Piloting = Piloting,
-                Quirks = Quirks.Copy(),
                 Sinks = Sinks,
                 Speed = Speed,
                 Tonnage = Tonnage,
@@ -297,7 +307,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
                 Id = id,
                 Movement = Movement,
                 MovementClass = MovementClass,
-                Name = $"New Unit ({id})",
+                Name = GenerateName(Name),
                 Narced = Narced,
                 Penalty = Penalty,
                 Ready = Ready,
@@ -305,6 +315,13 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
                 Tagged = Tagged,
                 TimeStamp = DateTime.UtcNow
             };
+        }
+
+        private string GenerateName(string name)
+        {
+            var numbersAtEndOfString = name.ToArray().Reverse().TakeWhile(char.IsNumber).Reverse().ToArray();
+
+            return numbersAtEndOfString.Any() ? $"{name.TrimEnd(numbersAtEndOfString)}{int.Parse(string.Concat(numbersAtEndOfString)) + 1}" : $"{name} 2";
         }
 
         /// <summary>
@@ -331,8 +348,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         public void ImportFromUnit(Unit unit)
         {
             Features = unit.Features.Copy();
-            Quirks = unit.Quirks.Copy();
-
             Gunnery = unit.Gunnery;
             JumpJets = unit.JumpJets;
             Piloting = unit.Piloting;

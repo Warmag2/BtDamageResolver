@@ -193,7 +193,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             }
 
             // Combat computer sinks 4 heat by itself
-            if (unit.HasQuirk(Quirk.CombatComputer))
+            if (unit.HasFeature(UnitFeature.CombatComputer))
             {
                 generatedDamageByThisUnit -= 4;
             }

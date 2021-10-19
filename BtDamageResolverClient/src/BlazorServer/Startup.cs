@@ -3,6 +3,7 @@ using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
+using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
@@ -41,7 +42,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             //var commonData = new CommonData(client);
 
             services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
-            services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
             services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
             services.Configure<CircuitOptions>(options =>
             {

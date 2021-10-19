@@ -60,7 +60,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             MapClusterTable = clusterTableRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
             MapCriticalDamageTable = criticalDamageTableRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
             MapPaperDoll = paperDollRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
-            MapQuirk = new SortedDictionary<string, Quirk>(Enum.GetValues<Quirk>().ToDictionary(q => q.ToString()));
+            MapFeature = new SortedDictionary<string, UnitFeature>(Enum.GetValues<UnitFeature>().ToDictionary(q => q.ToString()));
             MapWeapon = weaponRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
             _mapWeaponNamesNormal = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix) && !w.StartsWith(MeleeWeaponPrefix)).ToDictionary(w => w));
             _mapWeaponNamesBattleArmor = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(BattleArmorWeaponPrefix)).ToDictionary(w => w.Substring(BattleArmorWeaponPrefix.Length), w => w));
@@ -68,25 +68,25 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             _mapWeaponNamesMech = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w));
         }
 
+        public Dictionary<string, UnitType> MapUnitType { get; }
+        
+        public Dictionary<string, int> MapAttackModifier { get; }
+
         public Dictionary<string, ClusterTable> MapClusterTable { get; }
 
+        public Dictionary<string, Cover> MapCover { get; }
+
         public Dictionary<string, CriticalDamageTable> MapCriticalDamageTable { get; }
+
+        public Dictionary<string, Direction> MapFacing { get; }
+        
+        public SortedDictionary<string, UnitFeature> MapFeature { get; set; }
+
+        public Dictionary<string, int> MapMovementAmount { get; }
 
         public Dictionary<string, PaperDoll> MapPaperDoll { get; }
 
         public Dictionary<string, Weapon> MapWeapon { get; }
-        
-        public Dictionary<string, UnitType> MapUnitType { get; }
-        
-        public Dictionary<string, int> MapMovementAmount { get; }
-
-        public Dictionary<string, int> MapAttackModifier { get; }
-
-        public Dictionary<string, Cover> MapCover { get; }
-
-        public Dictionary<string, Direction> MapFacing { get; }
-        
-        public SortedDictionary<string, Quirk> MapQuirk { get; set; }
 
         public SortedDictionary<string, string> CreateMapWeaponName(UnitType type)
         {
@@ -322,23 +322,12 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public Dictionary<string, int> CreateMapMovementAmount(UnitEntry unitEntry)
         {
-            var maxMovementAmount = 0;
-
-            switch (unitEntry.MovementClass)
+            if (unitEntry.MovementClass == MovementClass.Jump)
             {
-                case MovementClass.Normal:
-                    maxMovementAmount = unitEntry.GetCurrentSpeed();
-                    break;
-                case MovementClass.Fast:
-                case MovementClass.OutOfControl:
-                    maxMovementAmount = unitEntry.GetCurrentSpeedFast();
-                    break;
-                case MovementClass.Masc:
-                    maxMovementAmount = unitEntry.GetCurrentSpeedMasc();
-                    break;
-                case MovementClass.Jump:
-                    return MakeSimplePickBrackets(0, 1, unitEntry.JumpJets).ToDictionary(p => p.ToString(), p => p.Begin);
+                return MakeSimplePickBrackets(0, 1, unitEntry.JumpJets).ToDictionary(p => p.ToString(), p => p.Begin);
             }
+
+            var maxMovementAmount = unitEntry.GetCurrentSpeed(unitEntry.MovementClass);
 
             var possibleMovementAmounts = MapMovementAmount.Where(k => k.Value != 0 && k.Value <= maxMovementAmount).Select(k => k.Value).ToList();
 

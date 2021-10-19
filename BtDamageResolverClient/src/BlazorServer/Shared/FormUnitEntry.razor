@@ -69,23 +69,6 @@
                         <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsTonnage" SelectedOption="@UnitEntry.Tonnage" Min="0" Max="100" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnTonnageChanged"></FormNumberPicker>
                     </td>
                 </tr>
-                <tr>
-                    <td>Features</td>
-                    <td>
-                        <div>
-                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Ams)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnAmsChanged">AMS</FormCheckbox>
-                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Bap)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnBapChanged">BAP</FormCheckbox>
-                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Ecm)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnEcmChanged">ECM</FormCheckbox>
-                            <FormCheckbox Checked="@UnitEntry.HasFeature(UnitFeature.Masc)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnMascChanged">MASC</FormCheckbox>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Quirks <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="() => _formPickSetQuirks.ShowAddDialog()">+</button></td>
-                    <td>
-                        <FormPickSet @ref="_formPickSetQuirks" Options="@_commonData.MapQuirk" ShowAddButton="@false" ContainedItems="@UnitEntry.Quirks" Editable="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(HashSet<Quirk> quirks) => OnQuirksChanged(quirks)"></FormPickSet>
-                    </td>
-                </tr>
                 <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetSpeedHidden(UnitEntry.Type)))">
                     <td>Speed</td>
                     <td>
@@ -96,6 +79,12 @@
                     <td>Jump Jets</td>
                     <td>
                         <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsJumpJets" SelectedOption="@UnitEntry.JumpJets" Min="0" Max="12" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnJumpJetsChanged"></FormNumberPicker>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Features <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="() => _formPickSetFeatures.ShowAddDialog()">+</button></td>
+                    <td>
+                        <FormPickSet @ref="_formPickSetFeatures" Options="@_commonData.MapFeature" ShowAddButton="@false" ContainedItems="@UnitEntry.Features" Editable="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(HashSet<UnitFeature> features) => OnFeaturesChanged(features)"></FormPickSet>
                     </td>
                 </tr>
             </table>
@@ -298,7 +287,7 @@
 }
 
 @code {
-    private FormPickSet<Quirk> _formPickSetQuirks;
+    private FormPickSet<UnitFeature> _formPickSetFeatures;
 
     [Parameter]
     public UnitEntry UnitEntry { get; set; }
@@ -406,9 +395,9 @@
         }
     }
 
-    private void OnQuirksChanged(HashSet<Quirk> quirks)
+    private void OnFeaturesChanged(HashSet<UnitFeature> features)
     {
-        UnitEntry.Quirks = quirks;
+        UnitEntry.Features = features;
         SendUpdate();
     }
 
@@ -470,42 +459,6 @@
         if (UnitEntry.Type != unitType)
         {
             UnitEntry.Type = unitType;
-            SendUpdate();
-        }
-    }
-
-    private void OnAmsChanged(bool ams)
-    {
-        if (UnitEntry.HasFeature(UnitFeature.Ams) != ams)
-        {
-            UnitEntry.SetFeature(UnitFeature.Ams, ams);
-            SendUpdate();
-        }
-    }
-
-    private void OnBapChanged(bool bap)
-    {
-        if (UnitEntry.HasFeature(UnitFeature.Bap) != bap)
-        {
-            UnitEntry.SetFeature(UnitFeature.Bap, bap);
-            SendUpdate();
-        }
-    }
-
-    private void OnEcmChanged(bool ecm)
-    {
-        if (UnitEntry.HasFeature(UnitFeature.Ecm) != ecm)
-        {
-            UnitEntry.SetFeature(UnitFeature.Ecm, ecm);
-            SendUpdate();
-        }
-    }
-
-    private void OnMascChanged(bool masc)
-    {
-        if (UnitEntry.HasFeature(UnitFeature.Masc) != masc)
-        {
-            UnitEntry.SetFeature(UnitFeature.Masc, masc);
             SendUpdate();
         }
     }

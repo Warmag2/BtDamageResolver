@@ -282,7 +282,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             {
                 // Round down, but minimum is still 1
                 var transformedDamage = Math.Max(damage / 2, 1);
-                damageReport.Log(new AttackLogEntry { Context = $"Quirk {Quirk.NarrowLowProfile} modifies received damage. New damage", Number = transformedDamage, Type = AttackLogEntryType.Calculation });
+                damageReport.Log(new AttackLogEntry { Context = $"Quirk {UnitFeature.NarrowLowProfile} modifies received damage. New damage", Number = transformedDamage, Type = AttackLogEntryType.Calculation });
 
                 return transformedDamage;
             }

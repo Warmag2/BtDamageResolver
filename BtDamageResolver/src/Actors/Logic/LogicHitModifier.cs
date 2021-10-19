@@ -130,7 +130,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private int GetQuirkModifier(UnitEntry firingUnit, UnitEntry targetUnit, Weapon weapon)
         {
-            if (firingUnit.HasQuirk(Quirk.TargetingAntiAir))
+            if (firingUnit.HasFeature(UnitFeature.TargetingAntiAir))
             {
                 switch (targetUnit.Type)
                 {
@@ -142,7 +142,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 }
             }
 
-            if (firingUnit.HasQuirk(Quirk.BattleFists) && weapon.AttackType == AttackType.Punch)
+            if (firingUnit.HasFeature(UnitFeature.BattleFists) && weapon.AttackType == AttackType.Punch)
             {
                 return -1;
             }
@@ -213,7 +213,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                             return 1;
                         case MovementClass.Fast:
                         case MovementClass.Masc:
-                            return firingUnit.HasQuirk(Quirk.StabilizedWeapons) ? 1 : 2;
+                            return firingUnit.HasFeature(UnitFeature.StabilizedWeapons) ? 1 : 2;
                         case MovementClass.Jump:
                             return 3;
                         default:
@@ -229,7 +229,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                             return 1;
                         case MovementClass.Fast:
                         case MovementClass.Masc:
-                            return firingUnit.HasQuirk(Quirk.StabilizedWeapons) ? 1 : 2;
+                            return firingUnit.HasFeature(UnitFeature.StabilizedWeapons) ? 1 : 2;
                         default:
                             return 0;
                     }
@@ -260,7 +260,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 case UnitType.MechQuad:
                     if (targetUnit.MovementClass == MovementClass.Jump)
                     {
-                        return targetUnit.HasQuirk(Quirk.NimbleJumper) ? 2 : 1;
+                        return targetUnit.HasFeature(UnitFeature.NimbleJumper) ? 2 : 1;
                     }
 
                     return 0;
@@ -349,25 +349,25 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                             return LogicConstants.InvalidTargetNumber; // Point blank weapon attacks are only allowed for Infantry and Battle Armor
                     }
                 case RangeBracket.Short:
-                    if (firingUnit.HasQuirk(Quirk.TargetingShortRange))
+                    if (firingUnit.HasFeature(UnitFeature.TargetingShortRange))
                     {
                         return -1;
                     }
                     return 0;
                 case RangeBracket.Medium:
-                    if (firingUnit.HasQuirk(Quirk.TargetingMediumRange))
+                    if (firingUnit.HasFeature(UnitFeature.TargetingMediumRange))
                     {
                         return 1;
                     }
                     return 2;
                 case RangeBracket.Long:
-                    if (firingUnit.HasQuirk(Quirk.TargetingLongRange))
+                    if (firingUnit.HasFeature(UnitFeature.TargetingLongRange))
                     {
                         return 3;
                     }
                     return 4;
                 case RangeBracket.Extreme:
-                    if (firingUnit.HasQuirk(Quirk.TargetingExtremeRange))
+                    if (firingUnit.HasFeature(UnitFeature.TargetingExtremeRange))
                     {
                         return 5;
                     }

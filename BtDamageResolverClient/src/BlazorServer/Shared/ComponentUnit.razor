@@ -66,20 +66,6 @@
                         </td>
                     </tr>
                 }
-                @if (UnitEntry.Quirks.Any())
-                {
-                    <tr class="resolver_tr_unitinformation">
-                        <td class="resolver_td_unitinformation_label">Quirks</td>
-                        <td class="resolver_td_unitinformation_data">
-                            @foreach (var quirk in UnitEntry.Quirks)
-                            {
-                                <div class="resolver_div_unitinformation_data">
-                                    @($"{quirk}")
-                                </div>
-                            }
-                        </td>
-                    </tr>
-                }
             <tr class="resolver_tr_unitinformation">
                 <td class="resolver_td_unitinformation_label">Movement</td>
                 <td class="resolver_td_unitinformation_data">@UnitEntry.MovementClass - @UnitEntry.Movement</td>

@@ -14,7 +14,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
     {
         public Unit()
         {
-            Quirks = new HashSet<Quirk>();
             Weapons = new List<WeaponEntry>();
         }
 
@@ -38,11 +37,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         /// </summary>
         public int JumpJets { get; set; }
         
-        /// <summary>
-        /// How many jump jets does this unit have, if any.
-        /// </summary>
-        public HashSet<Quirk> Quirks { get; set; }
-
         /// <summary>
         /// The base ground or air speed of this unit, when moving at normal speed, without modifications, in units per turn.
         /// </summary>
@@ -84,16 +78,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         }
 
         /// <summary>
-        /// Check whether the unit has a specific quirk or not.
-        /// </summary>
-        /// <param name="quirk">The quirk to check.</param>
-        /// <returns><b>True</b> if the unit has the specified quirk, <b>false</b> otherwise.</returns>
-        public bool HasQuirk(Quirk quirk)
-        {
-            return Quirks.Contains(quirk);
-        }
-
-        /// <summary>
         /// Add or remove a feature from an unit.
         /// </summary>
         /// <param name="feature">The feature to alter.</param>
@@ -101,16 +85,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         public void SetFeature(UnitFeature feature, bool present)
         {
             Features.Set(feature, present);
-        }
-
-        /// <summary>
-        /// Add or remove a quirk from an unit.
-        /// </summary>
-        /// <param name="quirk">The quirk to alter.</param>
-        /// <param name="present">Should the quirk be present or not.</param>
-        public void SetQuirk(Quirk quirk, bool present)
-        {
-            Quirks.Set(quirk, present);
         }
     }
 }

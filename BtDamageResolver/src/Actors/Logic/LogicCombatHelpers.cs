@@ -115,7 +115,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         public static bool IsGlancingBlow(int marginOfSuccess, Unit targetUnit)
         {
-            return targetUnit.HasQuirk(Quirk.NarrowLowProfile)
+            return targetUnit.HasFeature(UnitFeature.NarrowLowProfile)
                    && marginOfSuccess == 0;
         }
     }
