@@ -110,9 +110,7 @@
     </div>
     
     <div class="resolver_div_componentrow">
-
-        <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_attackLogVisible)" @onclick="@(e => _attackLogVisible = !_attackLogVisible)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Attack log</button>
-        <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_attackLogVisible)" style="@VisualStyleController.HideElement(!_attackLogVisible)">
+        <ContainerAccordion Enabled="@_attackLogVisible" Title="Damage requests">
             <div class="resolver_div_options">
                 @foreach (var attackLogEntryType in _logLineVisibility)
                 {
@@ -126,7 +124,7 @@
                     @logLine.ToString()
                 </div>
             }
-        </div>
+        </ContainerAccordion>
     </div>
 </div>
 

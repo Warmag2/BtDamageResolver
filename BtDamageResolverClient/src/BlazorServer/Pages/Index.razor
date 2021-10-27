@@ -3,7 +3,6 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
 @using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
@@ -26,56 +25,45 @@
     <FormServer @key="_userStateController.PlayerName" @ref="_formServer"></FormServer>
 </div>
 
-
-<div class="resolver_div_tabcontainer" style="@VisualStyleController.HideElement(!_userStateController.ConnectedToGame)">
-    <div class="resolver_div_tab">
-        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.Data)" @onclick="@(e => SelectTab(ResolverTab.Data))">Data</button>
-        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.Dashboard)" @onclick="@(e => SelectTab(ResolverTab.Dashboard))">Dashboard</button>
-        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.AllUnits)" @onclick="@(e => SelectTab(ResolverTab.AllUnits))">All units</button>
-        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.DamageReports)" @onclick="@(e => SelectTab(ResolverTab.DamageReports))">DamageReports</button>
-        <button class="@_visualStyleController.GetActiveClass(_selectedTab == ResolverTab.Options)" @onclick="@(e => SelectTab(ResolverTab.Options))">Options</button>
-    </div>
+<ContainerTabSelector Enabled="@_userStateController.ConnectedToGame" SelectedTab="@_selectedTab" TabNames="@_tabs" OnTabSelected="@SelectTab">
     <div class="resolver_div_tab resolver_style_alignright">
         <button @onclick="@LeaveGame" class="resolver_button_leave">X</button>
     </div>
-</div>
+</ContainerTabSelector>
 
-<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Data || !_userStateController.ConnectedToGame)">
+<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="Data" TabSelection="@_selectedTab">
     <FormData></FormData>
-</div>
+</ContainerTab>
 
-<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Dashboard || !_userStateController.ConnectedToGame)">
+<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormGameState></FormGameState>
-    }
-</div>
+<FormGameState></FormGameState>}
+</ContainerTab>
 
-<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.AllUnits || !_userStateController.ConnectedToGame)">
+<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>
-    }
-</div>
+<ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>}
+</ContainerTab>
 
-<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.DamageReports || !_userStateController.ConnectedToGame)">
+<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
-        <FormDamageReports OnlyNewest="false"></FormDamageReports>
-    }
-</div>
+<FormDamageReports OnlyNewest="false"></FormDamageReports>}
+</ContainerTab>
 
-<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(_selectedTab != ResolverTab.Options || !_userStateController.ConnectedToGame)">
+<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
     @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
     {
-        <FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>
-    }
-</div>
+<FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>}
+</ContainerTab>
 
 @code
 {
     private FormServer _formServer;
-    private ResolverTab _selectedTab = ResolverTab.Dashboard;
+    private readonly List<string> _tabs = new() { "Data", "Dashboard", "AllUnits", "DamageReports", "Options" };
+    private string _selectedTab = "Dashboard";
     private string _errorMessage;
     private HubConnection _hubConnection;
 
@@ -90,7 +78,7 @@
         {
             var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
-            // If we have disconnected from a game, clear damage reports and game options to make sure
+    // If we have disconnected from a game, clear damage reports and game options to make sure
             if (connectionResponse.GameId == null)
             {
                 _userStateController.GameOptions = null;
@@ -204,9 +192,9 @@
         _resolverCommunicator.SendPlayerOptions(_userStateController.PlayerOptions);
     }
 
-    private void SelectTab(ResolverTab resolverTab)
+    private void SelectTab(string input)
     {
-        _selectedTab = resolverTab;
+        _selectedTab = input;
     }
 
     private void LeaveGame()

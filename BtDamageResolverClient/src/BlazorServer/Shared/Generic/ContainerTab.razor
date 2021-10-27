@@ -1,1 +1,21 @@
-﻿
+﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject VisualStyleController _visualStyleController
+
+<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(TabIdentity != TabSelection || !Enabled)">
+    @ChildContent
+</div>
+
+@code
+{
+    [Parameter]
+    public bool Enabled { get; set; }
+
+    [Parameter]
+    public string TabIdentity { get; set; }
+
+    [Parameter]
+    public string TabSelection { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

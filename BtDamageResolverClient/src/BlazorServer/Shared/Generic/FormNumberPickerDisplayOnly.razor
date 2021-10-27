@@ -1,7 +1,7 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
-@inject VisualStyleController VisualStyleController
+@inject CommonData _commonData
+@inject VisualStyleController _visualStyleController
 
 <span class="resolver_distance_picker_display_only @(StyleSelectorDelegate(_selectedOption))" @onclick="Pick">@NumberToDisplay</span>
 

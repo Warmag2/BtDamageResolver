@@ -165,28 +165,28 @@ namespace Faemiyah.BtDamageResolver.Actors
 
         private void ProcessUnitHeat(List<DamageReport> damageReports, UnitEntry unit)
         {
-            var generatedDamageByThisUnit = damageReports.Where(d => d.FiringUnitId == unit.Id).Sum(damageReport => damageReport.AttackerHeat);
+            var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitId == unit.Id).Sum(damageReport => damageReport.AttackerHeat);
 
             switch (unit.MovementClass)
             {
                 case MovementClass.Immobile:
                 case MovementClass.Stationary:
-                    generatedDamageByThisUnit += 0;
+                    heatGeneratedByThisUnit += 0;
                     break;
                 case MovementClass.Normal:
-                    generatedDamageByThisUnit += 1;
+                    heatGeneratedByThisUnit += 1;
                     break;
                 case MovementClass.Fast:
-                    generatedDamageByThisUnit += 2;
+                    heatGeneratedByThisUnit += 2;
                     break;
                 case MovementClass.Masc:
-                    generatedDamageByThisUnit += 5;
+                    heatGeneratedByThisUnit += 5;
                     break;
                 case MovementClass.OutOfControl:
-                    generatedDamageByThisUnit += 2;
+                    heatGeneratedByThisUnit += 2;
                     break;
                 case MovementClass.Jump:
-                    generatedDamageByThisUnit += Math.Max(3, unit.Movement);
+                    heatGeneratedByThisUnit += Math.Max(3, unit.Movement);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -195,14 +195,14 @@ namespace Faemiyah.BtDamageResolver.Actors
             // Combat computer sinks 4 heat by itself
             if (unit.HasFeature(UnitFeature.CombatComputer))
             {
-                generatedDamageByThisUnit -= 4;
+                heatGeneratedByThisUnit -= 4;
             }
 
-            // Only apply heat if the generation is positive.
+            // Only apply heat if the generation is positive and the unit tracks heat.
             // Combat computer and other heat generation reductions never take the heat below 0.
-            if (generatedDamageByThisUnit > 0)
+            if (heatGeneratedByThisUnit > 0)
             {
-                unit.Heat += generatedDamageByThisUnit;
+                unit.Heat += heatGeneratedByThisUnit;
             }
 
             unit.Heat -= unit.Sinks;

@@ -1,7 +1,7 @@
 ﻿@typeparam TItem
 
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject VisualStyleController VisualStyleController
+@inject VisualStyleController _visualStyleController
 
 <input class="resolver_input resolver_input_text @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="text" disabled="@Disabled" @bind="SelectedOptionInternal" @oninput="AdjustOptionList" @onfocus="ShowComboBoxItems" @onfocusout="CheckHideComboBoxItems" @onkeypress="@(e => CheckForClose(e))">
 

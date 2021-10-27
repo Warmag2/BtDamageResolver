@@ -1,8 +1,7 @@
-﻿@using Faemiyah.BtDamageResolver.Api.Entities
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
+﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject CommonData CommonData
-@inject VisualStyleController VisualStyleController
+@inject CommonData _commonData
+@inject VisualStyleController _visualStyleController
 
 @{
     var pickDisabled = Disabled;
@@ -30,7 +29,7 @@
 {
     private int _selectedOption;
     private bool _selectionBoxHidden = true;
-    private List<PickBracket> _options = new List<PickBracket>();
+    private List<PickBracket> _options = new ();
     private DateTime _updateTimeStamp = DateTime.MinValue;
 
     [Parameter]

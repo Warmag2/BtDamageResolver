@@ -1,0 +1,36 @@
+﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject VisualStyleController _visualStyleController
+
+<div class="resolver_div_tabcontainer" style="@VisualStyleController.HideElement(!Enabled)">
+    @foreach (var tab in TabNames)
+    {
+        <div class="resolver_div_tab">
+            <button class="@_visualStyleController.GetActiveClass(SelectedTab == tab)" @onclick="@(() => Select(tab))">@tab</button>
+        </div>
+    }
+    @ChildContent
+</div>
+
+@code
+{
+    [Parameter]
+    public bool Enabled { get; set; }
+
+    [Parameter]
+    public string SelectedTab { get; set; }
+
+    [Parameter]
+    public List<string> TabNames { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnTabSelected { get; set; }
+
+    public void Select(string input)
+    {
+        OnTabSelected.InvokeAsync(input);
+        StateHasChanged();
+    }
+}
