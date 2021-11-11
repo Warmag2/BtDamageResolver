@@ -21,7 +21,7 @@ datasources:
   # <string> url
   url: orleansdb:5432
   # <string> database password, if used
-  password: $DATASOURCE_PASSWORD
+#  password: $DATASOURCE_PASSWORD
   # <string> database user, if used
   user: $DATASOURCE_USER
   # <string> database name, if used
@@ -40,14 +40,15 @@ datasources:
   readOnly: false
   # <map> fields that will be converted to json and stored in json_data
   jsonData:
-     postgresVersion: 1200
-     sslmode: "disable"
-     tlsAuth: false
-     tlsAuthWithCACert: false
-     tlsConfigurationMethod: file-path
-     tlsSkipVerify: true
+    postgresVersion: 1200
+    sslmode: "disable"
+#    tlsAuth: false
+#    tlsAuthWithCACert: false
+#    tlsConfigurationMethod: file-path
+#    tlsSkipVerify: true
   # <string> json object of data that will be encrypted.
-  #secureJsonData:
+  secureJsonData:
+    password: $DATASOURCE_PASSWORD
   #  tlsCACert:
   #  tlsClientCert:
   #  tlsClientKey:
