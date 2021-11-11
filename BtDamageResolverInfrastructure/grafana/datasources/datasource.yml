@@ -37,7 +37,7 @@ datasources:
   isDefault: true
   # <map> fields that will be converted to json and stored in json_data
   jsonData:
-     postgresVersion: 1000
+     postgresVersion: 1200
      sslmode: "disable"
   # <string> json object of data that will be encrypted.
   #secureJsonData:
