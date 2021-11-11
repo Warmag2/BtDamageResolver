@@ -1,5 +1,6 @@
 	Implemented
 
+[FEATURE] Parametrize all passwords for practical security reasons before release.
 [FEATURE] Multiple quirks implemented.
 [FEATURE] Show password protection in game list.
 [FEATURE] Redis -based API and client communication.
@@ -59,6 +60,10 @@
 
 	Fixed
 
+[BUG] Grafana bar graph does not display zero for intervals which are zero.
+[BUG] Grafana login is admin/admin.
+[BUG] Joining games with a password does not work from the modal dialog.
+[BUG] Deleting a damage report does not refresh.
 [BUG] Unit name is not saved correctly when saving into unit repository.
 [BUG] Game list does not refresh automatically / at all.
 

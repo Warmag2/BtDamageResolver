@@ -8,16 +8,24 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "description": "Events occurring in the Battletech Damage Resolver",
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "aliasColors": {
@@ -32,8 +40,14 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
-      "fillGradient": 0,
+      "fillGradient": 5,
       "gridPos": {
         "h": 7,
         "w": 24,
@@ -42,6 +56,7 @@
       },
       "hiddenSeries": false,
       "id": 4,
+      "interval": "1m",
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -54,12 +69,14 @@
         "values": true
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
+      "maxDataPoints": 240,
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": false
       },
       "percentage": false,
+      "pluginVersion": "8.2.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -74,15 +91,15 @@
             {
               "params": [
                 "$__interval",
-                "none"
+                "0"
               ],
               "type": "time"
             }
           ],
-          "hide": true,
+          "hide": false,
           "metricColumn": "none",
           "rawQuery": false,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  count(actiondata) AS \"Game Updates\"\nFROM resolverloggame\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = 1\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval,0),\n  count(actiondata) AS \"Game Updates\"\nFROM resolverloggame\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = '2'\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -121,7 +138,7 @@
               "params": [
                 "actiontype",
                 "=",
-                "1"
+                "'2'"
               ],
               "type": "expression"
             }
@@ -133,14 +150,15 @@
             {
               "params": [
                 "$__interval",
-                "none"
+                "0"
               ],
               "type": "time"
             }
           ],
+          "hide": false,
           "metricColumn": "none",
           "rawQuery": false,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  count(actiondata) AS \"Player Logins\"\nFROM resolverloggame\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = '0'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval,0),\n  count(actiondata) AS \"Game Logins\"\nFROM resolverloggame\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = '0'\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -158,7 +176,7 @@
               },
               {
                 "params": [
-                  "Player Logins"
+                  "Game Logins"
                 ],
                 "type": "alias"
               }
@@ -191,14 +209,15 @@
             {
               "params": [
                 "$__interval",
-                "none"
+                "0"
               ],
               "type": "time"
             }
           ],
+          "hide": false,
           "metricColumn": "none",
           "rawQuery": false,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  count(actiondata) AS \"Turns Played\"\nFROM resolverloggame\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = '2'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval,0),\n  count(actiondata) AS \"Turns Played\"\nFROM resolverloggame\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = '3'\nGROUP BY 1\nORDER BY 1",
           "refId": "C",
           "select": [
             [
@@ -237,7 +256,7 @@
               "params": [
                 "actiontype",
                 "=",
-                "'2'"
+                "'3'"
               ],
               "type": "expression"
             }
@@ -254,9 +273,10 @@
               "type": "time"
             }
           ],
+          "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  count(DISTINCT gameid) AS \"Active Games\"\nFROM resolverloggame\nWHERE\n  $__timeFilter(eventtime)\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval, 0),\n  count(DISTINCT gameid) AS \"Active Games\"\nFROM resolverloggame\nWHERE\n  $__timeFilter(eventtime)\nGROUP BY 1\nORDER BY 1",
           "refId": "D",
           "select": [
             [
@@ -322,6 +342,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:163",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -330,6 +351,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:164",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -345,6 +367,7 @@
     },
     {
       "aliasColors": {
+        "Active Players": "light-blue",
         "Active Users": "light-blue",
         "Player Logins": "yellow",
         "User Logins": "yellow",
@@ -355,8 +378,14 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
-      "fillGradient": 0,
+      "fillGradient": 5,
       "gridPos": {
         "h": 7,
         "w": 24,
@@ -377,12 +406,14 @@
         "values": true
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
+      "maxDataPoints": 240,
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": false
       },
       "percentage": false,
+      "pluginVersion": "8.2.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -397,15 +428,15 @@
             {
               "params": [
                 "$__interval",
-                "none"
+                "0"
               ],
               "type": "time"
             }
           ],
-          "hide": true,
+          "hide": false,
           "metricColumn": "none",
           "rawQuery": false,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  count(actiondata) AS \"User Updates\"\nFROM resolverlogplayer\nWHERE\n  $__timeFilter(eventtime) AND\n  actiondata = 1\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval,0),\n  count(actiondata) AS \"Player Updates\"\nFROM resolverlogplayer\nWHERE\n  $__timeFilter(eventtime) AND\n  actiondata = 1\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -423,7 +454,7 @@
               },
               {
                 "params": [
-                  "User Updates"
+                  "Player Updates"
                 ],
                 "type": "alias"
               }
@@ -456,14 +487,14 @@
             {
               "params": [
                 "$__interval",
-                "none"
+                "0"
               ],
               "type": "time"
             }
           ],
           "metricColumn": "none",
           "rawQuery": false,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  sum(actiondata) AS \"Player Logins\"\nFROM resolverlogplayer\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = '0'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval,0),\n  count(actiondata) AS \"Player Logins\"\nFROM resolverlogplayer\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = '0'\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -521,7 +552,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  count(DISTINCT playerId) AS \"Active Users\"\nFROM resolverlogplayer\nWHERE\n  $__timeFilter(eventtime)\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval,0),\n  count(DISTINCT playerId) AS \"Active Players\"\nFROM resolverlogplayer\nWHERE\n  $__timeFilter(eventtime)\nGROUP BY 1\nORDER BY 1",
           "refId": "C",
           "select": [
             [
@@ -609,8 +640,14 @@
       "dashes": false,
       "datasource": null,
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
-      "fillGradient": 0,
+      "fillGradient": 5,
       "gridPos": {
         "h": 7,
         "w": 24,
@@ -632,11 +669,13 @@
       },
       "lines": true,
       "linewidth": 1,
+      "maxDataPoints": 240,
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": false
       },
       "percentage": false,
+      "pluginVersion": "8.2.3",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -651,14 +690,14 @@
             {
               "params": [
                 "$__interval",
-                "none"
+                "0"
               ],
               "type": "time"
             }
           ],
           "metricColumn": "none",
           "rawQuery": false,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  count(actiondata) AS \"Unit Updates\"\nFROM resolverlogunit\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = '1'\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval,0),\n  count(actiondata) AS \"Unit Updates\"\nFROM resolverlogunit\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = '1'\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -709,14 +748,14 @@
             {
               "params": [
                 "$__interval",
-                "none"
+                "0"
               ],
               "type": "time"
             }
           ],
           "metricColumn": "none",
           "rawQuery": false,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  count(actiondata) AS \"Fire Events\"\nFROM resolverlogunit\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = 0\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval,0),\n  count(actiondata) AS \"Fire Events\"\nFROM resolverlogunit\nWHERE\n  $__timeFilter(eventtime) AND\n  actiontype = 0\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -774,7 +813,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval),\n  count(DISTINCT unitid) AS \"Active Units\"\nFROM resolverlogunit\nWHERE\n  $__timeFilter(eventtime)\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(eventtime,$__interval,0),\n  count(DISTINCT unitid) AS \"Active Units\"\nFROM resolverlogunit\nWHERE\n  $__timeFilter(eventtime)\nGROUP BY 1\nORDER BY 1",
           "refId": "C",
           "select": [
             [
@@ -863,7 +902,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 22,
+  "schemaVersion": 31,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -871,7 +910,7 @@
   },
   "time": {
     "from": "now-24h",
-    "to": "now"
+    "to": "now-1m"
   },
   "timepicker": {
     "hidden": false,
@@ -892,8 +931,5 @@
   "timezone": "",
   "title": "Resolver Events",
   "uid": "wSfQ6tCWk",
-  "variables": {
-    "list": []
-  },
   "version": 1
 }

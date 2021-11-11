@@ -6,7 +6,7 @@ TODO: Styling (looks like shit for the most part).
 
 	Open Bugs
 
-[BUG] Deleting a damage report does not refresh.
+None known at the moment. Report some.
 
 		Could not reproduce
 
