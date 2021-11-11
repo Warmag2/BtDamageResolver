@@ -8,6 +8,6 @@
     "LogLevelOrleans": "Warning"
   },
   "CommunicationOptions": {
-    "ConnectionString": "redis:6379,password=fuRZdwzQXl98wlNH8_bE"
+    "ConnectionString": "redis:6379,password=PASSWORD"
   }
 }

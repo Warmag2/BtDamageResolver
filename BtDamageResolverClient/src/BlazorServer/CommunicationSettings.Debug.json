@@ -3,6 +3,6 @@
     "LogLevel": "Debug"
   },
   "CommunicationOptions": {
-    "ConnectionString": "10.2.0.3:63790,password=fuRZdwzQXl98wlNH8_bE"
+    "ConnectionString": "10.2.0.3:63790,password=PASSWORD"
   }
 }

@@ -4,9 +4,9 @@
     "LogLevelOrleans": "Information"
   },
   "ClusterOptions": {
-    "ConnectionString": "User ID=faemiyah;Password=fuRZdwzQXl98wlNH8_bE;Host=10.2.0.3;Port=65432;Database=BtDamageResolver"
+    "ConnectionString": "User ID=USERNAME;Password=PASSWORD;Host=10.2.0.3;Port=65432;Database=BtDamageResolver"
   },
   "CommunicationOptions": {
-    "ConnectionString": "10.2.0.3:63790,password=fuRZdwzQXl98wlNH8_bE"
+    "ConnectionString": "10.2.0.3:63790,password=PASSWORD"
   }
 }

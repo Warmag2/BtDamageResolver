@@ -27,6 +27,7 @@ services:
     image: resolverdataimporter:latest
     environment:
       RESOLVER_ENVIRONMENT: Release
+      ClusterOptions__ConnectionString: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=orleansdb;Port=5432;Database=BtDamageResolver"
     networks:
       - resolvernet
     depends_on:
@@ -73,6 +74,8 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: "${RESOLVER_USER:?err}"
       GF_SECURITY_ADMIN_PASSWORD: "${RESOLVER_PASSWORD:?err}"
+      DATASOURCE_USER: "${RESOLVER_USER:?err}"
+      DATASOURCE_PASSWORD: "${RESOLVER_PASSWORD:?err}"
     ports:
       - "63000:3000"
     volumes:

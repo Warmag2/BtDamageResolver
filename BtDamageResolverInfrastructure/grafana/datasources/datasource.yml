@@ -20,9 +20,9 @@ datasources:
   # <string> url
   url: orleansdb:5432
   # <string> database password, if used
-  password: fuRZdwzQXl98wlNH8_bE
+  password: $DATASOURCE_PASSWORD
   # <string> database user, if used
-  user: faemiyah
+  user: $DATASOURCE_USER
   # <string> database name, if used
   database: BtDamageResolver
   # <bool> enable/disable basic auth
