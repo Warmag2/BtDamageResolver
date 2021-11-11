@@ -100,6 +100,7 @@ namespace Faemiyah.BtDamageResolver.Silo
             var configuration = GetConfiguration("SiloSettings.json");
 
             var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>();
+            Console.WriteLine($"CONNECTION STRING: {clusterOptions.ConnectionString}");
             //var loggingOptions = configuration.GetSection(Settings.LoggingOptionsBlockName).GetAsync<FaemiyahLoggingOptions>();
 
             var siloHostBuilder = new SiloHostBuilder()
