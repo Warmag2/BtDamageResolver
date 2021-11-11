@@ -10,9 +10,10 @@ TODO: Write this, or create Youtube videos or something
 
 ### Creating and running the docker images
 
-* Pull this repository into a linux/unix server with docker support installed
-* Run `build_producenugets.bat` or `build_producenugets.sh` in repository root depending on whether you are a Windows or Unix user. This will create the Nuget files required by the client implementation and put them in the `CustomNugets` subdirectory where the build system needs them to be.
-  - If you do not have a build system installed, or do not have access to my nuget feed, download the nugets manually instead. You can do this from the sidebar in the Github repository page. After downloading, manually move them to the `CustomNugets` folder in repository root.
+* Pull this repository into a Linux/Unix server with docker support installed
+* Run `build_producenugets.sh` in repository root. This will create the Nuget files required by the client implementation and put them in the `CustomNugets` subdirectory where the build system needs them to be.
+  - If you do not have a build system installed in the server and have a Windows system, run `build_producenugets.bat` therein and copy the files to the aforementioned place.
+  - If you do not have a build system installed at all, and do not have access to my nuget feed, download the nugets manually instead. You can do this from the sidebar in the Github repository page. Save them to the `CustomNugets` folder in repository root.
 * Go to the `BtDamageResolverInfrastructure` folder found in repository root
 * Copy or rename the `.env_sample` file to just `.env`
 * Type a secure password into the password environment variable in the `.env` file.
