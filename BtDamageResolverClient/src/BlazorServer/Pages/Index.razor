@@ -74,11 +74,11 @@
             .WithUrl(_navigationManager.ToAbsoluteUri("/ClientHub"))
             .Build();
 
-        _hubConnection.On<byte[]>(EventNames.ConnectionResponse, (connectionResponseData) =>
+        _hubConnection.On<byte[]>(EventNames.ConnectionResponse, async (connectionResponseData) =>
         {
             var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
-    // If we have disconnected from a game, clear damage reports and game options to make sure
+            // If we have disconnected from a game, clear damage reports and game options to make sure
             if (connectionResponse.GameId == null)
             {
                 _userStateController.GameOptions = null;
@@ -91,7 +91,7 @@
                 _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
                 _userStateController.ConnectedToServer = true;
                 _userStateController.PlayerName = connectionResponse.PlayerId;
-                _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword }).RunSynchronously();
+                await _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword });
             }
             else
             {
@@ -100,7 +100,7 @@
                 _userStateController.GameState = null;
                 _userStateController.PlayerName = null;
                 _userStateController.PlayerOptions = null;
-                _localStorage.RemoveUserCredentials().RunSynchronously();
+                await _localStorage.RemoveUserCredentials();
             }
 
             StateHasChanged();
