@@ -67,7 +67,7 @@
     private string _errorMessage;
     private HubConnection _hubConnection;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         _hubConnection = new HubConnectionBuilder()
             .WithAutomaticReconnect()
