@@ -157,3 +157,6 @@ __pycache__/
 
 # Mac folder properties
 .DS_Store
+
+# Docker-Compose environment
+BtDamageResolverInfrastructure/.env
