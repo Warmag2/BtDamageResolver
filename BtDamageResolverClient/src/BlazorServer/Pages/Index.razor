@@ -148,21 +148,19 @@
             StateHasChanged();
         });
 
-        _resolverCommunicator.SetHubConnection(_hubConnection);
-        await _hubConnection.StartAsync();
-
         _userStateController.OnPlayerStateUpdated += UpdatePlayerState;
         _userStateController.OnGameOptionsUpdated += UpdateGameOptions;
         _userStateController.OnPlayerOptionsUpdated += UpdatePlayerOptions;
         _userStateController.OnDamageInstanceRequested += SendDamageInstance;
-
-        await base.OnInitializedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            _resolverCommunicator.SetHubConnection(_hubConnection);
+            await _hubConnection.StartAsync();
+
             var (credentialsFound, credentials) = await _localStorage.GetUserCredentials();
 
             if (credentialsFound)

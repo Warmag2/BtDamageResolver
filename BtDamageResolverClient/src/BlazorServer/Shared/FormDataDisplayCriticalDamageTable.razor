@@ -54,15 +54,14 @@
 {
     private CriticalDamageTable _criticalDamageTable;
 
-        [Parameter]
-        public string CriticalDamageTableName { get; set; }
+    [Parameter]
+    public string CriticalDamageTableName { get; set; }
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(CriticalDamageTableName) && _commonData.MapCriticalDamageTable.ContainsKey(CriticalDamageTableName))
         {
-            if (!string.IsNullOrEmpty(CriticalDamageTableName) && _commonData.MapCriticalDamageTable.ContainsKey(CriticalDamageTableName))
-            {
-                _criticalDamageTable = _commonData.MapCriticalDamageTable[CriticalDamageTableName];
-            }
-            await base.OnInitializedAsync();
+            _criticalDamageTable = _commonData.MapCriticalDamageTable[CriticalDamageTableName];
         }
-        }
+    }
+}

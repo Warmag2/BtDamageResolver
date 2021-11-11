@@ -59,13 +59,13 @@
             <div class="resolver_modal_body">
                 <label class="resolver_label_auth">
                     Password:
-                    <input class="resolver_input resolver_input_text" type="text" @bind="_modalPassword" />
+                    <input class="resolver_input resolver_input_text" type="text" @bind="_joinDialogGamePassword" />
                 </label>
             </div>
 
             <!-- Modal footer -->
             <div class="resolver_modal_footer">
-                <button type="button" class="resolver_button" @onclick=@(e => ModalCompleted(_modalPassword))>Submit</button>
+                <button type="button" class="resolver_button" @onclick="@ModalCompleted">Submit</button>
                 <button type="button" class="resolver_button" @onclick="@ModalCancel">Cancel</button>
             </div>
         </div>
@@ -75,15 +75,13 @@
 @code
 {
     private bool _showModal = false;
-    private string _modalName = string.Empty;
-    private string _modalPassword = string.Empty;
+    private string _joinDialogGameName = string.Empty;
+    private string _joinDialogGamePassword = string.Empty;
 
     protected override void OnInitialized()
     {
         _userStateController.OnGameEntriesReceived += StateHasChanged;
         RefreshGameList();
-
-        base.OnInitialized();
     }
 
     private void OnTimerInterval(object sender, ElapsedEventArgs e)
@@ -127,6 +125,7 @@
     {
         if (_userStateController.GameEntries.TryGetValue(gameName, out var entry) && entry.PasswordProtected)
         {
+            _joinDialogGameName = gameName;
             ModalShow();
         }
         else
@@ -139,10 +138,10 @@
 
     private void ModalCancel() => _showModal = false;
 
-    private void ModalCompleted(string password)
+    private void ModalCompleted()
     {
         _showModal = false;
-        JoinGame(new Credentials { Name = _modalName, Password = password });
+        JoinGame(new Credentials { Name = _joinDialogGameName, Password = _joinDialogGamePassword });
     }
 
     public void Dispose()
