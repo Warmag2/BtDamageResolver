@@ -105,6 +105,8 @@ namespace Faemiyah.BtDamageResolver.Common
                     }
                 }
 
+                config.AddEnvironmentVariables();
+
                 return config.Build();
             }
             catch (Exception ex)

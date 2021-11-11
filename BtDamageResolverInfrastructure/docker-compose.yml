@@ -39,6 +39,7 @@ services:
     image: resolverclient:latest
     environment:
       RESOLVER_ENVIRONMENT: Release
+      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     ports:
       - 8787:80
     networks:
