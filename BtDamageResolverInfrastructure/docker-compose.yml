@@ -8,9 +8,11 @@ services:
     image: resolver:latest
     environment:
       RESOLVER_ENVIRONMENT: Release
-    ports:
-      - 11111:11111
-      - 30000:30000
+      ClusterOptions__ConnectionString: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=orleansdb;Port=5432;Database=BtDamageResolver"
+      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+#    ports:
+#      - 11111:11111
+#      - 30000:30000
     networks:
       - resolvernet
     depends_on:
@@ -52,8 +54,8 @@ services:
     image: orleansdb:latest
     environment:
       POSTGRES_DB: BtDamageResolver
-      POSTGRES_USER: faemiyah
-      POSTGRES_PASSWORD: fuRZdwzQXl98wlNH8_bE
+      POSTGRES_USER: "${RESOLVER_USER:?err}"
+      POSTGRES_PASSWORD: "${RESOLVER_PASSWORD:?err}"
     ports:
       - 65432:5432
     volumes:
@@ -67,10 +69,13 @@ services:
   grafana:
     container_name: grafana
     image: resolvergrafana:latest
+    environment:
+      GF_SECURITY_ADMIN_USER: "${RESOLVER_USER:?err}"
+      GF_SECURITY_ADMIN_PASSWORD: "${RESOLVER_PASSWORD:?err}"
     ports:
       - "63000:3000"
-#    volumes:
-#      - ./grafana/provisioning:/etc/grafana/provisioning
+    volumes:
+      - grafana-data:/var/lib/grafana
     networks:
       - resolvernet
     depends_on:
@@ -81,6 +86,8 @@ services:
   redis:
     container_name: redis
     image: resolverredis:latest
+    environment:
+      REDIS_PASSWORD: "${RESOLVER_PASSWORD:?err}"
     ports:
       - "63790:6379"
     volumes:
@@ -94,5 +101,6 @@ networks:
   resolvernet:
 
 volumes:
+  grafana-data:
   orleansdb-data:
   redis-data:
