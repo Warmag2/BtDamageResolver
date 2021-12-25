@@ -1,32 +1,18 @@
-﻿using System;
+﻿using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
-using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
-using Faemiyah.BtDamageResolver.Api;
-using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
-using Faemiyah.BtDamageResolver.Api.Enums;
-using Orleans;
-
-using static Faemiyah.BtDamageResolver.Actors.Logic.LogicCombatHelpers;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
-    public class LogicHits : ILogicHits
+    /// <summary>
+    /// Partial class of unit logic which governs all application of damage packets to unit paper dolls.
+    /// </summary>
+    public partial class LogicUnit
     {
-        private readonly IGrainFactory _grainFactory;
-        private readonly IMathExpression _mathExpression;
-        private readonly IResolverRandom _random;
-
-        public LogicHits(IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random)
-        {
-            _grainFactory = grainFactory;
-            _mathExpression = mathExpression;
-            _random = random;
-        }
-
         public async Task ResolveHits(DamageReport damageReport, Dictionary<Rule, bool> rules, FiringSolution firingSolution, int marginOfSuccess, UnitEntry targetUnit, Weapon weapon, WeaponMode mode, List<(int damage, List<SpecialDamageEntry> specialDamageEntries)> damagePackets)
         {
             foreach (var damagePacket in damagePackets)
@@ -35,7 +21,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                 if (HitIsBlockedByCover(firingSolution.Cover, location, targetUnit))
                 {
-                    damageReport.Log(new AttackLogEntry { Context = $"Hit to {location} blocked by cover", Type = AttackLogEntryType.Information});
+                    damageReport.Log(new AttackLogEntry { Context = $"Hit to {location} blocked by cover", Type = AttackLogEntryType.Information });
 
                     continue;
                 }
@@ -43,7 +29,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 // Unfortunately we still have to do transformations at this point, as certain locations and armor types receive damage differently
                 var transformedDamage = TransformDamageAmountBasedOnArmor(damageReport, location, targetUnit, damagePacket.damage);
                 transformedDamage = TransformDamageAmountBasedOnLocation(damageReport, location, targetUnit, transformedDamage);
-                
+
                 damageReport.DamagePaperDoll.RecordDamage(location, transformedDamage);
                 damageReport.Log(new AttackLogEntry { Location = location, Number = transformedDamage, Type = AttackLogEntryType.Damage });
 
@@ -68,7 +54,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                                 var glancingBlowModifier = IsGlancingBlow(marginOfSuccess, targetUnit) ? -2 : 0;
                                 if (glancingBlowModifier != 0)
                                 {
-                                    damageReport.Log(new AttackLogEntry { Context = "Threat roll glancing blow modifier", Number = glancingBlowModifier, Type = AttackLogEntryType.Calculation});
+                                    damageReport.Log(new AttackLogEntry { Context = "Threat roll glancing blow modifier", Number = glancingBlowModifier, Type = AttackLogEntryType.Calculation });
                                 }
 
                                 var specialDamageEntryCriticalThreatRoll = _random.D26() + specialDamageThreatModifier + glancingBlowModifier;
@@ -123,7 +109,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                         var aerospaceCriticalHitRoll = _random.D26();
                         damageReport.Log(new AttackLogEntry
                         {
-                            Context = "Aerospace critical hit roll", Number = aerospaceCriticalHitRoll,
+                            Context = "Aerospace critical hit roll",
+                            Number = aerospaceCriticalHitRoll,
                             Type = AttackLogEntryType.DiceRoll
                         });
 
@@ -189,7 +176,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                         damageReport.Log(new AttackLogEntry
                         {
-                            Context = "Critical Threat roll modified by unit type", Number = criticalThreatRoll,
+                            Context = "Critical Threat roll modified by unit type",
+                            Number = criticalThreatRoll,
                             Type = AttackLogEntryType.Calculation
                         });
                     }
@@ -302,7 +290,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             if (targetUnit.Type == UnitType.VehicleVtol && location == Location.Propulsion)
             {
                 var damage = decimal.ToInt32(Math.Ceiling(damagePacketDamage / 10m));
-                damageReport.Log(new AttackLogEntry { Context = "Damage after transformation into VTOL propulsion damage", Number=damage, Type = AttackLogEntryType.Calculation } );
+                damageReport.Log(new AttackLogEntry { Context = "Damage after transformation into VTOL propulsion damage", Number = damage, Type = AttackLogEntryType.Calculation });
                 return damage;
             }
 
@@ -338,7 +326,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                     _ => _random.NextPlusOne(paperDoll.LocationMapping.Keys.Count)
                 };
 
-                damageReport.Log(new AttackLogEntry {Context = "Location", Number = hitLocation, Type = AttackLogEntryType.DiceRoll});
+                damageReport.Log(new AttackLogEntry { Context = "Location", Number = hitLocation, Type = AttackLogEntryType.DiceRoll });
 
                 var locationList = paperDoll.LocationMapping[hitLocation];
 
@@ -384,32 +372,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             } while (!ready);
 
             return (hitLocation, location);
-        }
-
-        /// <summary>
-        /// Helper method for paper doll selection, based on attack parameters.
-        /// Needed because not all units have their individual paperdoll.
-        /// </summary>
-        /// <param name="targetType">The UnitType of the target.</param>
-        /// <param name="criticalDamageTableType">The type of the critical damage table to use.</param>
-        /// <param name="location">The location the attack struck.</param>
-        /// <returns></returns>
-        private static string GetCriticalDamageTableName(UnitType targetType, CriticalDamageTableType criticalDamageTableType, Location location)
-        {
-            var transformedTargetType = TransformTargetTypeToPaperDollType(targetType);
-
-            Location transformedLocation;
-
-            if (targetType == UnitType.Mech || targetType == UnitType.Building)
-            {
-                transformedLocation = Location.Front;
-            }
-            else
-            {
-                transformedLocation = location;
-            }
-
-            return CriticalDamageTable.GetIdFromProperties(transformedTargetType, criticalDamageTableType, transformedLocation);
         }
     }
 }

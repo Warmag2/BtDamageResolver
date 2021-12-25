@@ -17,7 +17,6 @@ namespace Faemiyah.BtDamageResolver.Api.Enums
         MeleeCharge,
         MeleeDfa,
         IndirectFire,
-        PpcCapacitor,
         PpcInhibitorOverride,
         Pulse,
         Rapid,

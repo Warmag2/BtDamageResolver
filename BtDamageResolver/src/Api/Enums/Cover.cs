@@ -9,6 +9,9 @@ namespace Faemiyah.BtDamageResolver.Api.Enums
         Lower,
         Left,
         Right,
-        Upper
+        Upper,
+        Light,      // For infantry, only protects from burst weapons
+        Hardened,   // As above, but blocks 50% of damage
+        Heavy       // As above, but blocks 75% of damage
     }
 }
