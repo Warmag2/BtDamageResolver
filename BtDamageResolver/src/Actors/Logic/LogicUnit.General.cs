@@ -2,13 +2,7 @@
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
-using static Faemiyah.BtDamageResolver.Actors.Logic.Helpers.LogicCombatHelpers;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
@@ -51,10 +45,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             {
                 if (combatAction.HitHappened)
                 {
-                    targetDamageReport.Merge(await ResolveCombatAction(combatAction, target));
+                    targetDamageReport.Merge(await ResolveCombatAction(target, combatAction));
                 }
 
-                selfDamageReport.Merge(await ResolveCombatActionSelf(combatAction, target));
+                selfDamageReport.Merge(await ResolveCombatActionSelf(target, combatAction));
             }
 
             return (selfDamageReport, targetDamageReport);

@@ -1,15 +1,17 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic
+namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
 {
     /// <summary>
-    /// Logic class for mech-class units. MechTripod and MechQuad inherit from here.
+    /// Logic class for all mech-class units. The rest inherit from here.
     /// </summary>
-    public class LogicUnitMechBase : LogicUnit
+    public abstract class LogicUnitMechBase : LogicUnit
     {
         /// <inheritdoc />
         public LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, LogicHelper logicHelper, GameOptions options, UnitEntry unit) : base(logger, logicHelper, options, unit)
@@ -52,9 +54,103 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         }
 
         /// <inheritdoc />
-        public override void ResolveHeat(DamageReport targetDamageReport, CombatAction hit)
+        public override bool IsBlockedByCover(Cover cover, Location location)
         {
-            ResolveHeatInternal(targetDamageReport, hit);
+            switch (cover)
+            {
+                case Cover.Lower:
+                    switch (location)
+                    {
+                        case Location.LeftLeg:
+                        case Location.RightLeg:
+                        case Location.RearLeftLeg:
+                        case Location.RearRightLeg:
+                        case Location.CenterLeg:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case Cover.Left:
+                    switch (location)
+                    {
+                        case Location.LeftTorso:
+                        case Location.RearLeftTorso:
+                        case Location.LeftArm:
+                        case Location.LeftLeg:
+                        case Location.RearLeftLeg:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case Cover.Right:
+                    switch (location)
+                    {
+                        case Location.RightTorso:
+                        case Location.RearRightTorso:
+                        case Location.RightArm:
+                        case Location.RightLeg:
+                        case Location.RearRightLeg:
+                            return true;
+                        default:
+                            return false;
+                    }
+                case Cover.Upper:
+                    switch (location)
+                    {
+                        case Location.Head:
+                        case Location.LeftTorso:
+                        case Location.RightTorso:
+                        case Location.CenterTorso:
+                        case Location.RearLeftTorso:
+                        case Location.RearRightTorso:
+                        case Location.RearCenterTorso:
+                        case Location.LeftArm:
+                        case Location.RightArm:
+                            return true;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+
+        /// <inheritdoc />
+        public override bool IsHeatTracking()
+        {
+            return true;
+        }
+
+        /// <inheritdoc />
+        protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
+        {
+            var criticalDamageTableId = GetCriticalDamageTableName(this, criticalDamageTableType, location);
+            var criticalDamageTable = await LogicHelper.GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
+
+            // Simulate arms and legs being able to be blown off
+            if (criticalThreatRoll == 12 &&
+                (location == Location.LeftArm || location == Location.LeftLeg ||
+                 location == Location.RightArm || location == Location.RightLeg))
+            {
+                damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
+                damageReport.Log(new AttackLogEntry
+                {
+                    Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
+                    Number = transformedDamage,
+                    Location = location,
+                    Type = AttackLogEntryType.Critical
+                });
+            }
+            else if (criticalDamageTable.Mapping[criticalThreatRoll].Any(c => c != CriticalDamageType.None))
+            {
+                damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
+                damageReport.Log(new AttackLogEntry
+                {
+                    Number = transformedDamage,
+                    Location = location,
+                    Type = AttackLogEntryType.Critical
+                });
+            }
         }
     }
 }

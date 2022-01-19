@@ -1,5 +1,4 @@
 ﻿using System;
-using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver

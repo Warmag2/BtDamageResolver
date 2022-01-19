@@ -7,8 +7,6 @@ using Faemiyah.BtDamageResolver.Api.Extensions;
 using System;
 using System.Threading.Tasks;
 
-using static Faemiyah.BtDamageResolver.Actors.Logic.Helpers.LogicCombatHelpers;
-
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
     /// <summary>
@@ -22,7 +20,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 ResolveClusterBonusMissile(damageReport, target, combatAction) :
                 ResolveClusterBonusProjectile(damageReport, combatAction);
 
-            if (target.IsGlancingBlow(combatAction))
+            if (target.IsGlancingBlow(combatAction.MarginOfSuccess))
             {
                 var clusterBonusGlancing = -4;
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster bonus from glancing blow", Number = clusterBonusGlancing });
@@ -97,6 +95,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         protected async Task<int> ResolveClusterValue(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageValue, int clusterBonus)
         {
             int clusterRoll = ResolveClusterRoll(damageReport, combatAction);
+
+            clusterRoll = target.TransformClusterRoll(damageReport, clusterRoll);
 
             clusterRoll = Math.Clamp(clusterRoll + clusterBonus, 2, 12);
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Modified cluster", Number = clusterRoll });

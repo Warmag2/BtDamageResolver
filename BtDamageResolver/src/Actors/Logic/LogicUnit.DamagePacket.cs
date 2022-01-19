@@ -1,5 +1,7 @@
-﻿using Faemiyah.BtDamageResolver.Api.Entities;
+﻿using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,365 +15,71 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
     /// </summary>
     public partial class LogicUnit
     {
-        public async Task ResolveHits(DamageReport damageReport, Dictionary<Rule, bool> rules, FiringSolution firingSolution, int marginOfSuccess, UnitEntry targetUnit, Weapon weapon, WeaponMode mode, List<(int damage, List<SpecialDamageEntry> specialDamageEntries)> damagePackets)
-        {
-            foreach (var damagePacket in damagePackets)
-            {
-                var (location, criticalDamageTableType) = GetLocation(damageReport, firingSolution.Cover, damageReport.DamagePaperDoll.PaperDoll, targetUnit);
-
-                if (HitIsBlockedByCover(firingSolution.Cover, location, targetUnit))
-                {
-                    damageReport.Log(new AttackLogEntry { Context = $"Hit to {location} blocked by cover", Type = AttackLogEntryType.Information });
-
-                    continue;
-                }
-
-                // Unfortunately we still have to do transformations at this point, as certain locations and armor types receive damage differently
-                var transformedDamage = TransformDamageAmountBasedOnArmor(damageReport, location, targetUnit, damagePacket.damage);
-                transformedDamage = TransformDamageAmountBasedOnLocation(damageReport, location, targetUnit, transformedDamage);
-
-                damageReport.DamagePaperDoll.RecordDamage(location, transformedDamage);
-                damageReport.Log(new AttackLogEntry { Location = location, Number = transformedDamage, Type = AttackLogEntryType.Damage });
-
-                foreach (var specialDamageEntry in damagePacket.specialDamageEntries)
-                {
-                    if (specialDamageEntry.Type != SpecialDamageType.None)
-                    {
-                        switch (specialDamageEntry.Type)
-                        {
-                            case SpecialDamageType.Critical:
-                            case SpecialDamageType.Motive:
-                                damageReport.Log(new AttackLogEntry { Context = "Weapon special damage induces a critical damage threat", Type = AttackLogEntryType.Information });
-
-                                var criticalTableType = specialDamageEntry.Type == SpecialDamageType.Critical ? CriticalDamageTableType.Critical : CriticalDamageTableType.Motive;
-
-                                var criticalDamageTableId = GetCriticalDamageTableName(targetUnit.Type, criticalTableType, location);
-                                var criticalDamageTable = await _grainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
-
-                                // Critical rolls from damage may have a modifier.
-                                var specialDamageThreatModifier = _mathExpression.Parse(specialDamageEntry.Data);
-                                damageReport.Log(new AttackLogEntry { Context = "Threat roll modifier from damage source", Number = specialDamageThreatModifier, Type = AttackLogEntryType.Calculation });
-                                var glancingBlowModifier = IsGlancingBlow(marginOfSuccess, targetUnit) ? -2 : 0;
-                                if (glancingBlowModifier != 0)
-                                {
-                                    damageReport.Log(new AttackLogEntry { Context = "Threat roll glancing blow modifier", Number = glancingBlowModifier, Type = AttackLogEntryType.Calculation });
-                                }
-
-                                var specialDamageEntryCriticalThreatRoll = _random.D26() + specialDamageThreatModifier + glancingBlowModifier;
-                                damageReport.Log(new AttackLogEntry { Context = "Threat roll", Number = specialDamageEntryCriticalThreatRoll, Type = AttackLogEntryType.DiceRoll });
-
-                                if (criticalDamageTable.Mapping[specialDamageEntryCriticalThreatRoll].Any(c => c != CriticalDamageType.None))
-                                {
-                                    // Critical damage threats coming from special damage (AP Ammo, Retractable Blade) never do multiple critical effects. Take the first.
-                                    // Direct critical damage threats should always succeed, regardless of damage threshold. Give a very high damage amount.
-                                    var criticalDamageType = criticalDamageTable.Mapping[specialDamageEntryCriticalThreatRoll].First();
-                                    damageReport.DamagePaperDoll.RecordCriticalDamage(location, damagePacket.damage, CriticalThreatType.Normal, criticalDamageType);
-                                    damageReport.Log(new AttackLogEntry { Context = criticalDamageType.ToString(), Number = 0, Location = location, Type = AttackLogEntryType.Critical });
-                                }
-
-                                break;
-                            default:
-                                damageReport.DamagePaperDoll.RecordSpecialDamage(location, specialDamageEntry);
-                                damageReport.Log(new AttackLogEntry { Context = specialDamageEntry.Type.ToString(), Location = location, Number = int.Parse(specialDamageEntry.Data), Type = AttackLogEntryType.SpecialDamage });
-                                break;
-                        }
-                    }
-                }
-
-                if (criticalDamageTableType != CriticalDamageTableType.None)
-                {
-                    var criticalThreatRoll = _random.D26();
-
-                    damageReport.Log(new AttackLogEntry
-                    {
-                        Context = "Critical threat",
-                        Number = criticalThreatRoll,
-                        Type = AttackLogEntryType.DiceRoll
-                    });
-
-                    await ResolveCriticalHit(damageReport, targetUnit, location, criticalThreatRoll, damagePacket.damage, transformedDamage, criticalDamageTableType);
-                }
-            }
-        }
-
-        private async Task ResolveCriticalHit(DamageReport damageReport, UnitEntry targetUnit, Location location, int criticalThreatRoll, int inducingDamage, int locationTransformedDamage, CriticalDamageTableType criticalDamageTableType)
-        {
-            var criticalDamageTableId = GetCriticalDamageTableName(targetUnit.Type, criticalDamageTableType, location);
-            var criticalDamageTable = await _grainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
-
-            switch (targetUnit.Type)
-            {
-                case UnitType.AerospaceCapital:
-                case UnitType.AerospaceDropship:
-                case UnitType.AerospaceFighter:
-                    if (criticalThreatRoll > 7)
-                    {
-                        var aerospaceCriticalHitRoll = _random.D26();
-                        damageReport.Log(new AttackLogEntry
-                        {
-                            Context = "Aerospace critical hit roll",
-                            Number = aerospaceCriticalHitRoll,
-                            Type = AttackLogEntryType.DiceRoll
-                        });
-
-                        damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
-                        damageReport.Log(new AttackLogEntry
-                        {
-                            Context = string.Join(", ", criticalDamageTable.Mapping[aerospaceCriticalHitRoll].Select(c => c.ToString())),
-                            Number = locationTransformedDamage,
-                            Location = location,
-                            Type = AttackLogEntryType.Critical
-                        });
-                    }
-
-                    break;
-                case UnitType.BattleArmor:
-                case UnitType.Infantry:
-                    break;
-                case UnitType.Mech:
-                case UnitType.MechTripod:
-                case UnitType.MechQuad:
-                    // Simulate arms and legs being able to be blown off
-                    if (criticalThreatRoll == 12 &&
-                        (location == Location.LeftArm || location == Location.LeftLeg ||
-                         location == Location.RightArm || location == Location.RightLeg))
-                    {
-                        damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
-                        damageReport.Log(new AttackLogEntry
-                        {
-                            Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
-                            Number = locationTransformedDamage,
-                            Location = location,
-                            Type = AttackLogEntryType.Critical
-                        });
-                    }
-                    else if (criticalDamageTable.Mapping[criticalThreatRoll].Any(c => c != CriticalDamageType.None))
-                    {
-                        damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
-                        damageReport.Log(new AttackLogEntry
-                        {
-                            Number = locationTransformedDamage,
-                            Location = location,
-                            Type = AttackLogEntryType.Critical
-                        });
-                    }
-
-                    break;
-                case UnitType.VehicleHover:
-                case UnitType.VehicleWheeled:
-                case UnitType.VehicleTracked:
-                case UnitType.Building:
-                case UnitType.VehicleVtol:
-                    if (criticalDamageTableType == CriticalDamageTableType.Motive)
-                    {
-                        switch (targetUnit.Type)
-                        {
-                            case UnitType.VehicleHover:
-                                criticalThreatRoll += 2;
-                                break;
-                            case UnitType.VehicleWheeled:
-                                criticalThreatRoll += 1;
-                                break;
-                        }
-
-                        damageReport.Log(new AttackLogEntry
-                        {
-                            Context = "Critical Threat roll modified by unit type",
-                            Number = criticalThreatRoll,
-                            Type = AttackLogEntryType.Calculation
-                        });
-                    }
-
-                    if (criticalDamageTable.Mapping[criticalThreatRoll].Any(c => c != CriticalDamageType.None))
-                    {
-                        damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
-                        damageReport.Log(new AttackLogEntry
-                        {
-                            Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
-                            Number = locationTransformedDamage,
-                            Location = location,
-                            Type = AttackLogEntryType.Critical
-                        });
-                    }
-
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(targetUnit), "No critical roll handling for designated target type.");
-            }
-        }
-
         /// <summary>
-        /// Resolves whether a specific cover blocks the attack or not.
+        /// Generate damage packets based on the attack and calculated damage.
         /// </summary>
-        /// <param name="cover">Cover for this attack.</param>
-        /// <param name="location">Location the attack would hit.</param>
-        /// <param name="targetUnit">The target unit type.</param>
-        /// <returns></returns>
-        private bool HitIsBlockedByCover(Cover cover, Location location, UnitEntry targetUnit)
+        /// <param name="damageReport">The damage report to append to.</param>
+        /// <param name="target">The target unit logic.</param>
+        /// <param name="combatAction">The combat action.</param>
+        /// <param name="damage">Total calculated and transformed damage.</param>
+        /// <returns>A list of damage packets generated by the attack parameters.</returns>
+        protected virtual List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
         {
-            switch (targetUnit.Type)
+            // Heat weapons are cluster weapons for vulnerable unit types
+            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Heat, out _))
             {
-                case UnitType.Mech:
-                case UnitType.MechTripod:
-                case UnitType.MechQuad:
-                    switch (cover)
-                    {
-                        case Cover.None:
-                            return false;
-                        case Cover.Lower:
-                            switch (location)
-                            {
-                                case Location.LeftLeg:
-                                case Location.RightLeg:
-                                case Location.RearLeftLeg:
-                                case Location.RearRightLeg:
-                                case Location.CenterLeg:
-                                    return true;
-                                default:
-                                    return false;
-                            }
-                        case Cover.Left:
-                            switch (location)
-                            {
-                                case Location.LeftTorso:
-                                case Location.RearLeftTorso:
-                                case Location.LeftArm:
-                                case Location.LeftLeg:
-                                case Location.RearLeftLeg:
-                                    return true;
-                                default:
-                                    return false;
-                            }
-                        case Cover.Right:
-                            switch (location)
-                            {
-                                case Location.RightTorso:
-                                case Location.RearRightTorso:
-                                case Location.RightArm:
-                                case Location.RightLeg:
-                                case Location.RearRightLeg:
-                                    return true;
-                                default:
-                                    return false;
-                            }
-                        case Cover.Upper:
-                            switch (location)
-                            {
-                                case Location.Head:
-                                case Location.LeftTorso:
-                                case Location.RightTorso:
-                                case Location.CenterTorso:
-                                case Location.RearLeftTorso:
-                                case Location.RearRightTorso:
-                                case Location.RearCenterTorso:
-                                case Location.LeftArm:
-                                case Location.RightArm:
-                                    return true;
-                                default:
-                                    return false;
-                            }
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(cover), cover, null);
-                    }
-                default:
-                    return false;
-            }
-        }
-
-        private int TransformDamageAmountBasedOnArmor(DamageReport damageReport, Location location, UnitEntry targetUnit, int damagePacketDamage)
-        {
-            // TODO: Reactive, Reflective and other special armor types also transform their damage here
-            return damagePacketDamage;
-        }
-
-        private int TransformDamageAmountBasedOnLocation(DamageReport damageReport, Location location, UnitEntry targetUnit, int damagePacketDamage)
-        {
-            // Only one case for now
-            if (targetUnit.Type == UnitType.VehicleVtol && location == Location.Propulsion)
-            {
-                var damage = decimal.ToInt32(Math.Ceiling(damagePacketDamage / 10m));
-                damageReport.Log(new AttackLogEntry { Context = "Damage after transformation into VTOL propulsion damage", Number = damage, Type = AttackLogEntryType.Calculation });
-                return damage;
-            }
-
-            return damagePacketDamage;
-        }
-
-        private (Location, CriticalDamageTableType) GetLocation(DamageReport damageReport, Cover cover, PaperDoll paperDoll, UnitEntry targetUnit)
-        {
-            var (hitLocation, location) = RollHitLocation(damageReport, cover, paperDoll, targetUnit, false);
-
-            if (location == Location.Reroll)
-            {
-                damageReport.Log(new AttackLogEntry { Context = "Location will be rerolled", Type = AttackLogEntryType.Information });
-                (_, location) = RollHitLocation(damageReport, cover, paperDoll, targetUnit, true);
-            }
-
-            var criticalDamageTableType = paperDoll.CriticalDamageMapping[hitLocation];
-
-            return (location, criticalDamageTableType);
-        }
-
-        private (int hitLocation, Location location) RollHitLocation(DamageReport damageReport, Cover cover, PaperDoll paperDoll, UnitEntry targetUnit, bool forceValidHit)
-        {
-            Location location;
-            int hitLocation;
-            var ready = false;
-
-            do
-            {
-                hitLocation = paperDoll.LocationMapping.Keys.Count switch
+                if(!target.GetUnit().IsHeatTracking())
                 {
-                    11 => _random.D26(),
-                    _ => _random.NextPlusOne(paperDoll.LocationMapping.Keys.Count)
-                };
-
-                damageReport.Log(new AttackLogEntry { Context = "Location", Number = hitLocation, Type = AttackLogEntryType.DiceRoll });
-
-                var locationList = paperDoll.LocationMapping[hitLocation];
-
-                // Return a random entry from the location list, if it has more than one entry
-                location = locationList[_random.Next(locationList.Count)];
-
-                if (locationList.Count != 1)
-                {
-                    damageReport.Log(new AttackLogEntry
-                    {
-                        Context = $"Selecting {location} from {locationList.Count} possible entries for this hit location",
-                        Type = AttackLogEntryType.Information
-                    });
+                    damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Heat weapon acts as a cluster weapon against targeted unit" });
+                    return Clusterize(combatAction.Weapon.ClusterDamage, combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
                 }
+            }
 
-                if (forceValidHit)
-                {
-                    if (location == Location.Reroll)
-                    {
-                        damageReport.Log(new AttackLogEntry
+            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _))
+            {
+                return Clusterize(combatAction.Weapon.ClusterDamage, combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+            }
+
+            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Rapid, out _))
+            {
+                // Rapid-fire weapons may already have dealt more damage than the individual instance, clusterize to units of the actual damage value
+                return Clusterize(1, combatAction.Weapon.Damage[combatAction.RangeBracket], damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+            }
+
+            // Clustrerize to a single packet
+            return Clusterize(1, damage, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+        }
+
+        protected List<DamagePacket> Clusterize(int clusterDamage, int clusterSize, int totalDamage, SpecialDamageEntry specialDamage, bool onlyApplySpecialDamageOnce = true)
+        {
+            var damagePackets = new List<DamagePacket>();
+            var first = true;
+
+            while (totalDamage > 0)
+            {
+                var currentClusterSize = Math.Clamp(totalDamage, 1, clusterSize);
+
+                // Typically we only the first cluster hit applies the special damage entry, if any, so clustering does not multiply any special damage
+                var clusterSpecialDamageEntry = first && onlyApplySpecialDamageOnce
+                    ? new List<SpecialDamageEntry> {
+                        new SpecialDamageEntry
                         {
-                            Context = $"Location {location} will be rerolled as a valid hit is required",
-                            Type = AttackLogEntryType.Information
-                        });
+                            Data = LogicHelper.MathExpression.Parse(specialDamage.Data).ToString(),
+                            Type = specialDamage.Type
+                        }
                     }
-                    else if (HitIsBlockedByCover(cover, location, targetUnit))
+                    : new List<SpecialDamageEntry>
                     {
-                        damageReport.Log(new AttackLogEntry
-                        {
-                            Context = $"Location {location} will be rerolled as it would be blocked by cover and a valid hit is required",
-                            Type = AttackLogEntryType.Information
-                        });
-                    }
-                    else
-                    {
-                        ready = true;
-                    }
-                }
-                else
-                {
-                    ready = true;
-                }
-            } while (!ready);
+                        new SpecialDamageEntry()
+                    };
 
-            return (hitLocation, location);
+                damagePackets.Add(new DamagePacket(currentClusterSize * clusterDamage, clusterSpecialDamageEntry));
+                totalDamage -= currentClusterSize;
+
+                first = false;
+            }
+
+            return damagePackets;
         }
     }
 }

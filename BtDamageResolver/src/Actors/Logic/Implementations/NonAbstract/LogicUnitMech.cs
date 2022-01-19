@@ -1,15 +1,12 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
-using Faemiyah.BtDamageResolver.Api.Entities;
+﻿using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic
+namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
 {
     /// <summary>
-    /// Logic class for mech-class units. MechTripod and MechQuad inherit from here.
+    /// Logic class for bipedal mech-class units.
     /// </summary>
     public class LogicUnitMech : LogicUnitMechBase
     {

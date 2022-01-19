@@ -6,14 +6,24 @@ using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic
+namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
 {
-    public abstract class LogicUnitInfantry : LogicUnit
+    /// <summary>
+    /// Logic class for infantry units.
+    /// </summary>
+    public class LogicUnitInfantry : LogicUnit
     {
         public LogicUnitInfantry(ILogger<LogicUnitInfantry> logger, LogicHelper logicHelper, GameOptions options, UnitEntry unit) : base(logger, logicHelper, options, unit)
         {
+        }
+
+        /// <inheritdoc />
+        public override bool CanTakeEmpHits()
+        {
+            return false;
         }
 
         /// <inheritdoc />
@@ -23,9 +33,21 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         }
 
         /// <inheritdoc />
+        public override PaperDollType GetPaperDollType()
+        {
+            return PaperDollType.Trooper;
+        }
+
+        /// <inheritdoc />
         protected override int GetRangeModifierPointBlank()
         {
             return -2;
+        }
+
+        /// <inheritdoc />
+        protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
+        {
+            return Clusterize(1, 2, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
         }
 
         /// <inheritdoc />

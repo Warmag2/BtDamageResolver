@@ -12,24 +12,16 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         #region Support methods
 
         /// <summary>
-        /// Does any transformations for the combat action.
+        /// Can this unit take an EMP hit.
         /// </summary>
-        /// <remarks>
-        /// For example, this may invalidate the hit it if it cannot happen due to unit properties or features, etc.
-        /// </remarks>
-        /// <param name="targetDamageReport">The damage report of the target.</param>
-        /// <param name="combatAction">The combat action to transform.</param>
-        /// <returns>Nothing.</returns>
-        public void TransformCombatAction(DamageReport targetDamageReport, CombatAction combatAction);
+        /// <returns><b>True</b> if the unit can take EMP hits, and <b>false</b> otherwise.</returns>
+        bool CanTakeEmpHits();
 
         /// <summary>
-        /// Does any transformations for damage based on the attack.
+        /// Can this unit take a motive hit.
         /// </summary>
-        /// <param name="targetDamageReport">The damage report of the target.</param>
-        /// <param name="combatAction">The combat action to transform.</param>
-        /// <param name="damage">The amount of damage before transformation.</param>
-        /// <returns>Nothing.</returns>
-        public Task<int> TransformDamage(DamageReport targetDamageReport, CombatAction combatAction, int damage);
+        /// <returns><b>True</b> if the unit can take motive hits, and <b>false</b> otherwise.</returns>
+        bool CanTakeMotiveHits();
 
         /// <summary>
         /// Gets the modifier to hit resolution from cover.
@@ -84,11 +76,23 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         UnitEntry GetUnit();
 
         /// <summary>
+        /// Is the given location behind cover for this unit logic.
+        /// </summary>
+        /// <returns><b>True</b> if the hit is blocked by cover, and <b>false</b> otherwise.</returns>
+        bool IsBlockedByCover(Cover cover, Location location);
+
+        /// <summary>
+        /// Does this unit track heat.
+        /// </summary>
+        /// <returns><b>True</b> if the unit tracks heat, and <b>false</b> otherwise.</returns>
+        bool IsHeatTracking();
+
+        /// <summary>
         /// Is this combat action a glancing blow or not for this unit.
         /// </summary>
-        /// <param name="combatAction">The combat action to check.</param>
+        /// <param name="marginOfSuccess">The margin of success.</param>
         /// <returns><b>True</b> if the combat action results in a glancing blow, and <b>false</b> if it does not.</returns>
-        bool IsGlancingBlow(CombatAction combatAction);
+        bool IsGlancingBlow(int marginOfSuccess);
 
         /// <summary>
         /// Get whether the unit is tagged or not.
@@ -96,7 +100,45 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <returns>Whether the unit is tagged or not.</returns>
         bool IsTagged();
 
+        /// <summary>
+        /// Transforms a cluster roll based on unit properties.
+        /// </summary>
+        /// <param name="damageReport">The damage report to append to.</param>
+        /// <param name="clusterRoll">The cluster roll to transform.</param>
+        /// <returns>The transformed cluster roll.</returns>
+        int TransformClusterRoll(DamageReport damageReport, int clusterRoll);
+
+        /// <summary>
+        /// Does any transformations for the combat action.
+        /// </summary>
+        /// <remarks>
+        /// For example, this may invalidate the hit it if it cannot happen due to unit properties or features, etc.
+        /// </remarks>
+        /// <param name="targetDamageReport">The damage report of the target.</param>
+        /// <param name="combatAction">The combat action to transform.</param>
+        /// <returns>Nothing.</returns>
+        void TransformCombatAction(DamageReport targetDamageReport, CombatAction combatAction);
+
+        /// <summary>
+        /// Does any transformations for damage based on the attack.
+        /// </summary>
+        /// <param name="targetDamageReport">The damage report of the target.</param>
+        /// <param name="combatAction">The combat action to transform.</param>
+        /// <param name="damage">The amount of damage before transformation.</param>
+        /// <returns>Nothing.</returns>
+        Task<int> TransformDamage(DamageReport targetDamageReport, CombatAction combatAction, int damage);
+
         #endregion
+
+        /// <summary>
+        /// Apply given damage packets to this unit logic.
+        /// </summary>
+        /// <param name="targetDamageReport">The damage report to apply the damage into.</param>
+        /// <param name="damagePackets">The damage packets.</param>
+        /// <param name="firingSolution">The firing solution.</param>
+        /// <param name="marginOfSuccess">The margin of success of the action which generated the damage.</param>
+        /// <returns>Nothing.</returns>
+        Task ApplyDamagePackets(DamageReport damageReport, List<DamagePacket> damagePackets, FiringSolution firingSolution, int marginOfSuccess);
 
         /// <summary>
         /// Resolves combat for this unit logic.

@@ -1,4 +1,4 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
+﻿using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using Orleans;
 

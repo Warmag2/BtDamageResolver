@@ -4,7 +4,7 @@ using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic
+namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
 {
     /// <summary>
     /// Logic class for capital-scale aerospace units.

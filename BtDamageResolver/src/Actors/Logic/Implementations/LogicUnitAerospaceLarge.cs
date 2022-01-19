@@ -5,7 +5,7 @@ using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic
+namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
 {
     /// <summary>
     /// Abstract logic class for large aerospace units (small craft, capital, dropship).

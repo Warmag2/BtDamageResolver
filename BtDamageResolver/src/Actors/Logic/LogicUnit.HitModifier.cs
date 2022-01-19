@@ -38,6 +38,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from range", Type = AttackLogEntryType.Calculation, Number = modifierRange });
 
+            var modifierArmor = GetArmorModifier(rangeBracket, target);
+
+            attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target armor", Type = AttackLogEntryType.Calculation, Number = modifierArmor });
+
             var modifierWeapon = GetWeaponModifier(weapon, mode);
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weapon properties", Type = AttackLogEntryType.Calculation, Number = modifierWeapon });
@@ -144,8 +148,22 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         #region Regular methods
 
-        protected virtual int GetQuirkModifierAntiAir()
+        private int GetArmorModifier(RangeBracket rangeBracket, ILogicUnit target)
         {
+            if (target.GetUnit().HasFeature(UnitFeature.ArmorStealth))
+            {
+                switch (rangeBracket)
+                {
+                    case RangeBracket.Medium:
+                        return 1;
+                    case RangeBracket.Long:
+                    case RangeBracket.Extreme:
+                        return 2;
+                    default:
+                        return 0;
+                }
+            }
+
             return 0;
         }
 
@@ -153,7 +171,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             if (Unit.HasFeature(UnitFeature.TargetingAntiAir))
             {
-                switch (target.GetUnitType())
+                switch (target.GetUnit().Type)
                 {
                     case UnitType.AerospaceCapital:
                     case UnitType.AerospaceDropship:

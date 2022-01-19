@@ -8,10 +8,11 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using static Faemiyah.BtDamageResolver.Actors.Logic.Helpers.LogicCombatHelpers;
-
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
+    /// <summary>
+    /// Abstract base logic class.
+    /// </summary>
     public abstract partial class LogicUnit : ILogicUnit
     {
         protected readonly ILogger<LogicUnit> Logger;
@@ -23,9 +24,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// General logic constructor.
         /// </summary>
         /// <param name="logger">The logging interface.</param>
-        /// <param name="logicHelper"></param>
-        /// <param name="options"></param>
-        /// <param name="unit"></param>
+        /// <param name="logicHelper">The logic helper class.</param>
+        /// <param name="options">The game options.</param>
+        /// <param name="unit">The unit entry to construct this logic for.</param>
         public LogicUnit(ILogger<LogicUnit> logger, LogicHelper logicHelper, GameOptions options, UnitEntry unit)
         {
             Logger = logger;
@@ -42,7 +43,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="criticalDamageTableType">The type of the critical damage table to use.</param>
         /// <param name="location">The location the attack struck.</param>
         /// <returns></returns>
-        private static string GetCriticalDamageTableName(ILogicUnit target, CriticalDamageTableType criticalDamageTableType, Location location)
+        protected static string GetCriticalDamageTableName(ILogicUnit target, CriticalDamageTableType criticalDamageTableType, Location location)
         {
             var transformedTargetType = target.GetPaperDollType();
 
@@ -149,18 +150,48 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         }
 
         /// <inheritdoc />
+        public virtual bool CanTakeEmpHits()
+        {
+            return true;
+        }
+
+        /// <inheritdoc />
+        public virtual bool CanTakeMotiveHits()
+        {
+            return false;
+        }
+
+        /// <inheritdoc />
         public abstract PaperDollType GetPaperDollType();
 
         /// <inheritdoc />
         public UnitEntry GetUnit() => Unit;
 
         /// <inheritdoc />
-        public bool IsGlancingBlow(CombatAction combatAction)
+        public virtual bool IsBlockedByCover(Cover cover, Location location)
         {
-            return Unit.HasFeature(UnitFeature.NarrowLowProfile) && combatAction.MarginOfSuccess == 0;
+            return false;
+        }
+
+        /// <inheritdoc />
+        public virtual bool IsHeatTracking()
+        {
+            return false;
+        }
+
+        /// <inheritdoc />
+        public bool IsGlancingBlow(int marginOfSuccess)
+        {
+            return Unit.HasFeature(UnitFeature.NarrowLowProfile) && marginOfSuccess == 0;
         }
 
         /// <inheritdoc />
         public bool IsTagged() => Unit.Tagged;
+
+        /// <inheritdoc />
+        public virtual int TransformClusterRoll(DamageReport damageReport, int clusterRoll)
+        {
+            return clusterRoll;
+        }
     }
 }
