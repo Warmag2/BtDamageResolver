@@ -23,7 +23,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             if (target.IsGlancingBlow(combatAction.MarginOfSuccess))
             {
                 var clusterBonusGlancing = -4;
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster bonus from glancing blow", Number = clusterBonusGlancing });
+                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Unit feature {UnitFeature.NarrowLowProfile} modifies cluster bonus calculation. New bonus", Number = clusterBonusGlancing });
                 clusterBonus += clusterBonusGlancing;
             }
 
@@ -96,7 +96,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             int clusterRoll = ResolveClusterRoll(damageReport, combatAction);
 
-            clusterRoll = target.TransformClusterRoll(damageReport, clusterRoll);
+            clusterRoll = TransformClusterRollBasedOnWeaponFeatures(damageReport, combatAction, clusterRoll);
+            clusterRoll = target.TransformClusterRollBasedOnUnitType(damageReport, clusterRoll);
+
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Cluster", Number = clusterRoll });
 
             clusterRoll = Math.Clamp(clusterRoll + clusterBonus, 2, 12);
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Modified cluster", Number = clusterRoll });
@@ -111,17 +114,23 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private int ResolveClusterRoll(DamageReport damageReport, CombatAction combatAction)
         {
-            int clusterRoll;
+            int clusterRoll = LogicHelper.Random.D26();
+            
+            return clusterRoll;
+        }
 
+        /// <inheritdoc />
+        public virtual int TransformClusterRollBasedOnUnitType(DamageReport damageReport, int clusterRoll)
+        {
+            return clusterRoll;
+        }
+
+        private int TransformClusterRollBasedOnWeaponFeatures(DamageReport damageReport, CombatAction combatAction, int clusterRoll)
+        {
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Streak, out _))
             {
                 clusterRoll = 11;
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value by a streak weapon", Number = clusterRoll });
-            }
-            else
-            {
-                clusterRoll = LogicHelper.Random.D26();
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Cluster", Number = clusterRoll });
             }
 
             return clusterRoll;

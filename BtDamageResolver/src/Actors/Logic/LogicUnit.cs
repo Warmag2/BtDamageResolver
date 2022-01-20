@@ -187,11 +187,5 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         /// <inheritdoc />
         public bool IsTagged() => Unit.Tagged;
-
-        /// <inheritdoc />
-        public virtual int TransformClusterRoll(DamageReport damageReport, int clusterRoll)
-        {
-            return clusterRoll;
-        }
     }
 }

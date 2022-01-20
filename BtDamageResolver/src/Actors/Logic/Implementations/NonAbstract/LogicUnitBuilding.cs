@@ -28,7 +28,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
         }
 
         /// <inheritdoc />
-        public override int TransformClusterRoll(DamageReport damageReport, int clusterRoll)
+        public override int TransformClusterRollBasedOnUnitType(DamageReport damageReport, int clusterRoll)
         {
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value against a building", Number = 12 });
 

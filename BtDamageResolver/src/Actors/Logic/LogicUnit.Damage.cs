@@ -294,12 +294,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <returns>The transformed damage amount.</returns>
         private int TransformDamageAmountBasedOnTargetFeatures(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageAmount)
         {
-            // Cluster weapons have been affected earlier, so they will not be affected again
+            // Cluster weapons have been affected in their damage calculation, so they will not be affected again
             if (!combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
             {
                 // Round down, but minimum is still 1
                 var transformedDamage = Math.Max(damageAmount / 2, 1);
-                damageReport.Log(new AttackLogEntry { Context = $"Quirk {UnitFeature.NarrowLowProfile} modifies received damage. New damage", Number = transformedDamage, Type = AttackLogEntryType.Calculation });
+                damageReport.Log(new AttackLogEntry { Context = $"Unit feature {UnitFeature.NarrowLowProfile} modifies received damage. New damage", Number = transformedDamage, Type = AttackLogEntryType.Calculation });
 
                 return transformedDamage;
             }

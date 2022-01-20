@@ -101,12 +101,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         bool IsTagged();
 
         /// <summary>
-        /// Transforms a cluster roll based on unit properties.
+        /// Transforms a cluster roll based on unit type and possible other properties.
         /// </summary>
         /// <param name="damageReport">The damage report to append to.</param>
         /// <param name="clusterRoll">The cluster roll to transform.</param>
         /// <returns>The transformed cluster roll.</returns>
-        int TransformClusterRoll(DamageReport damageReport, int clusterRoll);
+        int TransformClusterRollBasedOnUnitType(DamageReport damageReport, int clusterRoll);
 
         /// <summary>
         /// Does any transformations for the combat action.
