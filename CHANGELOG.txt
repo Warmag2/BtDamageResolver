@@ -1,5 +1,7 @@
 	Implemented
 
+[FEATURE] Stances for infantry/mechs.
+[FEATURE] Quirks.
 [FEATURE] Parametrize all passwords for practical security reasons before release.
 [FEATURE] Multiple quirks implemented.
 [FEATURE] Show password protection in game list.
@@ -37,7 +39,7 @@
 
 	Implemented (internal)
 
-[FEATURE] Quirks (cannot be set yet).
+[FEATURE] Logic reflection for easier expansions.
 [FEATURE] Faster and stabler repositories.
 [FEATURE] Better parser
 [FEATURE] Data sent over network is compressed with LZMA.
@@ -60,6 +62,8 @@
 
 	Fixed
 
+[BUG] Melee charge by ground vehicles worked incorrectly to non-prone mechs.
+[BUG] SRMs and other non-1 clusterdamage weapons did incorrect damage to infantry.
 [BUG] Grafana bar graph does not display zero for intervals which are zero.
 [BUG] Grafana login is admin/admin.
 [BUG] Joining games with a password does not work from the modal dialog.

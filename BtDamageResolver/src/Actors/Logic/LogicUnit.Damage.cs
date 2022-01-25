@@ -36,7 +36,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             damageReport.Log(new AttackLogEntry { Context = "Damage request cluster size", Number = damageInstance.ClusterSize, Type = AttackLogEntryType.Calculation });
 
-            var damagePackets = Clusterize(damageInstance.ClusterSize, damageInstance.Damage, new SpecialDamageEntry { Type = SpecialDamageType.None });
+            var transformedDamage = TransformDamageBasedOnStance(damageReport, damageInstance.Damage);
+
+            var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, new SpecialDamageEntry { Type = SpecialDamageType.None });
 
             await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, TargetUnit = damageInstance.UnitId }, 0);
 
