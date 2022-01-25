@@ -44,13 +44,27 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
 
         public DateTime TimeStamp { get; set; }
 
+        /// <summary>
+        /// Append an attack log entry to the attack log of this damage report.
+        /// </summary>
+        /// <param name="entry">The attack log entry to append.</param>
         public void Log(AttackLogEntry entry)
         {
             AttackLog.Append(entry);
         }
 
+        /// <summary>
+        /// Merge this damage report with another damage report.
+        /// </summary>
+        /// <param name="damageReport">The damage report to merge with.</param>
+        /// <exception cref="InvalidOperationException">Thrown when the damage report does not match the merged damage report.</exception>
         public void Merge(DamageReport damageReport)
         {
+            if(damageReport == null)
+            {
+                return;
+            }
+
             if (FiringUnitId != damageReport.FiringUnitId || TargetUnitId != damageReport.TargetUnitId)
             {
                 throw new InvalidOperationException("Firing and target units do not match. Trying to merge damage reports from different fire events.");

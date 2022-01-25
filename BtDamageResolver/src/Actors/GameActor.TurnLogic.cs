@@ -75,10 +75,10 @@ namespace Faemiyah.BtDamageResolver.Actors
                 foreach (var unitId in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries).Select(u => u.Id))
                 {
                     var unitActor = GrainFactory.GetGrain<IUnitActor>(unitId);
-                    var unit = await unitActor.GetUnitState();
+                    var unit = await unitActor.GetUnit();
 
                     // Do not fire at an unit which is not in the game
-                    if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGameInternal(unit.FiringSolution.TargetUnit))
+                    if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
                     {
                         damageReports.AddRange(await unitActor.ProcessFireEvent(_gameActorState.State.Options));
                     }

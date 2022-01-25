@@ -23,7 +23,7 @@
       "Normal": [ { "Type": "Cluster" } ],
       "Special": [ { "Type": "Cluster" } ]
     },
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "ClusterBonus": {
       "Normal": 2,
@@ -54,7 +54,7 @@
       "Normal": [ { "Type": "Cluster" } ],
       "Special": [ { "Type": "Cluster" } ]
     },
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "ClusterBonus": {
       "Normal": 2,
@@ -85,7 +85,7 @@
       "Normal": [ { "Type": "Cluster" } ],
       "Special": [ { "Type": "Cluster" } ]
     },
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "ClusterBonus": {
       "Normal": 2,
@@ -116,7 +116,7 @@
       "Normal": [ { "Type": "Cluster" } ],
       "Special": [ { "Type": "Cluster" } ]
     },
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "ClusterBonus": {
       "Normal": 2,

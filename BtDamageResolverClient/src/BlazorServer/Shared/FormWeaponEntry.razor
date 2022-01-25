@@ -17,10 +17,12 @@
     <td class="resolver_td_weaponname">
         @if (Unit.StaticDataHidden)
         {
-<b>@WeaponEntry.WeaponName</b> }
-            else
-            {
-<FormComboBox Options="@_commonData.CreateMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>}
+            <b>@WeaponEntry.WeaponName</b>
+        }
+        else
+        {
+            <FormComboBox Options="@_commonData.CreateMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
+        }
     </td>
     <td>
         <FormCheckbox Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormCheckbox>

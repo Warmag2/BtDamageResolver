@@ -16,7 +16,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// </summary>
         /// <param name="unitId">The unit id to search for.</param>
         /// <returns><b>True</b> if the unit is in the game, <b>false</b> otherwise.</returns>
-        private Task<bool> IsUnitInGameInternal(Guid unitId)
+        private Task<bool> IsUnitInGame(Guid unitId)
         {
             return Task.FromResult(_gameActorState.State.PlayerStates.Any(p => p.Value.UnitEntries.Any(u => u.Id == unitId)));
         }
@@ -54,10 +54,10 @@ namespace Faemiyah.BtDamageResolver.Actors
                 _logger.LogInformation("GameActor {gameId} is asking unit {unitId} to update its target numbers", this.GetPrimaryKeyString(), unitId);
 
                 var unitActor = GrainFactory.GetGrain<IUnitActor>(unitId);
-                var unit = await unitActor.GetUnitState();
+                var unit = await unitActor.GetUnit();
 
                 // Only fire at units which are in the game
-                if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGameInternal(unit.FiringSolution.TargetUnit))
+                if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
                 {
                     targetNumberUpdates.AddRange(await unitActor.ProcessTargetNumbers(_gameActorState.State.Options));
                 }

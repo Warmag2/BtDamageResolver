@@ -100,6 +100,26 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         public bool UsesAmmo { get; set; }
 
         /// <summary>
+        /// Informs what phase this weapon is used in.
+        /// </summary>
+        public Phase GetUsePhase()
+        {
+            switch (AttackType)
+            {
+                case AttackType.Normal:
+                    return Phase.Weapon;
+                case AttackType.Melee:
+                    return Phase.Melee;
+                case AttackType.Kick:
+                    return Phase.Melee;
+                case AttackType.Punch:
+                    return Phase.Melee;
+                default:
+                    throw new NotImplementedException("Unknown weapon attack type encountered when trying to determine weapon use phase.");
+            }
+        }
+
+        /// <summary>
         /// This method exists so that the user does not have to define all parameters
         /// for a weapon, and that creating the database is easier.
         /// </summary>
