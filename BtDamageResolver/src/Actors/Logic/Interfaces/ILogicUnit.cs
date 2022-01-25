@@ -2,6 +2,7 @@
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -29,6 +30,24 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="cover">The cover in the current firing solution.</param>
         /// <returns>The modifier to hit resolution from cover for this unit type.</returns>
         int GetCoverModifier(Cover cover);
+        
+        /// <summary>
+        /// Gets a critical damage table.
+        /// </summary>
+        /// <param name="criticalDamageTableType">The type of the critical damage table to use.</param>
+        /// <param name="location">The location the attack struck.</param>
+        /// <returns>The critical damage table for these attack parameters.</returns>
+        public Task<CriticalDamageTable> GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location);
+
+        /// <summary>
+        /// Gets the damage paper doll for a specific attack.
+        /// </summary>
+        /// <param name="target">The target unit logic.</param>
+        /// <param name="attackType">Attack type.</param>
+        /// <param name="direction">Attack direction.</param>
+        /// <param name="weaponFeatures">The weapon features, if any.</param>
+        /// <returns>The damage paper doll for the attack type and direction given.</returns>
+        Task<DamagePaperDoll> GetDamagePaperDoll(ILogicUnit target, AttackType attackType, Direction direction, List<WeaponFeature> weaponFeatures);
 
         /// <summary>
         /// Gets the modifier to hit resolution from weapon features against this unit type.
@@ -39,10 +58,16 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         int GetFeatureModifier(Weapon weapon, WeaponMode mode);
 
         /// <summary>
+        /// Gets a the id of the unit represented by this unit logic.
+        /// </summary>
+        /// <returns>The id of the unit represented by this unit logic.</returns>
+        Guid GetId();
+        
+        /// <summary>
         /// Gets the modifier to hit resolution from movement class.
         /// </summary>
         /// <returns>The modifier to hit resolution from this units movement class.</returns>
-        int GetMovementClassModifier();
+        int GetMovementClassModifierBasedOnUnitType();
 
         /// <summary>
         /// Gets the modifier to hit resolution from movement direction.
@@ -58,10 +83,40 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         int GetMovementModifier();
 
         /// <summary>
+        /// Gets the name of the unit represented by this unit logic.
+        /// </summary>
+        /// <returns>The name of the unit represented by this unit logic.</returns>
+        string GetName();
+
+        /// <summary>
         /// Gets the type of the paper doll for this unit.
         /// </summary>
         /// <returns>The paper doll type this unit uses.</returns>
         PaperDollType GetPaperDollType();
+
+        /// <summary>
+        /// Gets the stance this unit is currently in.
+        /// </summary>
+        /// <returns>The stance this unit is in.</returns>
+        Stance GetStance();
+
+        /// <summary>
+        /// Gets the modifier to hit resolution from unit stance.
+        /// </summary>
+        /// <returns>The modifier to hit resolution from unit stance.</returns>
+        int GetStanceModifier();
+
+        /// <summary>
+        /// Gets the tonnage of the unit represented by this unit logic.
+        /// </summary>
+        /// <returns>The tonnage of the unit represented by this unit logic.</returns>
+        int GetTonnage();
+
+        /// <summary>
+        /// Gets the number of troopers of the unit represented by this unit logic.
+        /// </summary>
+        /// <returns>The number of troopers of the unit represented by this unit logic.</returns>
+        int GetTroopers();
 
         /// <summary>
         /// Gets the modifier to hit resolution from unit type.
@@ -70,17 +125,24 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         int GetUnitTypeModifier();
 
         /// <summary>
-        /// Gets the unit data object.
+        /// Gets the unit type.
         /// </summary>
-        /// <returns>The unit data object of this logic unit.</returns>
-        UnitEntry GetUnit();
+        /// <returns>The unit type.</returns>
+        UnitType GetUnitType();
+
+        /// <summary>
+        /// Does the unit have a specific feature.
+        /// </summary>
+        /// <param name="unitFeature">The unit feature to query.</param>
+        /// <returns><b>True</b> if the unit has the feature, <b>false</b> otherwise.</returns>
+        bool HasFeature(UnitFeature unitFeature);
 
         /// <summary>
         /// Is the given location behind cover for this unit logic.
         /// </summary>
         /// <returns><b>True</b> if the hit is blocked by cover, and <b>false</b> otherwise.</returns>
         bool IsBlockedByCover(Cover cover, Location location);
-
+        
         /// <summary>
         /// Does this unit track heat.
         /// </summary>
@@ -95,9 +157,15 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         bool IsGlancingBlow(int marginOfSuccess);
 
         /// <summary>
+        /// Get whether the unit isNARCed or not.
+        /// </summary>
+        /// <returns><b>True</b> if the unit is NARCed, <b>false</b> otherwise.</returns>
+        bool IsNarced();
+
+        /// <summary>
         /// Get whether the unit is tagged or not.
         /// </summary>
-        /// <returns>Whether the unit is tagged or not.</returns>
+        /// <returns><b>True</b> if the unit is tagged, <b>false</b> otherwise.</returns>
         bool IsTagged();
 
         /// <summary>
@@ -120,13 +188,21 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         void TransformCombatAction(DamageReport targetDamageReport, CombatAction combatAction);
 
         /// <summary>
+        /// Does any transformations for damage based on cover.
+        /// </summary>
+        /// <param name="damageReport">The damage report.</param>
+        /// <param name="damage">The amount of damage before transformation.</param>
+        /// <returns>The transformed damage.</returns>
+        int TransformDamageBasedOnStance(DamageReport damageReport, int damageAmount);
+
+        /// <summary>
         /// Does any transformations for damage based on the attack.
         /// </summary>
-        /// <param name="targetDamageReport">The damage report of the target.</param>
+        /// <param name="damageReport">The damage report.</param>
         /// <param name="combatAction">The combat action to transform.</param>
         /// <param name="damage">The amount of damage before transformation.</param>
-        /// <returns>Nothing.</returns>
-        Task<int> TransformDamage(DamageReport targetDamageReport, CombatAction combatAction, int damage);
+        /// <returns>The transformed damage.</returns>
+        Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage);
 
         #endregion
 
@@ -144,8 +220,17 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// Resolves combat for this unit logic.
         /// </summary>
         /// <param name="target">The target unit logic.</param>
-        /// <returns>A tuple with the damage reports caused by this unit.</returns>
-        Task<(DamageReport selfDamageReport, DamageReport targetDamageReport)> ResolveCombat(ILogicUnit target);
+        /// <returns>A set of damage reports caused by this unit attacking.</returns>
+        Task<List<DamageReport>> ResolveCombat(ILogicUnit target);
+
+        /// <summary>
+        /// Resolve the given damage instance.
+        /// </summary>
+        /// <param name="damageInstance">The damage instance to resolve.</param>
+        /// <param name="phase">The phase this damage instance occurs in.</param>
+        /// <param name="selfDamage">Should the damage be marked as being done by the unit itself. If not, the instigator is left empty.</param>
+        /// <returns>The damage report caused by this damage instance.</returns>
+        Task<DamageReport> ResolveDamageInstance(DamageInstance damageInstance, Phase phase, bool selfDamage);
         
         /// <summary>
         /// Resolves a hit modifier and logs events related to the calculation in the given damage report.

@@ -19,7 +19,7 @@
     "RangeAerospace": "Short",
     "Heat": 2,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "SpecialFeatures": {
       "Normal": [ { "Type": "Cluster" } ],
@@ -46,7 +46,7 @@
     "RangeAerospace": "Short",
     "Heat": 3,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "SpecialFeatures": {
       "Normal": [ { "Type": "Cluster" } ],
@@ -73,7 +73,7 @@
     "RangeAerospace": "Short",
     "Heat": 4,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "SpecialFeatures": {
       "Normal": [ { "Type": "Cluster" } ],
@@ -100,7 +100,7 @@
     "RangeAerospace": "Short",
     "Heat": 2,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "ClusterBonus": {
       "Normal": 2,
@@ -131,7 +131,7 @@
     "RangeAerospace": "Short",
     "Heat": 3,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "ClusterBonus": {
       "Normal": 2,
@@ -162,7 +162,7 @@
     "RangeAerospace": "Short",
     "Heat": 4,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "ClusterBonus": {
       "Normal": 2,
@@ -193,7 +193,7 @@
     "RangeAerospace": "Short",
     "Heat": 2,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "SpecialFeatures": {
       "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
@@ -220,7 +220,7 @@
     "RangeAerospace": "Short",
     "Heat": 3,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "SpecialFeatures": {
       "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
@@ -247,7 +247,7 @@
     "RangeAerospace": "Short",
     "Heat": 4,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "SpecialFeatures": {
       "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
@@ -274,7 +274,7 @@
     "RangeAerospace": "Medium",
     "Heat": 2,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "SpecialFeatures": {
       "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
@@ -301,7 +301,7 @@
     "RangeAerospace": "Medium",
     "Heat": 3,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "SpecialFeatures": {
       "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
@@ -328,7 +328,7 @@
     "RangeAerospace": "Medium",
     "Heat": 4,
     "UsesAmmo": true,
-    "ClusterSize": 1,
+    "ClusterSize": 2,
     "ClusterDamage": 2,
     "SpecialFeatures": {
       "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],

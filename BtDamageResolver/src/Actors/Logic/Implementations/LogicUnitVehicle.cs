@@ -1,9 +1,12 @@
 ﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +18,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
     public abstract class LogicUnitVehicle : LogicUnit
     {
         /// <inheritdoc />
-        public LogicUnitVehicle(ILogger<LogicUnitVehicle> logger, LogicHelper logicHelper, GameOptions options, UnitEntry unit) : base(logger, logicHelper, options, unit)
+        public LogicUnitVehicle(ILogger<LogicUnitVehicle> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }
 
@@ -49,8 +52,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         /// <inheritdoc />
         protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
         {
-            var criticalDamageTableId = GetCriticalDamageTableName(this, criticalDamageTableType, location);
-            var criticalDamageTable = await LogicHelper.GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
+            var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
 
             if (criticalDamageTableType == CriticalDamageTableType.Motive)
             {
@@ -86,7 +88,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         }
 
         /// <inheritdoc />
-        public override Task<int> TransformDamage(DamageReport damageReport, CombatAction combatAction, int damageAmount)
+        public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damageAmount)
         {
             return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damageAmount));
         }

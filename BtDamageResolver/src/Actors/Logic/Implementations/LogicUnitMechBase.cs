@@ -1,8 +1,11 @@
 ﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,18 +17,27 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
     public abstract class LogicUnitMechBase : LogicUnit
     {
         /// <inheritdoc />
-        public LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, LogicHelper logicHelper, GameOptions options, UnitEntry unit) : base(logger, logicHelper, options, unit)
+        public LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }
 
         /// <inheritdoc />
         public override int GetCoverModifier(Cover cover)
         {
-            return cover != Cover.None ? 1 : 0;
+            switch (cover)
+            {
+                case Cover.Lower:
+                case Cover.Left:
+                case Cover.Right:
+                case Cover.Upper:
+                    return 1;
+                default:
+                    return 0;
+            }
         }
 
         /// <inheritdoc />
-        public override int GetMovementClassModifier()
+        public override int GetMovementClassModifierBasedOnUnitType()
         {
             return GetMovementClassJumpCapable();
         }
@@ -124,8 +136,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         /// <inheritdoc />
         protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
         {
-            var criticalDamageTableId = GetCriticalDamageTableName(this, criticalDamageTableType, location);
-            var criticalDamageTable = await LogicHelper.GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
+            var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
 
             // Simulate arms and legs being able to be blown off
             if (criticalThreatRoll == 12 &&

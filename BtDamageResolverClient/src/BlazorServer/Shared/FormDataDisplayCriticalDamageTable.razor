@@ -57,7 +57,7 @@
     [Parameter]
     public string CriticalDamageTableName { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         if (!string.IsNullOrEmpty(CriticalDamageTableName) && _commonData.MapCriticalDamageTable.ContainsKey(CriticalDamageTableName))
         {

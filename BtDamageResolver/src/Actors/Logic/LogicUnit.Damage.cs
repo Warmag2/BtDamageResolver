@@ -6,6 +6,7 @@ using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
@@ -18,13 +19,24 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         #region Public methods
 
         /// <inheritdoc />
-        public async Task<DamageReport> ResolveDamageInstance(DamageReport damageReport, DamageInstance damageInstance, GameOptions options)
+        public async Task<DamageReport> ResolveDamageInstance(DamageInstance damageInstance, Phase phase, bool selfDamage)
         {
+            var damageReport = new DamageReport
+            {
+                Phase = phase,
+                DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, damageInstance.Direction, new List<WeaponFeature>()),
+                FiringUnitId = selfDamage ? Unit.Id : Guid.Empty,
+                FiringUnitName = selfDamage ? Unit.Name : null,
+                TargetUnitId = Unit.Id,
+                TargetUnitName = Unit.Name,
+                InitialTroopers = Unit.Troopers
+            };
+
             damageReport.Log(new AttackLogEntry { Context = "Damage request total damage", Number = damageInstance.Damage, Type = AttackLogEntryType.Calculation });
 
             damageReport.Log(new AttackLogEntry { Context = "Damage request cluster size", Number = damageInstance.ClusterSize, Type = AttackLogEntryType.Calculation });
 
-            var damagePackets = Clusterize(damageInstance.Damage, damageInstance.ClusterSize, 1, new SpecialDamageEntry { Type = SpecialDamageType.None });
+            var damagePackets = Clusterize(damageInstance.ClusterSize, damageInstance.Damage, new SpecialDamageEntry { Type = SpecialDamageType.None });
 
             await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, TargetUnit = damageInstance.UnitId }, 0);
 
@@ -32,7 +44,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         }
 
         /// <inheritdoc />
-        public virtual Task<int> TransformDamage(DamageReport damageReport, CombatAction combatAction, int damageAmount)
+        public virtual int TransformDamageBasedOnStance(DamageReport damageReport, int damageAmount)
+        {
+            return damageAmount;
+        }
+
+        /// <inheritdoc />
+        public virtual Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damageAmount)
         {
             return Task.FromResult(damageAmount);
         }
@@ -53,7 +71,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
             {
-                var maxHits = LogicHelper.MathExpression.Parse(rapidFeatureEntry.Data);
+                var maxHits = MathExpression.Parse(rapidFeatureEntry.Data);
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Rapid fire weapon potential maximum number of hits", Number = maxHits });
                 var hits = await ResolveClusterValue(damageReport, target, combatAction, maxHits, 0);
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Rapid fire weapon number of hits", Number = hits });
@@ -83,24 +101,25 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             // This is a two-phase process. Firstly, the amount of damage done is determined by the firing unit
             // Different units treat the same weapons differently and use them differently
 
-            // Generate the paperdoll for the attack
-            var targetPaperDoll = await GetPaperDoll(target, combatAction.Weapon.AttackType, Unit.FiringSolution.Direction, Options);
-
             var damageReport = new DamageReport
             {
-                DamagePaperDoll = targetPaperDoll.GetDamagePaperDoll(),
+                Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
+                DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, Unit.FiringSolution.Direction, combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].Select(w => w.Type).ToList()),
                 FiringUnitId = Unit.Id,
                 FiringUnitName = Unit.Name,
-                TargetUnitId = target.GetUnit().Id,
-                TargetUnitName = target.GetUnit().Name,
-                InitialTroopers = target.GetUnit().Troopers
+                TargetUnitId = target.GetId(),
+                TargetUnitName = target.GetName(),
+                InitialTroopers = target.GetTroopers()
             };
 
             // First, we must determine the total amount of damage dealt
             var damageAmount = await ResolveTotalOutgoingDamage(damageReport, target, combatAction);
 
             // Then we transform the damage based on the target unit type
-            damageAmount = await target.TransformDamage(damageReport, combatAction, damageAmount);
+            damageAmount = await target.TransformDamageBasedOnUnitType(damageReport, combatAction, damageAmount);
+
+            // Then we transform the damage based on the target cover
+            damageAmount = target.TransformDamageBasedOnStance(damageReport, damageAmount);
 
             // Finally, transform damage based on quirks
             damageAmount = TransformDamageAmountBasedOnTargetFeatures(damageReport, target, combatAction, damageAmount);
@@ -126,12 +145,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <returns>The damage report caused by the combat action on the attacking unit, if any. Returns null for no action.</returns>
         protected async Task<DamageReport> ResolveCombatActionSelf(ILogicUnit target, CombatAction combatAction)
         {
-            // Generate the paperdoll for the attack
-            var selfPaperDoll = await GetPaperDoll(this, combatAction.Weapon.AttackType, Unit.FiringSolution.Direction, Options);
-
             var damageReport = new DamageReport
             {
-                DamagePaperDoll = selfPaperDoll.GetDamagePaperDoll(),
+                Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
+                DamagePaperDoll = await GetDamagePaperDoll(this, combatAction.Weapon.AttackType, Unit.FiringSolution.Direction, new List<WeaponFeature>()),
                 FiringUnitId = Unit.Id,
                 FiringUnitName = Unit.Name,
                 TargetUnitId = Unit.Id,
@@ -149,7 +166,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                 damageReport.Log(new AttackLogEntry { Context = "Attacker is damaged by its charge attack", Type = AttackLogEntryType.Information });
                 string attackerDamageStringCharge;
-                switch (target.GetUnit().Type)
+                switch (target.GetUnitType())
                 {
                     case UnitType.Building:
                     case UnitType.BattleArmor:
@@ -159,13 +176,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                         attackerDamageStringCharge = $"{Unit.Tonnage}/10";
                         break;
                     default:
-                        attackerDamageStringCharge = $"{target.GetUnit().Tonnage}/10";
+                        attackerDamageStringCharge = $"{target.GetTonnage()}/10";
                         break;
                 }
 
-                var attackerDamageCharge = LogicHelper.MathExpression.Parse(attackerDamageStringCharge);
+                var attackerDamageCharge = MathExpression.Parse(attackerDamageStringCharge);
 
-                return await ResolveDamageInstance(damageReport, new DamageInstance
+                damageReport.Merge(await ResolveDamageInstance(new DamageInstance
                 {
                     AttackType = AttackType.Normal,
                     ClusterSize = 5,
@@ -175,7 +192,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                     TimeStamp = DateTime.UtcNow,
                     UnitId = Unit.Id
                 },
-                    Options);
+                Phase.Melee,
+                true));
+
+                return damageReport;
             }
 
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.MeleeDfa, out _))
@@ -184,9 +204,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 {
                     damageReport.Log(new AttackLogEntry { Context = "Attacker is damaged by its DFA attack", Type = AttackLogEntryType.Information });
                     var attackerDamageDfa = Unit.HasFeature(UnitFeature.ReinforcedLegs) ?
-                        LogicHelper.MathExpression.Parse($"{Unit.Tonnage}/10") :
-                        LogicHelper.MathExpression.Parse($"{Unit.Tonnage}/5");
-                    return await ResolveDamageInstance(damageReport, new DamageInstance
+                        MathExpression.Parse($"{Unit.Tonnage}/10") :
+                        MathExpression.Parse($"{Unit.Tonnage}/5");
+                    damageReport.Merge(await ResolveDamageInstance(new DamageInstance
                     {
                         AttackType = AttackType.Kick,
                         ClusterSize = 5,
@@ -196,13 +216,16 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                         TimeStamp = DateTime.UtcNow,
                         UnitId = Unit.Id
                     },
-                        Options);
+                    Phase.Melee,
+                    true));
+
+                    return damageReport;
                 }
                 else
                 {
                     damageReport.Log(new AttackLogEntry { Context = "Attacker falls onto its back due to a failed DFA attack", Type = AttackLogEntryType.Information });
-                    var attackerDamageDfa = LogicHelper.MathExpression.Parse($"2*{Unit.Tonnage}/5");
-                    return await ResolveDamageInstance(damageReport, new DamageInstance
+                    var attackerDamageDfa = MathExpression.Parse($"2*{Unit.Tonnage}/5");
+                    damageReport.Merge(await ResolveDamageInstance(new DamageInstance
                     {
                         AttackType = AttackType.Normal,
                         ClusterSize = 5,
@@ -212,7 +235,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                         TimeStamp = DateTime.UtcNow,
                         UnitId = Unit.Id
                     },
-                        Options);
+                    Phase.Melee,
+                    true));
+
+                    return damageReport;
                 }
             }
 
@@ -224,7 +250,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Heat, out var heatFeatureEntry))
             {
-                var addDamage = LogicHelper.MathExpression.Parse(heatFeatureEntry.Data);
+                var addDamage = MathExpression.Parse(heatFeatureEntry.Data);
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Bonus damage from heat-inflicting weapon", Number = addDamage });
                 return damage += addDamage;
             }
@@ -264,7 +290,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total cluster modifier", Number = clusterBonus });
 
-                return await ResolveClusterValue(damageReport, target, combatAction, combatAction.Weapon.Damage[combatAction.RangeBracket], clusterBonus);
+                return combatAction.Weapon.ClusterDamage*(await ResolveClusterValue(damageReport, target, combatAction, combatAction.Weapon.Damage[combatAction.RangeBracket], clusterBonus));
             }
 
             var damage = combatAction.Weapon.Damage[combatAction.RangeBracket];
@@ -276,7 +302,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Melee, out var meleeFeatureEntry))
             {
-                var meleeDamage = LogicHelper.MathExpression.Parse(meleeFeatureEntry.Data.InsertVariables(Unit));
+                var meleeDamage = MathExpression.Parse(meleeFeatureEntry.Data.InsertVariables(Unit));
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Melee damage", Number = meleeDamage });
 
                 return Task.FromResult(meleeDamage);
@@ -313,13 +339,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             {
                 foreach (var entry in damagePacket.SpecialDamageEntries)
                 {
-                    if(!target.CanTakeEmpHits())
+                    if(entry.Type == SpecialDamageType.Emp && !target.CanTakeEmpHits())
                     {
                         damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive EMP damage, removing special damage entry", Type = AttackLogEntryType.Information });
                         entry.Clear();
                     }
 
-                    if (!target.IsHeatTracking())
+                    if (entry.Type == SpecialDamageType.Heat && !target.IsHeatTracking())
                     {
                         damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive Heat damage, removing special damage entry", Type = AttackLogEntryType.Information });
                         entry.Clear();

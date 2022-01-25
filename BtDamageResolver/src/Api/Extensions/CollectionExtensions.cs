@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Faemiyah.BtDamageResolver.Api.Extensions
 {
@@ -42,6 +43,20 @@ namespace Faemiyah.BtDamageResolver.Api.Extensions
             else
             {
                 input.Remove(item);
+            }
+        }
+
+        /// <summary>
+        /// Add the item to the list only if it is not null.
+        /// </summary>
+        /// <typeparam name="TType">The type of the item in the <see cref="List{TType}"/>.</typeparam>
+        /// <param name="input">The item to check for addition.</param>
+        public static void AddIfNotNull<TType>(this List<TType> inputList, TType input)
+            where TType : class
+        {
+            if (input != null)
+            {
+                inputList.Add(input);
             }
         }
     }

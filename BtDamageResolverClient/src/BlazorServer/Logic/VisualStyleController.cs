@@ -87,6 +87,21 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             }
         }
 
+        public bool GetStanceHidden(UnitType unitType)
+        {
+            switch (unitType)
+            {
+                case UnitType.BattleArmor:
+                case UnitType.Infantry:
+                case UnitType.Mech:
+                case UnitType.MechTripod:
+                case UnitType.MechQuad:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
         public bool GetTonnageHidden(UnitType unitType)
         {
             switch (unitType)

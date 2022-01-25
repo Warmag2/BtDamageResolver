@@ -1,9 +1,12 @@
-﻿using Faemiyah.BtDamageResolver.Api.Entities;
+﻿using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+using Faemiyah.BtDamageResolver.Api;
+using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using System;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
@@ -14,7 +17,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
     public class LogicUnitVehicleVtol : LogicUnitVehicle
     {
         /// <inheritdoc />
-        public LogicUnitVehicleVtol(ILogger<LogicUnitVehicleVtol> logger, LogicHelper logicHelper, GameOptions options, UnitEntry unit) : base(logger, logicHelper, options, unit)
+        public LogicUnitVehicleVtol(ILogger<LogicUnitVehicleVtol> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }
 
@@ -23,7 +26,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
         {
             if (weapon.SpecialFeatures[mode].HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
             {
-                return LogicHelper.MathExpression.Parse(flakFeatureEntry.Data);
+                return MathExpression.Parse(flakFeatureEntry.Data);
             }
 
             return 0;

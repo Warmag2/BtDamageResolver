@@ -76,7 +76,12 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// <summary>
         /// The firing solution of this unit this.
         /// </summary>
-        public FiringSolution FiringSolution;
+        public FiringSolution FiringSolution { get; set; }
+
+        /// <summary>
+        /// The stance the unit is in.
+        /// </summary>
+        public Stance Stance { get; set; }
 
         /// <summary>
         /// Is the unit "finished", i.e. should its editing settings be shown by default.

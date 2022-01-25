@@ -23,8 +23,7 @@
       "Normal": { "Data": "1", "Type": "Narc" },
       "Special": { "Data": "1", "Type": "Narc" }
     },
-    "ClusterSize": 1,
-    "ClusterDamage": 0
+    "ClusterSize": 1
   },
   {
     "Name": "Tag",

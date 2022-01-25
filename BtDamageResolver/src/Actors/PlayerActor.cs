@@ -59,7 +59,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             var units = new List<UnitEntry>();
             foreach (var unitId in _playerActorState.State.UnitEntryIds)
             {
-                units.Add(await GrainFactory.GetGrain<IUnitActor>(unitId).GetUnitState());
+                units.Add(await GrainFactory.GetGrain<IUnitActor>(unitId).GetUnit());
             }
 
             var playerState = new PlayerState

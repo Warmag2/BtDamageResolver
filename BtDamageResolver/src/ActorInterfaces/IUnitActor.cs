@@ -15,7 +15,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// Get the state of this unit.
         /// </summary>
         /// <returns>The <see cref="UnitEntry"/> object containing the properties of the unit represented by this <see cref="IUnitActor"/>.</returns>
-        Task<UnitEntry> GetUnitState();
+        Task<UnitEntry> GetUnit();
 
         /// <summary>
         /// Process a damage instance against the unit represented by this <see cref="IUnitActor"/> and return a damage report.
@@ -29,7 +29,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// Perform the fire event of the unit represented by this <see cref="IUnitActor"/> and return a damage report.
         /// </summary>
         /// <param name="gameOptions">The game options.</param>
-        /// <returns>A <see cref="DamageReport"/> detailing the effects of the fire event.</returns>
+        /// <returns>A set of <see cref="DamageReport"/>s detailing the effects of the fire event.</returns>
         Task<List<DamageReport>> ProcessFireEvent(GameOptions gameOptions);
 
         /// <summary>

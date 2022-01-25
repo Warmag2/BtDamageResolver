@@ -121,6 +121,12 @@
                         <FormRadio Options="@_commonData.CreateMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
                     </td>
                 </tr>
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetStanceHidden(UnitEntry.Type)))">
+                    <td>Stance</td>
+                    <td>
+                        <FormRadio Options="@_commonData.CreateMapStance(UnitEntry.Type)" SelectedOption="@UnitEntry.Stance" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Stance stance) => OnStanceChanged(stance)"></FormRadio>
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         Status effects
@@ -165,7 +171,7 @@
                 <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))))">
                     <td>Cover</td>
                     <td>
-                        <FormRadio Options="@_commonData.MapCover" SelectedOption="@UnitEntry.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
+                        <FormRadio Options="@_commonData.CreateMapCover(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))" SelectedOption="@UnitEntry.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
                     </td>
                 </tr>
 
@@ -477,6 +483,15 @@
         if (UnitEntry.Movement != movement)
         {
             UnitEntry.Movement = movement;
+            SendUpdate();
+        }
+    }
+
+    private void OnStanceChanged(Stance stance)
+    {
+        if (UnitEntry.Stance != stance)
+        {
+            UnitEntry.Stance = stance;
             SendUpdate();
         }
     }

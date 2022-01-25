@@ -48,11 +48,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                                 var criticalTableType = specialDamageEntry.Type == SpecialDamageType.Critical ? CriticalDamageTableType.Critical : CriticalDamageTableType.Motive;
 
-                                var criticalDamageTableId = GetCriticalDamageTableName(this, criticalTableType, location);
-                                var criticalDamageTable = await LogicHelper.GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
+                                var criticalDamageTable = await GetCriticalDamageTable(criticalTableType, location);
 
                                 // Critical rolls from damage may have a modifier.
-                                var specialDamageThreatModifier = LogicHelper.MathExpression.Parse(specialDamageEntry.Data);
+                                var specialDamageThreatModifier = MathExpression.Parse(specialDamageEntry.Data);
                                 damageReport.Log(new AttackLogEntry { Context = "Threat roll modifier from damage source", Number = specialDamageThreatModifier, Type = AttackLogEntryType.Calculation });
                                 var glancingBlowModifier = IsGlancingBlow(marginOfSuccess) ? -2 : 0;
                                 if (glancingBlowModifier != 0)
@@ -60,7 +59,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                                     damageReport.Log(new AttackLogEntry { Context = "Threat roll glancing blow modifier", Number = glancingBlowModifier, Type = AttackLogEntryType.Calculation });
                                 }
 
-                                var specialDamageEntryCriticalThreatRoll = LogicHelper.Random.D26() + specialDamageThreatModifier + glancingBlowModifier;
+                                var specialDamageEntryCriticalThreatRoll = Random.D26() + specialDamageThreatModifier + glancingBlowModifier;
                                 damageReport.Log(new AttackLogEntry { Context = "Threat roll", Number = specialDamageEntryCriticalThreatRoll, Type = AttackLogEntryType.DiceRoll });
 
                                 if (criticalDamageTable.Mapping[specialDamageEntryCriticalThreatRoll].Any(c => c != CriticalDamageType.None))
@@ -83,7 +82,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                 if (criticalDamageTableType != CriticalDamageTableType.None)
                 {
-                    var criticalThreatRoll = LogicHelper.Random.D26();
+                    var criticalThreatRoll = Random.D26();
 
                     damageReport.Log(new AttackLogEntry
                     {
@@ -150,8 +149,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             {
                 hitLocation = paperDoll.LocationMapping.Keys.Count switch
                 {
-                    11 => LogicHelper.Random.D26(),
-                    _ => LogicHelper.Random.NextPlusOne(paperDoll.LocationMapping.Keys.Count)
+                    11 => Random.D26(),
+                    _ => Random.NextPlusOne(paperDoll.LocationMapping.Keys.Count)
                 };
 
                 damageReport.Log(new AttackLogEntry { Context = "Location", Number = hitLocation, Type = AttackLogEntryType.DiceRoll });
@@ -159,7 +158,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 var locationList = paperDoll.LocationMapping[hitLocation];
 
                 // Return a random entry from the location list, if it has more than one entry
-                location = locationList[LogicHelper.Random.Next(locationList.Count)];
+                location = locationList[Random.Next(locationList.Count)];
 
                 if (locationList.Count != 1)
                 {

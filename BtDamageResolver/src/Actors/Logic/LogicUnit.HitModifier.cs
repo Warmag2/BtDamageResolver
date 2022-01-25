@@ -54,17 +54,21 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from cover", Type = AttackLogEntryType.Calculation, Number = modifierCover });
 
+            var modifierStance = target.GetStanceModifier();
+
+            attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target stance", Type = AttackLogEntryType.Calculation, Number = modifierStance });
+
             var modifierMovementDirection = target.GetMovementDirectionModifier(Unit.FiringSolution.Direction);
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from movement direction", Type = AttackLogEntryType.Calculation, Number = modifierMovementDirection });
 
-            var modifierMovementClass = GetMovementClassModifierBase(target, weapon, mode);
+            var modifierMovementClass = GetMovementClassModifier(target, weapon, mode);
 
-            attackLog.Append(new AttackLogEntry { Context = "Hit modifier from movement class", Type = AttackLogEntryType.Calculation, Number = modifierMovementClass });
+            attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target movement class", Type = AttackLogEntryType.Calculation, Number = modifierMovementClass });
 
             var modifierMovement = GetMovementModifierBase(target, weapon, mode);
 
-            attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target movement", Type = AttackLogEntryType.Calculation, Number = modifierMovement });
+            attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target movement amount", Type = AttackLogEntryType.Calculation, Number = modifierMovement });
 
             var modifierOwnMovement = GetOwnMovementModifier();
 
@@ -90,6 +94,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                                    modifierWeapon +
                                    modifierUnitType +
                                    modifierCover +
+                                   modifierStance +
                                    modifierMovementDirection +
                                    modifierMovementClass +
                                    modifierMovement +
@@ -116,14 +121,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         }
 
         /// <inheritdoc />
-        public virtual int GetMovementClassModifier()
+        public virtual int GetMovementClassModifierBasedOnUnitType()
         {
-            if (Unit.MovementClass == MovementClass.Immobile)
-            {
-                return -4;
-            }
-
-            return 0;
+            return GetMovementClassModifierInternal();
         }
 
         /// <inheritdoc />
@@ -139,6 +139,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         }
 
         /// <inheritdoc />
+        public virtual int GetStanceModifier()
+        {
+            return 0;
+        }
+
+        /// <inheritdoc />
         public virtual int GetUnitTypeModifier()
         {
             return 0;
@@ -150,7 +156,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private int GetArmorModifier(RangeBracket rangeBracket, ILogicUnit target)
         {
-            if (target.GetUnit().HasFeature(UnitFeature.ArmorStealth))
+            if (target.HasFeature(UnitFeature.ArmorStealth))
             {
                 switch (rangeBracket)
                 {
@@ -171,7 +177,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             if (Unit.HasFeature(UnitFeature.TargetingAntiAir))
             {
-                switch (target.GetUnit().Type)
+                switch (target.GetUnitType())
                 {
                     case UnitType.AerospaceCapital:
                     case UnitType.AerospaceDropship:
@@ -191,20 +197,20 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private int GetWeatherModifier(Weapon weapon)
         {
-            var penalty = Options.PenaltyAll;
+            var penalty = GameOptions.PenaltyAll;
 
             switch (weapon.Type)
             {
                 case WeaponType.Ballistic:
-                    penalty += Options.PenaltyBallistic;
+                    penalty += GameOptions.PenaltyBallistic;
                     break;
                 case WeaponType.Energy:
-                    penalty += Options.PenaltyEnergy;
+                    penalty += GameOptions.PenaltyEnergy;
                     break;
                 case WeaponType.Melee:
                     break;
                 case WeaponType.Missile:
-                    penalty += Options.PenaltyMissile;
+                    penalty += GameOptions.PenaltyMissile;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(weapon), "Invalid weapon type.");
@@ -218,7 +224,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return weapon.HitModifier[mode];
         }
 
-        private int GetMovementClassModifierBase(ILogicUnit target, Weapon weapon, WeaponMode mode)
+        private int GetMovementClassModifier(ILogicUnit target, Weapon weapon, WeaponMode mode)
         {
             // Missile weapons ignore attacker movement modifier if the target is tagged
             if (weapon.Type == WeaponType.Missile && target.IsTagged() && weapon.SpecialFeatures[mode].HasFeature(WeaponFeature.IndirectFire, out _))
@@ -226,7 +232,17 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 return 0;
             }
 
-            return target.GetMovementClassModifier();
+            return target.GetMovementClassModifierBasedOnUnitType();
+        }
+
+        private int GetMovementClassModifierInternal()
+        {
+            if (Unit.MovementClass == MovementClass.Immobile)
+            {
+                return -4;
+            }
+
+            return 0;
         }
 
         private int GetMovementModifierBase(ILogicUnit target, Weapon weapon, WeaponMode mode)
@@ -402,7 +418,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 return Unit.HasFeature(UnitFeature.NimbleJumper) ? 2 : 1;
             }
 
-            return GetMovementClassModifier();
+            return GetMovementClassModifierInternal();
         }
 
         /// <summary>

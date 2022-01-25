@@ -1,11 +1,14 @@
 ﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +22,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
     public abstract class LogicUnitAerospace : LogicUnit
     {
         /// <inheritdoc />
-        public LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, LogicHelper logicHelper, GameOptions options, UnitEntry unit) : base(logger, logicHelper, options, unit)
+        public LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }
 
@@ -28,7 +31,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         {
             if (weapon.SpecialFeatures[mode].HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
             {
-                return LogicHelper.MathExpression.Parse(flakFeatureEntry.Data);
+                return MathExpression.Parse(flakFeatureEntry.Data);
             }
 
             return 0;
@@ -89,26 +92,25 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
 
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _))
             {
-                return Clusterize(1, 5, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+                return Clusterize(5, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
             }
 
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
             {
-                return Clusterize(1, (int)Math.Ceiling((decimal)damage / LogicHelper.MathExpression.Parse(rapidFeatureEntry.Data)), damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+                return Clusterize((int)Math.Ceiling((decimal)damage / MathExpression.Parse(rapidFeatureEntry.Data)), damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
             }
 
-            return Clusterize(1, damage, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+            return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
         }
 
         /// <inheritdoc />
         protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
         {
-            var criticalDamageTableId = GetCriticalDamageTableName(this, criticalDamageTableType, location);
-            var criticalDamageTable = await LogicHelper.GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
+            var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
 
             if (criticalThreatRoll > 7)
             {
-                var aerospaceCriticalHitRoll = LogicHelper.Random.D26();
+                var aerospaceCriticalHitRoll = Random.D26();
                 damageReport.Log(new AttackLogEntry
                 {
                     Context = "Aerospace critical hit roll",
@@ -135,7 +137,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
             switch (combatAction.Weapon.Type)
             {
                 case WeaponType.Missile:
-                    if (target.GetUnit().HasFeature(UnitFeature.Ams))
+                    if (target.HasFeature(UnitFeature.Ams))
                     {
                         if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.AmsImmune, out _))
                         {
@@ -143,7 +145,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                         }
                         else
                         {
-                            var amsPenalty = LogicHelper.Random.Next(6);
+                            var amsPenalty = Random.Next(6);
                             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender AMS roll for cluster damage reduction", Number = amsPenalty });
                             damageValue -= amsPenalty;
 
@@ -151,9 +153,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                         }
                     }
 
-                    if (target.GetUnit().HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
+                    if (target.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
                     {
-                        var ecmPenalty = LogicHelper.Random.Next(3);
+                        var ecmPenalty = Random.Next(3);
                         damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender ECM roll for cluster damage reduction", Number = ecmPenalty });
                         damageValue -= ecmPenalty;
                     }
@@ -163,7 +165,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
             // Glancing blow for cluster aerospace weapons (improvised rule, since aerospace units do not normally use clustering)
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
             {
-                var glancingBlowPenalty = LogicHelper.Random.Next(6);
+                var glancingBlowPenalty = Random.Next(6);
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender roll for cluster damage reduction from glancing blow", Number = glancingBlowPenalty });
                 damageValue -= glancingBlowPenalty;
             }

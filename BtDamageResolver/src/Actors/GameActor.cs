@@ -78,7 +78,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                 return false;
             }
 
-            return await IsUnitInGameInternal(unitId);
+            return await IsUnitInGame(unitId);
         }
 
         /// <inheritdoc />

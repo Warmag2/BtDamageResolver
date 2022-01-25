@@ -32,9 +32,9 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
             Append(log.Log);
         }
 
-        public void Clear()
+        public bool IsEmpty()
         {
-            Log.Clear();
+            return !Log.Any();
         }
 
         public override string ToString()

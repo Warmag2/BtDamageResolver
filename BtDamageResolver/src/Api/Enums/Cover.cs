@@ -2,6 +2,9 @@
 
 namespace Faemiyah.BtDamageResolver.Api.Enums
 {
+    /// <summary>
+    /// Cover represents the cover of an unit, from its targets point of view.
+    /// </summary>
     [Serializable]
     public enum Cover
     {
@@ -10,8 +13,5 @@ namespace Faemiyah.BtDamageResolver.Api.Enums
         Left,
         Right,
         Upper,
-        Light,      // For infantry, only protects from burst weapons
-        Hardened,   // As above, but blocks 50% of damage
-        Heavy       // As above, but blocks 75% of damage
     }
 }

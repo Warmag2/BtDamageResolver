@@ -2,6 +2,9 @@
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
@@ -12,46 +15,68 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
     public partial class LogicUnit
     {
         /// <inheritdoc />
-        public async Task<(DamageReport selfDamageReport, DamageReport targetDamageReport)> ResolveCombat(ILogicUnit target)
+        public async Task<List<DamageReport>> ResolveCombat(ILogicUnit target)
         {
-            var targetPaperDoll = await GetPaperDoll(target, AttackType.Normal, Unit.FiringSolution.Direction, Options);
-            var selfPaperDoll = await GetPaperDoll(target, AttackType.Normal, Unit.FiringSolution.Direction, Options);
+            var damageReportCombatActionPairs = new List<(DamageReport damageReport, CombatAction combatAction)>();
 
-            var targetDamageReport = new DamageReport
+            foreach (var weaponEntry in Unit.Weapons.Where(w => w.State == WeaponState.Active))
             {
-                DamagePaperDoll = targetPaperDoll.GetDamagePaperDoll(),
-                FiringUnitId = Unit.Id,
-                FiringUnitName = Unit.Name,
-                TargetUnitId = target.GetUnit().Id,
-                TargetUnitName = target.GetUnit().Name,
-                InitialTroopers = target.GetUnit().Troopers
-            };
+                var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
 
-            var selfDamageReport = new DamageReport
-            {
-                DamagePaperDoll = selfPaperDoll.GetDamagePaperDoll(),
-                FiringUnitId = Unit.Id,
-                FiringUnitName = Unit.Name,
-                TargetUnitId = Unit.Id,
-                TargetUnitName = Unit.Name,
-                InitialTroopers = Unit.Troopers
-            };
-
-            // Get combat actions
-            var combatActions = await ResolveHits(targetDamageReport, target);
-
-            // Form damage reports from combat actions
-            foreach (var combatAction in combatActions)
-            {
-                if (combatAction.HitHappened)
+                var hitCalclulationDamageReport = new DamageReport
                 {
-                    targetDamageReport.Merge(await ResolveCombatAction(target, combatAction));
-                }
+                    Phase = weapon.GetUsePhase(),
+                    DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, Unit.FiringSolution.Direction, weapon.SpecialFeatures[weaponEntry.Mode].Select(w => w.Type).ToList()),
+                    FiringUnitId = Unit.Id,
+                    FiringUnitName = Unit.Name,
+                    TargetUnitId = target.GetId(),
+                    TargetUnitName = target.GetName(),
+                    InitialTroopers = target.GetTroopers()
+                };
 
-                selfDamageReport.Merge(await ResolveCombatActionSelf(target, combatAction));
+                var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon, weaponEntry.Mode);
+
+                damageReportCombatActionPairs.Add((hitCalclulationDamageReport, combatAction));
             }
 
-            return (selfDamageReport, targetDamageReport);
+            // If we have no actions at all, return an empty list.
+            if(!damageReportCombatActionPairs.Any())
+            {
+                return new List<DamageReport>();
+            }
+
+            var allDamageReports = new List<DamageReport>();
+
+            // Add damage resolution to damage reports based on combat actions
+            foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.combatAction.Weapon.GetUsePhase()))
+            {
+                var targetDamageReportsForPhase = new List<DamageReport>();
+                var selfDamageReportsForPhase = new List<DamageReport>();
+
+                foreach (var (damageReport, combatAction) in damageReportCombatActionPairsByPhase)
+                {
+                    // Do damage resolution only for combat actions which actually happened
+                    if (combatAction.ActionHappened)
+                    {
+                        // Target is unharmed if no hit happened
+                        if (combatAction.HitHappened)
+                        {
+                            damageReport.Merge(await ResolveCombatAction(target, combatAction));
+                        }
+
+                        // Attacker may be harmed even if a hit did not occur
+                        selfDamageReportsForPhase.AddIfNotNull(await ResolveCombatActionSelf(target, combatAction));
+                    }
+
+                    // Hit calculation and combat action pre-calculations are always included
+                    targetDamageReportsForPhase.Add(damageReport);
+                }
+
+                allDamageReports.AddIfNotNull(targetDamageReportsForPhase.Merge());
+                allDamageReports.AddIfNotNull(selfDamageReportsForPhase.Merge());
+            }
+
+            return allDamageReports;
         }
     }
 }

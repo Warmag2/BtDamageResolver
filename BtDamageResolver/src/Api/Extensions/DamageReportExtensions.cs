@@ -8,14 +8,16 @@ namespace Faemiyah.BtDamageResolver.Api.Extensions
     {
         public static DamageReport Merge(this List<DamageReport> damageReports)
         {
-            if (damageReports.Count == 0)
+            var damageReportsToProcess = damageReports.Where(d => d != null).ToList();
+
+            if (damageReportsToProcess.Count == 0)
             {
                 return null;
             }
 
-            var first = damageReports.First();
+            var first = damageReportsToProcess.First();
 
-            foreach (var report in damageReports.Skip(1))
+            foreach (var report in damageReportsToProcess.Skip(1))
             {
                 first.Merge(report);
             }

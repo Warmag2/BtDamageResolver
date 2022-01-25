@@ -1,10 +1,13 @@
 ﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,22 +17,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
     /// <summary>
     /// Logic class for infantry units.
     /// </summary>
-    public class LogicUnitInfantry : LogicUnit
+    public class LogicUnitInfantry : LogicUnitTrooper
     {
-        public LogicUnitInfantry(ILogger<LogicUnitInfantry> logger, LogicHelper logicHelper, GameOptions options, UnitEntry unit) : base(logger, logicHelper, options, unit)
+        public LogicUnitInfantry(ILogger<LogicUnitInfantry> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
-        }
-
-        /// <inheritdoc />
-        public override bool CanTakeEmpHits()
-        {
-            return false;
-        }
-
-        /// <inheritdoc />
-        public override int GetMovementClassModifier()
-        {
-            return GetMovementClassJumpCapable();
         }
 
         /// <inheritdoc />
@@ -45,9 +36,26 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
         }
 
         /// <inheritdoc />
+        public override int GetStanceModifier()
+        {
+            switch (Unit.Stance)
+            {
+                case Stance.DugIn:
+                    return 2;
+                case Stance.Prone:
+                case Stance.Light:
+                case Stance.Hardened:
+                case Stance.Heavy:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
+
+        /// <inheritdoc />
         protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
         {
-            return Clusterize(1, 2, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+            return Clusterize(2, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
         }
 
         /// <inheritdoc />
@@ -58,7 +66,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
 
         private async Task<int> ResolveTotalOutgoingDamageInternalInfantry(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
         {
-            var clusterTable = await LogicHelper.GrainFactory.GetClusterTableRepository().Get(combatAction.Weapon.ClusterTable);
+            var clusterTable = await GrainFactory.GetClusterTableRepository().Get(combatAction.Weapon.ClusterTable);
             var damage = clusterTable.GetDamage(Unit.Troopers);
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster table reference for {Unit.Troopers} troopers", Number = damage });
 
@@ -74,7 +82,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
         }
 
         /// <inheritdoc />
-        public override async Task<int> TransformDamage(DamageReport damageReport, CombatAction combatAction, int damageAmount)
+        public override async Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damageAmount)
         {
             // Battle armor units have special rules when damaging infantry.
             // Typically infantry damage does not care about the number of hits a weapon does, but battle armor unit attacks are resolved individually.
@@ -89,7 +97,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
                     var burstDamage = 0;
                     for (int ii = 0; ii < hits; ii++)
                     {
-                        var addDamage = LogicHelper.MathExpression.Parse(battleArmorBurstFeatureEntry.Data);
+                        var addDamage = MathExpression.Parse(battleArmorBurstFeatureEntry.Data);
                         damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Bonus damage to infantry", Number = addDamage });
                         burstDamage += addDamage;
                     }
@@ -105,7 +113,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Burst, out var burstFeatureEntry))
             {
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Burst fire weapon overrides infantry damage.", });
-                var burstDamage = LogicHelper.MathExpression.Parse(burstFeatureEntry.Data);
+                var burstDamage = MathExpression.Parse(burstFeatureEntry.Data);
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Burst fire weapon damage to infantry", Number = burstDamage });
                 return burstDamage;
             }

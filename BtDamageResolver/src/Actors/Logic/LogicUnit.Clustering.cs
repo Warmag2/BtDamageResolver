@@ -37,7 +37,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             clusterBonus += combatAction.Weapon.ClusterBonus[combatAction.WeaponMode];
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from weapon", Number = combatAction.Weapon.ClusterBonus[combatAction.WeaponMode] });
 
-            if (target.GetUnit().HasFeature(UnitFeature.Ams))
+            if (target.HasFeature(UnitFeature.Ams))
             {
                 if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.AmsImmune, out _))
                 {
@@ -52,13 +52,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 }
             }
 
-            if (target.GetUnit().HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
+            if (target.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
             {
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender ECM", Number = -2 });
                 clusterBonus -= 2;
             }
 
-            if (target.GetUnit().Narced)
+            if (target.IsNarced())
             {
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender being NARCed", Number = 2 });
                 clusterBonus += 2;
@@ -104,7 +104,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             clusterRoll = Math.Clamp(clusterRoll + clusterBonus, 2, 12);
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Modified cluster", Number = clusterRoll });
 
-            var damageTable = await LogicHelper.GrainFactory.GetClusterTableRepository().Get(Names.DefaultClusterTableName);
+            var damageTable = await GrainFactory.GetClusterTableRepository().Get(Names.DefaultClusterTableName);
 
             var clusterDamage = damageTable.GetDamage(damageValue, clusterRoll);
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster result", Number = clusterDamage });
@@ -114,7 +114,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private int ResolveClusterRoll(DamageReport damageReport, CombatAction combatAction)
         {
-            int clusterRoll = LogicHelper.Random.D26();
+            int clusterRoll = Random.D26();
             
             return clusterRoll;
         }

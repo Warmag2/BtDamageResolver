@@ -28,29 +28,29 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             // Heat weapons are cluster weapons for vulnerable unit types
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Heat, out _))
             {
-                if(!target.GetUnit().IsHeatTracking())
+                if(!target.IsHeatTracking())
                 {
                     damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Heat weapon acts as a cluster weapon against targeted unit" });
-                    return Clusterize(combatAction.Weapon.ClusterDamage, combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+                    return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
                 }
             }
 
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _))
             {
-                return Clusterize(combatAction.Weapon.ClusterDamage, combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+                return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
             }
 
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Rapid, out _))
             {
                 // Rapid-fire weapons may already have dealt more damage than the individual instance, clusterize to units of the actual damage value
-                return Clusterize(1, combatAction.Weapon.Damage[combatAction.RangeBracket], damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+                return Clusterize(combatAction.Weapon.Damage[combatAction.RangeBracket], damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
             }
 
             // Clustrerize to a single packet
-            return Clusterize(1, damage, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+            return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
         }
 
-        protected List<DamagePacket> Clusterize(int clusterDamage, int clusterSize, int totalDamage, SpecialDamageEntry specialDamage, bool onlyApplySpecialDamageOnce = true)
+        protected List<DamagePacket> Clusterize(int clusterSize, int totalDamage, SpecialDamageEntry specialDamage, bool onlyApplySpecialDamageOnce = true)
         {
             var damagePackets = new List<DamagePacket>();
             var first = true;
@@ -64,7 +64,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                     ? new List<SpecialDamageEntry> {
                         new SpecialDamageEntry
                         {
-                            Data = LogicHelper.MathExpression.Parse(specialDamage.Data).ToString(),
+                            Data = MathExpression.Parse(specialDamage.Data).ToString(),
                             Type = specialDamage.Type
                         }
                     }
@@ -73,7 +73,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                         new SpecialDamageEntry()
                     };
 
-                damagePackets.Add(new DamagePacket(currentClusterSize * clusterDamage, clusterSpecialDamageEntry));
+                damagePackets.Add(new DamagePacket(currentClusterSize, clusterSpecialDamageEntry));
                 totalDamage -= currentClusterSize;
 
                 first = false;

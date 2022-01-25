@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+using Faemiyah.BtDamageResolver.Actors.Logic;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
@@ -22,8 +24,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         private readonly ILogger<UnitActor> _logger;
         private readonly ILoggingServiceClient _loggingServiceClient;
         private readonly IPersistentState<UnitActorState> _unitActorState;
-        private readonly ILogicCombat _logicCombat;
-        private readonly ILogicHitModifier _logicHitModifier;
+        private readonly ILogicUnitFactory _logicUnitFactory;
 
         /// <summary>
         /// Constructor for an Unit actor.
@@ -37,14 +38,12 @@ namespace Faemiyah.BtDamageResolver.Actors
             ILogger<UnitActor> logger,
             ILoggingServiceClient loggingServiceClient,
             [PersistentState(nameof(UnitActorState), Settings.ActorStateStoreName)]IPersistentState<UnitActorState> unitActorState,
-            ILogicCombat logicCombat,
-            ILogicHitModifier logicHitModifier)
+            ILogicUnitFactory logicUnitFactory)
         {
             _logger = logger;
             _loggingServiceClient = loggingServiceClient;
             _unitActorState = unitActorState;
-            _logicCombat = logicCombat;
-            _logicHitModifier = logicHitModifier;
+            _logicUnitFactory = logicUnitFactory;
         }
 
         /// <inheritdoc />
@@ -67,7 +66,10 @@ namespace Faemiyah.BtDamageResolver.Actors
             // Log to permanent store
             await _loggingServiceClient.LogUnitAction(DateTime.UtcNow, this.GetPrimaryKey().ToString(), UnitActionType.Fire, 1);
 
-            return await _logicCombat.Fire(gameOptions, _unitActorState.State.UnitEntry);
+            var logicUnitAttacker = GetUnitLogic(gameOptions);
+            var logicUnitDefender = await GetUnitLogic(gameOptions, _unitActorState.State.UnitEntry.FiringSolution.TargetUnit);
+
+            return await logicUnitAttacker.ResolveCombat(logicUnitDefender);
         }
 
         public async Task<List<TargetNumberUpdate>> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers)
@@ -88,10 +90,13 @@ namespace Faemiyah.BtDamageResolver.Actors
                 }
                 else
                 {
-                    var targetUnit = await GrainFactory.GetGrain<IUnitActor>(_unitActorState.State.UnitEntry.FiringSolution.TargetUnit).GetUnitState();
                     var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
                     var attackLog = new AttackLog();
-                    (var targetNumber, _) = _logicHitModifier.ResolveHitModifier(attackLog, gameOptions, _unitActorState.State.UnitEntry, targetUnit, weapon, weaponEntry.Mode);
+
+                    var logicUnitAttacker = GetUnitLogic(gameOptions);
+                    var logicUnitDefender = await GetUnitLogic(gameOptions, _unitActorState.State.UnitEntry.FiringSolution.TargetUnit);
+
+                    (var targetNumber, _) = logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weapon, weaponEntry.Mode);
 
                     targetNumberUpdates.Add(new TargetNumberUpdate
                     {
@@ -109,14 +114,16 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public Task<UnitEntry> GetUnitState()
+        public Task<UnitEntry> GetUnit()
         {
             return Task.FromResult(_unitActorState.State.UnitEntry);
         }
 
         public async Task<DamageReport> ProcessDamageInstance(DamageInstance damageInstance, GameOptions gameOptions)
         {
-            return await _logicCombat.ResolveDamageInstance(damageInstance, gameOptions);
+            var logicUnit = GetUnitLogic(gameOptions);
+
+            return await logicUnit.ResolveDamageInstance(damageInstance, Phase.End, false);
         }
 
         /// <inheritdoc />
@@ -141,6 +148,25 @@ namespace Faemiyah.BtDamageResolver.Actors
                 "Discarding update event for unit {unitId}. Timestamp {stampEvent}, is older than existing timestamp {stampState}.",
                 unit.Id, unit.TimeStamp, _unitActorState.State.UpdateTimeStamp);
             return false;
+        }
+
+        /// <summary>
+        /// Get the logic corresponding to this unit actor.
+        /// </summary>
+        /// <param name="gameOptions">The game options.</param>
+        /// <returns>The <see cref="ILogicUnit"/> object containing the unit logic of the unit represented by this <see cref="IUnitActor"/>.</returns>
+        private ILogicUnit GetUnitLogic(GameOptions gameOptions)
+        {
+            return _logicUnitFactory.CreateFrom(gameOptions, _unitActorState.State.UnitEntry);
+        }
+
+        /// <summary>
+        /// Get the logic corresponding to the unit entry for the given unit actor.
+        /// </summary>
+        /// <returns>The <see cref="ILogicUnit"/> object containing the unit logic of the unit represented by this <see cref="IUnitActor"/>.</returns>
+        private async Task<ILogicUnit> GetUnitLogic(GameOptions gameOptions, Guid unitId)
+        {
+            return _logicUnitFactory.CreateFrom(gameOptions, await GrainFactory.GetGrain<IUnitActor>(unitId).GetUnit());
         }
     }
 }

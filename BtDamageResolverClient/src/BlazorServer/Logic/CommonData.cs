@@ -18,6 +18,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         private readonly SortedDictionary<string, string> _mapWeaponNamesBattleArmor;
         private readonly SortedDictionary<string, string> _mapWeaponNamesInfantry;
         private readonly SortedDictionary<string, string> _mapWeaponNamesMech;
+        private readonly SortedDictionary<string, string> _mapWeaponNamesVehicle;
 
         private const string BattleArmorWeaponPrefix = "BA ";
         private const string InfantryWeaponPrefix = "Infantry ";
@@ -49,10 +50,10 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             {
                 { "-4", -4 }, { "-3", -3 }, { "-2", -2 }, { "-1", -1 }, { "+0", 0 }, { "+1", 1 }, { "+2", 2 }, { "+3", 3 }, { "+4", 4 }
             };
-            MapCover = new Dictionary<string, Cover>
+            /*MapCover = new Dictionary<string, Cover>
             {
-                { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right }
-            };
+                { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right }, { "Light", Cover.Light }, { "Hardened", Cover.Hardened }, { "Heavy", Cover.Heavy }
+            };*/
             MapFacing = new Dictionary<string, Direction>
             {
                 { "Front", Direction.Front }, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top }
@@ -66,6 +67,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             _mapWeaponNamesBattleArmor = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(BattleArmorWeaponPrefix)).ToDictionary(w => w.Substring(BattleArmorWeaponPrefix.Length), w => w));
             _mapWeaponNamesInfantry = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w.Substring(InfantryWeaponPrefix.Length), w => w));
             _mapWeaponNamesMech = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w));
+            _mapWeaponNamesVehicle = new SortedDictionary<string, string>(MapWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix) && !w.StartsWith(MeleeWeaponPrefix)).ToDictionary(w => w));
+            _mapWeaponNamesVehicle.Add("Melee Charge", "Melee Charge");
         }
 
         public Dictionary<string, UnitType> MapUnitType { get; }
@@ -74,7 +77,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public Dictionary<string, ClusterTable> MapClusterTable { get; }
 
-        public Dictionary<string, Cover> MapCover { get; }
+        //public Dictionary<string, Cover> MapCover { get; }
 
         public Dictionary<string, CriticalDamageTable> MapCriticalDamageTable { get; }
 
@@ -88,6 +91,19 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
         public Dictionary<string, Weapon> MapWeapon { get; }
 
+        public Dictionary<string, Cover> CreateMapCover(UnitType type)
+        {
+            switch (type)
+            {
+                case UnitType.Mech:
+                case UnitType.MechTripod:
+                case UnitType.MechQuad:
+                    return new Dictionary<string, Cover> { { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right } };
+                default:
+                    return new Dictionary<string, Cover> { { "None", Cover.None } };
+            }
+        }
+
         public SortedDictionary<string, string> CreateMapWeaponName(UnitType type)
         {
             switch (type)
@@ -100,6 +116,11 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                 case UnitType.MechTripod:
                 case UnitType.MechQuad:
                     return _mapWeaponNamesMech;
+                case UnitType.VehicleHover:
+                case UnitType.VehicleTracked:
+                case UnitType.VehicleVtol:
+                case UnitType.VehicleWheeled:
+                    return _mapWeaponNamesVehicle;
                 default:
                     return _mapWeaponNamesNormal;
             }
@@ -152,6 +173,23 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                     return GenerateOptions(listOfModesVehicle);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unit), unit.Type, null);
+            }
+        }
+
+        public Dictionary<string, Stance> CreateMapStance(UnitType type)
+        {
+            switch (type)
+            {
+                case UnitType.BattleArmor:
+                    return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
+                case UnitType.Infantry:
+                    return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "DugIn", Stance.DugIn }, { "Prone", Stance.Prone }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
+                case UnitType.Mech:
+                case UnitType.MechTripod:
+                case UnitType.MechQuad:
+                    return new Dictionary<string, Stance> { { "Normal", Stance.Normal }, { "Crouch", Stance.Crouch }, { "Prone", Stance.Prone } };
+                default:
+                    return new Dictionary<string, Stance> { { "Normal", Stance.Normal } };
             }
         }
 

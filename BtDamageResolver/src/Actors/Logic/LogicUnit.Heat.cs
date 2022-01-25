@@ -36,7 +36,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
             {
-                var multiplier = LogicHelper.MathExpression.Parse(rapidFeatureEntry.Data);
+                var multiplier = MathExpression.Parse(rapidFeatureEntry.Data);
                 heat = calculatedSingleHitheat * multiplier;
                 targetDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} rate of fire multiplier for heat", Number = multiplier, Type = AttackLogEntryType.Calculation });
             }

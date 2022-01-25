@@ -1,8 +1,11 @@
 ﻿using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
+using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
 {
@@ -11,12 +14,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
     /// </summary>
     public class LogicUnitBuilding : LogicUnit
     {
-        public LogicUnitBuilding(ILogger<LogicUnitBuilding> logger, LogicHelper logicHelper, GameOptions options, UnitEntry unit) : base(logger, logicHelper, options, unit)
+        /// <inheritdoc />
+        public LogicUnitBuilding(ILogger<LogicUnitBuilding> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }
 
         /// <inheritdoc />
-        public override int GetMovementClassModifier()
+        public override int GetMovementClassModifierBasedOnUnitType()
         {
             return -4;
         }
