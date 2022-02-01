@@ -19,10 +19,7 @@
     "RangeAerospace": "Medium",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
     "SpecialFeatures": [ { "Type": "Cluster" } ]
@@ -47,10 +44,7 @@
     "RangeAerospace": "Medium",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
     "SpecialFeatures": [ { "Type": "Cluster" } ]
@@ -75,10 +69,7 @@
     "RangeAerospace": "Medium",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
     "SpecialFeatures": [ { "Type": "Cluster" } ]
@@ -103,10 +94,7 @@
     "RangeAerospace": "Medium",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
     "SpecialFeatures": [ { "Type": "Cluster" } ]
@@ -131,10 +119,7 @@
     "RangeAerospace": "Medium",
     "Heat": 2,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
     "SpecialFeatures": [ { "Type": "Cluster" } ]
