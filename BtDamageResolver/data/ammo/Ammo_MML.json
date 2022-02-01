@@ -58,10 +58,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1
@@ -82,10 +79,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -109,10 +103,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "HitModifier": 1,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ],
     "ClusterSize": 5,
@@ -177,10 +168,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1
@@ -201,10 +189,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -228,10 +213,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "HitModifier": 1,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ],
     "ClusterSize": 5,
@@ -296,10 +278,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1
@@ -320,10 +299,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -347,10 +323,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "HitModifier": 1,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ],
     "ClusterSize": 5,
@@ -415,10 +388,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1
@@ -439,10 +409,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -466,10 +433,7 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
+    "RangeMinimum": 6,
     "HitModifier": 1,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ],
     "ClusterSize": 5,
