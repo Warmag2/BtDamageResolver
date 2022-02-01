@@ -217,7 +217,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
             }
             else if (ClusterBonus.Count == 1)
             {
-                ClusterBonus = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), Damage.Single().Value);
+                ClusterBonus = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), ClusterBonus.Single().Value);
             }
 
             if (ClusterTable == null)
