@@ -57,10 +57,7 @@
       "Extreme": 24
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 2,
-      "Special": 2
-    },
+    "RangeMinimum": 2,
     "Heat": 6,
     "UsesAmmo": true,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Hag" }, { "Data": "-3", "Type": "Flak" } ],
