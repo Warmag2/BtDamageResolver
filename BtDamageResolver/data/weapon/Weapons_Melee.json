@@ -91,8 +91,8 @@
     "Name": "Melee Retractable Blade",
     "Type": "Melee",
     "Ammo": {
-      { "Normal", "Blank" },
-      { "AP Strike", "Melee-APStrike" }
+      "Normal": "Blank",
+      "AP Strike": "Melee-APStrike"
     },
     "AmmoDefault": "AP Strike",
     "AttackType": "Melee",
