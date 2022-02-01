@@ -119,7 +119,7 @@
     "DamageAerospace": {
       "Short": 16
     },
-    "SpecialFeatures": [ { "Type": "Cluster" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterBonus": {
       "Short": 2
     }
