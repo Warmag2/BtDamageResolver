@@ -52,33 +52,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return await GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
         }
 
-        /*/// <summary>
-        /// Helper method for critical damage table selection, based on attack parameters.
-        /// Needed because not all units have their individual paperdoll.
-        /// </summary>
-        /// <param name="targetType">The UnitType of the target.</param>
-        /// <param name="criticalDamageTableType">The type of the critical damage table to use.</param>
-        /// <param name="location">The location the attack struck.</param>
-        /// <returns>The name of the critical damage table for the given parameters.</returns>
-        private static string GetCriticalDamageTableName(ILogicUnit target, CriticalDamageTableType criticalDamageTableType, Location location)
-        {
-            var transformedTargetType = target.GetPaperDollType();
-
-            Location transformedLocation;
-
-            // Not self-evident, but all mech crit tables are actually just the default crit-ot-not table.
-            if (target.GetUnitType() == UnitType.Mech || target.GetUnitType() == UnitType.Building)
-            {
-                transformedLocation = Location.Front;
-            }
-            else
-            {
-                transformedLocation = location;
-            }
-
-            return CriticalDamageTable.GetIdFromProperties(transformedTargetType, criticalDamageTableType, transformedLocation);
-        }*/
-
         /// <summary>
         /// Helper method for paper doll selection, based on attack parameters and target type.
         /// Needed because not all units have their individual paperdoll.
@@ -167,20 +140,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             return transformedAttackType;
         }
-
-        /*/// <summary>
-        /// Gets the paper doll for a specific attack.
-        /// </summary>
-        /// <param name="logicUnit">The unit logic.</param>
-        /// <param name="attackType">Attack type.</param>
-        /// <param name="direction">Attack direction.</param>
-        /// <param name="options">Game options</param>
-        /// <returns>The paper doll for this attack type.</returns>
-        private async Task<PaperDoll> GetPaperDoll(ILogicUnit logicUnit, AttackType attackType, Direction direction, GameOptions options)
-        {
-            var paperDollName = GetPaperDollNameFromAttackParameters(logicUnit, attackType, direction, options);
-            return await GrainFactory.GetPaperDollRepository().Get(paperDollName);
-        }*/
 
         /// <inheritdoc />
         public async Task<DamagePaperDoll> GetDamagePaperDoll(ILogicUnit target, AttackType attackType, Direction direction, List<WeaponFeature> weaponFeatures)

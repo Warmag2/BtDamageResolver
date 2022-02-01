@@ -18,7 +18,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             var clusterBonus = combatAction.Weapon.Type == WeaponType.Missile ?
                 ResolveClusterBonusMissile(damageReport, target, combatAction) :
-                0;
+                ResolveClusterBonusNonMissile(damageReport, target, combatAction);
 
             if (target.IsGlancingBlow(combatAction.MarginOfSuccess))
             {
@@ -64,6 +64,19 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 clusterBonus += 2;
             }
 
+            return clusterBonus;
+        }
+
+        private int ResolveClusterBonusNonMissile(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
+        {
+            // Non-missile weapons do not care about AMS or ECM
+            var clusterBonus = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
+
+            if (clusterBonus != 0)
+            {
+                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster modifier for range bracket {combatAction.RangeBracket}", Number = clusterBonus });
+            }
+            
             return clusterBonus;
         }
 

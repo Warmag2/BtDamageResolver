@@ -211,7 +211,11 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
                 Ammo = new Dictionary<string, string>();
             }
 
-            if (ClusterBonus.Count == 1)
+            if (ClusterBonus == null)
+            {
+                ClusterBonus = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), 0);
+            }
+            else if (ClusterBonus.Count == 1)
             {
                 ClusterBonus = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), Damage.Single().Value);
             }
