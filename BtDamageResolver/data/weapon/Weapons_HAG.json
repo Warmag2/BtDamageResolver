@@ -60,7 +60,7 @@
     "RangeMinimum": 2,
     "Heat": 6,
     "UsesAmmo": true,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Hag" }, { "Data": "-3", "Type": "Flak" } ],
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
     "ClusterBonus": {
       "PointBlank": 2,
       "Short": 2,
@@ -96,7 +96,7 @@
     "RangeMinimum": 2,
     "Heat": 8,
     "UsesAmmo": true,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Hag" }, { "Data": "-3", "Type": "Flak" } ],
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
     "ClusterBonus": {
       "PointBlank": 2,
       "Short": 2,
