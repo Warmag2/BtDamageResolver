@@ -1,0 +1,462 @@
+﻿[
+  {
+    "Name": "MML3-SRM",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 2,
+    "ClusterDamage": 2
+  },
+  {
+    "Name": "MML3-SRM+Artemis",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterBonus": 2,
+    "ClusterSize": 2,
+    "ClusterDamage": 2
+  },
+  {
+    "Name": "MML3-LRM",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MML3-LRM+Artemis",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": 2
+  },
+  {
+    "Name": "MML3-LRM Indirect",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "HitModifier": 1,
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MML5-SRM",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 2,
+    "ClusterDamage": 2
+  },
+  {
+    "Name": "MML5-SRM+Artemis",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterBonus": 2,
+    "ClusterSize": 2,
+    "ClusterDamage": 2
+  },
+  {
+    "Name": "MML5-LRM",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MML5-LRM+Artemis",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": 2
+  },
+  {
+    "Name": "MML5-LRM Indirect",
+    "Damage": {
+      "Short": 5
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "HitModifier": 1,
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MML7-SRM",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 2,
+    "ClusterDamage": 2
+  },
+  {
+    "Name": "MML7-SRM+Artemis",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 12
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterBonus": 2,
+    "ClusterSize": 2,
+    "ClusterDamage": 2
+  },
+  {
+    "Name": "MML7-LRM",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MML7-LRM+Artemis",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": 2
+  },
+  {
+    "Name": "MML7-LRM Indirect",
+    "Damage": {
+      "Short": 7
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "HitModifier": 1,
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MML9-SRM",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 2,
+    "ClusterDamage": 2
+  },
+  {
+    "Name": "MML9-SRM+Artemis",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 14
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterBonus": 2,
+    "ClusterSize": 2,
+    "ClusterDamage": 2
+  },
+  {
+    "Name": "MML9-LRM",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  },
+  {
+    "Name": "MML9-LRM+Artemis",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 7
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1,
+    "ClusterBonus": 2
+  },
+  {
+    "Name": "MML9-LRM Indirect",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 5
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
+    },
+    "RangeAerospace": "Long",
+    "RangeMinimum": {
+      "Normal": 6,
+      "Special": 6
+    },
+    "HitModifier": 1,
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ],
+    "ClusterSize": 5,
+    "ClusterDamage": 1
+  }
+]

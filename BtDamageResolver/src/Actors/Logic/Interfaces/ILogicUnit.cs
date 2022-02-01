@@ -53,9 +53,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// Gets the modifier to hit resolution from weapon features against this unit type.
         /// </summary>
         /// <param name="weapon">The weapon being fired.</param>
-        /// <param name="mode">The firing mode of the weapon being fired.</param>
         /// <returns>The modifier to hit resolution from weapon features against this unit type.</returns>
-        int GetFeatureModifier(Weapon weapon, WeaponMode mode);
+        int GetFeatureModifier(Weapon weapon);
 
         /// <summary>
         /// Gets a the id of the unit represented by this unit logic.
@@ -231,15 +230,23 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="selfDamage">Should the damage be marked as being done by the unit itself. If not, the instigator is left empty.</param>
         /// <returns>The damage report caused by this damage instance.</returns>
         Task<DamageReport> ResolveDamageInstance(DamageInstance damageInstance, Phase phase, bool selfDamage);
-        
+
         /// <summary>
         /// Resolves a hit modifier and logs events related to the calculation in the given damage report.
         /// </summary>
         /// <param name="attackLog">The attack log to log to.</param>
         /// <param name="target">The target unit logic.</param>
         /// <param name="weapon">The weapon used.</param>
-        /// <param name="mode">The weapon mode in use.</param>
         /// <returns>A tuple with the hit modifier and the range bracket.</returns>
-        (int targetNumber, RangeBracket rangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponMode mode);
+        (int targetNumber, RangeBracket rangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon);
+
+        /// <summary>
+        /// Resolves a hit modifier and logs events related to the calculation in the given damage report.
+        /// </summary>
+        /// <param name="attackLog">The attack log to log to.</param>
+        /// <param name="target">The target unit logic.</param>
+        /// <param name="weaponEntry">The weapon entry used.</param>
+        /// <returns>A tuple with the hit modifier and the range bracket.</returns>
+        Task<(int targetNumber, RangeBracket rangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry);
     }
 }

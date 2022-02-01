@@ -2,6 +2,11 @@
   {
     "Name": "AC/2",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Normal", "Blank" },
+    	{ "AP", "AC-AP2" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 5
@@ -19,22 +24,17 @@
     "RangeAerospace": "Long",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ModeDescription": {
-      "Normal": "Normal",
-      "Special": "AP Ammo"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "-4", "Type": "ArmorPiercing" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "AC/5",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Normal", "Blank" },
+    	{ "AP", "AC-AP5" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 9
@@ -52,22 +52,17 @@
     "RangeAerospace": "Medium",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ModeDescription": {
-      "Normal": "Normal",
-      "Special": "AP Ammo"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "-3", "Type": "ArmorPiercing" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "AC/10",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Normal", "Blank" },
+    	{ "AP", "AC-AP10" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 12
@@ -85,22 +80,17 @@
     "RangeAerospace": "Medium",
     "Heat": 3,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ModeDescription": {
-      "Normal": "Normal",
-      "Special": "AP Ammo"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "-2", "Type": "ArmorPiercing" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "AC/20",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Normal", "Blank" },
+    	{ "AP", "AC-AP20" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 20
@@ -118,17 +108,7 @@
     "RangeAerospace": "Short",
     "Heat": 7,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ModeDescription": {
-      "Normal": "Normal",
-      "Special": "AP Ammo"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "-1", "Type": "ArmorPiercing" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   }
 ]

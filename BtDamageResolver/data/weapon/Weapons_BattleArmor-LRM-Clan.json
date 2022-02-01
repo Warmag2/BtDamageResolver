@@ -2,6 +2,11 @@
   {
     "Name": "BA Clan LRM-1",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "Missile" },
+    	{ "Indirect", "Missile Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 1
@@ -19,28 +24,17 @@
     "RangeAerospace": "Long",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1
   },
   {
     "Name": "BA Clan LRM-2",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "Missile" },
+    	{ "Indirect", "Missile Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 2
@@ -58,28 +52,17 @@
     "RangeAerospace": "Long",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1
   },
   {
     "Name": "BA Clan LRM-3",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "Missile" },
+    	{ "Indirect", "Missile Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 3
@@ -97,28 +80,17 @@
     "RangeAerospace": "Long",
     "Heat": 2,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1
   },
   {
     "Name": "BA Clan LRM-4",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "Missile" },
+    	{ "Indirect", "Missile Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 4
@@ -136,28 +108,17 @@
     "RangeAerospace": "Long",
     "Heat": 2,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1
   },
   {
     "Name": "BA Clan LRM-5",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "Missile" },
+    	{ "Indirect", "Missile Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 5
@@ -175,22 +136,6 @@
     "RangeAerospace": "Long",
     "Heat": 2,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1
   }

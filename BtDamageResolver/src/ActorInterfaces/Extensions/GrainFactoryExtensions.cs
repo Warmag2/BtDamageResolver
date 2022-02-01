@@ -7,6 +7,11 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Extensions
     {
         private const int RepositoryActorCommonId = 0;
 
+        public static IAmmoRepository GetAmmoRepository(this IGrainFactory grainFactory)
+        {
+            return grainFactory.GetGrain<IAmmoRepository>(RepositoryActorCommonId);
+        }
+
         public static IClusterTableRepository GetClusterTableRepository(this IGrainFactory grainFactory)
         {
             return grainFactory.GetGrain<IClusterTableRepository>(RepositoryActorCommonId);

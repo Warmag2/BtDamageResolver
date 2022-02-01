@@ -98,14 +98,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
-      "Special": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ]
-    },
-    "HitModifier": {
-      "Normal": -2,
-      "Special": -2
-    }
+    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "HitModifier": -2
   },
   {
     "Name": "BA Medium Pulse Laser",
@@ -126,13 +120,7 @@
     },
     "RangeAerospace": "Short",
     "Heat": 4,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Pulse" } ],
-      "Special": [ { "Type": "Pulse" } ]
-    },
-    "HitModifier": {
-      "Normal": -2,
-      "Special": -2
-    }
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "HitModifier": -2
   }
 ]

@@ -2,13 +2,13 @@
   {
     "Name": "Clan LRM-5",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "LRM5-Normal" },
+    	{ "Artemis", "LRM5+Artemis" },
+    	{ "Indirect", "LRM5 Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 5
-    },
-    "DamageAerospace": {
-      "Short": 3
-    },
     "Range": {
       "PointBlank": 0,
       "Short": 7,
@@ -19,35 +19,19 @@
     "RangeAerospace": "Long",
     "Heat": 2,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1
   },
   {
     "Name": "Clan LRM-10",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "LRM10-Normal" },
+    	{ "Artemis", "LRM10+Artemis" },
+    	{ "Indirect", "LRM10 Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 10
-    },
-    "DamageAerospace": {
-      "Short": 6
-    },
     "Range": {
       "PointBlank": 0,
       "Short": 7,
@@ -58,35 +42,19 @@
     "RangeAerospace": "Long",
     "Heat": 4,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1
   },
   {
     "Name": "Clan LRM-15",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "LRM15-Normal" },
+    	{ "Artemis", "LRM15+Artemis" },
+    	{ "Indirect", "LRM15 Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 15
-    },
-    "DamageAerospace": {
-      "Short": 9
-    },
     "Range": {
       "PointBlank": 0,
       "Short": 7,
@@ -97,35 +65,19 @@
     "RangeAerospace": "Long",
     "Heat": 5,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1
   },
   {
     "Name": "Clan LRM-20",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "LRM20-Normal" },
+    	{ "Artemis", "LRM20+Artemis" },
+    	{ "Indirect", "LRM20 Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 20
-    },
-    "DamageAerospace": {
-      "Short": 12
-    },
     "Range": {
       "PointBlank": 0,
       "Short": 7,
@@ -136,195 +88,7 @@
     "RangeAerospace": "Long",
     "Heat": 6,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1
-  },
-  {
-    "Name": "Clan LRM-5+Artemis",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 5
-    },
-    "DamageAerospace": {
-      "Short": 4
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 7,
-      "Medium": 14,
-      "Long": 21,
-      "Extreme": 21
-    },
-    "RangeAerospace": "Long",
-    "Heat": 2,
-    "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "Clan LRM-10+Artemis",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 10
-    },
-    "DamageAerospace": {
-      "Short": 8
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 7,
-      "Medium": 14,
-      "Long": 21,
-      "Extreme": 21
-    },
-    "RangeAerospace": "Long",
-    "Heat": 4,
-    "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "Clan LRM-15+Artemis",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 15
-    },
-    "DamageAerospace": {
-      "Short": 12
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 7,
-      "Medium": 14,
-      "Long": 21,
-      "Extreme": 21
-    },
-    "RangeAerospace": "Long",
-    "Heat": 5,
-    "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "Clan LRM-20+Artemis",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 20
-    },
-    "DamageAerospace": {
-      "Short": 16
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 7,
-      "Medium": 14,
-      "Long": 21,
-      "Extreme": 21
-    },
-    "RangeAerospace": "Long",
-    "Heat": 6,
-    "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
   }
 ]

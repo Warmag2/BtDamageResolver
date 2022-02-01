@@ -51,16 +51,16 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
         /// <inheritdoc />
         protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
         {
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
             {
                 // The total missile or clusterized damage accounting for trooper amount has been calculated earlier
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total damage value modified by BA trooper amount", Number = damage });
-                return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+                return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage);
             }
 
             // If we did not have a cluster weapon, the weapon still may have hit any amount of times due to possible rapid fire and trooper amount
             // Clusterize to hits which match the actual damage value of the weapon
-            return Clusterize(combatAction.Weapon.Damage[combatAction.RangeBracket], damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+            return Clusterize(combatAction.Weapon.Damage[combatAction.RangeBracket], damage, combatAction.Weapon.SpecialDamage);
         }
 
         /// <inheritdoc />
@@ -71,7 +71,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
 
         private async Task<int> ResolveTotalOutgoingDamageInternalBattleArmor(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
         {
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
             {
                 var clusterBonus = ResolveClusterBonus(damageReport, target, combatAction);
 

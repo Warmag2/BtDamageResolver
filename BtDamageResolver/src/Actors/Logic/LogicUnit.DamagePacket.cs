@@ -26,28 +26,28 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         protected virtual List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
         {
             // Heat weapons are cluster weapons for vulnerable unit types
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Heat, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Heat, out _))
             {
                 if(!target.IsHeatTracking())
                 {
                     damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Heat weapon acts as a cluster weapon against targeted unit" });
-                    return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+                    return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage);
                 }
             }
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
             {
-                return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+                return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage);
             }
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Rapid, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out _))
             {
                 // Rapid-fire weapons may already have dealt more damage than the individual instance, clusterize to units of the actual damage value
-                return Clusterize(combatAction.Weapon.Damage[combatAction.RangeBracket], damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+                return Clusterize(combatAction.Weapon.Damage[combatAction.RangeBracket], damage, combatAction.Weapon.SpecialDamage);
             }
 
             // Clustrerize to a single packet
-            return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+            return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage);
         }
 
         protected List<DamagePacket> Clusterize(int clusterSize, int totalDamage, SpecialDamageEntry specialDamage, bool onlyApplySpecialDamageOnce = true)

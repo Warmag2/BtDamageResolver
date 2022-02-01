@@ -2,6 +2,11 @@
   {
     "Name": "LBX AC/2",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Slug", "Blank" },
+    	{ "Cluster", "AC-LBXCluster" }
+    },
+    "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
       "Short": 5
@@ -19,28 +24,17 @@
     "RangeAerospace": "Extreme",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Slug",
-      "Special": "Cluster"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "-2", "Type": "Flak" } ]
-    },
-    "ClusterSize": 1,
-    "ClusterDamage": 1
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "LBX AC/5",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Slug", "Blank" },
+    	{ "Cluster", "AC-LBXCluster" }
+    },
+    "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
       "Short": 9
@@ -58,28 +52,17 @@
     "RangeAerospace": "Long",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Slug",
-      "Special": "Cluster"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "-2", "Type": "Flak" } ]
-    },
-    "ClusterSize": 1,
-    "ClusterDamage": 1
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "LBX AC/10",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Slug", "Blank" },
+    	{ "Cluster", "AC-LBXCluster" }
+    },
+    "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
       "Short": 12
@@ -97,28 +80,17 @@
     "RangeAerospace": "Medium",
     "Heat": 2,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Slug",
-      "Special": "Cluster"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "-2", "Type": "Flak" } ]
-    },
-    "ClusterSize": 1,
-    "ClusterDamage": 1
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "LBX AC/20",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Slug", "Blank" },
+    	{ "Cluster", "AC-LBXCluster" }
+    },
+    "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
       "Short": 20
@@ -136,28 +108,17 @@
     "RangeAerospace": "Medium",
     "Heat": 6,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Slug",
-      "Special": "Cluster"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "-2", "Type": "Flak" } ]
-    },
-    "ClusterSize": 1,
-    "ClusterDamage": 1
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Clan LBX AC/2",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Slug", "Blank" },
+    	{ "Cluster", "AC-LBXCluster" }
+    },
+    "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
       "Short": 5
@@ -175,28 +136,17 @@
     "RangeAerospace": "Extreme",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Slug",
-      "Special": "Cluster"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "-2", "Type": "Flak" } ]
-    },
-    "ClusterSize": 1,
-    "ClusterDamage": 1
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Clan LBX AC/5",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Slug", "Blank" },
+    	{ "Cluster", "AC-LBXCluster" }
+    },
+    "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
       "Short": 9
@@ -214,28 +164,17 @@
     "RangeAerospace": "Long",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Slug",
-      "Special": "Cluster"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "-2", "Type": "Flak" } ]
-    },
-    "ClusterSize": 1,
-    "ClusterDamage": 1
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Clan LBX AC/10",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Slug", "Blank" },
+    	{ "Cluster", "AC-LBXCluster" }
+    },
+    "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
       "Short": 12
@@ -253,28 +192,17 @@
     "RangeAerospace": "Medium",
     "Heat": 2,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Slug",
-      "Special": "Cluster"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "-2", "Type": "Flak" } ]
-    },
-    "ClusterSize": 1,
-    "ClusterDamage": 1
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Clan LBX AC/20",
     "Type": "Ballistic",
+    "Ammo": {
+    	{ "Slug", "Blank" },
+    	{ "Cluster", "AC-LBXCluster" }
+    },
+    "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
       "Short": 20
@@ -292,23 +220,7 @@
     "RangeAerospace": "Medium",
     "Heat": 6,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Slug",
-      "Special": "Cluster"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "-2", "Type": "Flak" } ]
-    },
-    "ClusterSize": 1,
-    "ClusterDamage": 1
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   }
 ]

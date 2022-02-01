@@ -138,14 +138,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
-      "Special": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ]
-    },
-    "HitModifier": {
-      "Normal": -2,
-      "Special": -2
-    }
+    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "HitModifier": -2
   },
   {
     "Name": "Medium Pulse Laser",
@@ -166,14 +160,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 4,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Pulse" } ],
-      "Special": [ { "Type": "Pulse" } ]
-    },
-    "HitModifier": {
-      "Normal": -2,
-      "Special": -2
-    }
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "HitModifier": -2
   },
   {
     "Name": "Large Pulse Laser",
@@ -194,14 +182,8 @@
     },
     "RangeAerospace": "Medium",
     "Heat": 10,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Pulse" } ],
-      "Special": [ { "Type": "Pulse" } ]
-    },
-    "HitModifier": {
-      "Normal": -2,
-      "Special": -2
-    }
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "HitModifier": -2
   },
   {
     "Name": "Clan ER Small Laser",
@@ -282,14 +264,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
-      "Special": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ]
-    },
-    "HitModifier": {
-      "Normal": -2,
-      "Special": -2
-    }
+    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "HitModifier": -2
   },
   {
     "Name": "Clan Medium Pulse Laser",
@@ -310,14 +286,8 @@
     },
     "RangeAerospace": "Medium",
     "Heat": 4,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Pulse" } ],
-      "Special": [ { "Type": "Pulse" } ]
-    },
-    "HitModifier": {
-      "Normal": -2,
-      "Special": -2
-    }
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "HitModifier": -2
   },
   {
     "Name": "Clan Large Pulse Laser",
@@ -338,14 +308,8 @@
     },
     "RangeAerospace": "Long",
     "Heat": 10,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Pulse" } ],
-      "Special": [ { "Type": "Pulse" } ]
-    },
-    "HitModifier": {
-      "Normal": -2,
-      "Special": -2
-    }
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "HitModifier": -2
   },
   {
     "Name": "Clan Heavy Small Laser",

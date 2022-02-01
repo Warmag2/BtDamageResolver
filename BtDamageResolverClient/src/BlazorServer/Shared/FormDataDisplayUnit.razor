@@ -66,16 +66,16 @@
             </tr>
             <tr>
                 <th>Name</th>
-                <th>Mode</th>
+                <th>Ammo</th>
             </tr>
-            @foreach (var weapon in _unitEntry.Weapons)
+            @foreach (var weaponEntry in _unitEntry.Weapons)
             {
                 <tr>
                     <td>
-                        @weapon.WeaponName
+                        @weaponEntry.WeaponName
                     </td>
                     <td>
-                        @_commonData.MapWeapon[weapon.WeaponName].ModeDescription[weapon.Mode]
+                        @_commonData.MapWeapon[weaponEntry.WeaponName].Ammo[weaponEntry.Ammo]
                     </td>
                 </tr>
             }

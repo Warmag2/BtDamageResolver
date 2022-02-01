@@ -18,14 +18,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 3,
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "3d6", "Type": "Burst" }, { "Data": "2", "Type": "Heat" } ],
-      "Special": [ { "Data": "3d6", "Type": "Burst" }, { "Data": "2", "Type": "Heat" } ]
-    },
-    "SpecialDamage": {
-      "Normal": { "Data": "2", "Type": "Heat" },
-      "Special": { "Data": "2", "Type": "Heat" }
-    },
+    "SpecialFeatures": [ { "Data": "3d6", "Type": "Burst" }, { "Data": "2", "Type": "Heat" } ],
+    "SpecialDamage": { "Data": "2", "Type": "Heat" },
     "ClusterDamage": 1,
     "ClusterSize": 5
   }

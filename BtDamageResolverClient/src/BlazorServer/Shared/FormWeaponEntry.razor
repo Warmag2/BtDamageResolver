@@ -6,9 +6,16 @@
 @inject UserStateController _userStateController
 @implements IDisposable
 
-@{ var targetNumberUpdate = _userStateController.GetTargetNumber(WeaponEntry.Id);
-                var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
-                var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A"; }
+@{
+    var targetNumberUpdate = _userStateController.GetTargetNumber(WeaponEntry.Id);
+    var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
+    var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
+    var mapWeaponAmmo = _commonData.CreateMapWeaponAmmo(WeaponEntry.WeaponName);
+    if(!mapWeaponAmmo.ContainsKey(WeaponEntry.Ammo))
+    {
+        WeaponEntry.Ammo = _commonData.GetWeaponDefaultAmmo(WeaponEntry.WeaponName);
+    }
+}
 
 <tr class="resolver_tr_weaponentry @(WeaponEntry.State == WeaponState.Active ? "active" : string.Empty)">
     <td class="resolver_td_targetnumber draggable" draggable="true" @ondrag="@(()=> StartDrag(WeaponEntry))" @ondrop="@(()=> Drop(WeaponEntry))" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', @calculationLog);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
@@ -26,7 +33,9 @@
     </td>
     <td>
         <FormCheckbox Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormCheckbox>
-        <FormCheckbox Checked="@(WeaponEntry.Mode == WeaponMode.Special)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponModeChanged">@(_weaponName != null ? _commonData.MapWeapon[_weaponName].ModeDescription[WeaponEntry.Mode] : "unknown")</FormCheckbox>
+    </td>
+    <td style="@VisualStyleController.HideElement(!_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))">
+        <FormComboBox Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormComboBox>
     </td>
     <td>
         <button class="resolver_button" disabled="@Disabled" @onclick="MoveUp"><b>&uarr;</b></button>
@@ -39,7 +48,7 @@
 
 @code
 {
-    private WeaponMode _weaponMode;
+    private string _weaponAmmo;
     private WeaponState _weaponState;
     private string _weaponName;
 
@@ -64,7 +73,7 @@
     protected override void OnInitialized()
     {
         // Necessary to set this way, because otherwise disabling the controls may emit null or incorrect values upwards.
-        _weaponMode = WeaponEntry.Mode;
+        _weaponAmmo = WeaponEntry.Ammo;
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
         _userStateController.OnTargetNumbersReceived += StateHasChanged;
@@ -84,9 +93,9 @@
             WeaponEntry.WeaponName = _weaponName;
             anythingChanged = true;
         }
-        if (WeaponEntry.Mode != _weaponMode)
+        if (WeaponEntry.Ammo != _weaponAmmo)
         {
-            WeaponEntry.Mode = _weaponMode;
+            WeaponEntry.Ammo = _weaponAmmo;
             anythingChanged = true;
         }
         if (WeaponEntry.State != _weaponState)
@@ -102,15 +111,15 @@
         }
     }
 
-    private void OnWeaponNameChanged(string name)
+    private void OnWeaponAmmoChanged(string ammo)
     {
-        _weaponName = name;
+        _weaponAmmo = ammo;
         UpdateWeaponEntry();
     }
 
-    private void OnWeaponModeChanged(bool mode)
+    private void OnWeaponNameChanged(string name)
     {
-        _weaponMode = mode ? WeaponMode.Special : WeaponMode.Normal;
+        _weaponName = name;
         UpdateWeaponEntry();
     }
 

@@ -1,5 +1,4 @@
 ﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
-using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
@@ -14,6 +13,22 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
     /// </summary>
     public partial class LogicUnit
     {
+        /// <summary>
+        /// Apply ammo to a weapon
+        /// </summary>
+        /// <returns>The <see cref="Weapon"/> with the chosen ammo in the weapon entry applied, if possible.</returns>
+        protected async Task<Weapon> FormWeapon(WeaponEntry weaponEntry)
+        {
+            var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
+
+            if (!string.IsNullOrWhiteSpace(weaponEntry.Ammo) && weapon.Ammo.ContainsKey(weaponEntry.Ammo))
+            {
+                return weapon.ApplyAmmo(await GrainFactory.GetAmmoRepository().Get(weapon.Ammo[weaponEntry.Ammo]));
+            }
+
+            return weapon;
+        }
+
         /// <inheritdoc />
         public async Task<CriticalDamageTable> GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location)
         {

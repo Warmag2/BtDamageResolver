@@ -1,0 +1,12 @@
+﻿[
+  {
+    "Name": "MRM",
+    "HitModifier": 1,
+    "ClusterBonus": 0
+  },
+  {
+    "Name": "MRM+Apollo",
+    "HitModifier": 0,
+    "ClusterBonus": -1
+  }
+]

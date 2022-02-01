@@ -18,14 +18,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "$tonnage/10", "Type": "Melee" } ],
-      "Special": [ { "Data": "$tonnage/10", "Type": "Melee" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Data": "$tonnage/10", "Type": "Melee" } ]
   },
   {
     "Name": "Melee Kick",
@@ -46,14 +40,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": -2,
-      "Special": -2
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "$tonnage/5", "Type": "Melee" } ],
-      "Special": [ { "Data": "$tonnage/5", "Type": "Melee" } ]
-    }
+    "HitModifier": -2,
+    "SpecialFeatures": [ { "Data": "$tonnage/5", "Type": "Melee" } ]
   },
   {
     "Name": "Melee Hatchet",
@@ -74,14 +62,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": -1,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "$tonnage/5", "Type": "Melee" } ],
-      "Special": [ { "Data": "$tonnage/5", "Type": "Melee" } ]
-    }
+    "HitModifier": -1,
+    "SpecialFeatures": [ { "Data": "$tonnage/5", "Type": "Melee" } ]
   },
   {
     "Name": "Melee Sword",
@@ -102,18 +84,17 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": -1,
-      "Special": -1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "$tonnage/10 + 1", "Type": "Melee" } ],
-      "Special": [ { "Data": "$tonnage/10 + 1", "Type": "Melee" } ]
-    }
+    "HitModifier": -2,
+    "SpecialFeatures": [ { "Data": "$tonnage/10 + 1", "Type": "Melee" } ]
   },
   {
     "Name": "Melee Retractable Blade",
     "Type": "Melee",
+    "Ammo": {
+      { "Normal", "Blank" },
+      { "AP Strike", "Melee-APStrike" }
+    },
+    "AmmoDefault": "AP Strike",
     "AttackType": "Melee",
     "Damage": {
       "Short": 0
@@ -130,18 +111,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": -1,
-      "Special": -1
-    },
-    "ModeDescription": {
-      "Normal": "Normal",
-      "Special": "AP Strike"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "$tonnage/10", "Type": "Melee" } ],
-      "Special": [ { "Data": "$tonnage/10", "Type": "Melee" }, { "Data": "0", "Type": "ArmorPiercing" } ]
-    }
+    "HitModifier": -2,
+    "SpecialFeatures": [ { "Data": "$tonnage/10", "Type": "Melee" } ]
   },
   {
     "Name": "Melee Stomp",
@@ -166,10 +137,7 @@
       "Normal": 3,
       "Special": 3
     },
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "$tonnage/5", "Type": "Melee" } ],
-      "Special": [ { "Data": "$tonnage/5", "Type": "Melee" } ]
-    }
+    "SpecialFeatures": [ { "Data": "$tonnage/5", "Type": "Melee" } ]
   },
   {
     "Name": "Melee Thrash",
@@ -190,14 +158,8 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": 3,
-      "Special": 3
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "$tonnage/3", "Type": "Burst" }, { "Data": "0", "Type": "Melee" } ],
-      "Special": [ { "Data": "$tonnage/3", "Type": "Burst" }, { "Data": "0", "Type": "Melee" } ]
-    }
+    "HitModifier": 3,
+    "SpecialFeatures": [ { "Data": "$tonnage/3", "Type": "Burst" }, { "Data": "0", "Type": "Melee" } ]
   },
   {
     "Name": "Melee DFA",
@@ -218,16 +180,10 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Data": "3*$tonnage/10", "Type": "Melee" }, { "Type": "MeleeDfa" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "3*$tonnage/10", "Type": "Melee" }, { "Type": "MeleeDfa" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "3*$tonnage/10", "Type": "Melee" }, { "Type": "MeleeDfa" } ]
   },
   {
     "Name": "Melee Charge",
@@ -248,15 +204,9 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
+    "HitModifier": 0,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Data": "Ceil($distance*$tonnage/10)", "Type": "Melee" }, { "Data": "0", "Type": "MeleeCharge" } ],
-      "Special": [ { "Type": "Cluster" }, { "Data": "Ceil($distance*$tonnage/10)", "Type": "Melee" }, { "Data": "0", "Type": "MeleeCharge" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "Ceil($distance*$tonnage/10)", "Type": "Melee" }, { "Data": "0", "Type": "MeleeCharge" } ]
   }
 ]

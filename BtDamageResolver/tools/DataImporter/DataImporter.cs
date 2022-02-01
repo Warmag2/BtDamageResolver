@@ -68,6 +68,10 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
                 {
                     _logger.LogInformation("Importing Entity {type} {name}", dataObject.GetType(), (dataObject as IEntity<string>)?.GetId());
 
+                    if (dataObject is Ammo ammo)
+                    {
+                        await client.GetAmmoRepository().AddOrUpdate(ammo);
+                    }
                     if (dataObject is ClusterTable clusterTable)
                     {
                         await client.GetClusterTableRepository().AddOrUpdate(clusterTable);
@@ -190,6 +194,8 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
 
             switch (fileNamePrefix)
             {
+                case "Ammo":
+                    return new object[] { JsonConvert.DeserializeObject<Ammo>(fileData) };
                 case "ClusterTable":
                     return new object[] { JsonConvert.DeserializeObject<ClusterTable>(fileData) };
                 case "CriticalDamageTable":

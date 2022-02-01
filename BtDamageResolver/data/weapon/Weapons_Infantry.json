@@ -18,10 +18,7 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterTable": "InfantryRifleBallistic",
     "ClusterSize": 2,
     "ClusterDamage": 1
@@ -45,10 +42,7 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterTable": "InfantryRifleEnergy",
     "ClusterSize": 2,
     "ClusterDamage": 1
@@ -72,14 +66,10 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    },
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Burst", "Data": "1d6" } ],
     "ClusterTable": "InfantryMachineGun",
     "ClusterSize": 2,
-    "ClusterDamage": 1,
-    "BonusDamageInfantry": "1d6"
+    "ClusterDamage": 1
   },
   {
     "Name": "Infantry SRM",
@@ -105,10 +95,7 @@
     "RangeAerospace": "Short",
     "Heat": 0,
     "UsesAmmo": true,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    },
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterTable": "InfantrySRM",
     "ClusterSize": 2,
     "ClusterDamage": 1
@@ -116,6 +103,11 @@
   {
     "Name": "Infantry LRM",
     "Type": "Missile",
+    "Ammo": {
+    	{ "Normal", "LRM-Normal" },
+    	{ "Indirect", "LRM-Indirect" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 0
@@ -137,10 +129,6 @@
     "RangeAerospace": "Short",
     "Heat": 0,
     "UsesAmmo": true,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
     "ClusterTable": "InfantryLRM",
     "ClusterSize": 2,
     "ClusterDamage": 1
@@ -168,10 +156,7 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    },
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Burst", "Data": "1d6" } ],
     "ClusterTable": "InfantryFlamer",
     "ClusterSize": 2,
     "ClusterDamage": 1

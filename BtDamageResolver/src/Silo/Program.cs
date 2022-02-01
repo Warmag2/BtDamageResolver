@@ -167,12 +167,14 @@ namespace Faemiyah.BtDamageResolver.Silo
                     services.AddSingleton<IMathExpression, MathExpression>();
                     services.AddSingleton<ICommunicationServiceClient, CommunicationServiceClient>();
                     services.AddSingleton<ILoggingServiceClient, LoggingServiceClient>();
+                    services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
                     services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
                     services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
                     services.AddSingleton<IEntityRepository<GameEntry, string>>(GetRedisEntityRepository<GameEntry>);
                     services.AddSingleton<IEntityRepository<PaperDoll, string>>(GetRedisEntityRepository<PaperDoll>);
                     services.AddSingleton<IEntityRepository<Unit, string>>(GetRedisEntityRepository<Unit>);
                     services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
+                    services.AddSingleton<CachedEntityRepository<Ammo, string>, CachedEntityRepository<Ammo, string>>();
                     services.AddSingleton<CachedEntityRepository<ClusterTable, string>, CachedEntityRepository<ClusterTable, string>>();
                     services.AddSingleton<CachedEntityRepository<CriticalDamageTable, string>, CachedEntityRepository<CriticalDamageTable, string>>();
                     services.AddSingleton<CachedEntityRepository<GameEntry, string>, CachedEntityRepository<GameEntry, string>>();

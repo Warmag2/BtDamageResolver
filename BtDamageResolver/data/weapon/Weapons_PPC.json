@@ -2,6 +2,11 @@
   {
     "Name": "PPC",
     "Type": "Energy",
+    "Ammo": {
+    	{ "Normal", "Blank" },
+    	{ "Inhibitor", "PPC+Inhibitor" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 10
@@ -16,32 +21,18 @@
       "Long": 18,
       "Extreme": 18
     },
-    "RangeMinimum": {
-      "Normal": 3,
-      "Special": -1
-    },
+    "RangeMinimum": 3,
     "RangeAerospace": "Medium",
-    "Heat": 10,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "SpecialDamage": {
-      "Normal": { "Type": "None" },
-      "Special": { "Data": "1", "Type": "Emp" }
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "PpcInhibitorOverride" } ]
-    },
-    "ModeDescription": {
-      "Normal": "Inhibitor",
-      "Special": "No Inhibitor"
-    }
+    "Heat": 10
   },
   {
     "Name": "ER PPC",
     "Type": "Energy",
+    "Ammo": {
+    	{ "Normal", "Blank" },
+    	{ "Inhibitor", "ERPPC+Inhibitor" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 10
@@ -57,27 +48,16 @@
       "Extreme": 23
     },
     "RangeAerospace": "Long",
-    "Heat": 15,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "SpecialDamage": {
-      "Normal": { "Type": "None" },
-      "Special": { "Data": "1", "Type": "Emp" }
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "PpcInhibitorOverride" } ]
-    },
-    "ModeDescription": {
-      "Normal": "Inhibitor",
-      "Special": "No Inhibitor"
-    }
+    "Heat": 15
   },
   {
     "Name": "Light PPC",
     "Type": "Energy",
+    "Ammo": {
+    	{ "Normal", "Blank" },
+    	{ "Inhibitor", "LightPPC+Inhibitor" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 5
@@ -92,32 +72,18 @@
       "Long": 18,
       "Extreme": 18
     },
-    "RangeMinimum": {
-      "Normal": 3,
-      "Special": -1
-    },
+    "RangeMinimum": 3,
     "Heat": 5,
-    "RangeAerospace": "Medium",
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "SpecialDamage": {
-      "Normal": { "Type": "None" },
-      "Special": { "Data": "1", "Type": "Emp" }
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "PpcInhibitorOverride" } ]
-    },
-    "ModeDescription": {
-      "Normal": "Inhibitor",
-      "Special": "No Inhibitor"
-    }
+    "RangeAerospace": "Medium"
   },
   {
     "Name": "Heavy PPC",
     "Type": "Energy",
+    "Ammo": {
+    	{ "Normal", "Blank" },
+    	{ "Inhibitor", "HeavyPPC+Inhibitor" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 15
@@ -133,27 +99,8 @@
       "Extreme": 18
     },
     "Heat": 15,
-    "RangeMinimum": {
-      "Normal": 3,
-      "Special": -1
-    },
-    "RangeAerospace": "Medium",
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "SpecialDamage": {
-      "Normal": { "Type": "None" },
-      "Special": { "Data": "1", "Type": "Emp" }
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "PpcInhibitorOverride" } ]
-    },
-    "ModeDescription": {
-      "Normal": "Inhibitor",
-      "Special": "No Inhibitor"
-    }
+    "RangeMinimum": 3,
+    "RangeAerospace": "Medium"
   },
   {
     "Name": "Snub-Nose PPC",
@@ -186,6 +133,11 @@
   {
     "Name": "Clan ER PPC",
     "Type": "Energy",
+    "Ammo": {
+    	{ "Normal", "Blank" },
+    	{ "Inhibitor", "ERPPC+Inhibitor" }
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 15
@@ -201,22 +153,6 @@
       "Extreme": 23
     },
     "RangeAerospace": "Long",
-    "Heat": 15,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "SpecialDamage": {
-      "Normal": { "Type": "None" },
-      "Special": { "Data": "1", "Type": "Emp" }
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Type": "PpcInhibitorOverride" } ]
-    },
-    "ModeDescription": {
-      "Normal": "Inhibitor",
-      "Special": "No Inhibitor"
-    }
+    "Heat": 15
   }
 ]

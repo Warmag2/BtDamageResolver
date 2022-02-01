@@ -25,10 +25,7 @@
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   },
   {
     "Name": "BA Rocket Launcher 2",
@@ -56,10 +53,7 @@
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   },
   {
     "Name": "BA Rocket Launcher 3",
@@ -87,10 +81,7 @@
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   },
   {
     "Name": "BA Rocket Launcher 4",
@@ -118,10 +109,7 @@
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   },
   {
     "Name": "BA Rocket Launcher 5",
@@ -149,9 +137,6 @@
     },
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   }
 ]

@@ -21,12 +21,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             foreach (var weaponEntry in Unit.Weapons.Where(w => w.State == WeaponState.Active))
             {
-                var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
+                var weapon = await FormWeapon(weaponEntry);
 
                 var hitCalclulationDamageReport = new DamageReport
                 {
                     Phase = weapon.GetUsePhase(),
-                    DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, Unit.FiringSolution.Direction, weapon.SpecialFeatures[weaponEntry.Mode].Select(w => w.Type).ToList()),
+                    DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, Unit.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
                     FiringUnitId = Unit.Id,
                     FiringUnitName = Unit.Name,
                     TargetUnitId = target.GetId(),
@@ -34,7 +34,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                     InitialTroopers = target.GetTroopers()
                 };
 
-                var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon, weaponEntry.Mode);
+                var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon);
 
                 damageReportCombatActionPairs.Add((hitCalclulationDamageReport, combatAction));
             }

@@ -15,16 +15,6 @@
                 <td>@_weapon.Name</td>
             </tr>
             <tr>
-                <td>Modes</td>
-                <td>
-                    @foreach (var mode in _weapon.Modes)
-                    {
-                        @($"{mode}: {_weapon.ModeDescription[mode]}")
-                        <br/>
-                    }
-                </td>
-            </tr>
-            <tr>
                 <td>Type</td>
                 <td>@_weapon.Type</td>
             </tr>
@@ -48,13 +38,7 @@
             </tr>
             <tr>
                 <td>Range (Minimum)</td>
-                <td>
-                    @foreach (var mode in _weapon.RangeMinimum)
-                    {
-                        @($"{mode.Key}: {mode.Value}")
-                        <br />
-                    }
-                </td>
+                <td>@_weapon.RangeMinimum</td>
             </tr>
             <tr>
                 <td>Damage</td>
@@ -86,13 +70,7 @@
             </tr>
             <tr>
                 <td>Hit modifiers</td>
-                <td>
-                    @foreach (var mode in _weapon.HitModifier)
-                    {
-                        @($"{mode.Key}: {mode.Value}")
-                        <br/>
-                    }
-                </td>
+                <td>@_weapon.HitModifier</td>
             </tr>
             <tr>
                 <td>Cluster Size</td>
@@ -104,13 +82,7 @@
             </tr>
             <tr>
                 <td>Cluster Bonus</td>
-                <td>
-                    @foreach (var mode in _weapon.ClusterBonus)
-                    {
-                        @($"{mode.Key}: {mode.Value}")
-                        <br/>
-                    }
-                </td>
+                <td>@_weapon.ClusterBonus</td>
             </tr>
             <tr>
                 <td>Cluster Table</td>
@@ -118,24 +90,15 @@
             </tr>
             <tr>
                 <td>Special Damage</td>
-                <td>
-                    @foreach (var mode in _weapon.SpecialDamage)
-                    {
-                        @($"{mode.Key}: {mode.Value}")
-                        <br/>
-                    }
-                </td>
+                <td>@($"{_weapon.SpecialDamage}")</td>
             </tr>
             <tr>
                 <td>Special Features</td>
                 <td>
-                    @foreach (var mode in _weapon.SpecialFeatures)
+                    @foreach (var entry in _weapon.SpecialFeatures)
                     {
-                        foreach (var entry in mode.Value)
-                        {
-                            @($"{mode.Key}: {entry}")
-                            <br/>
-                        }
+                        @($"{entry}")
+                        <br/>
                     }
                 </td>
             </tr>
@@ -150,11 +113,14 @@
     [Parameter]
     public string WeaponName { get; set; }
 
+    [Parameter]
+    public string Ammo { get; set; }
+
     protected override void OnInitialized()
     {
         if (!string.IsNullOrEmpty(WeaponName) && _commonData.MapWeapon.ContainsKey(WeaponName))
         {
-            _weapon = _commonData.MapWeapon[WeaponName];
+            _weapon = _commonData.FormWeapon(WeaponName, Ammo);
         }
     }
 }

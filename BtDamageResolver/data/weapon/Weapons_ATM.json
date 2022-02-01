@@ -1,470 +1,66 @@
 [
   {
-    "Name": "ATM-3 SRM",
+    "Name": "ATM-3",
     "Type": "Missile",
+    "Ammo": {
+    	{ "SRM", "ATM3-SRM" },
+    	{ "MRM", "ATM3-MRM" },
+    	{ "LRM", "ATM3-LRM" }
+    },
+    "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 9
-    },
-    "DamageAerospace": {
-      "Short": 6
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
     "Heat": 2,
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 2
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "ClusterBonus": 2
   },
   {
-    "Name": "ATM-6 SRM",
+    "Name": "ATM-6",
     "Type": "Missile",
+    "Ammo": {
+    	{ "SRM", "ATM6-SRM" },
+    	{ "MRM", "ATM6-MRM" },
+    	{ "LRM", "ATM6-LRM" }
+    },
+    "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 18
-    },
-    "DamageAerospace": {
-      "Short": 12
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
     "Heat": 4,
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 2
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "ClusterBonus": 2
   },
   {
-    "Name": "ATM-9 SRM",
+    "Name": "ATM-9",
     "Type": "Missile",
+    "Ammo": {
+    	{ "SRM", "ATM9-SRM" },
+    	{ "MRM", "ATM9-MRM" },
+    	{ "LRM", "ATM9-LRM" }
+    },
+    "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 27
-    },
-    "DamageAerospace": {
-      "Short": 21
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
     "Heat": 6,
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 2
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "ClusterBonus": 2
   },
   {
-    "Name": "ATM-12 SRM",
+    "Name": "ATM-12",
     "Type": "Missile",
+    "Ammo": {
+    	{ "SRM", "ATM12-SRM" },
+    	{ "MRM", "ATM12-MRM" },
+    	{ "LRM", "ATM12-LRM" }
+    },
+    "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 36
-    },
-    "DamageAerospace": {
-      "Short": 30
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
     "Heat": 8,
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 2
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
-  },
-  {
-    "Name": "ATM-3 MRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 6
-    },
-    "DamageAerospace": {
-      "Short": 4
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 5,
-      "Medium": 10,
-      "Long": 15,
-      "Extreme": 15
-    },
-    "RangeAerospace": "Medium",
-    "RangeMinimum": {
-      "Normal": 4,
-      "Special": 4
-    },
-    "Heat": 2,
-    "UsesAmmo": true,
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "ATM-6 MRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 12
-    },
-    "DamageAerospace": {
-      "Short": 8
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 5,
-      "Medium": 10,
-      "Long": 15,
-      "Extreme": 15
-    },
-    "RangeAerospace": "Medium",
-    "RangeMinimum": {
-      "Normal": 4,
-      "Special": 4
-    },
-    "Heat": 4,
-    "UsesAmmo": true,
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "ATM-9 MRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 18
-    },
-    "DamageAerospace": {
-      "Short": 14
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 5,
-      "Medium": 10,
-      "Long": 15,
-      "Extreme": 15
-    },
-    "RangeAerospace": "Medium",
-    "RangeMinimum": {
-      "Normal": 4,
-      "Special": 4
-    },
-    "Heat": 6,
-    "UsesAmmo": true,
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "ATM-12 MRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 24
-    },
-    "DamageAerospace": {
-      "Short": 20
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 5,
-      "Medium": 10,
-      "Long": 15,
-      "Extreme": 15
-    },
-    "RangeAerospace": "Medium",
-    "RangeMinimum": {
-      "Normal": 4,
-      "Special": 4
-    },
-    "Heat": 8,
-    "UsesAmmo": true,
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "ATM-3 LRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 3
-    },
-    "DamageAerospace": {
-      "Short": 2
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 9,
-      "Medium": 18,
-      "Long": 27,
-      "Extreme": 27
-    },
-    "RangeAerospace": "Extreme",
-    "RangeMinimum": {
-      "Normal": 4,
-      "Special": 4
-    },
-    "Heat": 2,
-    "UsesAmmo": true,
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "ATM-6 LRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 6
-    },
-    "DamageAerospace": {
-      "Short": 4
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 9,
-      "Medium": 18,
-      "Long": 27,
-      "Extreme": 27
-    },
-    "RangeAerospace": "Extreme",
-    "RangeMinimum": {
-      "Normal": 4,
-      "Special": 4
-    },
-    "Heat": 4,
-    "UsesAmmo": true,
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "ATM-9 LRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 9
-    },
-    "DamageAerospace": {
-      "Short": 7
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 9,
-      "Medium": 18,
-      "Long": 27,
-      "Extreme": 27
-    },
-    "RangeAerospace": "Extreme",
-    "RangeMinimum": {
-      "Normal": 4,
-      "Special": 4
-    },
-    "Heat": 6,
-    "UsesAmmo": true,
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
-  },
-  {
-    "Name": "ATM-12 LRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 12
-    },
-    "DamageAerospace": {
-      "Short": 10
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 9,
-      "Medium": 18,
-      "Long": 27,
-      "Extreme": 27
-    },
-    "RangeAerospace": "Extreme",
-    "RangeMinimum": {
-      "Normal": 4,
-      "Special": 4
-    },
-    "Heat": 8,
-    "UsesAmmo": true,
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 0
-    }
+    "ClusterBonus": 2
   }
 ]
