@@ -3,8 +3,8 @@
     "Name": "AC/2",
     "Type": "Ballistic",
     "Ammo": {
-    	{ "Normal", "Blank" },
-    	{ "AP", "AC-AP2" }
+      "Normal": "Blank",
+      "AP": "AC-AP2"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -31,8 +31,8 @@
     "Name": "AC/5",
     "Type": "Ballistic",
     "Ammo": {
-    	{ "Normal", "Blank" },
-    	{ "AP", "AC-AP5" }
+      "Normal": "Blank",
+      "AP": "AC-AP5"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -59,8 +59,8 @@
     "Name": "AC/10",
     "Type": "Ballistic",
     "Ammo": {
-    	{ "Normal", "Blank" },
-    	{ "AP", "AC-AP10" }
+      "Normal": "Blank",
+      "AP": "AC-AP10"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -87,8 +87,8 @@
     "Name": "AC/20",
     "Type": "Ballistic",
     "Ammo": {
-    	{ "Normal", "Blank" },
-    	{ "AP", "AC-AP20" }
+      "Normal": "Blank",
+      "AP": "AC-AP20"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
