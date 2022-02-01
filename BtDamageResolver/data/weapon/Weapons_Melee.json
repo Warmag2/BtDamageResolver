@@ -133,10 +133,7 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": 3,
-      "Special": 3
-    },
+    "HitModifier": 3,
     "SpecialFeatures": [ { "Data": "$tonnage/5", "Type": "Melee" } ]
   },
   {
