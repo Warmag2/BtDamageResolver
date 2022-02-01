@@ -3,9 +3,9 @@
     "Name": "ATM-3",
     "Type": "Missile",
     "Ammo": {
-    	{ "SRM", "ATM3-SRM" },
-    	{ "MRM", "ATM3-MRM" },
-    	{ "LRM", "ATM3-LRM" }
+      "SRM": "ATM3-SRM",
+      "MRM": "ATM3-MRM",
+      "LRM": "ATM3-LRM"
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
@@ -21,9 +21,9 @@
     "Name": "ATM-6",
     "Type": "Missile",
     "Ammo": {
-    	{ "SRM", "ATM6-SRM" },
-    	{ "MRM", "ATM6-MRM" },
-    	{ "LRM", "ATM6-LRM" }
+      "SRM": "ATM6-SRM",
+      "MRM": "ATM6-MRM",
+      "LRM": "ATM6-LRM"
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
@@ -39,9 +39,9 @@
     "Name": "ATM-9",
     "Type": "Missile",
     "Ammo": {
-    	{ "SRM", "ATM9-SRM" },
-    	{ "MRM", "ATM9-MRM" },
-    	{ "LRM", "ATM9-LRM" }
+      "SRM": "ATM9-SRM",
+      "MRM": "ATM9-MRM",
+      "LRM": "ATM9-LRM"
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
@@ -57,9 +57,9 @@
     "Name": "ATM-12",
     "Type": "Missile",
     "Ammo": {
-    	{ "SRM", "ATM12-SRM" },
-    	{ "MRM", "ATM12-MRM" },
-    	{ "LRM", "ATM12-LRM" }
+      "SRM": "ATM12-SRM",
+      "MRM": "ATM12-MRM",
+      "LRM": "ATM12-LRM"
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
