@@ -101,8 +101,8 @@
     "Name": "Infantry LRM",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "LRM-Normal" },
-    	{ "Indirect", "LRM-Indirect" }
+      "Normal": "Missile",
+      "Indirect": "Missile Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
