@@ -72,7 +72,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
                     {
                         await client.GetAmmoRepository().AddOrUpdate(ammo);
                     }
-                    if (dataObject is ClusterTable clusterTable)
+                    else if (dataObject is ClusterTable clusterTable)
                     {
                         await client.GetClusterTableRepository().AddOrUpdate(clusterTable);
                     }
