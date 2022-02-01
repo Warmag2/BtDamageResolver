@@ -3,8 +3,8 @@
     "Name": "BA LRM-1",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "Missile" },
-    	{ "Indirect", "Missile Indirect" }
+      "Normal": "Missile",
+      "Indirect": "Missile Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -35,8 +35,8 @@
     "Name": "BA LRM-2",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "Missile" },
-    	{ "Indirect", "Missile Indirect" }
+      "Normal": "Missile",
+      "Indirect": "Missile Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -67,8 +67,8 @@
     "Name": "BA LRM-3",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "Missile" },
-    	{ "Indirect", "Missile Indirect" }
+      "Normal": "Missile",
+      "Indirect": "Missile Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -99,8 +99,8 @@
     "Name": "BA LRM-4",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "Missile" },
-    	{ "Indirect", "Missile Indirect" }
+      "Normal": "Missile",
+      "Indirect": "Missile Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -131,8 +131,8 @@
     "Name": "BA LRM-5",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "Missile" },
-    	{ "Indirect", "Missile Indirect" }
+      "Normal": "Missile",
+      "Indirect": "Missile Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",

@@ -3,11 +3,11 @@
     "Name": "MML-3",
     "Type": "Missile",
     "Ammo": {
-    	{ "SRM", "MML3-SRM" },
-    	{ "SRM+Artemis", "MML3-SRM+Artemis" },    	
-    	{ "LRM", "MML3-LRM" },
-    	{ "LRM+Artemis", "MML3-LRM+Artemis" },
-    	{ "LRM Indirect", "MML3-LRM Indirect" }
+      "SRM": "MML3-SRM",
+      "SRM+Artemis": "MML3-SRM+Artemis",
+      "LRM": "MML3-LRM",
+      "LRM+Artemis": "MML3-LRM+Artemis",
+      "LRM Indirect": "MML3-LRM Indirect"
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
@@ -18,11 +18,11 @@
     "Name": "MML-5",
     "Type": "Missile",
     "Ammo": {
-    	{ "SRM", "MML5-SRM" },
-    	{ "SRM+Artemis", "MML5-SRM+Artemis" },    	
-    	{ "LRM", "MML5-LRM" },
-    	{ "LRM+Artemis", "MML5-LRM+Artemis" },
-    	{ "LRM Indirect", "MML5-LRM Indirect" }
+      "SRM": "MML5-SRM",
+      "SRM+Artemis": "MML5-SRM+Artemis",
+      "LRM": "MML5-LRM",
+      "LRM+Artemis": "MML5-LRM+Artemis",
+      "LRM Indirect": "MML5-LRM Indirect"
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
@@ -33,11 +33,11 @@
     "Name": "MML-7",
     "Type": "Missile",
     "Ammo": {
-    	{ "SRM", "MML7-SRM" },
-    	{ "SRM+Artemis", "MML7-SRM+Artemis" },    	
-    	{ "LRM", "MML7-LRM" },
-    	{ "LRM+Artemis", "MML7-LRM+Artemis" },
-    	{ "LRM Indirect", "MML7-LRM Indirect" }
+      "SRM": "MML7-SRM",
+      "SRM+Artemis": "MML7-SRM+Artemis",
+      "LRM": "MML7-LRM",
+      "LRM+Artemis": "MML7-LRM+Artemis",
+      "LRM Indirect": "MML7-LRM Indirect"
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
@@ -48,11 +48,11 @@
     "Name": "MML-9",
     "Type": "Missile",
     "Ammo": {
-    	{ "SRM", "MML9-SRM" },
-    	{ "SRM+Artemis", "MML9-SRM+Artemis" },    	
-    	{ "LRM", "MML9-LRM" },
-    	{ "LRM+Artemis", "MML9-LRM+Artemis" },
-    	{ "LRM Indirect", "MML9-LRM Indirect" }
+      "SRM": "MML9-SRM",
+      "SRM+Artemis": "MML9-SRM+Artemis",
+      "LRM": "MML9-LRM",
+      "LRM+Artemis": "MML9-LRM+Artemis",
+      "LRM Indirect": "MML9-LRM Indirect"
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",

@@ -3,8 +3,8 @@
     "Name": "MRM-10",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "MRM" },
-    	{ "Apollo", "MRM+Apollo" }
+      "Normal": "MRM",
+      "Apollo": "MRM+Apollo"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -32,8 +32,8 @@
     "Name": "MRM-20",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "MRM" },
-    	{ "Apollo", "MRM+Apollo" }
+      "Normal": "MRM",
+      "Apollo": "MRM+Apollo"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -61,8 +61,8 @@
     "Name": "MRM-30",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "MRM" },
-    	{ "Apollo", "MRM+Apollo" }
+      "Normal": "MRM",
+      "Apollo": "MRM+Apollo"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -90,8 +90,8 @@
     "Name": "MRM-40",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "MRM" },
-    	{ "Apollo", "MRM+Apollo" }
+      "Normal": "MRM",
+      "Apollo": "MRM+Apollo"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",

@@ -3,9 +3,9 @@
     "Name": "Clan LRM-5",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "LRM5-Normal" },
-    	{ "Artemis", "LRM5+Artemis" },
-    	{ "Indirect", "LRM5 Indirect" }
+      "Normal": "LRM5-Normal",
+      "Artemis": "LRM5+Artemis",
+      "Indirect": "LRM5 Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -26,9 +26,9 @@
     "Name": "Clan LRM-10",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "LRM10-Normal" },
-    	{ "Artemis", "LRM10+Artemis" },
-    	{ "Indirect", "LRM10 Indirect" }
+      "Normal": "LRM10-Normal",
+      "Artemis": "LRM10+Artemis",
+      "Indirect": "LRM10 Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -49,9 +49,9 @@
     "Name": "Clan LRM-15",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "LRM15-Normal" },
-    	{ "Artemis", "LRM15+Artemis" },
-    	{ "Indirect", "LRM15 Indirect" }
+      "Normal": "LRM15-Normal",
+      "Artemis": "LRM15+Artemis",
+      "Indirect": "LRM15 Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -72,9 +72,9 @@
     "Name": "Clan LRM-20",
     "Type": "Missile",
     "Ammo": {
-    	{ "Normal", "LRM20-Normal" },
-    	{ "Artemis", "LRM20+Artemis" },
-    	{ "Indirect", "LRM20 Indirect" }
+      "Normal": "LRM20-Normal",
+      "Artemis": "LRM20+Artemis",
+      "Indirect": "LRM20 Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
