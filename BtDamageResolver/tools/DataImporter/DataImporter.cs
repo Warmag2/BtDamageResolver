@@ -195,7 +195,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
             switch (fileNamePrefix)
             {
                 case "Ammo":
-                    return new object[] { JsonConvert.DeserializeObject<Ammo>(fileData) };
+                    return (JsonConvert.DeserializeObject<List<Ammo>>(fileData) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object);
                 case "ClusterTable":
                     return new object[] { JsonConvert.DeserializeObject<ClusterTable>(fileData) };
                 case "CriticalDamageTable":
