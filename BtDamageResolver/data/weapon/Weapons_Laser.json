@@ -330,10 +330,7 @@
     },
     "RangeAerospace": "Short",
     "Heat": 3,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    }
+    "HitModifier": 1
   },
   {
     "Name": "Clan Heavy Medium Laser",
@@ -354,10 +351,7 @@
     },
     "RangeAerospace": "Short",
     "Heat": 7,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    }
+    "HitModifier": 1
   },
   {
     "Name": "Clan Heavy Large Laser",
@@ -378,9 +372,6 @@
     },
     "RangeAerospace": "Medium",
     "Heat": 18,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    }
+    "HitModifier": 1
   }
 ]
