@@ -220,12 +220,25 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
                 ClusterBonus = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), Damage.Single().Value);
             }
 
-            if (Damage.Count == 1)
+            if (ClusterTable == null)
+            {
+                ClusterTable = Constants.Names.DefaultClusterTableName;
+            }
+
+            if (Damage == null)
+            {
+                Damage = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), 0);
+            }
+            else if (Damage.Count == 1)
             {
                 Damage = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), Damage.Single().Value);
             }
 
-            if (DamageAerospace.Count == 1)
+            if (DamageAerospace == null)
+            {
+                DamageAerospace = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), 0);
+            }
+            else if (DamageAerospace.Count == 1)
             {
                 DamageAerospace = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), DamageAerospace.Single().Value);
             }
@@ -238,11 +251,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
             if (SpecialFeatures == null)
             {
                 SpecialFeatures = new List<WeaponFeatureEntry> { new WeaponFeatureEntry { Data = "0", Type = WeaponFeature.None } };
-            }
-
-            if (ClusterTable == null)
-            {
-                ClusterTable = Constants.Names.DefaultClusterTableName;
             }
         }
 
