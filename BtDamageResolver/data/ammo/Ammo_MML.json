@@ -36,9 +36,11 @@
     },
     "RangeAerospace": "Short",
     "SpecialFeatures": [ { "Type": "Cluster" } ],
-    "ClusterBonus": 2,
     "ClusterSize": 2,
-    "ClusterDamage": 2
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "MML3-LRM",
@@ -87,7 +89,9 @@
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "MML3-LRM Indirect",
@@ -151,9 +155,11 @@
     },
     "RangeAerospace": "Short",
     "SpecialFeatures": [ { "Type": "Cluster" } ],
-    "ClusterBonus": 2,
     "ClusterSize": 2,
-    "ClusterDamage": 2
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Short": 2
+    }    
   },
   {
     "Name": "MML5-LRM",
@@ -202,7 +208,9 @@
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "MML5-LRM Indirect",
@@ -266,9 +274,11 @@
     },
     "RangeAerospace": "Short",
     "SpecialFeatures": [ { "Type": "Cluster" } ],
-    "ClusterBonus": 2,
     "ClusterSize": 2,
-    "ClusterDamage": 2
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "MML7-LRM",
@@ -317,7 +327,9 @@
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "MML7-LRM Indirect",
@@ -381,9 +393,11 @@
     },
     "RangeAerospace": "Short",
     "SpecialFeatures": [ { "Type": "Cluster" } ],
-    "ClusterBonus": 2,
     "ClusterSize": 2,
-    "ClusterDamage": 2
+    "ClusterDamage": 2,
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "MML9-LRM",
@@ -432,7 +446,9 @@
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "MML9-LRM Indirect",

@@ -18,7 +18,9 @@
       "Short": 4
     },
     "SpecialFeatures": [ { "Type": "Cluster" } ],
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "LRM5 Indirect",
@@ -50,7 +52,9 @@
       "Short": 8
     },
     "SpecialFeatures": [ { "Type": "Cluster" } ],
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "LRM10 Indirect",
@@ -82,7 +86,9 @@
       "Short": 12
     },
     "SpecialFeatures": [ { "Type": "Cluster" } ],
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "LRM15 Indirect",
@@ -114,7 +120,9 @@
       "Short": 16
     },
     "SpecialFeatures": [ { "Type": "Cluster" } ]
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "LRM20 Indirect",

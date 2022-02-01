@@ -9,7 +9,9 @@
   {
     "Name": "Missile+Artemis",
     "SpecialFeatures": [ { "Type": "Cluster" } ],
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "Missile Indirect",

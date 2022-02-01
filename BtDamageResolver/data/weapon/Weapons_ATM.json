@@ -13,7 +13,9 @@
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "ATM-6",
@@ -29,7 +31,9 @@
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "ATM-9",
@@ -45,7 +49,9 @@
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   },
   {
     "Name": "ATM-12",
@@ -61,6 +67,8 @@
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "ClusterBonus": 2
+    "ClusterBonus": {
+      "Short": 2
+    }
   }
 ]
