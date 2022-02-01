@@ -3,8 +3,8 @@
     "Name": "PPC",
     "Type": "Energy",
     "Ammo": {
-    	{ "Normal", "Blank" },
-    	{ "Inhibitor", "PPC+Inhibitor" }
+      "Normal": "Blank",
+      "Inhibitor": "PPC+Inhibitor"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -29,8 +29,8 @@
     "Name": "ER PPC",
     "Type": "Energy",
     "Ammo": {
-    	{ "Normal", "Blank" },
-    	{ "Inhibitor", "ERPPC+Inhibitor" }
+      "Normal": "Blank",
+      "Inhibitor": "ERPPC+Inhibitor"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -54,8 +54,8 @@
     "Name": "Light PPC",
     "Type": "Energy",
     "Ammo": {
-    	{ "Normal", "Blank" },
-    	{ "Inhibitor", "LightPPC+Inhibitor" }
+      "Normal": "Blank",
+      "Inhibitor": "LightPPC+Inhibitor"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -80,8 +80,8 @@
     "Name": "Heavy PPC",
     "Type": "Energy",
     "Ammo": {
-    	{ "Normal", "Blank" },
-    	{ "Inhibitor", "HeavyPPC+Inhibitor" }
+      "Normal": "Blank",
+      "Inhibitor": "HeavyPPC+Inhibitor"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -134,8 +134,8 @@
     "Name": "Clan ER PPC",
     "Type": "Energy",
     "Ammo": {
-    	{ "Normal", "Blank" },
-    	{ "Inhibitor", "ERPPC+Inhibitor" }
+      "Normal": "Blank",
+      "Inhibitor": "ERPPC+Inhibitor"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
