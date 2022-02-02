@@ -1,5 +1,4 @@
 ﻿using Faemiyah.BtDamageResolver.Api.Enums;
-using System;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
@@ -8,6 +7,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
     /// </summary>
     public partial class LogicUnit
     {
+        /// <inheritdoc />
+        public virtual bool CanTakeCriticalHits()
+        {
+            return true;
+        }
+
         /// <inheritdoc />
         public virtual bool CanTakeEmpHits()
         {
@@ -21,29 +26,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         }
 
         /// <inheritdoc />
-        public Guid GetId() => Unit.Id;
-
-        /// <inheritdoc />
-        public string GetName() => Unit.Name;
-
-        /// <inheritdoc />
         public abstract PaperDollType GetPaperDollType();
-
-        /// <inheritdoc />
-        public Stance GetStance() => Unit.Stance;
-
-        /// <inheritdoc />
-        public int GetTonnage() => Unit.Tonnage;
-
-        /// <inheritdoc />
-        public int GetTroopers() => Unit.Troopers;
-
-        /// <inheritdoc />
-        public UnitType GetUnitType() => Unit.Type;
-
-        /// <inheritdoc />
-        public bool HasFeature(UnitFeature unitFeature) => Unit.HasFeature(unitFeature);
-
 
         /// <inheritdoc />
         public virtual bool IsBlockedByCover(Cover cover, Location location)
@@ -62,11 +45,5 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             return Unit.HasFeature(UnitFeature.NarrowLowProfile) && marginOfSuccess == 0;
         }
-
-        /// <inheritdoc />
-        public bool IsNarced() => Unit.Narced;
-
-        /// <inheritdoc />
-        public bool IsTagged() => Unit.Tagged;
     }
 }

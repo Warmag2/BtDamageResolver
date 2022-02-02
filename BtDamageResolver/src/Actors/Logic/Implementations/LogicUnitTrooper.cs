@@ -20,6 +20,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         }
 
         /// <inheritdoc />
+        public override bool CanTakeCriticalHits()
+        {
+            return false;
+        }
+
+        /// <inheritdoc />
         public override bool CanTakeEmpHits()
         {
             return false;

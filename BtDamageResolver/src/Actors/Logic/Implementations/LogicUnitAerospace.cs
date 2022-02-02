@@ -137,7 +137,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
             switch (combatAction.Weapon.Type)
             {
                 case WeaponType.Missile:
-                    if (target.HasFeature(UnitFeature.Ams))
+                    if (target.Unit.HasFeature(UnitFeature.Ams))
                     {
                         if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.AmsImmune, out _))
                         {
@@ -153,7 +153,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                         }
                     }
 
-                    if (target.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
+                    if (target.Unit.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
                     {
                         var ecmPenalty = Random.Next(3);
                         damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender ECM roll for cluster damage reduction", Number = ecmPenalty });

@@ -30,7 +30,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         public Dictionary<RangeBracket, int> ClusterBonus { get; set; }
 
         /// <summary>
-        /// The damage value of a single cluster instance.
+        /// The damage value of a single cluster instance inflicted by this weapon.
         /// </summary>
         public int ClusterDamage { get; set; }
 
@@ -111,7 +111,15 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
             {
                 applyTarget.ClusterBonus = ammo.ClusterBonus;
             }
-            if(ammo.Damage != null)
+            if (ammo.ClusterDamage != null)
+            {
+                applyTarget.ClusterDamage = ammo.ClusterDamage.Value;
+            }
+            if (ammo.ClusterSize != null)
+            {
+                applyTarget.ClusterSize = ammo.ClusterSize.Value;
+            }
+            if (ammo.Damage != null)
             {
                 applyTarget.Damage = ammo.Damage;
             }

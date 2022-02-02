@@ -108,9 +108,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, Unit.FiringSolution.Direction, combatAction.Weapon.SpecialFeatures.Select(w => w.Type).ToList()),
                 FiringUnitId = Unit.Id,
                 FiringUnitName = Unit.Name,
-                TargetUnitId = target.GetId(),
-                TargetUnitName = target.GetName(),
-                InitialTroopers = target.GetTroopers()
+                TargetUnitId = target.Unit.Id,
+                TargetUnitName = target.Unit.Name,
+                InitialTroopers = target.Unit.Troopers
             };
 
             // First, we must determine the total amount of damage dealt
@@ -167,7 +167,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                 damageReport.Log(new AttackLogEntry { Context = "Attacker is damaged by its charge attack", Type = AttackLogEntryType.Information });
                 string attackerDamageStringCharge;
-                switch (target.GetUnitType())
+                switch (target.Unit.Type)
                 {
                     case UnitType.Building:
                     case UnitType.BattleArmor:
@@ -177,7 +177,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                         attackerDamageStringCharge = $"{Unit.Tonnage}/10";
                         break;
                     default:
-                        attackerDamageStringCharge = $"{target.GetTonnage()}/10";
+                        attackerDamageStringCharge = $"{target.Unit.Tonnage}/10";
                         break;
                 }
 
@@ -359,7 +359,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private List<DamagePacket> TransformDamagePacketsBasedOnWeaponFeatures(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target, CombatAction combatAction)
         {
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.ArmorPiercing, out var armorPiercingEntry))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.ArmorPiercing, out var armorPiercingEntry) && target.CanTakeCriticalHits())
             {
                 damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = armorPiercingEntry.Data, Type = SpecialDamageType.Critical });
                 damageReport.Log(new AttackLogEntry { Context = "Armor Piercing weapon feature adds a potential critical hit", Type = AttackLogEntryType.Information });

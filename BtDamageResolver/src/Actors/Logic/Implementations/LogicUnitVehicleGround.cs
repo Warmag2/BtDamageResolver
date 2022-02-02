@@ -25,9 +25,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         protected override AttackType TransformAttackType(ILogicUnit target, AttackType attackType, List<WeaponFeature> weaponFeatures)
         {
             // Ground vehicles doing charge attacks on standing mechs hit the legs
-            if (weaponFeatures.Contains(WeaponFeature.MeleeCharge) && target.GetStance() == Stance.Normal)
+            if (weaponFeatures.Contains(WeaponFeature.MeleeCharge) && target.Unit.Stance == Stance.Normal)
             {
-                switch (target.GetUnitType())
+                switch (target.Unit.Type)
                 {
                     case UnitType.Mech:
                     case UnitType.MechTripod:

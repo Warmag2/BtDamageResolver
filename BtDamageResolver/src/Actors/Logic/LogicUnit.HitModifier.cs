@@ -162,7 +162,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private int GetArmorModifier(RangeBracket rangeBracket, ILogicUnit target)
         {
-            if (target.HasFeature(UnitFeature.ArmorStealth))
+            if (target.Unit.HasFeature(UnitFeature.ArmorStealth))
             {
                 switch (rangeBracket)
                 {
@@ -183,7 +183,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             if (Unit.HasFeature(UnitFeature.TargetingAntiAir))
             {
-                switch (target.GetUnitType())
+                switch (target.Unit.Type)
                 {
                     case UnitType.AerospaceCapital:
                     case UnitType.AerospaceDropship:
@@ -233,7 +233,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         private int GetMovementClassModifier(ILogicUnit target, Weapon weapon)
         {
             // Missile weapons ignore attacker movement modifier if the target is tagged
-            if (weapon.Type == WeaponType.Missile && target.IsTagged() && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
+            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
             {
                 return 0;
             }
@@ -254,7 +254,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         private int GetMovementModifierBase(ILogicUnit target, Weapon weapon)
         {
             // Missile weapons ignore defender movement modifier if the target is tagged
-            if (weapon.Type == WeaponType.Missile && target.IsTagged() && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
+            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
             {
                 return 0;
             }

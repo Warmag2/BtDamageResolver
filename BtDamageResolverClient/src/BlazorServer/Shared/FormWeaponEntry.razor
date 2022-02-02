@@ -11,7 +11,8 @@
     var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
     var mapWeaponAmmo = _commonData.CreateMapWeaponAmmo(WeaponEntry.WeaponName);
-    if(!mapWeaponAmmo.ContainsKey(WeaponEntry.Ammo))
+    
+    if(WeaponEntry.Ammo == null || !mapWeaponAmmo.ContainsKey(WeaponEntry.Ammo))
     {
         WeaponEntry.Ammo = _commonData.GetWeaponDefaultAmmo(WeaponEntry.WeaponName);
     }
@@ -34,8 +35,11 @@
     <td>
         <FormCheckbox Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormCheckbox>
     </td>
-    <td style="@VisualStyleController.HideElement(!_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))">
-        <FormComboBox Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormComboBox>
+    <td>
+        @if (_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))
+        {
+            <FormComboBox Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormComboBox>
+        }
     </td>
     <td>
         <button class="resolver_button" disabled="@Disabled" @onclick="MoveUp"><b>&uarr;</b></button>

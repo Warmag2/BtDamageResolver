@@ -37,7 +37,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             clusterBonus += combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from weapon", Number = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket] });
 
-            if (target.HasFeature(UnitFeature.Ams))
+            if (target.Unit.HasFeature(UnitFeature.Ams))
             {
                 if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.AmsImmune, out _))
                 {
@@ -52,13 +52,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 }
             }
 
-            if (target.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
+            if (target.Unit.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
             {
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender ECM", Number = -2 });
                 clusterBonus -= 2;
             }
 
-            if (target.IsNarced())
+            if (target.Unit.Narced)
             {
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender being NARCed", Number = 2 });
                 clusterBonus += 2;

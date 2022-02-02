@@ -14,6 +14,16 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         public Dictionary<RangeBracket, int> ClusterBonus { get; set; }
 
         /// <summary>
+        /// The damage value of a single cluster instance inflicted by this ammo.
+        /// </summary>
+        public int? ClusterDamage { get; set; }
+
+        /// <summary>
+        /// How many cluster instances are dealt at a time with this ammo.
+        /// </summary>
+        public int? ClusterSize { get; set; }
+
+        /// <summary>
         /// The damage array for ground units.
         /// </summary>
         public Dictionary<RangeBracket, int> Damage { get; set; }

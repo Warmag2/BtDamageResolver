@@ -29,9 +29,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                     DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, Unit.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
                     FiringUnitId = Unit.Id,
                     FiringUnitName = Unit.Name,
-                    TargetUnitId = target.GetId(),
-                    TargetUnitName = target.GetName(),
-                    InitialTroopers = target.GetTroopers()
+                    TargetUnitId = target.Unit.Id,
+                    TargetUnitName = target.Unit.Name,
+                    InitialTroopers = target.Unit.Troopers
                 };
 
                 var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon);

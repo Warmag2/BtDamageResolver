@@ -66,13 +66,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             var transformedTargetType = target.GetPaperDollType();
 
-            var targetType = target.GetUnitType();
-
             var transformedAttackType = TransformAttackType(target, attackType, weaponFeatures);
 
             Direction transformedDirection;
 
-            if (targetType == UnitType.Infantry || targetType == UnitType.BattleArmor || targetType == UnitType.Building)
+            if (target.Unit.Type == UnitType.Infantry || target.Unit.Type == UnitType.BattleArmor || target.Unit.Type == UnitType.Building)
             {
                 transformedDirection = Direction.Front;
             }
@@ -87,7 +85,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             // Floating critical may only apply to mechs
             if (gameOptions.Rules[Rule.FloatingCritical] && transformedAttackType == AttackType.Normal)
             {
-                switch (targetType)
+                switch (target.Unit.Type)
                 {
                     case UnitType.Mech:
                     case UnitType.MechTripod:
@@ -100,7 +98,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             // Improved vehicle survivability may only apply to vehicles
             if (gameOptions.Rules[Rule.ImprovedVehicleSurvivability])
             {
-                switch (targetType)
+                switch (target.Unit.Type)
                 {
                     case UnitType.VehicleHover:
                     case UnitType.VehicleTracked:
@@ -119,7 +117,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             // Melee attacks that are not kicks or punches use normal attack tables
             var transformedAttackType = attackType == AttackType.Melee ? AttackType.Normal : attackType;
 
-            var targetType = target.GetUnitType();
+            var targetType = target.Unit.Type;
 
             // Punch and kick tables only exist for mechs, revert to normal for all other target types
             switch (targetType)
@@ -128,7 +126,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 case UnitType.MechTripod:
                 case UnitType.MechQuad:
                     // Punches and kicks to prone or crouched mechs can hit anywhere
-                    if(target.GetStance() == Stance.Prone || target.GetStance() == Stance.Crouch)
+                    if(target.Unit.Stance == Stance.Prone || target.Unit.Stance == Stance.Crouch)
                     {
                         transformedAttackType = AttackType.Normal;
                     }
