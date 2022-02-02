@@ -22,6 +22,9 @@
     <td class="resolver_td_targetnumber draggable" draggable="true" @ondrag="@(()=> StartDrag(WeaponEntry))" @ondrop="@(()=> Drop(WeaponEntry))" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', @calculationLog);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
         <b>@targetNumber</b>
     </td>
+    <td>
+        <FormCheckbox Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormCheckbox>
+    </td>
     <td class="resolver_td_weaponname">
         @if (Unit.StaticDataHidden)
         {
@@ -31,9 +34,6 @@
         {
             <FormComboBox Options="@_commonData.CreateMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
         }
-    </td>
-    <td>
-        <FormCheckbox Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormCheckbox>
     </td>
     <td>
         @if (_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))

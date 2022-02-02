@@ -1,5 +1,6 @@
 	Implemented
 
+[FEATURE] Ammo.
 [FEATURE] Stances for infantry/mechs.
 [FEATURE] Quirks.
 [FEATURE] Parametrize all passwords for practical security reasons before release.
@@ -62,6 +63,10 @@
 
 	Fixed
 
+[BUG] Forced critical hits (such as that from AC AP ammo) would inflict critical hits 
+      against targets which could not take critical hits (such as infantry).
+
+[BUG] Critical hit modifiers might cause result selection to go out-of-bounds.
 [BUG] Melee charge by ground vehicles worked incorrectly to non-prone mechs.
 [BUG] SRMs and other non-1 clusterdamage weapons did incorrect damage to infantry.
 [BUG] Grafana bar graph does not display zero for intervals which are zero.
