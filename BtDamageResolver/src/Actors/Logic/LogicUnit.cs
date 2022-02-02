@@ -1,6 +1,7 @@
 ﻿using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -17,7 +18,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         protected readonly IGrainFactory GrainFactory;
         protected readonly IMathExpression MathExpression;
         protected readonly IResolverRandom Random;
-        protected readonly UnitEntry Unit;
 
         /// <summary>
         /// General logic constructor.
@@ -37,5 +37,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             Random = random;
             Unit = unit;
         }
+
+        /// <inheritdoc />
+        public UnitEntry Unit { get; }
     }
 }

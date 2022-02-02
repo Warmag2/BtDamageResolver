@@ -22,9 +22,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
         }
 
         /// <inheritdoc />
-        public override int GetFeatureModifier(Weapon weapon, WeaponMode mode)
+        public override int GetFeatureModifier(Weapon weapon)
         {
-            if (weapon.SpecialFeatures[mode].HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
+            if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
             {
                 return MathExpression.Parse(flakFeatureEntry.Data);
             }

@@ -25,16 +25,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
 
             int calculatedSingleHitheat = combatAction.Weapon.Heat;
-
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.PpcInhibitorOverride, out _))
-            {
-                calculatedSingleHitheat += 2;
-                targetDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} additional heat load from overriding PPC inhibitor", Number = 5, Type = AttackLogEntryType.Calculation });
-            }
-
             int heat;
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
             {
                 var multiplier = MathExpression.Parse(rapidFeatureEntry.Data);
                 heat = calculatedSingleHitheat * multiplier;

@@ -11,13 +11,11 @@ namespace Faemiyah.BtDamageResolver.Api.Enums
         Burst,
         Cluster,
         Flak,
-        Hag,
         Heat,
         Melee,
         MeleeCharge,
         MeleeDfa,
         IndirectFire,
-        PpcInhibitorOverride,
         Pulse,
         Rapid,
         Streak

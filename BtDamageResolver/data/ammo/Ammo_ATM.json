@@ -1,0 +1,226 @@
+﻿[
+  {
+    "Name": "ATM3-SRM",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 6
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM3-MRM",
+    "Damage": {
+      "Short": 6
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 10,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "RangeMinimum": 4,
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM3-LRM",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 2
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 9,
+      "Medium": 18,
+      "Long": 27,
+      "Extreme": 27
+    },
+    "RangeAerospace": "Extreme",
+    "RangeMinimum": 4,
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM6-SRM",
+    "Damage": {
+      "Short": 18
+    },
+    "DamageAerospace": {
+      "Short": 12
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM6-MRM",
+    "Damage": {
+      "Short": 12
+    },
+    "DamageAerospace": {
+      "Short": 8
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 10,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "RangeMinimum": 4,
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM6-LRM",
+    "Damage": {
+      "Short": 6
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 9,
+      "Medium": 18,
+      "Long": 27,
+      "Extreme": 27
+    },
+    "RangeAerospace": "Extreme",
+    "RangeMinimum": 4,
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+    {
+    "Name": "ATM9-SRM",
+    "Damage": {
+      "Short": 27
+    },
+    "DamageAerospace": {
+      "Short": 21
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM9-MRM",
+    "Damage": {
+      "Short": 18
+    },
+    "DamageAerospace": {
+      "Short": 14
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 10,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "RangeMinimum": 4,
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM9-LRM",
+    "Damage": {
+      "Short": 9
+    },
+    "DamageAerospace": {
+      "Short": 7
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 9,
+      "Medium": 18,
+      "Long": 27,
+      "Extreme": 27
+    },
+    "RangeAerospace": "Extreme",
+    "RangeMinimum": 4,
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM12-SRM",
+    "Damage": {
+      "Short": 36
+    },
+    "DamageAerospace": {
+      "Short": 30
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM12-MRM",
+    "Damage": {
+      "Short": 24
+    },
+    "DamageAerospace": {
+      "Short": 20
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 5,
+      "Medium": 10,
+      "Long": 15,
+      "Extreme": 15
+    },
+    "RangeAerospace": "Medium",
+    "RangeMinimum": 4,
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  },
+  {
+    "Name": "ATM12-LRM",
+    "Damage": {
+      "Short": 12
+    },
+    "DamageAerospace": {
+      "Short": 10
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 9,
+      "Medium": 18,
+      "Long": 27,
+      "Extreme": 27
+    },
+    "RangeAerospace": "Extreme",
+    "RangeMinimum": 4,
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
+  }
+]

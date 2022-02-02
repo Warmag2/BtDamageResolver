@@ -1,266 +1,62 @@
 [
   {
-    "Name": "MML-3 SRM",
+    "Name": "MML-3",
     "Type": "Missile",
+    "Ammo": {
+      "SRM": "MML3-SRM",
+      "SRM+Artemis": "MML3-SRM+Artemis",
+      "LRM": "MML3-LRM",
+      "LRM+Artemis": "MML3-LRM+Artemis",
+      "LRM Indirect": "MML3-LRM Indirect"
+    },
+    "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 3
-    },
-    "DamageAerospace": {
-      "Short": 4
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
     "Heat": 2,
-    "UsesAmmo": true,
-    "ClusterSize": 2,
-    "ClusterDamage": 2
+    "UsesAmmo": true
   },
   {
-    "Name": "MML-5 SRM",
+    "Name": "MML-5",
     "Type": "Missile",
+    "Ammo": {
+      "SRM": "MML5-SRM",
+      "SRM+Artemis": "MML5-SRM+Artemis",
+      "LRM": "MML5-LRM",
+      "LRM+Artemis": "MML5-LRM+Artemis",
+      "LRM Indirect": "MML5-LRM Indirect"
+    },
+    "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 5
-    },
-    "DamageAerospace": {
-      "Short": 6
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
     "Heat": 3,
-    "UsesAmmo": true,
-    "ClusterSize": 2,
-    "ClusterDamage": 2
+    "UsesAmmo": true
   },
   {
-    "Name": "MML-7 SRM",
+    "Name": "MML-7",
     "Type": "Missile",
+    "Ammo": {
+      "SRM": "MML7-SRM",
+      "SRM+Artemis": "MML7-SRM+Artemis",
+      "LRM": "MML7-LRM",
+      "LRM+Artemis": "MML7-LRM+Artemis",
+      "LRM Indirect": "MML7-LRM Indirect"
+    },
+    "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 7
-    },
-    "DamageAerospace": {
-      "Short": 8
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
-    "Heat": 4,
-    "UsesAmmo": true,
-    "ClusterSize": 2,
-    "ClusterDamage": 2
-  },
-  {
-    "Name": "MML-9 SRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 9
-    },
-    "DamageAerospace": {
-      "Short": 10
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
-    "Heat": 5,
-    "UsesAmmo": true,
-    "ClusterSize": 2,
-    "ClusterDamage": 2
-  },
-  {
-    "Name": "MML-3 LRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 3
-    },
-    "DamageAerospace": {
-      "Short": 2
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 7,
-      "Medium": 14,
-      "Long": 21,
-      "Extreme": 21
-    },
-    "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
     "Heat": 2,
-    "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1
+    "UsesAmmo": true
   },
   {
-    "Name": "MML-5 LRM",
+    "Name": "MML-9",
     "Type": "Missile",
+    "Ammo": {
+      "SRM": "MML9-SRM",
+      "SRM+Artemis": "MML9-SRM+Artemis",
+      "LRM": "MML9-LRM",
+      "LRM+Artemis": "MML9-LRM+Artemis",
+      "LRM Indirect": "MML9-LRM Indirect"
+    },
+    "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Damage": {
-      "Short": 5
-    },
-    "DamageAerospace": {
-      "Short": 3
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 7,
-      "Medium": 14,
-      "Long": 21,
-      "Extreme": 21
-    },
-    "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
     "Heat": 3,
-    "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1
-  },
-  {
-    "Name": "MML-7 LRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 7
-    },
-    "DamageAerospace": {
-      "Short": 4
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 7,
-      "Medium": 14,
-      "Long": 21,
-      "Extreme": 21
-    },
-    "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
-    "Heat": 4,
-    "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1
-  },
-  {
-    "Name": "MML-9 LRM",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 9
-    },
-    "DamageAerospace": {
-      "Short": 5
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 7,
-      "Medium": 14,
-      "Long": 21,
-      "Extreme": 21
-    },
-    "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 6,
-      "Special": 6
-    },
-    "Heat": 5,
-    "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Direct",
-      "Special": "Indirect"
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 1
-    },
-    "ClusterSize": 5,
-    "ClusterDamage": 1
+    "UsesAmmo": true
   }
 ]

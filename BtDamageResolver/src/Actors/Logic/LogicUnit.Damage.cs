@@ -3,7 +3,6 @@ using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
-using Faemiyah.BtDamageResolver.Api.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +70,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <returns>The total damage by rapid fire action.</returns>
         protected async Task<int> RapidFireWrapper(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, Task<int> singleFireDamageCalculation)
         {
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
             {
                 var maxHits = MathExpression.Parse(rapidFeatureEntry.Data);
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Rapid fire weapon potential maximum number of hits", Number = maxHits });
@@ -106,12 +105,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             var damageReport = new DamageReport
             {
                 Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-                DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, Unit.FiringSolution.Direction, combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].Select(w => w.Type).ToList()),
+                DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, Unit.FiringSolution.Direction, combatAction.Weapon.SpecialFeatures.Select(w => w.Type).ToList()),
                 FiringUnitId = Unit.Id,
                 FiringUnitName = Unit.Name,
-                TargetUnitId = target.GetId(),
-                TargetUnitName = target.GetName(),
-                InitialTroopers = target.GetTroopers()
+                TargetUnitId = target.Unit.Id,
+                TargetUnitName = target.Unit.Name,
+                InitialTroopers = target.Unit.Troopers
             };
 
             // First, we must determine the total amount of damage dealt
@@ -159,7 +158,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             };
 
             // Only certain melee weapons have this for now, go through them one by one
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.MeleeCharge, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeCharge, out _))
             {
                 if (!combatAction.HitHappened)
                 {
@@ -168,7 +167,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                 damageReport.Log(new AttackLogEntry { Context = "Attacker is damaged by its charge attack", Type = AttackLogEntryType.Information });
                 string attackerDamageStringCharge;
-                switch (target.GetUnitType())
+                switch (target.Unit.Type)
                 {
                     case UnitType.Building:
                     case UnitType.BattleArmor:
@@ -178,7 +177,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                         attackerDamageStringCharge = $"{Unit.Tonnage}/10";
                         break;
                     default:
-                        attackerDamageStringCharge = $"{target.GetTonnage()}/10";
+                        attackerDamageStringCharge = $"{target.Unit.Tonnage}/10";
                         break;
                 }
 
@@ -200,7 +199,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 return damageReport;
             }
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.MeleeDfa, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeDfa, out _))
             {
                 if (combatAction.HitHappened)
                 {
@@ -250,7 +249,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <inheritdoc />
         protected int ResolveHeatExtraDamage(DamageReport damageReport, CombatAction combatAction, int damage)
         {
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Heat, out var heatFeatureEntry))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Heat, out var heatFeatureEntry))
             {
                 var addDamage = MathExpression.Parse(heatFeatureEntry.Data);
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Bonus damage from heat-inflicting weapon", Number = addDamage });
@@ -286,7 +285,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private async Task<int> ResolveTotalOutgoingDamageInternal(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
         {
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
             {
                 var clusterBonus = ResolveClusterBonus(damageReport, target, combatAction);
 
@@ -302,7 +301,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private Task<int> ResolveTotalOutgoingDamageMelee(DamageReport damageReport, CombatAction combatAction)
         {
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Melee, out var meleeFeatureEntry))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Melee, out var meleeFeatureEntry))
             {
                 var meleeDamage = MathExpression.Parse(meleeFeatureEntry.Data.InsertVariables(Unit));
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Melee damage", Number = meleeDamage });
@@ -323,7 +322,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         private int TransformDamageAmountBasedOnTargetFeatures(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageAmount)
         {
             // Cluster weapons have been affected in their damage calculation, so they will not be affected again
-            if (!combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
+            if (!combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
             {
                 // Round down, but minimum is still 1
                 var transformedDamage = Math.Max(damageAmount / 2, 1);
@@ -360,13 +359,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private List<DamagePacket> TransformDamagePacketsBasedOnWeaponFeatures(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target, CombatAction combatAction)
         {
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.ArmorPiercing, out var armorPiercingEntry))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.ArmorPiercing, out var armorPiercingEntry) && target.CanTakeCriticalHits())
             {
                 damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = armorPiercingEntry.Data, Type = SpecialDamageType.Critical });
                 damageReport.Log(new AttackLogEntry { Context = "Armor Piercing weapon feature adds a potential critical hit", Type = AttackLogEntryType.Information });
             }
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.MeleeCharge, out var chargeEntry) && target.CanTakeMotiveHits())
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeCharge, out var chargeEntry) && target.CanTakeMotiveHits())
             {
                 damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = chargeEntry.Data, Type = SpecialDamageType.Motive });
                 damageReport.Log(new AttackLogEntry { Context = "Melee charge adds a potential motive hit", Type = AttackLogEntryType.Information });

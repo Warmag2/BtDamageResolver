@@ -19,12 +19,8 @@
     "RangeAerospace": "Short",
     "Heat": 0,
     "UsesAmmo": true,
-    "SpecialDamage": {
-      "Normal": { "Data": "1", "Type": "Narc" },
-      "Special": { "Data": "1", "Type": "Narc" }
-    },
+    "SpecialDamage": { "Data": "1", "Type": "Narc" },
     "ClusterSize": 1,
-    "ClusterDamage": 0
   },
   {
     "Name": "BA Tag",
@@ -45,9 +41,6 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "SpecialDamage": {
-      "Normal": { "Data": "1", "Type": "Tag" },
-      "Special": { "Data": "1", "Type": "Tag" }
-    }
+    "SpecialDamage": { "Data": "1", "Type": "Tag" }
   }
 ]

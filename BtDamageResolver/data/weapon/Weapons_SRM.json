@@ -2,6 +2,11 @@
   {
     "Name": "SRM-2",
     "Type": "Missile",
+    "Ammo": {
+      "Normal": "Missile",
+      "Indirect": "Missile+Artemis"
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 2
@@ -20,15 +25,16 @@
     "Heat": 2,
     "UsesAmmo": true,
     "ClusterSize": 2,
-    "ClusterDamage": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "ClusterDamage": 2
   },
   {
     "Name": "SRM-4",
     "Type": "Missile",
+    "Ammo": {
+      "Normal": "Missile",
+      "Indirect": "Missile+Artemis"
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 4
@@ -47,15 +53,16 @@
     "Heat": 3,
     "UsesAmmo": true,
     "ClusterSize": 2,
-    "ClusterDamage": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "ClusterDamage": 2
   },
   {
     "Name": "SRM-6",
     "Type": "Missile",
+    "Ammo": {
+      "Normal": "Missile",
+      "Indirect": "Missile+Artemis"
+    },
+    "AmmoDefault": "Normal",
     "AttackType": "Normal",
     "Damage": {
       "Short": 6
@@ -74,104 +81,7 @@
     "Heat": 4,
     "UsesAmmo": true,
     "ClusterSize": 2,
-    "ClusterDamage": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
-  },
-  {
-    "Name": "SRM-2+Artemis",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 2
-    },
-    "DamageAerospace": {
-      "Short": 4
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
-    "Heat": 2,
-    "UsesAmmo": true,
-    "ClusterSize": 2,
-    "ClusterDamage": 2,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 2
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
-  },
-  {
-    "Name": "SRM-4+Artemis",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 4
-    },
-    "DamageAerospace": {
-      "Short": 6
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
-    "Heat": 3,
-    "UsesAmmo": true,
-    "ClusterSize": 2,
-    "ClusterDamage": 2,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 2
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
-  },
-  {
-    "Name": "SRM-6+Artemis",
-    "Type": "Missile",
-    "AttackType": "Normal",
-    "Damage": {
-      "Short": 6
-    },
-    "DamageAerospace": {
-      "Short": 10
-    },
-    "Range": {
-      "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
-    },
-    "RangeAerospace": "Short",
-    "Heat": 4,
-    "UsesAmmo": true,
-    "ClusterSize": 2,
-    "ClusterDamage": 2,
-    "ClusterBonus": {
-      "Normal": 2,
-      "Special": 2
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "ClusterDamage": 2
   },
   {
     "Name": "Streak SRM-2",
@@ -195,10 +105,7 @@
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
   },
   {
     "Name": "Streak SRM-4",
@@ -222,10 +129,7 @@
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
   },
   {
     "Name": "Streak SRM-6",
@@ -249,10 +153,7 @@
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
   },
   {
     "Name": "Clan Streak SRM-2",
@@ -276,10 +177,7 @@
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
   },
   {
     "Name": "Clan Streak SRM-4",
@@ -303,10 +201,7 @@
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
   },
   {
     "Name": "Clan Streak SRM-6",
@@ -330,9 +225,6 @@
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Type": "Streak" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Streak" } ]
   }
 ]

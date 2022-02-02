@@ -18,13 +18,7 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "3d6", "Type": "Burst" } ],
-      "Special": [ { "Data": "3d6", "Type": "Burst" } ]
-    }
+    "HitModifier": 1,
+    "SpecialFeatures": [ { "Data": "3d6", "Type": "Burst" } ]
   }
 ]

@@ -55,7 +55,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
         /// <inheritdoc />
         protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
         {
-            return Clusterize(2, damage, combatAction.Weapon.SpecialDamage[combatAction.WeaponMode]);
+            return Clusterize(2, damage, combatAction.Weapon.SpecialDamage);
         }
 
         /// <inheritdoc />
@@ -70,7 +70,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
             var damage = clusterTable.GetDamage(Unit.Troopers);
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster table reference for {Unit.Troopers} troopers", Number = damage });
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
             {
                 var clusterBonus = ResolveClusterBonus(damageReport, target, combatAction);
 
@@ -88,7 +88,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
             // Typically infantry damage does not care about the number of hits a weapon does, but battle armor unit attacks are resolved individually.
             if (combatAction.UnitType == UnitType.BattleArmor)
             {
-                if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Burst, out var battleArmorBurstFeatureEntry))
+                if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Burst, out var battleArmorBurstFeatureEntry))
                 {
                     damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Troopers with burst weapons attack infantry individually" });
                     var hits = await ResolveClusterValue(damageReport, this, combatAction, combatAction.Troopers, 0);
@@ -110,7 +110,21 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
                 return damageAmount;
             }
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Burst, out var burstFeatureEntry))
+            // Infantry units have special rules when damaging other infantry.
+            if (combatAction.UnitType == UnitType.Infantry)
+            {
+                if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Burst, out var infantryBurstFeatureEntry))
+                {
+                    var burstDamage = MathExpression.Parse(infantryBurstFeatureEntry.Data);
+                    damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Burst weapon bonus damage to infantry", Number = burstDamage });
+
+                    return damageAmount + burstDamage;
+                }
+
+                return damageAmount;
+            }
+
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Burst, out var burstFeatureEntry))
             {
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Burst fire weapon overrides infantry damage.", });
                 var burstDamage = MathExpression.Parse(burstFeatureEntry.Data);
@@ -125,14 +139,14 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
                 return missileDamage;
             }
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Pulse, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Pulse, out _))
             {
                 var pulseDamage = (int)Math.Ceiling(damageAmount / 10m) + 2;
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Transformed Pulse weapon damage to infantry", Number = pulseDamage });
                 return pulseDamage;
             }
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Cluster, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
             {
                 var clusterDamage = (int)Math.Ceiling(damageAmount / 10m) + 1;
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Transformed Cluster weapon damage to infantry", Number = clusterDamage });

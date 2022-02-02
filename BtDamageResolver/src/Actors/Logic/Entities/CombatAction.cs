@@ -50,10 +50,5 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Entities
         /// The weapon which initiated the combat action.
         /// </summary>
         public Weapon Weapon { get; set; }
-
-        /// <summary>
-        /// The weapon mode of the weapon when the combat action happened.
-        /// </summary>
-        public WeaponMode WeaponMode { get; set; }
     }
 }

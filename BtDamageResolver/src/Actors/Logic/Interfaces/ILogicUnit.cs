@@ -13,6 +13,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         #region Support methods
 
         /// <summary>
+        /// Can this unit take a critical hit.
+        /// </summary>
+        /// <returns><b>True</b> if the unit can take critical hits, and <b>false</b> otherwise.</returns>
+        bool CanTakeCriticalHits();
+
+        /// <summary>
         /// Can this unit take an EMP hit.
         /// </summary>
         /// <returns><b>True</b> if the unit can take EMP hits, and <b>false</b> otherwise.</returns>
@@ -30,7 +36,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="cover">The cover in the current firing solution.</param>
         /// <returns>The modifier to hit resolution from cover for this unit type.</returns>
         int GetCoverModifier(Cover cover);
-        
+
         /// <summary>
         /// Gets a critical damage table.
         /// </summary>
@@ -53,16 +59,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// Gets the modifier to hit resolution from weapon features against this unit type.
         /// </summary>
         /// <param name="weapon">The weapon being fired.</param>
-        /// <param name="mode">The firing mode of the weapon being fired.</param>
         /// <returns>The modifier to hit resolution from weapon features against this unit type.</returns>
-        int GetFeatureModifier(Weapon weapon, WeaponMode mode);
+        int GetFeatureModifier(Weapon weapon);
 
-        /// <summary>
-        /// Gets a the id of the unit represented by this unit logic.
-        /// </summary>
-        /// <returns>The id of the unit represented by this unit logic.</returns>
-        Guid GetId();
-        
         /// <summary>
         /// Gets the modifier to hit resolution from movement class.
         /// </summary>
@@ -83,22 +82,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         int GetMovementModifier();
 
         /// <summary>
-        /// Gets the name of the unit represented by this unit logic.
-        /// </summary>
-        /// <returns>The name of the unit represented by this unit logic.</returns>
-        string GetName();
-
-        /// <summary>
         /// Gets the type of the paper doll for this unit.
         /// </summary>
         /// <returns>The paper doll type this unit uses.</returns>
         PaperDollType GetPaperDollType();
-
-        /// <summary>
-        /// Gets the stance this unit is currently in.
-        /// </summary>
-        /// <returns>The stance this unit is in.</returns>
-        Stance GetStance();
 
         /// <summary>
         /// Gets the modifier to hit resolution from unit stance.
@@ -107,42 +94,17 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         int GetStanceModifier();
 
         /// <summary>
-        /// Gets the tonnage of the unit represented by this unit logic.
-        /// </summary>
-        /// <returns>The tonnage of the unit represented by this unit logic.</returns>
-        int GetTonnage();
-
-        /// <summary>
-        /// Gets the number of troopers of the unit represented by this unit logic.
-        /// </summary>
-        /// <returns>The number of troopers of the unit represented by this unit logic.</returns>
-        int GetTroopers();
-
-        /// <summary>
         /// Gets the modifier to hit resolution from unit type.
         /// </summary>
         /// <returns>The modifier to hit resolution from this unit type.</returns>
         int GetUnitTypeModifier();
 
         /// <summary>
-        /// Gets the unit type.
-        /// </summary>
-        /// <returns>The unit type.</returns>
-        UnitType GetUnitType();
-
-        /// <summary>
-        /// Does the unit have a specific feature.
-        /// </summary>
-        /// <param name="unitFeature">The unit feature to query.</param>
-        /// <returns><b>True</b> if the unit has the feature, <b>false</b> otherwise.</returns>
-        bool HasFeature(UnitFeature unitFeature);
-
-        /// <summary>
         /// Is the given location behind cover for this unit logic.
         /// </summary>
         /// <returns><b>True</b> if the hit is blocked by cover, and <b>false</b> otherwise.</returns>
         bool IsBlockedByCover(Cover cover, Location location);
-        
+
         /// <summary>
         /// Does this unit track heat.
         /// </summary>
@@ -155,18 +117,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="marginOfSuccess">The margin of success.</param>
         /// <returns><b>True</b> if the combat action results in a glancing blow, and <b>false</b> if it does not.</returns>
         bool IsGlancingBlow(int marginOfSuccess);
-
-        /// <summary>
-        /// Get whether the unit isNARCed or not.
-        /// </summary>
-        /// <returns><b>True</b> if the unit is NARCed, <b>false</b> otherwise.</returns>
-        bool IsNarced();
-
-        /// <summary>
-        /// Get whether the unit is tagged or not.
-        /// </summary>
-        /// <returns><b>True</b> if the unit is tagged, <b>false</b> otherwise.</returns>
-        bool IsTagged();
 
         /// <summary>
         /// Transforms a cluster roll based on unit type and possible other properties.
@@ -204,6 +154,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <returns>The transformed damage.</returns>
         Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage);
 
+        /// <summary>
+        /// A getter for the unit object of this logic.
+        /// </summary>
+        UnitEntry Unit { get; }
+
         #endregion
 
         /// <summary>
@@ -231,15 +186,23 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="selfDamage">Should the damage be marked as being done by the unit itself. If not, the instigator is left empty.</param>
         /// <returns>The damage report caused by this damage instance.</returns>
         Task<DamageReport> ResolveDamageInstance(DamageInstance damageInstance, Phase phase, bool selfDamage);
-        
+
         /// <summary>
         /// Resolves a hit modifier and logs events related to the calculation in the given damage report.
         /// </summary>
         /// <param name="attackLog">The attack log to log to.</param>
         /// <param name="target">The target unit logic.</param>
         /// <param name="weapon">The weapon used.</param>
-        /// <param name="mode">The weapon mode in use.</param>
         /// <returns>A tuple with the hit modifier and the range bracket.</returns>
-        (int targetNumber, RangeBracket rangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponMode mode);
+        (int targetNumber, RangeBracket rangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon);
+
+        /// <summary>
+        /// Resolves a hit modifier and logs events related to the calculation in the given damage report.
+        /// </summary>
+        /// <param name="attackLog">The attack log to log to.</param>
+        /// <param name="target">The target unit logic.</param>
+        /// <param name="weaponEntry">The weapon entry used.</param>
+        /// <returns>A tuple with the hit modifier and the range bracket.</returns>
+        Task<(int targetNumber, RangeBracket rangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry);
     }
 }

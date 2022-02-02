@@ -25,6 +25,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         private const string MeleeWeaponPrefix = "Melee ";
 
         public CommonData(
+            IEntityRepository<Ammo, string> ammoRepository,
             IEntityRepository<ClusterTable, string> clusterTableRepository,
             IEntityRepository<CriticalDamageTable, string> criticalDamageTableRepository,
             IEntityRepository<GameEntry, string> gameEntryRepository,
@@ -58,6 +59,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             {
                 { "Front", Direction.Front }, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top }
             };
+            MapAmmo = ammoRepository.GetAllAsync().Result.OrderBy(a => a.Name).ToDictionary(a => a.Name);
             MapClusterTable = clusterTableRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
             MapCriticalDamageTable = criticalDamageTableRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
             MapPaperDoll = paperDollRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
@@ -71,13 +73,11 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             _mapWeaponNamesVehicle.Add("Melee Charge", "Melee Charge");
         }
 
-        public Dictionary<string, UnitType> MapUnitType { get; }
-        
+        public Dictionary<string, Ammo> MapAmmo { get; }
+
         public Dictionary<string, int> MapAttackModifier { get; }
 
         public Dictionary<string, ClusterTable> MapClusterTable { get; }
-
-        //public Dictionary<string, Cover> MapCover { get; }
 
         public Dictionary<string, CriticalDamageTable> MapCriticalDamageTable { get; }
 
@@ -88,6 +88,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         public Dictionary<string, int> MapMovementAmount { get; }
 
         public Dictionary<string, PaperDoll> MapPaperDoll { get; }
+
+        public Dictionary<string, UnitType> MapUnitType { get; }
 
         public Dictionary<string, Weapon> MapWeapon { get; }
 
@@ -102,6 +104,11 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                 default:
                     return new Dictionary<string, Cover> { { "None", Cover.None } };
             }
+        }
+
+        public SortedDictionary<string, string> CreateMapWeaponAmmo(string weaponName)
+        {
+            return new SortedDictionary<string,string>(MapWeapon[weaponName].Ammo.Keys.ToDictionary(k => k));
         }
 
         public SortedDictionary<string, string> CreateMapWeaponName(UnitType type)
@@ -219,7 +226,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                     return new WeaponEntry
                     {
                         TimeStamp = DateTime.UtcNow,
-                        Mode = WeaponMode.Normal,
                         State = WeaponState.Active,
                         WeaponName = "Medium Laser"
                     };
@@ -227,7 +233,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                     return new WeaponEntry
                     {
                         TimeStamp = DateTime.UtcNow,
-                        Mode = WeaponMode.Normal,
                         State = WeaponState.Active,
                         WeaponName = "BA Machine Gun"
                     };
@@ -235,7 +240,6 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                     return new WeaponEntry
                     {
                         TimeStamp = DateTime.UtcNow,
-                        Mode = WeaponMode.Normal,
                         State = WeaponState.Active,
                         WeaponName = "Infantry Rifle Ballistic"
                     };
@@ -275,6 +279,26 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             return await _unitRepository.GetAsync(unitName);
         }
 
+        public string GetWeaponDefaultAmmo(string weaponName)
+        {
+            if (MapWeapon.ContainsKey(weaponName))
+            {
+                return MapWeapon[weaponName].AmmoDefault;
+            }
+
+            return null;
+        }
+
+        public bool WeaponHasAmmo(string weaponName)
+        {
+            if(MapWeapon.ContainsKey(weaponName))
+            {
+                return MapWeapon[weaponName].Ammo.Any();
+            }
+
+            return false;
+        }
+
         public async Task DeleteUnit(string unitName)
         {
             await _unitRepository.DeleteAsync(unitName);
@@ -286,7 +310,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
             foreach (var weaponEntry in unit.Weapons)
             {
-                var weapon = MapWeapon[weaponEntry.WeaponName];
+                var weapon = FormWeapon(weaponEntry);
                 if (unit.Type == UnitType.AerospaceDropship || unit.Type == UnitType.AerospaceFighter)
                 {
                     switch (weapon.RangeAerospace)
@@ -310,9 +334,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                 else
                 {
                     allRangeChanges.AddRange(weapon.Range.Values);
-                    if (weapon.RangeMinimum[weaponEntry.Mode] != -1)
+                    if (weapon.RangeMinimum != -1)
                     {
-                        for (int ii = 0; ii <= weapon.RangeMinimum[weaponEntry.Mode]; ii++)
+                        for (int ii = 0; ii <= weapon.RangeMinimum; ii++)
                         {
                             allRangeChanges.Add(ii);
                         }
@@ -442,6 +466,23 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
             }
 
             return pickBrackets;
+        }
+
+        public Weapon FormWeapon(WeaponEntry weaponEntry)
+        {
+            return FormWeapon(weaponEntry.WeaponName, weaponEntry.Ammo);
+        }
+
+        public Weapon FormWeapon(string weaponName, string ammoName)
+        {
+            var weapon = MapWeapon[weaponName];
+
+            if(!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.ContainsKey(ammoName))
+            {
+                return weapon.ApplyAmmo(MapAmmo[weapon.Ammo[ammoName]]);
+            }
+
+            return weapon;
         }
     }
 }

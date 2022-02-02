@@ -1,7 +1,7 @@
 [
   {
     "Name": "BA Recoilless Rifle Light",
-    "Type": "Energy",
+    "Type": "Ballistic",
     "AttackType": "Normal",
     "Damage": {
       "Short": 2
@@ -18,14 +18,11 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "1d6", "Type": "Burst" } ],
-      "Special": [ { "Data": "1d6", "Type": "Burst" } ]
-    }
+    "SpecialFeatures": [ { "Data": "1d6", "Type": "Burst" } ]
   },
   {
     "Name": "BA Recoilless Rifle Medium",
-    "Type": "Energy",
+    "Type": "Ballistic",
     "AttackType": "Normal",
     "Damage": {
       "Short": 3
@@ -42,14 +39,11 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "2d6", "Type": "Burst" } ],
-      "Special": [ { "Data": "2d6", "Type": "Burst" } ]
-    }
+    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" } ]
   },
   {
     "Name": "BA Recoilless Rifle Heavy",
-    "Type": "Energy",
+    "Type": "Ballistic",
     "AttackType": "Normal",
     "Damage": {
       "Short": 3
@@ -66,9 +60,6 @@
     },
     "RangeAerospace": "Short",
     "Heat": 0,
-    "SpecialFeatures": {
-      "Normal": [ { "Data": "2d6", "Type": "Burst" } ],
-      "Special": [ { "Data": "2d6", "Type": "Burst" } ]
-    }
+    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" } ]
   }
 ]

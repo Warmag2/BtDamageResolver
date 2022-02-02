@@ -4,6 +4,7 @@ using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
 using System;
+using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
@@ -16,8 +17,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         #region Public methods
 
+        public async Task<(int targetNumber, RangeBracket rangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry)
+        {
+            return ResolveHitModifier(attackLog, target, await FormWeapon(weaponEntry));
+        }
+
         /// <inheritdoc />
-        public (int targetNumber, RangeBracket rangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponMode mode)
+        public (int targetNumber, RangeBracket rangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon)
         {
             var modifierBase = weapon.AttackType == AttackType.Normal ? Unit.Gunnery : Unit.Piloting;
 
@@ -34,7 +40,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             var rangeBracket = GetRangeBracket(weapon);
             var modifierRange = GetRangeModifier(rangeBracket);
-            modifierRange += GetMinimumRangeModifier(weapon, mode);
+            modifierRange += GetMinimumRangeModifier(weapon);
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from range", Type = AttackLogEntryType.Calculation, Number = modifierRange });
 
@@ -42,7 +48,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target armor", Type = AttackLogEntryType.Calculation, Number = modifierArmor });
 
-            var modifierWeapon = GetWeaponModifier(weapon, mode);
+            var modifierWeapon = GetWeaponModifier(weapon);
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weapon properties", Type = AttackLogEntryType.Calculation, Number = modifierWeapon });
 
@@ -62,11 +68,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from movement direction", Type = AttackLogEntryType.Calculation, Number = modifierMovementDirection });
 
-            var modifierMovementClass = GetMovementClassModifier(target, weapon, mode);
+            var modifierMovementClass = GetMovementClassModifier(target, weapon);
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target movement class", Type = AttackLogEntryType.Calculation, Number = modifierMovementClass });
 
-            var modifierMovement = GetMovementModifierBase(target, weapon, mode);
+            var modifierMovement = GetMovementModifierBase(target, weapon);
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target movement amount", Type = AttackLogEntryType.Calculation, Number = modifierMovement });
 
@@ -74,7 +80,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from own movement", Type = AttackLogEntryType.Calculation, Number = modifierOwnMovement });
 
-            var modifierFeatures = target.GetFeatureModifier(weapon, mode);
+            var modifierFeatures = target.GetFeatureModifier(weapon);
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weapon features", Type = AttackLogEntryType.Calculation, Number = modifierFeatures });
 
@@ -115,7 +121,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         }
 
         /// <inheritdoc />
-        public virtual int GetFeatureModifier(Weapon weapon, WeaponMode mode)
+        public virtual int GetFeatureModifier(Weapon weapon)
         {
             return 0;
         }
@@ -156,7 +162,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private int GetArmorModifier(RangeBracket rangeBracket, ILogicUnit target)
         {
-            if (target.HasFeature(UnitFeature.ArmorStealth))
+            if (target.Unit.HasFeature(UnitFeature.ArmorStealth))
             {
                 switch (rangeBracket)
                 {
@@ -177,7 +183,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             if (Unit.HasFeature(UnitFeature.TargetingAntiAir))
             {
-                switch (target.GetUnitType())
+                switch (target.Unit.Type)
                 {
                     case UnitType.AerospaceCapital:
                     case UnitType.AerospaceDropship:
@@ -219,15 +225,15 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return penalty;
         }
 
-        private int GetWeaponModifier(Weapon weapon, WeaponMode mode)
+        private int GetWeaponModifier(Weapon weapon)
         {
-            return weapon.HitModifier[mode];
+            return weapon.HitModifier;
         }
 
-        private int GetMovementClassModifier(ILogicUnit target, Weapon weapon, WeaponMode mode)
+        private int GetMovementClassModifier(ILogicUnit target, Weapon weapon)
         {
             // Missile weapons ignore attacker movement modifier if the target is tagged
-            if (weapon.Type == WeaponType.Missile && target.IsTagged() && weapon.SpecialFeatures[mode].HasFeature(WeaponFeature.IndirectFire, out _))
+            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
             {
                 return 0;
             }
@@ -245,10 +251,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return 0;
         }
 
-        private int GetMovementModifierBase(ILogicUnit target, Weapon weapon, WeaponMode mode)
+        private int GetMovementModifierBase(ILogicUnit target, Weapon weapon)
         {
             // Missile weapons ignore defender movement modifier if the target is tagged
-            if (weapon.Type == WeaponType.Missile && target.IsTagged() && weapon.SpecialFeatures[mode].HasFeature(WeaponFeature.IndirectFire, out _))
+            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
             {
                 return 0;
             }
@@ -397,11 +403,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="weapon">The weapon used.</param>
         /// <param name="mode">The weapon usage mode.</param>
         /// <returns>The modifier for firing below weapon minimum range.</returns>
-        protected virtual int GetMinimumRangeModifier(Weapon weapon, WeaponMode mode)
+        protected virtual int GetMinimumRangeModifier(Weapon weapon)
         {
-            if (Unit.FiringSolution.Distance <= weapon.RangeMinimum?[mode])
+            if (Unit.FiringSolution.Distance <= weapon.RangeMinimum)
             {
-                return weapon.RangeMinimum[mode] - Unit.FiringSolution.Distance + 1;
+                return weapon.RangeMinimum - Unit.FiringSolution.Distance + 1;
             }
 
             return 0;

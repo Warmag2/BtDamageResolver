@@ -18,7 +18,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             var clusterBonus = combatAction.Weapon.Type == WeaponType.Missile ?
                 ResolveClusterBonusMissile(damageReport, target, combatAction) :
-                ResolveClusterBonusProjectile(damageReport, combatAction);
+                ResolveClusterBonusNonMissile(damageReport, target, combatAction);
 
             if (target.IsGlancingBlow(combatAction.MarginOfSuccess))
             {
@@ -34,12 +34,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             var clusterBonus = 0;
 
-            clusterBonus += combatAction.Weapon.ClusterBonus[combatAction.WeaponMode];
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from weapon", Number = combatAction.Weapon.ClusterBonus[combatAction.WeaponMode] });
+            clusterBonus += combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from weapon", Number = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket] });
 
-            if (target.HasFeature(UnitFeature.Ams))
+            if (target.Unit.HasFeature(UnitFeature.Ams))
             {
-                if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.AmsImmune, out _))
+                if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.AmsImmune, out _))
                 {
                     damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is immune to AMS defenses" });
                 }
@@ -52,13 +52,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 }
             }
 
-            if (target.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
+            if (target.Unit.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
             {
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender ECM", Number = -2 });
                 clusterBonus -= 2;
             }
 
-            if (target.IsNarced())
+            if (target.Unit.Narced)
             {
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender being NARCed", Number = 2 });
                 clusterBonus += 2;
@@ -67,29 +67,17 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return clusterBonus;
         }
 
-        private static int ResolveClusterBonusProjectile(DamageReport damageReport, CombatAction combatAction)
+        private int ResolveClusterBonusNonMissile(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
         {
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Hag, out _))
-            {
-                switch (combatAction.RangeBracket) // Only HAG has cluster bonus for projectile weapons and it is treated differently depending on range
-                {
-                    case RangeBracket.PointBlank:
-                    case RangeBracket.Short:
-                        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "HAG cluster modifier from short range", Number = 2 });
-                        return 2;
-                    case RangeBracket.Medium:
-                        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "HAG cluster modifier from normal range", Number = 0 });
-                        return 0;
-                    case RangeBracket.Long:
-                    case RangeBracket.Extreme:
-                        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "HAG cluster modifier from long range", Number = -2 });
-                        return -2;
-                    default:
-                        throw new InvalidOperationException($"RangeBracket of cluster damage calculation is invalid: {combatAction.RangeBracket}");
-                }
-            }
+            // Non-missile weapons do not care about AMS or ECM
+            var clusterBonus = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
 
-            return 0;
+            if (clusterBonus != 0)
+            {
+                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster modifier for range bracket {combatAction.RangeBracket}", Number = clusterBonus });
+            }
+            
+            return clusterBonus;
         }
 
         protected async Task<int> ResolveClusterValue(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageValue, int clusterBonus)
@@ -127,7 +115,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private int TransformClusterRollBasedOnWeaponFeatures(DamageReport damageReport, CombatAction combatAction, int clusterRoll)
         {
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Streak, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out _))
             {
                 clusterRoll = 11;
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value by a streak weapon", Number = clusterRoll });

@@ -19,16 +19,10 @@
     "RangeAerospace": "Medium",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   },
   {
     "Name": "BA Rocket Launcher 2",
@@ -50,16 +44,10 @@
     "RangeAerospace": "Medium",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   },
   {
     "Name": "BA Rocket Launcher 3",
@@ -81,16 +69,10 @@
     "RangeAerospace": "Medium",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   },
   {
     "Name": "BA Rocket Launcher 4",
@@ -112,16 +94,10 @@
     "RangeAerospace": "Medium",
     "Heat": 1,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   },
   {
     "Name": "BA Rocket Launcher 5",
@@ -143,15 +119,9 @@
     "RangeAerospace": "Medium",
     "Heat": 2,
     "UsesAmmo": true,
-    "HitModifier": {
-      "Normal": 1,
-      "Special": 1
-    },
+    "HitModifier": 1,
     "ClusterSize": 5,
     "ClusterDamage": 1,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" } ],
-      "Special": [ { "Type": "Cluster" } ]
-    }
+    "SpecialFeatures": [ { "Type": "Cluster" } ]
   }
 ]

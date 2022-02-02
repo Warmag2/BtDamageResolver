@@ -28,6 +28,13 @@
                 <FormComboBox @key="@_entryName" Options="@sortedItemDict" SelectedOption=@_entryName OnChanged="(string entryName) => OnEntityChanged(entryName)"></FormComboBox>
             </div>
             
+            @if (_selectedDataType == ResolverDataType.Weapon)
+            {
+                <div class="resolver_div_componentrow">
+                    <FormComboBox @key="@_entryName" Options="@_commonData.CreateMapWeaponAmmo(_entryName)" SelectedOption=@_commonData.GetWeaponDefaultAmmo(_entryName) OnChanged="(string ammoName) => OnAmmoChanged(ammoName)"></FormComboBox>
+                </div>
+            }
+            
             @switch (_selectedDataType)
             {
                 case ResolverDataType.ClusterTable:
@@ -43,7 +50,7 @@
                     <FormDataDisplayUnit @key=@_entryName UnitName=@_entryName OnDelete=@OnUnitDeleted></FormDataDisplayUnit>
                     break;
                 case ResolverDataType.Weapon:
-                    <FormDataDisplayWeapon @key=@_entryName WeaponName=@_entryName></FormDataDisplayWeapon>
+                    <FormDataDisplayWeapon @key=@_entryName WeaponName=@_entryName Ammo=@_ammoName></FormDataDisplayWeapon>
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -56,6 +63,7 @@
 {
     private ResolverDataType _selectedDataType = ResolverDataType.ClusterTable;
     private List<string> _items = new();
+    private string _ammoName;
     private string _entryName;
 
     protected override void OnInitialized()
@@ -87,6 +95,11 @@
         }
 
         _entryName = _items.FirstOrDefault();
+    }
+
+    private void OnAmmoChanged(string ammoName)
+    {
+        _ammoName = ammoName;
     }
 
     private void OnDataTypeChanged(ResolverDataType selectedDataType)

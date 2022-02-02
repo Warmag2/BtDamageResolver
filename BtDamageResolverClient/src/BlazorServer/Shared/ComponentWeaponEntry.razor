@@ -17,10 +17,10 @@
         <div class="resolver_div_unitinformation_data">@WeaponEntry.WeaponName</div>
     </td>
     @{
-        var specialText = WeaponEntry?.WeaponName != null ? _commonData.MapWeapon[WeaponEntry.WeaponName].ModeDescription[WeaponEntry.Mode] : string.Empty;
+        var ammoText = WeaponEntry?.Ammo == null ? "-" : WeaponEntry.Ammo;
     }
     <td>
-        <div class="resolver_div_unitinformation_data">@specialText</div>
+        <div class="resolver_div_unitinformation_data">@ammoText</div>
     </td>
 </tr>
 

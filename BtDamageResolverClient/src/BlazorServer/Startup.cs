@@ -66,6 +66,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
                 options.EnableDetailedErrors = true;
                 options.MaximumReceiveMessageSize = 1048576;
             });
+            services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
             services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
             services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
             services.AddSingleton<IEntityRepository<GameEntry, string>>(GetRedisEntityRepository<GameEntry>);

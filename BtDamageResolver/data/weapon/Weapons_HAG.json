@@ -4,11 +4,7 @@
     "Type": "Ballistic",
     "AttackType": "Normal",
     "Damage": {
-      "PointBlank": 20,
-      "Short": 20,
-      "Medium": 20,
-      "Long": 20,
-      "Extreme": 20
+      "Short": 20
     },
     "DamageAerospace": {
       "PointBlank": 16,
@@ -25,15 +21,16 @@
       "Extreme": 24
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 2,
-      "Special": 2
-    },
+    "RangeMinimum": 2,
     "Heat": 4,
     "UsesAmmo": true,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Type": "Hag" }, { "Data": "-3", "Type": "Flak" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "Hag" }, { "Data": "-3", "Type": "Flak" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
+    "ClusterBonus": {
+      "PointBlank": 2,
+      "Short": 2,
+      "Medium": 0,
+      "Long": -2,
+      "Extreme": -2
     },
     "ClusterSize": 5,
     "ClusterDamage": 1
@@ -43,11 +40,7 @@
     "Type": "Ballistic",
     "AttackType": "Normal",
     "Damage": {
-      "PointBlank": 30,
-      "Short": 30,
-      "Medium": 30,
-      "Long": 30,
-      "Extreme": 30
+      "Short": 30
     },
     "DamageAerospace": {
       "PointBlank": 24,
@@ -64,15 +57,16 @@
       "Extreme": 24
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 2,
-      "Special": 2
-    },
+    "RangeMinimum": 2,
     "Heat": 6,
     "UsesAmmo": true,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Type": "Hag" }, { "Data": "-3", "Type": "Flak" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "Hag" }, { "Data": "-3", "Type": "Flak" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
+    "ClusterBonus": {
+      "PointBlank": 2,
+      "Short": 2,
+      "Medium": 0,
+      "Long": -2,
+      "Extreme": -2
     },
     "ClusterSize": 5,
     "ClusterDamage": 1
@@ -82,11 +76,7 @@
     "Type": "Ballistic",
     "AttackType": "Normal",
     "Damage": {
-      "PointBlank": 40,
       "Short": 40,
-      "Medium": 40,
-      "Long": 40,
-      "Extreme": 40
     },
     "DamageAerospace": {
       "PointBlank": 32,
@@ -103,15 +93,16 @@
       "Extreme": 24
     },
     "RangeAerospace": "Long",
-    "RangeMinimum": {
-      "Normal": 2,
-      "Special": 2
-    },
+    "RangeMinimum": 2,
     "Heat": 8,
     "UsesAmmo": true,
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "Cluster" }, { "Type": "Hag" }, { "Data": "-3", "Type": "Flak" } ],
-      "Special": [ { "Type": "Cluster" }, { "Type": "Hag" }, { "Data": "-3", "Type": "Flak" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
+    "ClusterBonus": {
+      "PointBlank": 2,
+      "Short": 2,
+      "Medium": 0,
+      "Long": -2,
+      "Extreme": -2
     },
     "ClusterSize": 5,
     "ClusterDamage": 1

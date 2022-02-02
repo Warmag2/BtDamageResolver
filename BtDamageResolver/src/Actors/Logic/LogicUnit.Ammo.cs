@@ -24,7 +24,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             int ammoUsed;
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
             {
                 ammoUsed = MathExpression.Parse(rapidFeatureEntry.Data);
                 damageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} rate of fire multiplier for ammo usage", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
@@ -34,7 +34,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 ammoUsed = 1;
             }
 
-            if (combatAction.Weapon.SpecialFeatures[combatAction.WeaponMode].HasFeature(WeaponFeature.Streak, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out _))
             {
                 if (!combatAction.ActionHappened)
                 {

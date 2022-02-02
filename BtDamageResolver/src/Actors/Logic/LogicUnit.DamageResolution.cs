@@ -59,7 +59,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                                     damageReport.Log(new AttackLogEntry { Context = "Threat roll glancing blow modifier", Number = glancingBlowModifier, Type = AttackLogEntryType.Calculation });
                                 }
 
-                                var specialDamageEntryCriticalThreatRoll = Random.D26() + specialDamageThreatModifier + glancingBlowModifier;
+                                var specialDamageEntryCriticalThreatRoll = Math.Clamp(Random.D26() + specialDamageThreatModifier + glancingBlowModifier, 2, 12);
                                 damageReport.Log(new AttackLogEntry { Context = "Threat roll", Number = specialDamageEntryCriticalThreatRoll, Type = AttackLogEntryType.DiceRoll });
 
                                 if (criticalDamageTable.Mapping[specialDamageEntryCriticalThreatRoll].Any(c => c != CriticalDamageType.None))

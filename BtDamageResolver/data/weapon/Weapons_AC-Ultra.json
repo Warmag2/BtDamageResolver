@@ -2,6 +2,11 @@
   {
     "Name": "Ultra AC/2",
     "Type": "Ballistic",
+    "Ammo": {
+      "Single": "Blank",
+      "Rapid": "Rapid4"
+    },
+    "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
       "Short": 2
@@ -19,26 +24,17 @@
     "RangeAerospace": "Extreme",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Single",
-      "Special": "Rapid"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "4", "Type": "Rapid" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Ultra AC/5",
     "Type": "Ballistic",
+    "Ammo": {
+      "Single": "Blank",
+      "Rapid": "Rapid3"
+    },
+    "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
       "Short": 5
@@ -56,26 +52,17 @@
     "RangeAerospace": "Long",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Single",
-      "Special": "Rapid"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "3", "Type": "Rapid" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Ultra AC/10",
     "Type": "Ballistic",
+    "Ammo": {
+      "Single": "Blank",
+      "Rapid": "Rapid2"
+    },
+    "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
       "Short": 12
@@ -93,26 +80,17 @@
     "RangeAerospace": "Medium",
     "Heat": 4,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Single",
-      "Special": "Rapid"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "2", "Type": "Rapid" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Ultra AC/20",
     "Type": "Ballistic",
+    "Ammo": {
+      "Single": "Blank",
+      "Rapid": "Rapid2"
+    },
+    "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
       "Short": 20
@@ -130,26 +108,17 @@
     "RangeAerospace": "Medium",
     "Heat": 8,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Single",
-      "Special": "Rapid"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "2", "Type": "Rapid" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Clan Ultra AC/2",
     "Type": "Ballistic",
+    "Ammo": {
+      "Single": "Blank",
+      "Rapid": "Rapid4"
+    },
+    "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
       "Short": 2
@@ -167,26 +136,17 @@
     "RangeAerospace": "Extreme",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Single",
-      "Special": "Rapid"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "4", "Type": "Rapid" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Clan Ultra AC/5",
     "Type": "Ballistic",
+    "Ammo": {
+      "Single": "Blank",
+      "Rapid": "Rapid3"
+    },
+    "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
       "Short": 5
@@ -204,26 +164,17 @@
     "RangeAerospace": "Long",
     "Heat": 1,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Single",
-      "Special": "Rapid"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "3", "Type": "Rapid" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Clan Ultra AC/10",
     "Type": "Ballistic",
+    "Ammo": {
+      "Single": "Blank",
+      "Rapid": "Rapid2"
+    },
+    "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
       "Short": 12
@@ -241,26 +192,17 @@
     "RangeAerospace": "Medium",
     "Heat": 3,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Single",
-      "Special": "Rapid"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "2", "Type": "Rapid" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   },
   {
     "Name": "Clan Ultra AC/20",
     "Type": "Ballistic",
+    "Ammo": {
+      "Single": "Blank",
+      "Rapid": "Rapid2"
+    },
+    "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
       "Short": 20
@@ -278,21 +220,7 @@
     "RangeAerospace": "Medium",
     "Heat": 7,
     "UsesAmmo": true,
-    "Modes": [
-      "Normal",
-      "Special"
-    ],
-    "ModeDescription": {
-      "Normal": "Single",
-      "Special": "Rapid"
-    },
-    "HitModifier": {
-      "Normal": 0,
-      "Special": 0
-    },
-    "SpecialFeatures": {
-      "Normal": [ { "Type": "None" } ],
-      "Special": [ { "Data": "2", "Type": "Rapid" } ]
-    }
+    "HitModifier": 0,
+    "SpecialFeatures": [ { "Type": "None" } ]
   }
 ]

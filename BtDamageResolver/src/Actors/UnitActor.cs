@@ -90,13 +90,12 @@ namespace Faemiyah.BtDamageResolver.Actors
                 }
                 else
                 {
-                    var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
                     var attackLog = new AttackLog();
 
                     var logicUnitAttacker = GetUnitLogic(gameOptions);
                     var logicUnitDefender = await GetUnitLogic(gameOptions, _unitActorState.State.UnitEntry.FiringSolution.TargetUnit);
 
-                    (var targetNumber, _) = logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weapon, weaponEntry.Mode);
+                    (var targetNumber, _) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry);
 
                     targetNumberUpdates.Add(new TargetNumberUpdate
                     {
