@@ -3,6 +3,13 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 
+@{
+    if (!string.IsNullOrEmpty(WeaponName) && _commonData.MapWeapon.ContainsKey(WeaponName))
+    {
+        _weapon = _commonData.FormWeapon(WeaponName, Ammo);
+    }
+}
+
 @if (_weapon != null)
 {
     <div class="resolver_div_componentrow">
@@ -150,14 +157,6 @@
 
     [Parameter]
     public string Ammo { get; set; }
-
-    protected override void OnInitialized()
-    {
-        if (!string.IsNullOrEmpty(WeaponName) && _commonData.MapWeapon.ContainsKey(WeaponName))
-        {
-            _weapon = _commonData.FormWeapon(WeaponName, Ammo);
-        }
-    }
 
     private bool AllValuesAreEqual(Dictionary<RangeBracket, int> valueDict)
     {
