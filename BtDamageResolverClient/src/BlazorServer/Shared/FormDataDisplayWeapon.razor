@@ -1,4 +1,5 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
+@using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 
@@ -25,10 +26,17 @@
             <tr>
                 <td>Range</td>
                 <td>
-                    @foreach (var rangeBracket in _weapon.Range)
+                    @if(AllValuesAreEqual(_weapon.Range))
                     {
-                        @($"{rangeBracket.Key}: {rangeBracket.Value}")
-                        <br/>
+                        @($"All: {_weapon.Range.First().Value}")
+                    }
+                    else
+                    {
+                        foreach (var rangeBracket in _weapon.Range)
+                        {
+                            @($"{rangeBracket.Key}: {rangeBracket.Value}")
+                            <br/>
+                        }
                     }
                 </td>
             </tr>
@@ -43,20 +51,34 @@
             <tr>
                 <td>Damage</td>
                 <td>
-                    @foreach (var rangeBracket in _weapon.Damage)
+                    @if(AllValuesAreEqual(_weapon.Damage))
                     {
-                        @($"{rangeBracket.Key}: {rangeBracket.Value}")
-                        <br/>
+                        @($"All: {_weapon.Damage.First().Value}")
+                    }
+                    else
+                    {
+                        foreach (var rangeBracket in _weapon.Damage)
+                        {
+                            @($"{rangeBracket.Key}: {rangeBracket.Value}")
+                            <br/>
+                        }
                     }
                 </td>
             </tr>
             <tr>
                 <td>Damage (Aerospace)</td>
                 <td>
-                    @foreach (var rangeBracket in _weapon.DamageAerospace)
+                    @if(AllValuesAreEqual(_weapon.DamageAerospace))
                     {
-                        @($"{rangeBracket.Key}: {rangeBracket.Value}")
-                        <br/>
+                        @($"All: {_weapon.DamageAerospace.First().Value}")
+                    }
+                    else
+                    {
+                        foreach (var rangeBracket in _weapon.DamageAerospace)
+                        {
+                            @($"{rangeBracket.Key}: {rangeBracket.Value}")
+                            <br/>
+                        }
                     }
                 </td>
             </tr>
@@ -82,7 +104,20 @@
             </tr>
             <tr>
                 <td>Cluster Bonus</td>
-                <td>@_weapon.ClusterBonus</td>
+                <td>
+                    @if(AllValuesAreEqual(_weapon.ClusterBonus))
+                    {
+                        @($"All: {_weapon.ClusterBonus.First().Value}")
+                    }
+                    else
+                    {
+                        foreach (var rangeBracket in _weapon.ClusterBonus)
+                        {
+                            @($"{rangeBracket.Key}: {rangeBracket.Value}")
+                            <br/>
+                        }
+                    }
+                </td>
             </tr>
             <tr>
                 <td>Cluster Table</td>
@@ -122,5 +157,15 @@
         {
             _weapon = _commonData.FormWeapon(WeaponName, Ammo);
         }
+    }
+
+    private bool AllValuesAreEqual(Dictionary<RangeBracket, int> valueDict)
+    {
+        if (valueDict.Values.Distinct().Count() == 1)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
