@@ -18,7 +18,8 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
 
         public override string ToString()
         {
-            return $"{Type} ({Data})";
+            var dataString = Data == null ? "null" : Data;
+            return $"{Type} ({dataString})";
         }
     }
 }
