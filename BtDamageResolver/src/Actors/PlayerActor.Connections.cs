@@ -9,8 +9,12 @@ using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
+    /// <summary>
+    /// Partial class for player actor containing client connection methods.
+    /// </summary>
     public partial class PlayerActor
     {
+        /// <inheritdoc/>
         public async Task<bool> Connect(string password)
         {
             if (password == null)
@@ -57,13 +61,10 @@ namespace Faemiyah.BtDamageResolver.Actors
                 return false;
             }
 
-            if (IsConnectedToGame())
+            if (IsConnectedToGame() && !await LeaveGame(_playerActorState.State.AuthenticationToken))
             {
-                if (!await LeaveGame(_playerActorState.State.AuthenticationToken))
-                {
-                    _logger.LogWarning("Player {playerId} has failed to disconnect while signing out.", this.GetPrimaryKeyString());
-                    await SendErrorMessageToClient($"Inconsistent state. Player {this.GetPrimaryKeyString()} Unable to sign out of the active game. {_playerActorState.State.GameId}");
-                }
+                _logger.LogWarning("Player {playerId} has failed to disconnect while signing out.", this.GetPrimaryKeyString());
+                await SendErrorMessageToClient($"Inconsistent state. Player {this.GetPrimaryKeyString()} Unable to sign out of the active game. {_playerActorState.State.GameId}");
             }
 
             await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(false));
@@ -71,7 +72,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             // Log the logout to permanent store
             await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Logout, 0);
             await _playerActorState.WriteStateAsync();
-            
+
             return true;
         }
 
@@ -102,33 +103,6 @@ namespace Faemiyah.BtDamageResolver.Actors
             return await JoinGameInternal(gameId, password);
         }
 
-        private async Task<bool> JoinGameInternal(string gameId, string password)
-        {
-            var gameActor = GrainFactory.GetGrain<IGameActor>(gameId);
-
-            if (await gameActor.JoinGame(_playerActorState.State.AuthenticationToken, this.GetPrimaryKeyString(), password))
-            {
-                _logger.LogInformation("Player {id} successfully connected to the game {game}.", this.GetPrimaryKeyString(),
-                    gameId);
-                _playerActorState.State.GameId = gameId;
-                _playerActorState.State.GamePassword = password;
-                await _playerActorState.WriteStateAsync();
-
-                // When we connect to a game, the game is not guaranteed to have our state. Send it and mark all units as updated.
-                await gameActor.SendPlayerState(_playerActorState.State.AuthenticationToken, await GetPlayerState(false), _playerActorState.State.UnitEntryIds.ToList());
-                // Fetch game options on join
-                await RequestGameOptions(_playerActorState.State.AuthenticationToken);
-                // Connection state has been updated, so send it
-                await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
-
-                return true;
-            }
-
-            _logger.LogInformation("Player {id} failed to connect to the game {game}.", this.GetPrimaryKeyString(), gameId);
-
-            return false;
-        }
-
         /// <inheritdoc />
         public async Task<bool> LeaveGame(Guid authenticationToken)
         {
@@ -154,6 +128,34 @@ namespace Faemiyah.BtDamageResolver.Actors
             }
 
             _logger.LogInformation("Player {id} failed to disconnect from the {game}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
+
+            return false;
+        }
+
+        private async Task<bool> JoinGameInternal(string gameId, string password)
+        {
+            var gameActor = GrainFactory.GetGrain<IGameActor>(gameId);
+
+            if (await gameActor.JoinGame(_playerActorState.State.AuthenticationToken, this.GetPrimaryKeyString(), password))
+            {
+                _logger.LogInformation("Player {id} successfully connected to the game {game}.", this.GetPrimaryKeyString(), gameId);
+                _playerActorState.State.GameId = gameId;
+                _playerActorState.State.GamePassword = password;
+                await _playerActorState.WriteStateAsync();
+
+                // When we connect to a game, the game is not guaranteed to have our state. Send it and mark all units as updated.
+                await gameActor.SendPlayerState(_playerActorState.State.AuthenticationToken, await GetPlayerState(false), _playerActorState.State.UnitEntryIds.ToList());
+
+                // Fetch game options on join
+                await RequestGameOptions(_playerActorState.State.AuthenticationToken);
+
+                // Connection state has been updated, so send it
+                await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
+
+                return true;
+            }
+
+            _logger.LogInformation("Player {id} failed to connect to the game {game}.", this.GetPrimaryKeyString(), gameId);
 
             return false;
         }

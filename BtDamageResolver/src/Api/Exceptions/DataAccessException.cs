@@ -11,24 +11,6 @@ namespace Faemiyah.BtDamageResolver.Api.Exceptions
     public class DataAccessException : Exception
     {
         /// <summary>
-        /// The error code associated with this exception.
-        /// </summary>
-        public DataAccessErrorCode ErrorCode { get; set; }
-
-        /// <inheritdoc/>
-        protected DataAccessException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
-        {
-            ErrorCode = Enum.Parse<DataAccessErrorCode>(serializationInfo.GetString(nameof(ErrorCode)));
-        }
-
-        /// <inheritdoc/>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue(nameof(ErrorCode), ErrorCode);
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DataAccessException"/> class.
         /// </summary>
         /// <param name="errorCode">The error code for this exception.</param>
@@ -56,6 +38,28 @@ namespace Faemiyah.BtDamageResolver.Api.Exceptions
         public DataAccessException(DataAccessErrorCode errorCode, string errorMessage, Exception innerException) : base(errorMessage, innerException)
         {
             ErrorCode = errorCode;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataAccessException"/> class.
+        /// </summary>
+        /// <param name="serializationInfo">The serialization info.</param>
+        /// <param name="streamingContext">The streaming context.</param>
+        protected DataAccessException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
+        {
+            ErrorCode = Enum.Parse<DataAccessErrorCode>(serializationInfo.GetString(nameof(ErrorCode)));
+        }
+
+        /// <summary>
+        /// The error code associated with this exception.
+        /// </summary>
+        public DataAccessErrorCode ErrorCode { get; set; }
+
+        /// <inheritdoc/>
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(ErrorCode), ErrorCode);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
+﻿using System;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using System;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Entities
 {

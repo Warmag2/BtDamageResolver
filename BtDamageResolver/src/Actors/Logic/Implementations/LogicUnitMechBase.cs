@@ -1,4 +1,5 @@
-﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -6,8 +7,6 @@ using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
 {
@@ -16,8 +15,16 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
     /// </summary>
     public abstract class LogicUnitMechBase : LogicUnit
     {
-        /// <inheritdoc />
-        public LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogicUnitMechBase"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="gameOptions">The game options.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="mathExpression">The math expression parser.</param>
+        /// <param name="random">The random number generator.</param>
+        /// <param name="unit">The unit.</param>
+        protected LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }
 
@@ -43,23 +50,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         }
 
         /// <inheritdoc />
-        protected override int GetOwnMovementModifier()
-        {
-            switch (Unit.MovementClass)
-            {
-                case MovementClass.Normal:
-                    return 1;
-                case MovementClass.Fast:
-                case MovementClass.Masc:
-                    return Unit.HasFeature(UnitFeature.StabilizedWeapons) ? 1 : 2;
-                case MovementClass.Jump:
-                    return 3;
-                default:
-                    return 0;
-            }
-        }
-
-        /// <inheritdoc />
         public override PaperDollType GetPaperDollType()
         {
             return PaperDollType.Mech;
@@ -82,6 +72,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                         default:
                             return false;
                     }
+
                 case Cover.Left:
                     switch (location)
                     {
@@ -94,6 +85,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                         default:
                             return false;
                     }
+
                 case Cover.Right:
                     switch (location)
                     {
@@ -106,6 +98,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                         default:
                             return false;
                     }
+
                 case Cover.Upper:
                     switch (location)
                     {
@@ -122,6 +115,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                         default:
                             return false;
                     }
+
                 default:
                     return false;
             }
@@ -131,6 +125,23 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         public override bool IsHeatTracking()
         {
             return true;
+        }
+
+        /// <inheritdoc />
+        protected override int GetOwnMovementModifier()
+        {
+            switch (Unit.MovementClass)
+            {
+                case MovementClass.Normal:
+                    return 1;
+                case MovementClass.Fast:
+                case MovementClass.Masc:
+                    return Unit.HasFeature(UnitFeature.StabilizedWeapons) ? 1 : 2;
+                case MovementClass.Jump:
+                    return 3;
+                default:
+                    return 0;
+            }
         }
 
         /// <inheritdoc />

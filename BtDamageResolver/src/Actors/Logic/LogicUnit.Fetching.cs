@@ -1,10 +1,10 @@
-﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
@@ -13,26 +13,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
     /// </summary>
     public partial class LogicUnit
     {
-        /// <summary>
-        /// Apply ammo to a weapon
-        /// </summary>
-        /// <returns>The <see cref="Weapon"/> with the chosen ammo in the weapon entry applied, if possible.</returns>
-        protected async Task<Weapon> FormWeapon(WeaponEntry weaponEntry)
-        {
-            var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
-
-            if (!string.IsNullOrWhiteSpace(weaponEntry.Ammo) && weapon.Ammo.ContainsKey(weaponEntry.Ammo))
-            {
-                return weapon.ApplyAmmo(await GrainFactory.GetAmmoRepository().Get(weapon.Ammo[weaponEntry.Ammo]));
-            }
-
-            return weapon;
-        }
-
         /// <inheritdoc />
         public async Task<CriticalDamageTable> GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location)
         {
-            //var criticalDamageTableId = GetCriticalDamageTableName(target, criticalDamageTableType, location);
             var transformedTargetType = GetPaperDollType();
 
             Location transformedLocation;
@@ -50,6 +33,67 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             var criticalDamageTableId = CriticalDamageTable.GetIdFromProperties(transformedTargetType, criticalDamageTableType, transformedLocation);
 
             return await GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
+        }
+
+        /// <inheritdoc />
+        public async Task<DamagePaperDoll> GetDamagePaperDoll(ILogicUnit target, AttackType attackType, Direction direction, List<WeaponFeature> weaponFeatures)
+        {
+            var paperDollName = GetPaperDollNameFromAttackParameters(target, attackType, direction, GameOptions, weaponFeatures);
+            var paperDoll = await GrainFactory.GetPaperDollRepository().Get(paperDollName);
+
+            return paperDoll.GetDamagePaperDoll();
+        }
+
+        /// <summary>
+        /// Apply ammo to a weapon.
+        /// </summary>
+        /// <param name="weaponEntry">The weapon entry to base the applied weapon on.</param>
+        /// <returns>The <see cref="Weapon"/> with the chosen ammo in the weapon entry applied, if possible.</returns>
+        protected async Task<Weapon> FormWeapon(WeaponEntry weaponEntry)
+        {
+            var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
+
+            if (!string.IsNullOrWhiteSpace(weaponEntry.Ammo) && weapon.Ammo.ContainsKey(weaponEntry.Ammo))
+            {
+                return weapon.ApplyAmmo(await GrainFactory.GetAmmoRepository().Get(weapon.Ammo[weaponEntry.Ammo]));
+            }
+
+            return weapon;
+        }
+
+        /// <summary>
+        /// Transform attack type based on target properties and weapon features.
+        /// </summary>
+        /// <param name="target">The target unit logic.</param>
+        /// <param name="attackType">The attack type.</param>
+        /// <param name="weaponFeatures">The weapon features.</param>
+        /// <returns>The transformed attack type.</returns>
+        protected virtual AttackType TransformAttackType(ILogicUnit target, AttackType attackType, List<WeaponFeature> weaponFeatures)
+        {
+            // Melee attacks that are not kicks or punches use normal attack tables
+            var transformedAttackType = attackType == AttackType.Melee ? AttackType.Normal : attackType;
+
+            var targetType = target.Unit.Type;
+
+            // Punch and kick tables only exist for mechs, revert to normal for all other target types
+            switch (targetType)
+            {
+                case UnitType.Mech:
+                case UnitType.MechTripod:
+                case UnitType.MechQuad:
+                    // Punches and kicks to prone or crouched mechs can hit anywhere
+                    if (target.Unit.Stance == Stance.Prone || target.Unit.Stance == Stance.Crouch)
+                    {
+                        transformedAttackType = AttackType.Normal;
+                    }
+
+                    break;
+                default:
+                    transformedAttackType = AttackType.Normal;
+                    break;
+            }
+
+            return transformedAttackType;
         }
 
         /// <summary>
@@ -110,42 +154,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
 
             return PaperDoll.GetIdFromProperties(transformedTargetType, transformedAttackType, transformedDirection, transformedRules);
-        }
-
-        protected virtual AttackType TransformAttackType(ILogicUnit target, AttackType attackType, List<WeaponFeature> weaponFeatures)
-        {
-            // Melee attacks that are not kicks or punches use normal attack tables
-            var transformedAttackType = attackType == AttackType.Melee ? AttackType.Normal : attackType;
-
-            var targetType = target.Unit.Type;
-
-            // Punch and kick tables only exist for mechs, revert to normal for all other target types
-            switch (targetType)
-            {
-                case UnitType.Mech:
-                case UnitType.MechTripod:
-                case UnitType.MechQuad:
-                    // Punches and kicks to prone or crouched mechs can hit anywhere
-                    if(target.Unit.Stance == Stance.Prone || target.Unit.Stance == Stance.Crouch)
-                    {
-                        transformedAttackType = AttackType.Normal;
-                    }
-                    break;
-                default:
-                    transformedAttackType = AttackType.Normal;
-                    break;
-            }
-
-            return transformedAttackType;
-        }
-
-        /// <inheritdoc />
-        public async Task<DamagePaperDoll> GetDamagePaperDoll(ILogicUnit target, AttackType attackType, Direction direction, List<WeaponFeature> weaponFeatures)
-        {
-            var paperDollName = GetPaperDollNameFromAttackParameters(target, attackType, direction, GameOptions, weaponFeatures);
-            var paperDoll = await GrainFactory.GetPaperDollRepository().Get(paperDollName);
-
-            return paperDoll.GetDamagePaperDoll();
         }
     }
 }

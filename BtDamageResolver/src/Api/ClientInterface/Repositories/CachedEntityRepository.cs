@@ -12,6 +12,8 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
     /// <summary>
     /// A cached entity repository, which caches items locally and fetches from the back-end repository, if local cache is missing a value.
     /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <typeparam name="TKey">The key type.</typeparam>
     public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, TKey>
         where TEntity : class, IEntity<TKey>
         where TKey : IComparable
@@ -20,21 +22,17 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         private readonly IEntityRepository<TEntity, TKey> _repository;
         private readonly Dictionary<TKey, TEntity> _cache;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedEntityRepository{TEntity, TKey}"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="repository">The repository to cache.</param>
         public CachedEntityRepository(ILogger<CachedEntityRepository<TEntity, TKey>> logger, IEntityRepository<TEntity, TKey> repository)
         {
             _logger = logger;
             _repository = repository;
             _cache = new Dictionary<TKey, TEntity>();
             FillCache().Wait();
-        }
-
-        private async Task FillCache()
-        {
-            var items = await _repository.GetAllAsync();
-            foreach (var item in items)
-            {
-                _cache.Add(item.GetId(), item);
-            }
         }
 
         /// <inheritdoc />
@@ -83,7 +81,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
                 {
                     await _repository.DeleteAsync(key);
                     _cache.Remove(key);
-                    
+
                     return true;
                 }
 
@@ -105,7 +103,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         /// <inheritdoc />
         public Task<TEntity> GetAsync(TKey key)
         {
-            return _cache.TryGetValue(key, out var entity) ? Task.FromResult(entity) : Task.FromResult((TEntity) null);
+            return _cache.TryGetValue(key, out var entity) ? Task.FromResult(entity) : Task.FromResult((TEntity)null);
         }
 
         /// <inheritdoc />
@@ -124,7 +122,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         public List<TKey> GetAllKeys()
         {
             var keys = _repository.GetAllKeys();
-            
+
             // Update cache in this situation
             foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
             {
@@ -147,6 +145,15 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
             {
                 _logger.LogError(ex, "Could not update entity {entityName} in repository. Unknown failure.", entity.GetId());
                 throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            }
+        }
+
+        private async Task FillCache()
+        {
+            var items = await _repository.GetAllAsync();
+            foreach (var item in items)
+            {
+                _cache.Add(item.GetId(), item);
             }
         }
     }

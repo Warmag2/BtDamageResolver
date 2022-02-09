@@ -67,7 +67,9 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                     _logger.LogWarning(
                         "In Game {gameId}, unit {unitId} tried to calculate target numbers for target {targetUnitId} which does not exist or is not in the same game.",
-                        this.GetPrimaryKeyString(), unit.Id, unit.FiringSolution.TargetUnit);
+                        this.GetPrimaryKeyString(),
+                        unit.Id,
+                        unit.FiringSolution.TargetUnit);
                 }
             }
 

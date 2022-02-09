@@ -5,35 +5,51 @@ using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog.Extensions.Logging;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
+
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Faemiyah.BtDamageResolver.Common.Logging
 {
     /// <summary>
-    /// Thor specific implementation of ILoggerFactory.
+    /// Specific implementation of ILoggerFactory.
     /// Provides logging options into file system or ElasticSearch.
     /// Use extension method to enable logging in console / asp.net applications.
-    /// <see cref="FaemiyahLoggingExtensions"/>
+    /// See <see cref="FaemiyahLoggingExtensions"/>.
     /// </summary>
     public class FaemiyahLoggerFactory : ILoggerFactory, ILoggerProvider
     {
+        private static readonly SemaphoreSlim LogCreationSemaphore = new SemaphoreSlim(1, 1);
         private readonly ConcurrentDictionary<string, ILogger> _loggers;
         private readonly SerilogLoggerFactory _logFactory;
-        private static readonly SemaphoreSlim LogCreationSemaphore = new SemaphoreSlim(1, 1);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FaemiyahLoggerFactory"/> class.
+        /// </summary>
+        /// <param name="options">The logging options.</param>
         public FaemiyahLoggerFactory(IOptions<FaemiyahLoggingOptions> options)
         {
             _logFactory = new SerilogLoggerFactory(InitializeLogging(options.Value ?? new FaemiyahLoggingOptions()));
             _loggers = new ConcurrentDictionary<string, ILogger>();
         }
 
+        /// <summary>
+        /// Logs an information entry about a setting value.
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="settingKey">The setting key.</param>
+        /// <param name="settingValue">The setting value.</param>
+        public static void LogInfoSettings(ILogger logger, string settingKey, object settingValue)
+        {
+            logger.LogInformation("Settings :: {0}={1}", settingKey, settingValue);
+        }
+
+        /// <inheritdoc />
         public ILogger CreateLogger(string categoryName)
         {
             LogCreationSemaphore.Wait();
             try
             {
-
                 if (_loggers.TryGetValue(categoryName, out var storedLogger))
                 {
                     return storedLogger;
@@ -54,22 +70,24 @@ namespace Faemiyah.BtDamageResolver.Common.Logging
             }
         }
 
-        /// <summary>
-        /// Logs an information entry about a setting value.
-        /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="settingKey">The setting key.</param>
-        /// <param name="settingValue">The setting value.</param>
-        public static void LogInfoSettings(ILogger logger, string settingKey, object settingValue)
-        {
-            logger.LogInformation("Settings :: {0}={1}", settingKey, settingValue);
-        }
-
+        /// <inheritdoc />
         public void AddProvider(ILoggerProvider provider)
         {
+            // Inherited method that does not need to do anything.
         }
 
+        /// <inheritdoc />
         public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Perform cleanup.
+        /// </summary>
+        /// <param name="disposing">Is the class disposing.</param>
+        protected virtual void Dispose(bool disposing)
         {
             _loggers.Clear();
             _logFactory.Dispose();

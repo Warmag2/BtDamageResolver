@@ -14,44 +14,29 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 {
     /// <summary>
     /// A redis-based entity repository, which directly stores all entities into database 0.
-    /// Entities are stored with their string-based name, and prefixed with Resolver{EntityName}
+    /// Entities are stored with their string-based name, and prefixed with Resolver{EntityName}.
     /// </summary>
     /// <typeparam name="TEntity">The entity to store.</typeparam>
     /// <remarks>For this repository, the key of the entity key must be string-based.</remarks>
     public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         where TEntity : class, IEntity<string>
     {
-        private readonly ILogger<RedisEntityRepository<TEntity>> _logger;
         private readonly string _connectionString;
         private readonly string _keyPrefix;
+        private readonly ILogger<RedisEntityRepository<TEntity>> _logger;
         private readonly IConnectionMultiplexer _redisConnectionMultiplexer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RedisEntityRepository{TEntity}"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="connectionString">The connection string.</param>
         public RedisEntityRepository(ILogger<RedisEntityRepository<TEntity>> logger, string connectionString)
         {
             _logger = logger;
             _connectionString = connectionString;
             _keyPrefix = $"Resolver{typeof(TEntity).Name}";
             _redisConnectionMultiplexer = ConnectionMultiplexer.Connect(_connectionString);
-        }
-
-        private string GetKey(TEntity entity)
-        {
-            return $"{_keyPrefix}_{entity.GetId()}";
-        }
-
-        private string GetKey(string key)
-        {
-            return $"{_keyPrefix}_{key}";
-        }
-
-        private IDatabase GetConnection()
-        {
-            return _redisConnectionMultiplexer.GetDatabase();
-        }
-
-        private IServer GetServer()
-        {
-            return _redisConnectionMultiplexer.GetServer(_connectionString.Split(',').First());
         }
 
         /// <inheritdoc />
@@ -107,7 +92,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
             try
             {
                 var connection = GetConnection();
-                var value =  connection.StringGet(GetKey(key));
+                var value = connection.StringGet(GetKey(key));
 
                 if (value != RedisValue.Null)
                 {
@@ -139,7 +124,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
 
                 if (value != RedisValue.Null)
                 {
-                    var entity =  JsonConvert.DeserializeObject<TEntity>(value);
+                    var entity = JsonConvert.DeserializeObject<TEntity>(value);
                     return entity;
                 }
 
@@ -267,6 +252,26 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
                 _logger.LogError(ex, "Could not update entity {entityName} of type {entityType}. Unknown failure.", entity.GetId(), typeof(TEntity));
                 throw new DataAccessException(DataAccessErrorCode.OperationFailure);
             }
+        }
+
+        private IDatabase GetConnection()
+        {
+            return _redisConnectionMultiplexer.GetDatabase();
+        }
+
+        private string GetKey(TEntity entity)
+        {
+            return $"{_keyPrefix}_{entity.GetId()}";
+        }
+
+        private string GetKey(string key)
+        {
+            return $"{_keyPrefix}_{key}";
+        }
+
+        private IServer GetServer()
+        {
+            return _redisConnectionMultiplexer.GetServer(_connectionString.Split(',').First());
         }
     }
 }

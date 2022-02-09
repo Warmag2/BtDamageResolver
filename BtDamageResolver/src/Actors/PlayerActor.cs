@@ -12,6 +12,9 @@ using Orleans.Runtime;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
+    /// <summary>
+    /// Partial class for player actor containing the base implementation.
+    /// </summary>
     public partial class PlayerActor : Grain, IPlayerActor
     {
         private readonly ILogger<PlayerActor> _logger;
@@ -20,7 +23,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         private readonly IPersistentState<PlayerActorState> _playerActorState;
 
         /// <summary>
-        /// Constructor for a Player actor.
+        /// Initializes a new instance of the <see cref="PlayerActor"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="communicationServiceClient">The communication service client.</param>
@@ -49,6 +52,14 @@ namespace Faemiyah.BtDamageResolver.Actors
             return await GetPlayerState(markStateAsNew);
         }
 
+        /// <inheritdoc />
+        public async Task UnReady()
+        {
+            _playerActorState.State.IsReady = false;
+            _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
+            await _playerActorState.WriteStateAsync();
+        }
+
         private async Task<PlayerState> GetPlayerState(bool markStateAsNew)
         {
             if (markStateAsNew)
@@ -71,14 +82,6 @@ namespace Faemiyah.BtDamageResolver.Actors
             };
 
             return playerState;
-        }
-
-        /// <inheritdoc />
-        public async Task UnReady()
-        {
-            _playerActorState.State.IsReady = false;
-            _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
-            await _playerActorState.WriteStateAsync();
         }
     }
 }

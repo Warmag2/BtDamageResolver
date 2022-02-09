@@ -1,13 +1,11 @@
-﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
@@ -105,7 +103,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="inducingDamage">The inducing damage.</param>
         /// <param name="transformedDamage">The transformed damage (location, armor).</param>
         /// <param name="criticalDamageTableType">The critical damage table type.</param>
-        /// <returns></returns>
+        /// <returns>A task which finishes when the critical hit has been resolved.</returns>
         protected virtual Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
         {
             damageReport.Log(new AttackLogEntry { Context = "Unit type does not take critical hits", Type = AttackLogEntryType.Information });
@@ -118,13 +116,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="damageReport">The damage report to append to.</param>
         /// <param name="location">The location.</param>
         /// <param name="damage">The amount of damage before transformation.</param>
-        /// <returns></returns>
+        /// <returns>The transformed damage amount.</returns>
         protected virtual int TransformDamageAmountBasedOnLocation(DamageReport damageReport, Location location, int damage)
         {
             return damage;
         }
 
-        private (Location, CriticalDamageTableType) GetLocation(DamageReport damageReport, Cover cover, PaperDoll paperDoll)
+        private (Location Location, CriticalDamageTableType CriticalDamageTableType) GetLocation(DamageReport damageReport, Cover cover, PaperDoll paperDoll)
         {
             var (hitLocation, location) = RollHitLocation(damageReport, cover, paperDoll, false);
 
@@ -139,7 +137,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return (location, criticalDamageTableType);
         }
 
-        private (int hitLocation, Location location) RollHitLocation(DamageReport damageReport, Cover cover, PaperDoll paperDoll, bool forceValidHit)
+        private (int HitLocation, Location Location) RollHitLocation(DamageReport damageReport, Cover cover, PaperDoll paperDoll, bool forceValidHit)
         {
             Location location;
             int hitLocation;
@@ -196,7 +194,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 {
                     ready = true;
                 }
-            } while (!ready);
+            }
+            while (!ready);
 
             return (hitLocation, location);
         }

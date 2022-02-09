@@ -8,12 +8,25 @@ namespace Faemiyah.BtDamageResolver.Api.Enums
     [Serializable]
     public enum Stance
     {
-        Normal,     // For all units
-        Crouch,     // For mechs
-        DugIn,      // For infantry, -2 to hit
-        Prone,      // -1 to hit for infantry, various effects for mechs
-        Light,      // For infantry, only protects from burst weapons
-        Hardened,   // As above, but blocks 50% of damage
-        Heavy       // As above, but blocks 75% of damage
+        // For all units
+        Normal,
+
+        // For mechs
+        Crouch,
+
+        // For infantry, -2 to hit
+        DugIn,
+
+        // -1 to hit for infantry, various effects for mechs
+        Prone,
+
+        // For infantry, only gives no protection but provides a -1 to hit
+        Light,
+
+        // As above, but blocks 50% of damage
+        Hardened,
+
+        // As above, but blocks 75% of damage
+        Heavy
     }
 }

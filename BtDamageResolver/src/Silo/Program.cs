@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Actors.Logic;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
-using Faemiyah.BtDamageResolver.Actors.Logic;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
@@ -28,20 +28,26 @@ using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Silo
 {
+    /// <summary>
+    /// Main program class.
+    /// </summary>
     public static class Program
     {
         private static readonly ManualResetEvent SiloStopped = new(false);
-        private static ISiloHost _siloHost;
-        private static bool _siloStopping;
         private static readonly object SyncLock = new();
         private static readonly CancellationTokenSource CancellationTokenSource = new();
+        private static ISiloHost _siloHost;
+        private static bool _siloStopping;
 
+        /// <summary>
+        /// Main entry point.
+        /// </summary>
         public static void Main()
         {
             SetupApplicationShutdown();
 
             _siloHost = CreateSilo();
-            
+
             try
             {
                 _siloHost.StartAsync(CancellationTokenSource.Token).Wait(CancellationTokenSource.Token);
@@ -62,6 +68,7 @@ namespace Faemiyah.BtDamageResolver.Silo
             {
                 // Prevent the application from crashing ungracefully.
                 a.Cancel = true;
+
                 // Don't allow the following code to repeat if the user presses Ctrl+C repeatedly.
                 lock (SyncLock)
                 {
@@ -87,6 +94,7 @@ namespace Faemiyah.BtDamageResolver.Silo
             catch (Exception e)
             {
                 Console.WriteLine(e);
+
                 // If silo is in starting state, cancel the cancellation token to interrupt it.
                 CancellationTokenSource.Cancel();
             }
@@ -101,7 +109,6 @@ namespace Faemiyah.BtDamageResolver.Silo
 
             var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>();
             Console.WriteLine($"CONNECTION STRING: {clusterOptions.ConnectionString}");
-            //var loggingOptions = configuration.GetSection(Settings.LoggingOptionsBlockName).GetAsync<FaemiyahLoggingOptions>();
 
             var siloHostBuilder = new SiloHostBuilder()
                 .Configure<ClusterOptions>(options =>
@@ -143,8 +150,10 @@ namespace Faemiyah.BtDamageResolver.Silo
                 .Configure<EndpointOptions>(options =>
                 {
                     options.AdvertisedIPAddress = GetHostIp();
+
                     // The socket used for silo-to-silo will bind to this endpoint
                     options.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, clientPort);
+
                     // The socket used by the gateway will bind to this endpoint
                     options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, siloPort);
                 })
@@ -186,7 +195,8 @@ namespace Faemiyah.BtDamageResolver.Silo
             return siloHostBuilder.Build();
         }
 
-        private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
+        private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider)
+            where TType : class, IEntity<string>
         {
             var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
             if (options != null)

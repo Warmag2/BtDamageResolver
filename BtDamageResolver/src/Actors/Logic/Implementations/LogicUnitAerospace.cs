@@ -1,4 +1,8 @@
-﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
@@ -9,10 +13,6 @@ using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
 {
@@ -21,8 +21,16 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
     /// </summary>
     public abstract class LogicUnitAerospace : LogicUnit
     {
-        /// <inheritdoc />
-        public LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogicUnitAerospace"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="gameOptions">The game options.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="mathExpression">The math expression parser.</param>
+        /// <param name="random">The random number generator.</param>
+        /// <param name="unit">The unit.</param>
+        protected LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }
 
@@ -34,12 +42,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                 return MathExpression.Parse(flakFeatureEntry.Data);
             }
 
-            return 0;
-        }
-
-        /// <inheritdoc />
-        protected override int GetMinimumRangeModifier(Weapon weapon)
-        {
             return 0;
         }
 
@@ -69,6 +71,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         }
 
         /// <inheritdoc />
+        protected override int GetMinimumRangeModifier(Weapon weapon)
+        {
+            return 0;
+        }
+
+        /// <inheritdoc />
         protected override int GetOwnMovementModifier()
         {
             return Unit.MovementClass == MovementClass.OutOfControl || Unit.MovementClass == MovementClass.Fast ? 2 : 0;
@@ -78,29 +86,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         protected override RangeBracket GetRangeBracket(Weapon weapon)
         {
             return GetRangeBracketAerospace(weapon, Unit.FiringSolution.Distance);
-        }
-
-        /// <inheritdoc />
-        protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
-        {
-            // Missile weapons which do 0 damage have been shot down. Return an empty list.
-            if (combatAction.Weapon.Type == WeaponType.Missile && damage == 0)
-            {
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile weapon has been shot down and does no damage" });
-                return new List<DamagePacket>();
-            }
-
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
-            {
-                return Clusterize(5, damage, combatAction.Weapon.SpecialDamage);
-            }
-
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
-            {
-                return Clusterize((int)Math.Ceiling((decimal)damage / MathExpression.Parse(rapidFeatureEntry.Data)), damage, combatAction.Weapon.SpecialDamage);
-            }
-
-            return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage);
         }
 
         /// <inheritdoc />
@@ -127,6 +112,29 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                     Type = AttackLogEntryType.Critical
                 });
             }
+        }
+
+        /// <inheritdoc />
+        protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
+        {
+            // Missile weapons which do 0 damage have been shot down. Return an empty list.
+            if (combatAction.Weapon.Type == WeaponType.Missile && damage == 0)
+            {
+                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile weapon has been shot down and does no damage" });
+                return new List<DamagePacket>();
+            }
+
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
+            {
+                return Clusterize(5, damage, combatAction.Weapon.SpecialDamage);
+            }
+
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+            {
+                return Clusterize((int)Math.Ceiling((decimal)damage / MathExpression.Parse(rapidFeatureEntry.Data)), damage, combatAction.Weapon.SpecialDamage);
+            }
+
+            return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage);
         }
 
         /// <inheritdoc />
@@ -159,6 +167,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                         damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender ECM roll for cluster damage reduction", Number = ecmPenalty });
                         damageValue -= ecmPenalty;
                     }
+
                     break;
             }
 

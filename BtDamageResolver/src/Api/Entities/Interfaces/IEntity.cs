@@ -6,7 +6,8 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.Interfaces
     /// Base interface for an entity stored in repositories.
     /// </summary>
     /// <typeparam name="TKey">The primary key type of the entity.</typeparam>
-    public interface IEntity<TKey> where TKey : IComparable
+    public interface IEntity<TKey>
+        where TKey : IComparable
     {
         /// <summary>
         /// Gets the base identifier of the entity.

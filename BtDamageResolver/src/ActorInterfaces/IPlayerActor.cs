@@ -74,6 +74,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// <param name="authenticationToken">The authentication token.</param>
         /// <param name="unitId">The unit id to move.</param>
         /// <param name="playerId">The player to move the unit to.</param>
+        /// <returns><b>True</b> if the unit was successfully moved, <b>false</b> otherwise.</returns>
         public Task<bool> MoveUnit(Guid authenticationToken, Guid unitId, string playerId);
 
         /// <summary>
@@ -97,6 +98,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// <summary>
         /// Request a full list of damage reports from the game the player is currently connected to.
         /// </summary>
+        /// <param name="authenticationToken">The authentication token.</param>
         /// <returns><b>True</b> if the damage reports were successfully requested, <b>false</b> otherwise.</returns>
         Task<bool> RequestDamageReports(Guid authenticationToken);
 
@@ -110,6 +112,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// <summary>
         /// Request a full game state from the game the player is currently connected to.
         /// </summary>
+        /// <param name="authenticationToken">The authentication token.</param>
         /// <returns><b>True</b> if the damage reports were successfully requested, <b>false</b> otherwise.</returns>
         Task<bool> RequestGameState(Guid authenticationToken);
 
@@ -139,9 +142,9 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// Update the options for the game this player is in.
         /// </summary>
         /// <param name="authenticationToken">The authentication token.</param>
-        /// <param name="playerOptions">The game options.</param>
+        /// <param name="gameOptions">The game options.</param>
         /// <returns><b>True</b> if the options were successfully updated, <b>false</b> otherwise.</returns>
-        Task<bool> SendGameOptions(Guid authenticationToken, GameOptions playerOptions);
+        Task<bool> SendGameOptions(Guid authenticationToken, GameOptions gameOptions);
 
         /// <summary>
         /// Update the options for this player.
@@ -162,6 +165,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// <summary>
         /// Removes the ready status from this player.
         /// </summary>
+        /// <returns>A task which finishes when the player has been unreadied.</returns>
         public Task UnReady();
     }
 }

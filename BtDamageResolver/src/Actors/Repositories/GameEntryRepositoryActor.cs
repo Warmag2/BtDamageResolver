@@ -14,14 +14,20 @@ using Microsoft.Extensions.Logging;
 namespace Faemiyah.BtDamageResolver.Actors.Repositories
 {
     /// <summary>
-    /// An Game Entry repository actor, which stores the properties of different units.
+    /// An Game Entry repository actor, which stores information on ongoing games.
     /// </summary>
-    public class GameEntryRepositoryActor : ExternalRepositoryActorBase<GameEntry,string>, IGameEntryRepository
+    public class GameEntryRepositoryActor : ExternalRepositoryActorBase<GameEntry, string>, IGameEntryRepository
     {
         private readonly ICommunicationServiceClient _communicationServiceClient;
         private readonly TimeSpan _maxGameAge = TimeSpan.FromHours(Settings.MaximumGameEntryAgeHours);
 
-        public GameEntryRepositoryActor(ILogger<GameEntryRepositoryActor> logger, CachedEntityRepository<GameEntry,string> repository, ICommunicationServiceClient communicationServiceClient) : base(logger, repository)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameEntryRepositoryActor"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="repository">The repository back-end.</param>
+        /// <param name="communicationServiceClient">The communication service client.</param>
+        public GameEntryRepositoryActor(ILogger<GameEntryRepositoryActor> logger, CachedEntityRepository<GameEntry, string> repository, ICommunicationServiceClient communicationServiceClient) : base(logger, repository)
         {
             _communicationServiceClient = communicationServiceClient;
         }
@@ -30,7 +36,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories
         public override async Task<GameEntry> Get(string key)
         {
             await CleanupOldEntries();
-            
+
             return await base.Get(key);
         }
 
@@ -38,7 +44,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories
         public override async Task<List<GameEntry>> GetAll()
         {
             await CleanupOldEntries();
-            
+
             return await base.GetAll();
         }
 

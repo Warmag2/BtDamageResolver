@@ -12,15 +12,21 @@ using Microsoft.Extensions.Options;
 
 namespace Faemiyah.BtDamageResolver.Tools.DataImporter
 {
+    /// <summary>
+    /// Data importer main program class.
+    /// </summary>
     [ExcludeFromCodeCoverage]
-    public class Program
+    public static class Program
     {
         private const string LogoText = @"Faemiyah";
 
         private const string Disclaimer = "This application is intended only for internal data entry and testing.";
 
-        private static ILogger _logger;
-
+        /// <summary>
+        /// Main entry point.
+        /// </summary>
+        /// <param name="args">Command line arguments.</param>
+        /// <returns>Zero on no errors, nonzero on error.</returns>
         public static int Main(string[] args)
         {
             var configuration = GetConfiguration("DataImporterSettings.json");
@@ -28,12 +34,13 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
             var loggingOptions = Options.Create(section.Get<FaemiyahLoggingOptions>());
             var loggerFactory = new FaemiyahLoggerFactory(loggingOptions);
 
-            _logger = loggerFactory.CreateLogger("DataImporter");
-            _logger.LogInformation(LogoText);
-            _logger.LogInformation(Disclaimer);
+            var logger = loggerFactory.CreateLogger("DataImporter");
+            logger.LogInformation(LogoText);
+            logger.LogInformation(Disclaimer);
 
             var result = Parser.Default.ParseArguments<DataImportOptions>(args)
-                .MapResult(initOptions => RunDataImport(loggerFactory.CreateLogger("DataImporter"), initOptions).Result,
+                .MapResult(
+                    initOptions => RunDataImport(loggerFactory.CreateLogger("DataImporter"), initOptions).Result,
                     errs => 1);
 
             return result;

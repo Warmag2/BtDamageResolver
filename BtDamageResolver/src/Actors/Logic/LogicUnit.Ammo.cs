@@ -5,14 +5,16 @@ using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
+    /// <summary>
+    /// Partial unit logic class concerning ammo.
+    /// </summary>
     public partial class LogicUnit
     {
         /// <summary>
         /// Resolves the ammo usage of a combat action.
         /// </summary>
-        /// <param name="targetDamageReport">The damage report of the target.</param>
+        /// <param name="damageReport">The damage report of the target.</param>
         /// <param name="combatAction">The combat action to process the heat for.</param>
-        /// <returns>Nothing.</returns>
         protected void ResolveAmmo(DamageReport damageReport, CombatAction combatAction)
         {
             // All units may expend ammo when firing, so an unit type check is skipped

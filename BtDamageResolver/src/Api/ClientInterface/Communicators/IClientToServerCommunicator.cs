@@ -6,16 +6,20 @@ using Faemiyah.BtDamageResolver.Api.Options;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 {
+    /// <summary>
+    /// The client-to-server communication interface.
+    /// </summary>
     public interface IClientToServerCommunicator
     {
         /// <summary>
         /// Sends data to the server.
         /// </summary>
-        /// <param name="envelopeType">The type of the envelope.</param>
-        /// <param name="data">The data to send.</param>
         /// <remarks>
         /// Envelope type is a processing hint for the recipient.
         /// </remarks>
+        /// <param name="envelopeType">The type of the envelope.</param>
+        /// <param name="data">The data to send.</param>
+        /// <typeparam name="TType">The type of the data in the envelope.</typeparam>
         public void Send<TType>(string envelopeType, TType data);
 
         /// <summary>

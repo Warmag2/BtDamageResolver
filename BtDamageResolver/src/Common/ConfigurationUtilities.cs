@@ -12,6 +12,9 @@ using Serilog.Filters;
 
 namespace Faemiyah.BtDamageResolver.Common
 {
+    /// <summary>
+    /// Static methods for configuration handling.
+    /// </summary>
     public static class ConfigurationUtilities
     {
         private const string EnvironmentOrleansClientPort = "ORLEANS_CLIENTPORT";
@@ -30,7 +33,7 @@ namespace Faemiyah.BtDamageResolver.Common
         /// </summary>
         /// <param name="portPad">Number to add to all ports if debug environment is active. In release environments, this parameter does nothing.</param>
         /// <returns>A tuple containing the client and silo ports.</returns>
-        public static (int clientPort, int siloPort) GetSiloPortConfigurationFromEnvironment(int portPad = 0)
+        public static (int ClientPort, int SiloPort) GetSiloPortConfigurationFromEnvironment(int portPad = 0)
         {
             int clientPort = DefaultOrleansClientPort, siloPort = DefaultOrleansSiloPort;
 
@@ -133,12 +136,17 @@ namespace Faemiyah.BtDamageResolver.Common
             throw new ConfigurationException("Could not resolve an IP address for this host.");
         }
 
+        /// <summary>
+        /// Initializes the logging system.
+        /// </summary>
+        /// <param name="options">The logging options.</param>
+        /// <returns>A logging interface.</returns>
         public static ILogger InitializeLogging(FaemiyahLoggingOptions options)
         {
             var logfile = options.LogFile;
             var logLevel = options.LogLevel;
             var logLevelOrleans = options.LogLevelOrleans;
-            
+
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Is(logLevel)
                 .Enrich.With(new PropertyEnricher("ProgramName", options.ProgramName))

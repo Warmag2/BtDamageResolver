@@ -19,6 +19,9 @@ using Orleans.Runtime;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
+    /// <summary>
+    /// The unit actor.
+    /// </summary>
     public class UnitActor : Grain, IUnitActor
     {
         private readonly ILogger<UnitActor> _logger;
@@ -27,13 +30,12 @@ namespace Faemiyah.BtDamageResolver.Actors
         private readonly ILogicUnitFactory _logicUnitFactory;
 
         /// <summary>
-        /// Constructor for an Unit actor.
+        /// Initializes a new instance of the <see cref="UnitActor"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="loggingServiceClient">The logging service client.</param>
         /// <param name="unitActorState">The state object for this actor.</param>
-        /// <param name="logicCombat">The combat logic class.</param>
-        /// <param name="logicHitModifier">The specific combat logic class for hit modifier calculation.</param>
+        /// <param name="logicUnitFactory">The unit logic factory.</param>
         public UnitActor(
             ILogger<UnitActor> logger,
             ILoggingServiceClient loggingServiceClient,
@@ -72,7 +74,13 @@ namespace Faemiyah.BtDamageResolver.Actors
             return await logicUnitAttacker.ResolveCombat(logicUnitDefender);
         }
 
-        public async Task<List<TargetNumberUpdate>> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers)
+        /// <summary>
+        /// Processes the target numbers for a given unit.
+        /// </summary>
+        /// <param name="gameOptions">The game options.</param>
+        /// <param name="setBlankNumbers">Should blank numbers be set.</param>
+        /// <returns>A list of target number updates.</returns>
+        public async Task<List<TargetNumberUpdate>> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers = false)
         {
             var targetNumberUpdates = new List<TargetNumberUpdate>();
 
@@ -118,6 +126,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             return Task.FromResult(_unitActorState.State.UnitEntry);
         }
 
+        /// <inheritdoc />
         public async Task<DamageReport> ProcessDamageInstance(DamageInstance damageInstance, GameOptions gameOptions)
         {
             var logicUnit = GetUnitLogic(gameOptions);
@@ -145,7 +154,9 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             _logger.LogDebug(
                 "Discarding update event for unit {unitId}. Timestamp {stampEvent}, is older than existing timestamp {stampState}.",
-                unit.Id, unit.TimeStamp, _unitActorState.State.UpdateTimeStamp);
+                unit.Id,
+                unit.TimeStamp,
+                _unitActorState.State.UpdateTimeStamp);
             return false;
         }
 

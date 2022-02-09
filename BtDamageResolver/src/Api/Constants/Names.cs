@@ -10,8 +10,14 @@
         /// </summary>
         public const string DefaultClusterTableName = "Default";
 
+        /// <summary>
+        /// Distance variable replacement.
+        /// </summary>
         public const string ExpressionVariableNameDistance = "$distance";
-        
+
+        /// <summary>
+        /// Tonnage variable replacement.
+        /// </summary>
         public const string ExpressionVariableNameTonnage = "$tonnage";
     }
 }

@@ -4,14 +4,25 @@ using static Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver.ExpressionE
 
 namespace Faemiyah.BtDamageResolver.Tests
 {
+    /// <summary>
+    /// Tests for math expression solver.
+    /// </summary>
     [TestFixture]
     public class ExpressionTests
     {
+        /// <summary>
+        /// Test setup.
+        /// </summary>
         [SetUp]
         public void Setup()
         {
+            // Nothing to be done
         }
 
+        /// <summary>
+        /// Test for true token validity.
+        /// </summary>
+        /// <param name="input">The token to test.</param>
         [Test]
         [TestCase('d')]
         [TestCase('^')]
@@ -21,15 +32,19 @@ namespace Faemiyah.BtDamageResolver.Tests
         [TestCase('-')]
         public void Test_Token_IsAToken_ReturnsTrue(char input)
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             var result = input.IsToken();
 
-            //Assert
+            // Assert
             result.Should().BeTrue();
         }
 
+        /// <summary>
+        /// Test for false token validity.
+        /// </summary>
+        /// <param name="input">The token to test.</param>
         [Test]
         [TestCase('C')]
         [TestCase('e')]
@@ -39,14 +54,13 @@ namespace Faemiyah.BtDamageResolver.Tests
         [TestCase('0')]
         public void Test_Token_IsNotAToken_ReturnsFalse(char input)
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             var result = input.IsToken();
 
-            //Assert
+            // Assert
             result.Should().BeFalse();
         }
-
     }
 }

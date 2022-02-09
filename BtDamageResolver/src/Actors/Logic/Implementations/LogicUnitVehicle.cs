@@ -1,4 +1,5 @@
-﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
@@ -7,8 +8,6 @@ using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
 {
@@ -17,8 +16,16 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
     /// </summary>
     public abstract class LogicUnitVehicle : LogicUnit
     {
-        /// <inheritdoc />
-        public LogicUnitVehicle(ILogger<LogicUnitVehicle> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogicUnitVehicle"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="gameOptions">The game options.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="mathExpression">The math expression parser.</param>
+        /// <param name="random">The random number generator.</param>
+        /// <param name="unit">The unit.</param>
+        protected LogicUnitVehicle(ILogger<LogicUnitVehicle> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }
 
@@ -27,6 +34,18 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
         {
             return true;
         }
+
+        /// <inheritdoc />
+        public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
+        {
+            return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
+        }
+
+        /// <summary>
+        /// Gets the modifier to motive hits for this unit type.
+        /// </summary>
+        /// <returns>The modifier to motive hit application.</returns>
+        protected abstract int GetMotiveHitModifier();
 
         /// <inheritdoc />
         protected override int GetOwnMovementModifier()
@@ -42,12 +61,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                     return 0;
             }
         }
-
-        /// <summary>
-        /// Gets the modifier to motive hits for this unit type.
-        /// </summary>
-        /// <returns></returns>
-        protected abstract int GetMotiveHitModifier();
 
         /// <inheritdoc />
         protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
@@ -85,12 +98,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
                     Type = AttackLogEntryType.Critical
                 });
             }
-        }
-
-        /// <inheritdoc />
-        public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damageAmount)
-        {
-            return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damageAmount));
         }
     }
 }

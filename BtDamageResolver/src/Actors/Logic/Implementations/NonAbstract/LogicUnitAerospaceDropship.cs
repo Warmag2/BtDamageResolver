@@ -12,7 +12,15 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
     /// </summary>
     public class LogicUnitAerospaceDropship : LogicUnitAerospaceLarge
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogicUnitAerospaceDropship"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="gameOptions">The game options.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="mathExpression">The math expression parser.</param>
+        /// <param name="random">The random number generator.</param>
+        /// <param name="unit">The unit.</param>
         public LogicUnitAerospaceDropship(ILogger<LogicUnitAerospaceDropship> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }

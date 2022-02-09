@@ -7,6 +7,9 @@ using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
+    /// <summary>
+    /// A partial class for GameActor containing game tools.
+    /// </summary>
     public partial class GameActor
     {
         /// <inheritdoc />
@@ -32,14 +35,12 @@ namespace Faemiyah.BtDamageResolver.Actors
             _logger.LogInformation("In Game {gameId}, Player {playerId} successfully kicked player {playerToKickId}.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken], playerId);
 
             return Task.FromResult(true);
-
-            
         }
 
         /// <inheritdoc />
         public async Task<bool> ForceReady(Guid authenticationToken)
         {
-            if(CheckAuthentication(authenticationToken, _gameActorState.State.AdminId))
+            if (CheckAuthentication(authenticationToken, _gameActorState.State.AdminId))
             {
                 foreach (var state in _gameActorState.State.PlayerStates.Values)
                 {

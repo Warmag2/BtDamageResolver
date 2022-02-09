@@ -11,6 +11,9 @@ using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
+    /// <summary>
+    /// Partial class for player actor containing data transfer methods.
+    /// </summary>
     public partial class PlayerActor
     {
         /// <inheritdoc />
@@ -104,7 +107,9 @@ namespace Faemiyah.BtDamageResolver.Actors
                 {
                     _logger.LogInformation(
                         "Discarding update event for player {id}. Timestamp {stampEvent}, is older than existing timestamp {stampState}.",
-                        this.GetPrimaryKeyString(), playerState.TimeStamp, _playerActorState.State.UpdateTimeStamp);
+                        this.GetPrimaryKeyString(),
+                        playerState.TimeStamp,
+                        _playerActorState.State.UpdateTimeStamp);
                 }
             }
             catch (Exception ex)

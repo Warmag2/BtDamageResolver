@@ -1,23 +1,22 @@
-﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
     /// <summary>
-    /// General top-level methods for resolving combat
+    /// General top-level methods for resolving combat.
     /// </summary>
     public partial class LogicUnit
     {
         /// <inheritdoc />
         public async Task<List<DamageReport>> ResolveCombat(ILogicUnit target)
         {
-            var damageReportCombatActionPairs = new List<(DamageReport damageReport, CombatAction combatAction)>();
+            var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
 
             foreach (var weaponEntry in Unit.Weapons.Where(w => w.State == WeaponState.Active))
             {
@@ -40,7 +39,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
 
             // If we have no actions at all, return an empty list.
-            if(!damageReportCombatActionPairs.Any())
+            if (!damageReportCombatActionPairs.Any())
             {
                 return new List<DamageReport>();
             }
@@ -48,7 +47,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             var allDamageReports = new List<DamageReport>();
 
             // Add damage resolution to damage reports based on combat actions
-            foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.combatAction.Weapon.GetUsePhase()))
+            foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.CombatAction.Weapon.GetUsePhase()))
             {
                 var targetDamageReportsForPhase = new List<DamageReport>();
                 var selfDamageReportsForPhase = new List<DamageReport>();

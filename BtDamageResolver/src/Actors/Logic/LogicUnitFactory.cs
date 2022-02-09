@@ -1,4 +1,5 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+﻿using System;
+using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
@@ -6,7 +7,6 @@ using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
-using System;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
@@ -21,8 +21,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         private readonly IResolverRandom _random;
 
         /// <summary>
-        /// Constructor for unit logic factory.
+        /// Initializes a new instance of the <see cref="LogicUnitFactory"/> class.
         /// </summary>
+        /// <param name="loggerFactory">The logger factory.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="mathExpression">The math expression solver.</param>
+        /// <param name="random">The random number generator.</param>
         public LogicUnitFactory(ILoggerFactory loggerFactory, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random)
         {
             _loggerFactory = loggerFactory;
@@ -30,7 +34,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             _mathExpression = mathExpression;
             _random = random;
         }
-               
+
         /// <inheritdoc />
         public ILogicUnit CreateFrom(GameOptions gameOptions, UnitEntry unit)
         {

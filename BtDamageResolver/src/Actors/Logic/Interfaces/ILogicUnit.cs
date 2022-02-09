@@ -1,16 +1,21 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
+    /// <summary>
+    /// The interface for unit logic.
+    /// </summary>
     public interface ILogicUnit
     {
-        #region Support methods
+        /// <summary>
+        /// A getter for the unit object of this logic.
+        /// </summary>
+        UnitEntry Unit { get; }
 
         /// <summary>
         /// Can this unit take a critical hit.
@@ -102,6 +107,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <summary>
         /// Is the given location behind cover for this unit logic.
         /// </summary>
+        /// <param name="cover">The cover.</param>
+        /// <param name="location">The location.</param>
         /// <returns><b>True</b> if the hit is blocked by cover, and <b>false</b> otherwise.</returns>
         bool IsBlockedByCover(Cover cover, Location location);
 
@@ -134,14 +141,13 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// </remarks>
         /// <param name="targetDamageReport">The damage report of the target.</param>
         /// <param name="combatAction">The combat action to transform.</param>
-        /// <returns>Nothing.</returns>
         void TransformCombatAction(DamageReport targetDamageReport, CombatAction combatAction);
 
         /// <summary>
         /// Does any transformations for damage based on cover.
         /// </summary>
         /// <param name="damageReport">The damage report.</param>
-        /// <param name="damage">The amount of damage before transformation.</param>
+        /// <param name="damageAmount">The amount of damage before transformation.</param>
         /// <returns>The transformed damage.</returns>
         int TransformDamageBasedOnStance(DamageReport damageReport, int damageAmount);
 
@@ -155,16 +161,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage);
 
         /// <summary>
-        /// A getter for the unit object of this logic.
-        /// </summary>
-        UnitEntry Unit { get; }
-
-        #endregion
-
-        /// <summary>
         /// Apply given damage packets to this unit logic.
         /// </summary>
-        /// <param name="targetDamageReport">The damage report to apply the damage into.</param>
+        /// <param name="damageReport">The damage report to apply the damage into.</param>
         /// <param name="damagePackets">The damage packets.</param>
         /// <param name="firingSolution">The firing solution.</param>
         /// <param name="marginOfSuccess">The margin of success of the action which generated the damage.</param>
@@ -194,7 +193,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="target">The target unit logic.</param>
         /// <param name="weapon">The weapon used.</param>
         /// <returns>A tuple with the hit modifier and the range bracket.</returns>
-        (int targetNumber, RangeBracket rangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon);
+        (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon);
 
         /// <summary>
         /// Resolves a hit modifier and logs events related to the calculation in the given damage report.
@@ -203,6 +202,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="target">The target unit logic.</param>
         /// <param name="weaponEntry">The weapon entry used.</param>
         /// <returns>A tuple with the hit modifier and the range bracket.</returns>
-        Task<(int targetNumber, RangeBracket rangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry);
+        Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry);
     }
 }

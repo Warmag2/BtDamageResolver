@@ -15,12 +15,20 @@ using static SevenZip.Compression.LZMA.DataHelper;
 
 namespace Faemiyah.BtDamageResolver.Services
 {
+    /// <summary>
+    /// A Redis-based server-to-client communicator.
+    /// </summary>
     public class ServerToClientCommunicator : RedisServerToClientCommunicator
     {
         private readonly ILogger<ServerToClientCommunicator> _logger;
         private readonly IGrainFactory _grainFactory;
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerToClientCommunicator"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="connectionString">The Redis connection string.</param>
+        /// <param name="grainFactory">The grain factory.</param>
         public ServerToClientCommunicator(ILogger<ServerToClientCommunicator> logger, string connectionString, IGrainFactory grainFactory) : base(logger, connectionString)
         {
             _logger = logger;
@@ -28,228 +36,228 @@ namespace Faemiyah.BtDamageResolver.Services
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleConnectRequest(byte[] connectRequestData, Guid correlationId)
+        public override async Task<bool> HandleConnectRequest(byte[] connectRequest, Guid correlationId)
         {
-            var connectRequest = Unpack<ConnectRequest>(connectRequestData);
-            var (connectResult, connectValidationResult) = ValidateObject(connectRequest);
+            var unpackedConnectRequest = Unpack<ConnectRequest>(connectRequest);
+            var (connectResult, connectValidationResult) = ValidateObject(unpackedConnectRequest);
 
             if (!connectResult)
             {
-                SendErrorMessage(connectRequest.PlayerName, $"Errors: {string.Join(", ", connectValidationResult.Where(v => v.ErrorMessage != null).Select(v => v.ErrorMessage))}");
+                SendErrorMessage(unpackedConnectRequest.PlayerName, $"Errors: {string.Join(", ", connectValidationResult.Where(v => v.ErrorMessage != null).Select(v => v.ErrorMessage))}");
 
                 return false;
             }
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(connectRequest.Credentials.Name).Connect(connectRequest.Credentials.Password))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedConnectRequest.Credentials.Name).Connect(unpackedConnectRequest.Credentials.Password))
             {
-                LogWarning(connectRequest);
-            }
-          
-            return true;
-        }
-
-        /// <inheritdoc />
-        public override async Task<bool> HandleDisconnectRequest(byte[] disconnectRequestData, Guid correlationId)
-        {
-            var disconnectRequest = Unpack<DisconnectRequest>(disconnectRequestData);
-
-            if (!await _grainFactory.GetGrain<IPlayerActor>(disconnectRequest.PlayerName).Disconnect(disconnectRequest.AuthenticationToken))
-            {
-                LogWarning(disconnectRequest);
-            }
-            
-            return true;
-        }
-
-        /// <inheritdoc />
-        public override async Task<bool> HandleGetDamageReportsRequest(byte[] getDamageReportsRequestData, Guid correlationId)
-        {
-            var getDamageReportsRequest = Unpack<GetDamageReportsRequest>(getDamageReportsRequestData);
-
-            if (!await _grainFactory.GetGrain<IPlayerActor>(getDamageReportsRequest.PlayerName).RequestDamageReports(getDamageReportsRequest.AuthenticationToken))
-            {
-                LogWarning(getDamageReportsRequest);
+                LogWarning(unpackedConnectRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleGetGameOptionsRequest(byte[] getGameOptionsRequestData, Guid correlationId)
+        public override async Task<bool> HandleDisconnectRequest(byte[] disconnectRequest, Guid correlationId)
         {
-            var getGameOptionsRequest = Unpack<GetGameOptionsRequest>(getGameOptionsRequestData);
+            var unpackedDisconnectRequest = Unpack<DisconnectRequest>(disconnectRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(getGameOptionsRequest.PlayerName).RequestGameOptions(getGameOptionsRequest.AuthenticationToken))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedDisconnectRequest.PlayerName).Disconnect(unpackedDisconnectRequest.AuthenticationToken))
             {
-                LogWarning(getGameOptionsRequest);
+                LogWarning(unpackedDisconnectRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleGetGameStateRequest(byte[] getGameStateRequestData, Guid correlationId)
+        public override async Task<bool> HandleGetDamageReportsRequest(byte[] getDamageReportsRequest, Guid correlationId)
         {
-            var getGameStateRequest = Unpack<GetGameStateRequest>(getGameStateRequestData);
+            var unpackedGetDamageReportsRequest = Unpack<GetDamageReportsRequest>(getDamageReportsRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(getGameStateRequest.PlayerName).RequestGameState(getGameStateRequest.AuthenticationToken))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetDamageReportsRequest.PlayerName).RequestDamageReports(unpackedGetDamageReportsRequest.AuthenticationToken))
             {
-                LogWarning(getGameStateRequest);
+                LogWarning(unpackedGetDamageReportsRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleGetPlayerOptionsRequest(byte[] getPlayerOptionsRequestData, Guid correlationId)
+        public override async Task<bool> HandleGetGameOptionsRequest(byte[] getGameOptionsRequest, Guid correlationId)
         {
-            var getPlayerOptionsRequest = Unpack<GetPlayerOptionsRequest>(getPlayerOptionsRequestData);
+            var unpackedGetGameOptionsRequest = Unpack<GetGameOptionsRequest>(getGameOptionsRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(getPlayerOptionsRequest.PlayerName).RequestPlayerOptions(getPlayerOptionsRequest.AuthenticationToken))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetGameOptionsRequest.PlayerName).RequestGameOptions(unpackedGetGameOptionsRequest.AuthenticationToken))
             {
-                LogWarning(getPlayerOptionsRequest);
+                LogWarning(unpackedGetGameOptionsRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleForceReadyRequest(byte[] forceReadyRequestData, Guid correlationId)
+        public override async Task<bool> HandleGetGameStateRequest(byte[] getGameStateRequest, Guid correlationId)
         {
-            var forceReadyRequest = Unpack<ForceReadyRequest>(forceReadyRequestData);
+            var unpackedGetGameStateRequest = Unpack<GetGameStateRequest>(getGameStateRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(forceReadyRequest.PlayerName).ForceReady(forceReadyRequest.AuthenticationToken))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetGameStateRequest.PlayerName).RequestGameState(unpackedGetGameStateRequest.AuthenticationToken))
             {
-                LogWarning(forceReadyRequest);
+                LogWarning(unpackedGetGameStateRequest);
             }
-            
+
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleJoinGameRequest(byte[] joinGameRequestData, Guid correlationId)
+        public override async Task<bool> HandleGetPlayerOptionsRequest(byte[] getPlayerOptionsRequest, Guid correlationId)
         {
-            var joinGameRequest = Unpack<JoinGameRequest>(joinGameRequestData);
-            var (joinGameRequestResult, joinGameRequestValidationResult) = ValidateObject(joinGameRequest);
+            var unpackedGetPlayerOptionsRequest = Unpack<GetPlayerOptionsRequest>(getPlayerOptionsRequest);
+
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetPlayerOptionsRequest.PlayerName).RequestPlayerOptions(unpackedGetPlayerOptionsRequest.AuthenticationToken))
+            {
+                LogWarning(unpackedGetPlayerOptionsRequest);
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc />
+        public override async Task<bool> HandleForceReadyRequest(byte[] forceReadyRequest, Guid correlationId)
+        {
+            var unpackedForceReadyRequest = Unpack<ForceReadyRequest>(forceReadyRequest);
+
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedForceReadyRequest.PlayerName).ForceReady(unpackedForceReadyRequest.AuthenticationToken))
+            {
+                LogWarning(unpackedForceReadyRequest);
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc />
+        public override async Task<bool> HandleJoinGameRequest(byte[] joinGameRequest, Guid correlationId)
+        {
+            var unpackedJoinGameRequest = Unpack<JoinGameRequest>(joinGameRequest);
+            var (joinGameRequestResult, joinGameRequestValidationResult) = ValidateObject(unpackedJoinGameRequest);
 
             if (!joinGameRequestResult)
             {
-                SendErrorMessage(joinGameRequest.PlayerName, $"Errors: {string.Join(", ", joinGameRequestValidationResult.Where(v => v.ErrorMessage != null).Select(v => v.ErrorMessage))}");
+                SendErrorMessage(unpackedJoinGameRequest.PlayerName, $"Errors: {string.Join(", ", joinGameRequestValidationResult.Where(v => v.ErrorMessage != null).Select(v => v.ErrorMessage))}");
 
                 return false;
             }
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(joinGameRequest.PlayerName).JoinGame(joinGameRequest.AuthenticationToken, joinGameRequest.Credentials.Name, joinGameRequest.Credentials.Password))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedJoinGameRequest.PlayerName).JoinGame(unpackedJoinGameRequest.AuthenticationToken, unpackedJoinGameRequest.Credentials.Name, unpackedJoinGameRequest.Credentials.Password))
             {
-                LogWarning(joinGameRequest);
+                LogWarning(unpackedJoinGameRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleKickPlayerRequest(byte[] kickPlayerRequestData, Guid correlationId)
+        public override async Task<bool> HandleKickPlayerRequest(byte[] kickPlayerRequest, Guid correlationId)
         {
-            var kickPlayerRequest = Unpack<KickPlayerRequest>(kickPlayerRequestData);
+            var unpackedKickPlayerRequest = Unpack<KickPlayerRequest>(kickPlayerRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(kickPlayerRequest.PlayerName).KickPlayer(kickPlayerRequest.AuthenticationToken, kickPlayerRequest.PlayerToKickName))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedKickPlayerRequest.PlayerName).KickPlayer(unpackedKickPlayerRequest.AuthenticationToken, unpackedKickPlayerRequest.PlayerToKickName))
             {
-                LogWarning(kickPlayerRequest);
+                LogWarning(unpackedKickPlayerRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleLeaveGameRequest(byte[] leaveGameRequestData, Guid correlationId)
+        public override async Task<bool> HandleLeaveGameRequest(byte[] leaveGameRequest, Guid correlationId)
         {
-            var leaveGameRequest = Unpack<LeaveGameRequest>(leaveGameRequestData);
+            var unpackedLeaveGameRequest = Unpack<LeaveGameRequest>(leaveGameRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(leaveGameRequest.PlayerName).LeaveGame(leaveGameRequest.AuthenticationToken))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedLeaveGameRequest.PlayerName).LeaveGame(unpackedLeaveGameRequest.AuthenticationToken))
             {
-                LogWarning(leaveGameRequest);
+                LogWarning(unpackedLeaveGameRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleMoveUnitRequest(byte[] moveUnitRequestData, Guid correlationId)
+        public override async Task<bool> HandleMoveUnitRequest(byte[] moveUnitRequest, Guid correlationId)
         {
-            var moveUnitRequest = Unpack<MoveUnitRequest>(moveUnitRequestData);
+            var unpackedMoveUnitRequest = Unpack<MoveUnitRequest>(moveUnitRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(moveUnitRequest.PlayerName).MoveUnit(moveUnitRequest.AuthenticationToken, moveUnitRequest.UnitId, moveUnitRequest.ReceivingPlayer))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedMoveUnitRequest.PlayerName).MoveUnit(unpackedMoveUnitRequest.AuthenticationToken, unpackedMoveUnitRequest.UnitId, unpackedMoveUnitRequest.ReceivingPlayer))
             {
-                LogWarning(moveUnitRequest);
+                LogWarning(unpackedMoveUnitRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleSendDamageRequest(byte[] sendDamageInstanceRequestData, Guid correlationId)
+        public override async Task<bool> HandleSendDamageRequest(byte[] sendDamageInstanceRequest, Guid correlationId)
         {
-            var sendDamageInstanceRequest = Unpack<SendDamageInstanceRequest>(sendDamageInstanceRequestData);
+            var unpackedSendDamageInstanceRequest = Unpack<SendDamageInstanceRequest>(sendDamageInstanceRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(sendDamageInstanceRequest.PlayerName).SendDamageInstance(sendDamageInstanceRequest.AuthenticationToken, sendDamageInstanceRequest.DamageInstance))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendDamageInstanceRequest.PlayerName).SendDamageInstance(unpackedSendDamageInstanceRequest.AuthenticationToken, unpackedSendDamageInstanceRequest.DamageInstance))
             {
-                LogWarning(sendDamageInstanceRequest);
+                LogWarning(unpackedSendDamageInstanceRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleSendGameOptionsRequest(byte[] sendGameOptionsRequestData, Guid correlationId)
+        public override async Task<bool> HandleSendGameOptionsRequest(byte[] sendGameOptionsRequest, Guid correlationId)
         {
-            var sendGameOptionsRequest = Unpack<SendGameOptionsRequest>(sendGameOptionsRequestData);
+            var unpackedSendGameOptionsRequest = Unpack<SendGameOptionsRequest>(sendGameOptionsRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(sendGameOptionsRequest.PlayerName).SendGameOptions(sendGameOptionsRequest.AuthenticationToken, sendGameOptionsRequest.GameOptions))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendGameOptionsRequest.PlayerName).SendGameOptions(unpackedSendGameOptionsRequest.AuthenticationToken, unpackedSendGameOptionsRequest.GameOptions))
             {
-                LogWarning(sendGameOptionsRequest);
+                LogWarning(unpackedSendGameOptionsRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleSendPlayerOptionsRequest(byte[] sendPlayerOptionsRequestData, Guid correlationId)
+        public override async Task<bool> HandleSendPlayerOptionsRequest(byte[] sendPlayerOptionsRequest, Guid correlationId)
         {
-            var sendPlayerOptionsRequest = Unpack<SendPlayerOptionsRequest>(sendPlayerOptionsRequestData);
+            var unpackedSendPlayerOptionsRequest = Unpack<SendPlayerOptionsRequest>(sendPlayerOptionsRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(sendPlayerOptionsRequest.PlayerName).SendPlayerOptions(sendPlayerOptionsRequest.AuthenticationToken, sendPlayerOptionsRequest.PlayerOptions))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendPlayerOptionsRequest.PlayerName).SendPlayerOptions(unpackedSendPlayerOptionsRequest.AuthenticationToken, unpackedSendPlayerOptionsRequest.PlayerOptions))
             {
-                LogWarning(sendPlayerOptionsRequest);
+                LogWarning(unpackedSendPlayerOptionsRequest);
             }
 
             return true;
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleSendPlayerStateRequest(byte[] sendPlayerStateRequestData, Guid correlationId)
+        public override async Task<bool> HandleSendPlayerStateRequest(byte[] sendPlayerStateRequest, Guid correlationId)
         {
-            var sendPlayerStateRequest = Unpack<SendPlayerStateRequest>(sendPlayerStateRequestData);
+            var unpackedSendPlayerStateRequest = Unpack<SendPlayerStateRequest>(sendPlayerStateRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(sendPlayerStateRequest.PlayerName).SendPlayerState(sendPlayerStateRequest.AuthenticationToken, sendPlayerStateRequest.PlayerState))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendPlayerStateRequest.PlayerName).SendPlayerState(unpackedSendPlayerStateRequest.AuthenticationToken, unpackedSendPlayerStateRequest.PlayerState))
             {
-                LogWarning(sendPlayerStateRequest);
+                LogWarning(unpackedSendPlayerStateRequest);
             }
 
             return true;
+        }
+
+        private static (bool Success, List<ValidationResult> ValidationResults) ValidateObject(object validatedObject)
+        {
+            var validationResults = new List<ValidationResult>();
+            var result = Validator.TryValidateObject(validatedObject, new ValidationContext(validatedObject), validationResults, true);
+
+            return (result, validationResults);
         }
 
         private void LogWarning(RequestBase request)
         {
             _logger.LogWarning("Failed to handle a {type} for player {playerId}", request.GetType(), request.PlayerName);
             Send(request.PlayerName, EventNames.ErrorMessage, $"Failed to handle a {request.GetType()} for player {request.PlayerName}.");
-        }
-
-        private static (bool, List<ValidationResult>) ValidateObject(object validatedObject)
-        {
-            var validationResults = new List<ValidationResult>();
-            var result = Validator.TryValidateObject(validatedObject, new ValidationContext(validatedObject), validationResults, true);
-
-            return (result, validationResults);
         }
     }
 }

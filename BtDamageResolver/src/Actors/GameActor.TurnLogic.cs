@@ -33,13 +33,14 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
             await DistributeGameStateToPlayers();
-            
+
             // Save game actor state
             await _gameActorState.WriteStateAsync();
 
             // Log update to permanent store
             await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
-            // Remark game existence 
+
+            // Remark game existence
             await GrainFactory.GetGameEntryRepository().AddOrUpdate(
                 new GameEntry
                 {
@@ -189,7 +190,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                     heatGeneratedByThisUnit += Math.Max(3, unit.Movement);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(unit.Name, $"The movement class of the unit, {unit.MovementClass} is not handled.");
             }
 
             // Combat computer sinks 4 heat by itself

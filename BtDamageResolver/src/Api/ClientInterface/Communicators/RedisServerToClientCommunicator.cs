@@ -12,65 +12,12 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
     public abstract class RedisServerToClientCommunicator : RedisCommunicator, IServerToClientCommunicator
     {
         /// <summary>
-        /// Constructor for the Redis implementation of BtDamageResolver server-to-client communicator.
+        /// Initializes a new instance of the <see cref="RedisServerToClientCommunicator"/> class.
         /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="connectionString">The connection string for Redis.</param>
         protected RedisServerToClientCommunicator(ILogger logger, string connectionString) : base(logger, connectionString, ServerStreamAddress)
         {
-        }
-
-        /// <inheritdoc />
-        protected override async Task RunProcessorMethod(Envelope incomingEnvelope)
-        {
-            switch (incomingEnvelope.Type)
-            {
-                case RequestNames.Connect:
-                    await HandleConnectRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.Disconnect:
-                    await HandleDisconnectRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.GetDamageReports:
-                    await HandleGetDamageReportsRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.GetGameOptions:
-                    await HandleGetGameOptionsRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.GetGameState:
-                    await HandleGetGameStateRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.GetPlayerOptions:
-                    await HandleGetGameOptionsRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.ForceReady:
-                    await HandleForceReadyRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.JoinGame:
-                    await HandleJoinGameRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.KickPlayer:
-                    await HandleKickPlayerRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.LeaveGame:
-                    await HandleLeaveGameRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.MoveUnit:
-                    await HandleMoveUnitRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.SendDamageInstanceRequest:
-                    await HandleSendDamageRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.SendGameOptions:
-                    await HandleSendGameOptionsRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.SendPlayerOptions:
-                    await HandleSendPlayerOptionsRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case RequestNames.SendPlayerState:
-                    await HandleSendPlayerStateRequest(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(incomingEnvelope.Type), $"No handler defined for request type {incomingEnvelope.Type}");
-            }
         }
 
         /// <inheritdoc />
@@ -139,5 +86,60 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 
         /// <inheritdoc />
         public abstract Task<bool> HandleSendPlayerStateRequest(byte[] sendPlayerStateRequest, Guid correlationId);
+
+        /// <inheritdoc />
+        protected override async Task RunProcessorMethod(Envelope envelope)
+        {
+            switch (envelope.Type)
+            {
+                case RequestNames.Connect:
+                    await HandleConnectRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.Disconnect:
+                    await HandleDisconnectRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.GetDamageReports:
+                    await HandleGetDamageReportsRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.GetGameOptions:
+                    await HandleGetGameOptionsRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.GetGameState:
+                    await HandleGetGameStateRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.GetPlayerOptions:
+                    await HandleGetGameOptionsRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.ForceReady:
+                    await HandleForceReadyRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.JoinGame:
+                    await HandleJoinGameRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.KickPlayer:
+                    await HandleKickPlayerRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.LeaveGame:
+                    await HandleLeaveGameRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.MoveUnit:
+                    await HandleMoveUnitRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.SendDamageInstanceRequest:
+                    await HandleSendDamageRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.SendGameOptions:
+                    await HandleSendGameOptionsRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.SendPlayerOptions:
+                    await HandleSendPlayerOptionsRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                case RequestNames.SendPlayerState:
+                    await HandleSendPlayerStateRequest(envelope.Data, envelope.CorrelationId);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(envelope), $"No handler defined for request type {envelope.Type}");
+            }
+        }
     }
 }

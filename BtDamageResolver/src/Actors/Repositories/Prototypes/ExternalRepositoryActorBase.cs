@@ -20,9 +20,21 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories.Prototypes
         where TEntity : class, IEntity<TKey>
         where TKey : IComparable
     {
+        /// <summary>
+        /// The logging interface.
+        /// </summary>
         protected readonly ILogger Logger;
+
+        /// <summary>
+        /// The repository back-end.
+        /// </summary>
         protected readonly CachedEntityRepository<TEntity, TKey> Repository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExternalRepositoryActorBase{TEntity, TKey}"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="repository">The repository back-end.</param>
         protected ExternalRepositoryActorBase(ILogger logger, CachedEntityRepository<TEntity, TKey> repository)
         {
             Logger = logger;
@@ -60,7 +72,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories.Prototypes
         /// <inheritdoc />
         public virtual async Task<List<TEntity>> GetAll()
         {
-             return await Repository.GetAllAsync(); ;
+             return await Repository.GetAllAsync();
         }
 
         /// <inheritdoc />

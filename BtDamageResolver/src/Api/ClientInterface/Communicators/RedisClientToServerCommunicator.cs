@@ -12,57 +12,14 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
     /// </summary>
     public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClientToServerCommunicator
     {
-        private ChannelMessageQueue _listenedClientQueue;
-
         /// <summary>
-        /// Constructor for the Redis implementation of BtDamageResolver client-to-server communicator.
+        /// Initializes a new instance of the <see cref="RedisClientToServerCommunicator"/> class.
         /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="connectionString">The Redis connection string.</param>
+        /// <param name="playerId">The player ID to listen for events from.</param>
         protected RedisClientToServerCommunicator(ILogger logger, string connectionString, string playerId) : base(logger, connectionString, playerId)
         {
-        }
-
-        /// <inheritdoc />
-        protected override void SubscribeAdditional()
-        {
-            _listenedClientQueue = RedisSubscriber.Subscribe(ClientStreamAddress);
-            _listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
-
-            base.SubscribeAdditional();
-        }
-
-        /// <inheritdoc />
-        protected override async Task RunProcessorMethod(Envelope incomingEnvelope)
-        {
-            switch (incomingEnvelope.Type)
-            {
-                case EventNames.ConnectionResponse:
-                    await HandleConnectionResponse(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case EventNames.DamageReports:
-                    await HandleDamageReports(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case EventNames.ErrorMessage:
-                    await HandleErrorMessage(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case EventNames.GameEntries:
-                    await HandleGameEntries(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case EventNames.GameOptions:
-                    await HandleGameOptions(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case EventNames.GameState:
-                    await HandleGameState(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case EventNames.PlayerOptions:
-                    await HandlePlayerOptions(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                case EventNames.TargetNumbers:
-                    await HandleTargetNumberUpdates(incomingEnvelope.Data, incomingEnvelope.CorrelationId);
-                    break;
-                default:
-                    Logger.LogWarning("A client has sent data with unknown handling type {handlingType}.", incomingEnvelope.Type);
-                    break;
-            }
         }
 
         /// <inheritdoc />
@@ -81,7 +38,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         public abstract Task<bool> HandleErrorMessage(byte[] errorMessage, Guid correlationId);
 
         /// <inheritdoc />
-        public abstract Task<bool> HandleGameEntries(byte[] gameList, Guid correlationId);
+        public abstract Task<bool> HandleGameEntries(byte[] gameEntries, Guid correlationId);
 
         /// <inheritdoc />
         public abstract Task<bool> HandleGameOptions(byte[] gameOptions, Guid correlationId);
@@ -94,5 +51,49 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 
         /// <inheritdoc />
         public abstract Task<bool> HandleTargetNumberUpdates(byte[] targetNumbers, Guid correlationId);
+
+        /// <inheritdoc />
+        protected override async Task RunProcessorMethod(Envelope envelope)
+        {
+            switch (envelope.Type)
+            {
+                case EventNames.ConnectionResponse:
+                    await HandleConnectionResponse(envelope.Data, envelope.CorrelationId);
+                    break;
+                case EventNames.DamageReports:
+                    await HandleDamageReports(envelope.Data, envelope.CorrelationId);
+                    break;
+                case EventNames.ErrorMessage:
+                    await HandleErrorMessage(envelope.Data, envelope.CorrelationId);
+                    break;
+                case EventNames.GameEntries:
+                    await HandleGameEntries(envelope.Data, envelope.CorrelationId);
+                    break;
+                case EventNames.GameOptions:
+                    await HandleGameOptions(envelope.Data, envelope.CorrelationId);
+                    break;
+                case EventNames.GameState:
+                    await HandleGameState(envelope.Data, envelope.CorrelationId);
+                    break;
+                case EventNames.PlayerOptions:
+                    await HandlePlayerOptions(envelope.Data, envelope.CorrelationId);
+                    break;
+                case EventNames.TargetNumbers:
+                    await HandleTargetNumberUpdates(envelope.Data, envelope.CorrelationId);
+                    break;
+                default:
+                    Logger.LogWarning("A client has sent data with unknown handling type {handlingType}.", envelope.Type);
+                    break;
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void SubscribeAdditional()
+        {
+            var listenedClientQueue = RedisSubscriber.Subscribe(ClientStreamAddress);
+            listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
+
+            base.SubscribeAdditional();
+        }
     }
 }

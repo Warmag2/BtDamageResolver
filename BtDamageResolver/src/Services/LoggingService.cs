@@ -28,7 +28,17 @@ namespace Faemiyah.BtDamageResolver.Services
         private readonly ConcurrentQueue<GameLogEntry> _gameLogEntries;
         private readonly ConcurrentQueue<PlayerLogEntry> _playerLogEntries;
         private readonly ConcurrentQueue<UnitLogEntry> _unitLogEntries;
-        
+        private bool _writerActive;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingService"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="clusterOptions">The cluster options.</param>
+        /// <param name="loggingOptions">The logging options.</param>
+        /// <param name="grainId">The grain ID.</param>
+        /// <param name="silo">The silo.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         public LoggingService(
             ILogger<LoggingService> logger,
             IOptions<FaemiyahClusterOptions> clusterOptions,
@@ -48,15 +58,57 @@ namespace Faemiyah.BtDamageResolver.Services
         /// <inheritdoc />
         public override Task Start()
         {
+            _writerActive = true;
             Task.Run(LogWriteLoop);
             _logger.LogInformation("{service} running log writing loop.", this.GetType());
 
             return base.Start();
         }
 
+        /// <inheritdoc />
+        public override Task Stop()
+        {
+            _writerActive = false;
+
+            return base.Stop();
+        }
+
+        /// <inheritdoc />
+        public Task LogGameAction(DateTime timeStamp, string gameId, GameActionType gameActionType, int actionData)
+        {
+            if (_loggingOptions.LogToDatabase)
+            {
+                _gameLogEntries.Enqueue(new GameLogEntry { ActionData = actionData, ActionType = gameActionType, GameId = gameId, TimeStamp = timeStamp });
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public Task LogPlayerAction(DateTime timeStamp, string userId, PlayerActionType playerActionType, int actionData)
+        {
+            if (_loggingOptions.LogToDatabase)
+            {
+                _playerLogEntries.Enqueue(new PlayerLogEntry { ActionData = actionData, ActionType = playerActionType, PlayerId = userId, TimeStamp = timeStamp });
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public Task LogUnitAction(DateTime timeStamp, string unitId, UnitActionType unitActionType, int actionData)
+        {
+            if (_loggingOptions.LogToDatabase)
+            {
+                _unitLogEntries.Enqueue(new UnitLogEntry { ActionData = actionData, ActionType = unitActionType, UnitId = unitId, TimeStamp = timeStamp });
+            }
+
+            return Task.CompletedTask;
+        }
+
         private async Task LogWriteLoop()
         {
-            while (true)
+            while (_writerActive)
             {
                 if (_gameLogEntries.IsEmpty && _playerLogEntries.IsEmpty && _unitLogEntries.IsEmpty)
                 {
@@ -84,39 +136,6 @@ namespace Faemiyah.BtDamageResolver.Services
                     }
                 }
             }
-        }
-
-        /// <inheritdoc />
-        public Task LogGameAction(DateTime timeStamp, string gameId, GameActionType gameActionType, int actionData)
-        {
-            if (_loggingOptions.LogToDatabase)
-            {
-                _gameLogEntries.Enqueue(new GameLogEntry {ActionData = actionData, ActionType = gameActionType, GameId = gameId, TimeStamp = timeStamp});
-            }
-
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
-        public Task LogPlayerAction(DateTime timeStamp, string userId, PlayerActionType playerActionType, int actionData)
-        {
-            if (_loggingOptions.LogToDatabase)
-            {
-                _playerLogEntries.Enqueue(new PlayerLogEntry {ActionData = actionData, ActionType = playerActionType, PlayerId = userId, TimeStamp = timeStamp});
-            }
-
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
-        public Task LogUnitAction(DateTime timeStamp, string unitId, UnitActionType unitActionType, int actionData)
-        {
-            if (_loggingOptions.LogToDatabase)
-            {
-                _unitLogEntries.Enqueue(new UnitLogEntry { ActionData = actionData, ActionType = unitActionType, UnitId = unitId, TimeStamp = timeStamp });
-            }
-
-            return Task.CompletedTask;
         }
     }
 }

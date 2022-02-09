@@ -6,22 +6,55 @@
     /// </summary>
     public enum UnitFeature
     {
-        Ams,                        // Unit has an AMS missile defense system
-        ArmorHeatResistant,         // Heat resistant armor negates extra damage from heat weapons to heat-vulnerable units
-        ArmorStealth,               // Stealth armor bestows -1 to hit from medium and -2 to hit from long range
-        Bap,                        // Unit has a beagle active probe
-        BattleFists,                // Bonus of 1 to hit in melee
-        CombatComputer,             // Always generates 4 points less heat
-        Ecm,                        // Unit has ECM
-        Masc,                       // Unit has MASC
-        NarrowLowProfile,           // Half damage from glancing cluster shots (hit exactly at target value)
-        NimbleJumper,               // Jumping provides 1 more evasion bonus
-        ReinforcedLegs,             // Half damage to legs from DFAs
-        StabilizedWeapons,          // Running only gives -1 to hit
-        TargetingAntiAir,           // Bonus of 2 to hit air units
-        TargetingExtremeRange,      // Bonus of 1 to hit at extreme range
-        TargetingLongRange,         // Bonus of 1 to hit at long range
-        TargetingMediumRange,       // Bonus of 1 to hit at medium range
-        TargetingShortRange         // Bonus of 1 to hit at short range
+        // Unit has an AMS missile defense system
+        Ams,
+
+        // Heat resistant armor negates extra damage from heat weapons to heat-vulnerable units
+        ArmorHeatResistant,
+
+        // Stealth armor bestows -1 to hit from medium and -2 to hit from long range
+        ArmorStealth,
+
+        // Unit has a beagle active probe
+        Bap,
+
+        // Bonus of 1 to hit in melee
+        BattleFists,
+
+        // Always generates 4 points less heat
+        CombatComputer,
+
+        // Unit has ECM
+        Ecm,
+
+        // Unit has MASC
+        Masc,
+
+        // Half damage from glancing cluster shots (hit exactly at target value)
+        NarrowLowProfile,
+
+        // Jumping provides 1 more evasion bonus
+        NimbleJumper,
+
+        // Half damage to legs from DFAs
+        ReinforcedLegs,
+
+        // Running only gives -1 to hit
+        StabilizedWeapons,
+
+        // Bonus of 2 to hit air units
+        TargetingAntiAir,
+
+        // Bonus of 1 to hit at extreme range
+        TargetingExtremeRange,
+
+        // Bonus of 1 to hit at long range
+        TargetingLongRange,
+
+        // Bonus of 1 to hit at medium range
+        TargetingMediumRange,
+
+        // Bonus of 1 to hit at short range
+        TargetingShortRange
     }
 }

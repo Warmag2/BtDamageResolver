@@ -1,12 +1,9 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+﻿using System;
+using System.Collections.Generic;
+using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
@@ -26,13 +23,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         protected virtual List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
         {
             // Heat weapons are cluster weapons for vulnerable unit types
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Heat, out _))
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Heat, out _) && !target.IsHeatTracking())
             {
-                if(!target.IsHeatTracking())
-                {
-                    damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Heat weapon acts as a cluster weapon against targeted unit" });
-                    return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage);
-                }
+                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Heat weapon acts as a cluster weapon against targeted unit" });
+                return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage);
             }
 
             if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
@@ -50,6 +44,14 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage);
         }
 
+        /// <summary>
+        /// Clusterize a hit.
+        /// </summary>
+        /// <param name="clusterSize">The cluster size.</param>
+        /// <param name="totalDamage">The total damage.</param>
+        /// <param name="specialDamage">Special damage entry, if any.</param>
+        /// <param name="onlyApplySpecialDamageOnce">Apply special damage entry to each cluster hit or only the first.</param>
+        /// <returns>A list of damage packets representing the clusterization.</returns>
         protected List<DamagePacket> Clusterize(int clusterSize, int totalDamage, SpecialDamageEntry specialDamage, bool onlyApplySpecialDamageOnce = true)
         {
             var damagePackets = new List<DamagePacket>();
@@ -61,7 +63,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                 // Typically we only the first cluster hit applies the special damage entry, if any, so clustering does not multiply any special damage
                 var clusterSpecialDamageEntry = first && onlyApplySpecialDamageOnce
-                    ? new List<SpecialDamageEntry> {
+                    ? new List<SpecialDamageEntry>
+                    {
                         new SpecialDamageEntry
                         {
                             Data = MathExpression.Parse(specialDamage.Data).ToString(),

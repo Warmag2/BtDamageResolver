@@ -1,4 +1,6 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -7,8 +9,6 @@ using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
 {
@@ -17,7 +17,15 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
     /// </summary>
     public class LogicUnitBattleArmor : LogicUnitTrooper
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogicUnitBattleArmor"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="gameOptions">The game options.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="mathExpression">The math expression parser.</param>
+        /// <param name="random">The random number generator.</param>
+        /// <param name="unit">The unit.</param>
         public LogicUnitBattleArmor(ILogger<LogicUnitBattleArmor> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }
@@ -26,12 +34,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
         public override PaperDollType GetPaperDollType()
         {
             return PaperDollType.BattleArmor;
-        }
-
-        /// <inheritdoc />
-        protected override int GetRangeModifierPointBlank()
-        {
-            return 0;
         }
 
         /// <inheritdoc />
@@ -46,6 +48,24 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
                 default:
                     return 0;
             }
+        }
+
+        /// <inheritdoc />
+        public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
+        {
+            if (Unit.HasFeature(UnitFeature.ArmorHeatResistant))
+            {
+                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Heat-inflicting weapon bonus damage negated by heat-resistant armor" });
+                return Task.FromResult(damage);
+            }
+
+            return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
+        }
+
+        /// <inheritdoc />
+        protected override int GetRangeModifierPointBlank()
+        {
+            return 0;
         }
 
         /// <inheritdoc />
@@ -76,10 +96,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
                 var clusterBonus = ResolveClusterBonus(damageReport, target, combatAction);
 
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total cluster modifier", Number = clusterBonus });
+
                 // The cluster damage reference value is the cluster value of all the troopers combined
                 var clusterDamage = combatAction.Weapon.Damage[combatAction.RangeBracket] * Unit.Troopers;
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total cluster value from all troopers", Number = clusterDamage });
-                return combatAction.Weapon.ClusterDamage*(await ResolveClusterValue(damageReport, target, combatAction, clusterDamage, clusterBonus));
+                return combatAction.Weapon.ClusterDamage * (await ResolveClusterValue(damageReport, target, combatAction, clusterDamage, clusterBonus));
             }
 
             // Default damage calculation path if we did not have a cluster weapon
@@ -89,18 +110,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
             var damage = combatAction.Weapon.Damage[combatAction.RangeBracket] * hits;
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total attack damage value", Number = damage });
             return damage;
-        }
-
-        /// <inheritdoc />
-        public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damageAmount)
-        {
-            if (Unit.HasFeature(UnitFeature.ArmorHeatResistant))
-            {
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Heat-inflicting weapon bonus damage negated by heat-resistant armor" });
-                return Task.FromResult(damageAmount);
-            }
-
-            return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damageAmount));
         }
     }
 }

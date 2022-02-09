@@ -14,13 +14,13 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
     public class UnitEntry : Unit
     {
         /// <summary>
-        /// Base constructor for an unit entry.
+        /// Initializes a new instance of the <see cref="UnitEntry"/> class.
         /// </summary>
         public UnitEntry()
         {
             TimeStamp = DateTime.UtcNow;
             Id = Guid.NewGuid();
-            
+
             Features = new HashSet<UnitFeature>();
             FiringSolution = new FiringSolution();
             Weapons = new List<WeaponEntry>();
@@ -32,7 +32,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// The last update time of this unit.
         /// </summary>
         public DateTime TimeStamp { get; set; }
-        
+
         /// <summary>
         /// Has this unit been marked ready.
         /// </summary>
@@ -57,14 +57,14 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// Is this unit currently narced.
         /// </summary>
         public bool Narced { get; set; }
-        
+
         /// <summary>
         /// Is this unit currently tagged.
         /// </summary>
         public bool Tagged { get; set; }
 
         /// <summary>
-        /// The current movement class 
+        /// The current movement class.
         /// </summary>
         public MovementClass MovementClass { get; set; }
 
@@ -95,7 +95,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// <summary>
         /// Does this unit track heat.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Is the unit a heat-tracking unit.</returns>
         public bool IsHeatTracking()
         {
             switch (Type)
@@ -111,8 +111,9 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         }
 
         /// <summary>
-        /// The penalty to speed from heat.
+        /// Gets the penalty to attacks from heat.
         /// </summary>
+        /// <returns>The penalty to attacks from unit heat.</returns>
         public int GetHeatAttackPenalty()
         {
             if (!IsHeatTracking())
@@ -146,8 +147,9 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         }
 
         /// <summary>
-        /// The penalty to speed from heat.
+        /// Gets the penalty to speed from heat.
         /// </summary>
+        /// <returns>The penalty to speed from unit heat.</returns>
         public int GetHeatSpeedPenalty()
         {
             if (!IsHeatTracking())
@@ -186,8 +188,9 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         }
 
         /// <summary>
-        /// The difficulty of the ammo explosion roll, based on heat.
+        /// Gets the difficulty of the ammo explosion roll, based on heat.
         /// </summary>
+        /// <returns>The difficulty level of an ammo explosion roll for the current heat.</returns>
         public int GetHeatAmmoExplosionDifficulty()
         {
             if (!IsHeatTracking())
@@ -214,8 +217,9 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         }
 
         /// <summary>
-        /// The difficulty of the shutdown, based on heat.
+        /// Gets the difficulty of the shutdown, based on heat.
         /// </summary>
+        /// <returns>The difficulty level of the shutdown roll for current heat.</returns>
         public int GetHeatShutdownDifficulty()
         {
             if (!IsHeatTracking())
@@ -254,6 +258,9 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// <summary>
         /// The current ground or air speed of this unit, when moving at normal speed.
         /// </summary>
+        /// <param name="movementClass">The movement class.</param>
+        /// <param name="accountForHeat">Account for heat.</param>
+        /// <returns>The current maximum speed of this unit.</returns>
         public int GetCurrentSpeed(MovementClass movementClass, bool accountForHeat = true)
         {
             switch (movementClass)
@@ -274,11 +281,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
                 default:
                     throw new ArgumentOutOfRangeException(nameof(movementClass), movementClass, null);
             }
-        }
-
-        private int GetCurrentSpeedInternal(bool accountForHeat = true)
-        {
-            return accountForHeat ? Math.Max(Speed - GetHeatSpeedPenalty(), 1) : Speed;
         }
 
         /// <summary>
@@ -322,29 +324,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
             };
         }
 
-        private string GenerateName(string name)
-        {
-            var numbersAtEndOfString = name.ToArray().Reverse().TakeWhile(char.IsNumber).Reverse().ToArray();
-
-            return numbersAtEndOfString.Any() ? $"{name.TrimEnd(numbersAtEndOfString)}{int.Parse(string.Concat(numbersAtEndOfString)) + 1}" : $"{name} 2";
-        }
-
-        /// <summary>
-        /// Creates an <see cref="Unit"/> based on this unit.
-        /// </summary>
-        /// <remarks>
-        /// No references are copied, all entities in the new object are new ones.
-        /// </remarks>
-        /// <returns>An <see cref="Unit"/> based on this unit.</returns>
-        public Unit ToUnit()
-        {
-            var copy = Copy();
-            // We want to keep the name because Copy() generates a new one
-            copy.Name = Name;
-
-            return copy;
-        }
-
         /// <summary>
         /// Imports the contents of a given <see cref="Unit"/> into this unit.
         /// </summary>
@@ -361,6 +340,35 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
             Tonnage = unit.Tonnage;
             Troopers = unit.Troopers;
             Weapons = Weapons.Select(w => w.Copy()).ToList();
+        }
+
+        /// <summary>
+        /// Creates an <see cref="Unit"/> based on this unit.
+        /// </summary>
+        /// <remarks>
+        /// No references are copied, all entities in the new object are new ones.
+        /// </remarks>
+        /// <returns>An <see cref="Unit"/> based on this unit.</returns>
+        public Unit ToUnit()
+        {
+            var copy = Copy();
+
+            // In this case we want to keep the name because Copy() generates a new one
+            copy.Name = Name;
+
+            return copy;
+        }
+
+        private string GenerateName(string name)
+        {
+            var numbersAtEndOfString = name.AsEnumerable().Reverse().TakeWhile(char.IsNumber).Reverse().ToArray();
+
+            return numbersAtEndOfString.Any() ? $"{name.TrimEnd(numbersAtEndOfString)}{int.Parse(string.Concat(numbersAtEndOfString)) + 1}" : $"{name} 2";
+        }
+
+        private int GetCurrentSpeedInternal(bool accountForHeat = true)
+        {
+            return accountForHeat ? Math.Max(Speed - GetHeatSpeedPenalty(), 1) : Speed;
         }
     }
 }

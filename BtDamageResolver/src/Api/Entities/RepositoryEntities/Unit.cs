@@ -12,6 +12,9 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
     [Serializable]
     public class Unit : NamedEntity
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Unit"/> class.
+        /// </summary>
         public Unit()
         {
             Weapons = new List<WeaponEntry>();
@@ -36,7 +39,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         /// How many jump jets does this unit have, if any.
         /// </summary>
         public int JumpJets { get; set; }
-        
+
         /// <summary>
         /// The base ground or air speed of this unit, when moving at normal speed, without modifications, in units per turn.
         /// </summary>
@@ -45,7 +48,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         /// <summary>
         /// The unit type of this unit.
         /// </summary>
-        public UnitType Type;
+        public UnitType Type { get; set; }
 
         /// <summary>
         /// The tonnage of this unit.

@@ -1,6 +1,6 @@
-﻿using Faemiyah.BtDamageResolver.Api.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Faemiyah.BtDamageResolver.Api.Entities;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Entities
 {
@@ -11,7 +11,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Entities
     public class DamagePacket
     {
         /// <summary>
-        /// Property-setting constructor.
+        /// Initializes a new instance of the <see cref="DamagePacket"/> class.
         /// </summary>
         /// <param name="damageAmount">The amount of damage for this packet.</param>
         /// <param name="specialDamageEntry">Special damage for this packet, if any.</param>
@@ -22,8 +22,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Entities
         }
 
         /// <summary>
-        /// Parameterless constructor for serialization.
+        /// Initializes a new instance of the <see cref="DamagePacket"/> class.
         /// </summary>
+        /// <remarks>
+        /// Parameterless constructor for serialization.
+        /// </remarks>
         public DamagePacket()
         {
         }

@@ -1,4 +1,5 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+﻿using System;
+using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -7,7 +8,6 @@ using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
-using System;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
 {
@@ -16,7 +16,15 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
     /// </summary>
     public class LogicUnitVehicleVtol : LogicUnitVehicle
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogicUnitVehicleVtol"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="gameOptions">The game options.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="mathExpression">The math expression parser.</param>
+        /// <param name="random">The random number generator.</param>
+        /// <param name="unit">The unit.</param>
         public LogicUnitVehicleVtol(ILogger<LogicUnitVehicleVtol> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
         {
         }

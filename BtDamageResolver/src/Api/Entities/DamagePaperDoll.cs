@@ -6,62 +6,90 @@ using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities
 {
+    /// <summary>
+    /// The damage paper doll for recording unit damage.
+    /// </summary>
     [Serializable]
     public class DamagePaperDoll
     {
-        public Dictionary<Location, List<int>> DamageCollection { get; set; }
-        
-        public Dictionary<Location, List<SpecialDamageEntry>> SpecialDamageCollection { get; set; }
-
-        public Dictionary<Location, List<CriticalDamageEntry>> CriticalDamageCollection { get; set; }
-
-        public PaperDoll PaperDoll;
-
-        public PaperDollType Type => PaperDoll.Type;
-
         /// <summary>
-        /// Blank constructor. Should never be used manually, but only in serialization.
+        /// Initializes a new instance of the <see cref="DamagePaperDoll"/> class.
         /// </summary>
+        /// <remarks>
+        /// Blank constructor for serialization purposes.
+        /// </remarks>
         public DamagePaperDoll()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DamagePaperDoll"/> class.
+        /// </summary>
+        /// <param name="basePaperDoll">The base paper doll to generate from.</param>
         public DamagePaperDoll(PaperDoll basePaperDoll)
         {
             DamageCollection = new Dictionary<Location, List<int>>();
-            SpecialDamageCollection = new Dictionary<Location, List<SpecialDamageEntry>>();
-            CriticalDamageCollection = new Dictionary<Location, List<CriticalDamageEntry>>();
+            DamageCollectionSpecial = new Dictionary<Location, List<SpecialDamageEntry>>();
+            DamageCollectionCritical = new Dictionary<Location, List<CriticalDamageEntry>>();
             PaperDoll = basePaperDoll;
         }
 
+        /// <summary>
+        /// The collection of normal damage entries.
+        /// </summary>
+        public Dictionary<Location, List<int>> DamageCollection { get; set; }
+
+        /// <summary>
+        /// The collection of critical damage entries.
+        /// </summary>
+        public Dictionary<Location, List<CriticalDamageEntry>> DamageCollectionCritical { get; set; }
+
+        /// <summary>
+        /// The collection of special damage entries.
+        /// </summary>
+        public Dictionary<Location, List<SpecialDamageEntry>> DamageCollectionSpecial { get; set; }
+
+        /// <summary>
+        /// The paperdoll.
+        /// </summary>
+        public PaperDoll PaperDoll { get; set; }
+
+        /// <summary>
+        /// The paperdoll type.
+        /// </summary>
+        public PaperDollType Type => PaperDoll.Type;
+
+        /// <summary>
+        /// Get all locations for this damage report.
+        /// </summary>
+        /// <returns>The locations for this damage report.</returns>
         public List<Location> GetLocations()
         {
             return DamageCollection.Keys.ToList();
         }
 
-        public void RecordDamage(Location location, int amount)
+        /// <summary>
+        /// Gets the total damage of a specific special damage type.
+        /// </summary>
+        /// <param name="type">The type of special damage to fetch.</param>
+        /// <returns>The total damage of a specific special damage type.</returns>
+        public int GetTotalDamageOfType(SpecialDamageType type)
         {
-            InsertDamage(location, amount);
-        }
+            int result = 0;
 
-        public void RecordSpecialDamage(Location location, SpecialDamageEntry specialDamageEntry)
-        {
-            InsertSpecialDamage(location, specialDamageEntry);
-        }
-
-        public void RecordCriticalDamage(Location location, int damage, CriticalThreatType threatType, CriticalDamageType criticalDamageType)
-        {
-            InsertCriticalDamage(location, new CriticalDamageEntry(damage, threatType, criticalDamageType));
-        }
-
-        public void RecordCriticalDamage(Location location, int damage, CriticalThreatType threatType, List<CriticalDamageType> criticalDamageTypes)
-        {
-            foreach (var criticalDamageType in criticalDamageTypes)
+            foreach (var (_, value) in DamageCollectionSpecial)
             {
-                InsertCriticalDamage(location, new CriticalDamageEntry(damage, threatType, criticalDamageType));
+                result += value.Where(l => l.Type == type).Sum(d => int.Parse(d.Data));
             }
+
+            return result;
         }
 
+        /// <summary>
+        /// Merge this damage report with another damage report.
+        /// </summary>
+        /// <param name="damagePaperDoll">The damage report to merge with.</param>
+        /// <exception cref="InvalidOperationException">Thrown when the damage report is for a different unit type.</exception>
         public void Merge(DamagePaperDoll damagePaperDoll)
         {
             if (Type != damagePaperDoll.Type)
@@ -74,22 +102,106 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
                 InsertDamage(entry.Key, entry.Value);
             }
 
-            foreach (var entry in damagePaperDoll.SpecialDamageCollection)
+            foreach (var entry in damagePaperDoll.DamageCollectionSpecial)
             {
                 InsertSpecialDamage(entry.Key, entry.Value);
             }
 
-            foreach (var entry in damagePaperDoll.CriticalDamageCollection)
+            foreach (var entry in damagePaperDoll.DamageCollectionCritical)
             {
                 InsertCriticalDamage(entry.Key, entry.Value);
             }
         }
 
+        /// <summary>
+        /// Record damage to this damage report.
+        /// </summary>
+        /// <param name="location">The location to record to.</param>
+        /// <param name="amount">The amount of damage to record.</param>
+        public void RecordDamage(Location location, int amount)
+        {
+            InsertDamage(location, amount);
+        }
+
+        /// <summary>
+        /// Record critical damage to this damage report.
+        /// </summary>
+        /// <param name="location">The location to record to.</param>
+        /// <param name="damage">The damage amount to record.</param>
+        /// <param name="threatType">The type of the critical damage threat.</param>
+        /// <param name="criticalDamageType">The type of the critical damage to record.</param>
+        public void RecordCriticalDamage(Location location, int damage, CriticalThreatType threatType, CriticalDamageType criticalDamageType)
+        {
+            InsertCriticalDamage(location, new CriticalDamageEntry(damage, threatType, criticalDamageType));
+        }
+
+        /// <summary>
+        /// Record critical damage to this damage report.
+        /// </summary>
+        /// <param name="location">The location to record to.</param>
+        /// <param name="damage">The damage amount to record.</param>
+        /// <param name="threatType">The type of the critical damage threat.</param>
+        /// <param name="criticalDamageTypes">The list of critical damage types to record.</param>
+        public void RecordCriticalDamage(Location location, int damage, CriticalThreatType threatType, List<CriticalDamageType> criticalDamageTypes)
+        {
+            foreach (var criticalDamageType in criticalDamageTypes)
+            {
+                InsertCriticalDamage(location, new CriticalDamageEntry(damage, threatType, criticalDamageType));
+            }
+        }
+
+        /// <summary>
+        /// Record special damage to this damage report.
+        /// </summary>
+        /// <param name="location">The location to record to.</param>
+        /// <param name="specialDamageEntry">The special damage to record.</param>
+        public void RecordSpecialDamage(Location location, SpecialDamageEntry specialDamageEntry)
+        {
+            InsertSpecialDamage(location, specialDamageEntry);
+        }
+
+        /// <summary>
+        /// Insert critical damage to location.
+        /// </summary>
+        /// <param name="location">The location to insert to.</param>
+        /// <param name="entry">The critical damage entry to insert.</param>
+        private void InsertCriticalDamage(Location location, CriticalDamageEntry entry)
+        {
+            InsertCriticalDamage(location, new List<CriticalDamageEntry> { entry });
+        }
+
+        /// <summary>
+        /// Insert critical damage to location.
+        /// </summary>
+        /// <param name="location">The location to insert to.</param>
+        /// <param name="entries">The critical damage entries to insert.</param>
+        private void InsertCriticalDamage(Location location, List<CriticalDamageEntry> entries)
+        {
+            if (DamageCollectionCritical.ContainsKey(location))
+            {
+                DamageCollectionCritical[location].AddRange(entries);
+            }
+            else
+            {
+                DamageCollectionCritical.Add(location, entries);
+            }
+        }
+
+        /// <summary>
+        /// Insert damage to location.
+        /// </summary>
+        /// <param name="location">The location to insert to.</param>
+        /// <param name="amount">The amount of damage to insert.</param>
         private void InsertDamage(Location location, int amount)
         {
             InsertDamage(location, new List<int> { amount });
         }
 
+        /// <summary>
+        /// Insert damage to location.
+        /// </summary>
+        /// <param name="location">The location to insert to.</param>
+        /// <param name="amounts">A list of damage amounts to insert.</param>
         private void InsertDamage(Location location, List<int> amounts)
         {
             if (DamageCollection.ContainsKey(location))
@@ -102,50 +214,31 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
             }
         }
 
-        private void InsertCriticalDamage(Location location, CriticalDamageEntry entry)
-        {
-            InsertCriticalDamage(location, new List<CriticalDamageEntry> { entry });
-        }
-
-        private void InsertCriticalDamage(Location location, List<CriticalDamageEntry> entries)
-        {
-            if (CriticalDamageCollection.ContainsKey(location))
-            {
-                CriticalDamageCollection[location].AddRange(entries);
-            }
-            else
-            {
-                CriticalDamageCollection.Add(location, entries);
-            }
-        }
-
+        /// <summary>
+        /// Insert special damage to location.
+        /// </summary>
+        /// <param name="location">The location to insert to.</param>
+        /// <param name="entry">The special damage entry to insert.</param>
         private void InsertSpecialDamage(Location location, SpecialDamageEntry entry)
         {
-            InsertSpecialDamage(location, new List<SpecialDamageEntry> {entry});
+            InsertSpecialDamage(location, new List<SpecialDamageEntry> { entry });
         }
 
+        /// <summary>
+        /// Insert special damage to location.
+        /// </summary>
+        /// <param name="location">The location to insert to.</param>
+        /// <param name="entries">The special damage entries to insert.</param>
         private void InsertSpecialDamage(Location location, List<SpecialDamageEntry> entries)
         {
-            if (SpecialDamageCollection.ContainsKey(location))
+            if (DamageCollectionSpecial.ContainsKey(location))
             {
-                SpecialDamageCollection[location].AddRange(entries);
+                DamageCollectionSpecial[location].AddRange(entries);
             }
             else
             {
-                SpecialDamageCollection.Add(location, entries);
+                DamageCollectionSpecial.Add(location, entries);
             }
-        }
-
-        public int GetTotalDamageOfType(SpecialDamageType type)
-        {
-            int result = 0;
-            
-            foreach (var (_, value) in SpecialDamageCollection)
-            {
-                result += value.Where(l => l.Type == type).Sum(d => int.Parse(d.Data));
-            }
-
-            return result;
         }
     }
 }

@@ -49,7 +49,8 @@ namespace Faemiyah.BtDamageResolver.Actors
 
         private async Task SendOnlyThisPlayerGameStateToClient()
         {
-            await SendDataToClient(EventNames.GameState,
+            await SendDataToClient(
+                EventNames.GameState,
                 new GameState
                 {
                     GameId = _playerActorState.State.GameId,

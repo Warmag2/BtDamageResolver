@@ -42,7 +42,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         Task<List<TargetNumberUpdate>> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers = false);
 
         /// <summary>
-        /// Receive a new state for this unit. 
+        /// Receive a new state for this unit.
         /// </summary>
         /// <param name="unit">The <see cref="UnitEntry"/> object containing the new state of the unit represented by this <see cref="IUnitActor"/>.</param>
         /// <returns><b>True</b> if the unit state was updated, <b>false</b> otherwise.</returns>

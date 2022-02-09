@@ -6,6 +6,9 @@ using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 {
+    /// <summary>
+    /// A weapon entity.
+    /// </summary>
     [Serializable]
     public class Weapon : NamedEntity
     {
@@ -100,9 +103,10 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         public bool UsesAmmo { get; set; }
 
         /// <summary>
-        /// Applies an ammo type and returns a new weapon with the properties of the ammo applied..
+        /// Generates a new weapon with the given ammo type applied to it.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="ammo">The ammo to apply.</param>
+        /// <returns>The weapon with the ammo applied.</returns>
         public Weapon ApplyAmmo(Ammo ammo)
         {
             var applyTarget = Copy();
@@ -111,101 +115,63 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
             {
                 applyTarget.ClusterBonus = ammo.ClusterBonus;
             }
+
             if (ammo.ClusterDamage != null)
             {
                 applyTarget.ClusterDamage = ammo.ClusterDamage.Value;
             }
+
             if (ammo.ClusterSize != null)
             {
                 applyTarget.ClusterSize = ammo.ClusterSize.Value;
             }
+
             if (ammo.Damage != null)
             {
                 applyTarget.Damage = ammo.Damage;
             }
-            if(ammo.DamageAerospace != null)
+
+            if (ammo.DamageAerospace != null)
             {
                 applyTarget.DamageAerospace = ammo.DamageAerospace;
             }
-            if(ammo.Heat.HasValue)
+
+            if (ammo.Heat.HasValue)
             {
                 applyTarget.Heat = ammo.Heat.Value;
             }
-            if(ammo.HitModifier.HasValue)
+
+            if (ammo.HitModifier.HasValue)
             {
                 applyTarget.HitModifier = ammo.HitModifier.Value;
             }
-            if(ammo.Range != null)
+
+            if (ammo.Range != null)
             {
                 applyTarget.Range = ammo.Range;
             }
-            if(ammo.RangeAerospace.HasValue)
+
+            if (ammo.RangeAerospace.HasValue)
             {
                 applyTarget.RangeAerospace = ammo.RangeAerospace.Value;
             }
-            if(ammo.RangeMinimum.HasValue)
+
+            if (ammo.RangeMinimum.HasValue)
             {
                 applyTarget.RangeMinimum = ammo.RangeMinimum.Value;
             }
-            if(ammo.SpecialDamage != null)
+
+            if (ammo.SpecialDamage != null)
             {
                 applyTarget.SpecialDamage = ammo.SpecialDamage;
             }
-            if(ammo.SpecialFeatures != null)
+
+            if (ammo.SpecialFeatures != null)
             {
                 applyTarget.SpecialFeatures = ammo.SpecialFeatures;
             }
 
             return applyTarget;
-        }
-
-        /// <summary>
-        /// Provides a shallow copy of a weapon.
-        /// </summary>
-        /// <returns>A copy of this weapon entity</returns>
-        private Weapon Copy()
-        {
-            return new Weapon
-            {
-                Ammo = Ammo,
-                AttackType = AttackType,
-                ClusterBonus = ClusterBonus,
-                ClusterDamage = ClusterDamage,
-                ClusterSize = ClusterSize,
-                ClusterTable = ClusterTable,
-                Damage = Damage,
-                DamageAerospace = DamageAerospace,
-                Heat = Heat,
-                HitModifier = HitModifier,
-                Name = Name,
-                Range = Range,
-                RangeAerospace = RangeAerospace,
-                RangeMinimum = RangeMinimum,
-                SpecialDamage = SpecialDamage,
-                SpecialFeatures = SpecialFeatures,
-                Type = Type,
-                UsesAmmo = UsesAmmo
-            };
-        }
-
-        /// <summary>
-        /// Informs what phase this weapon is used in.
-        /// </summary>
-        public Phase GetUsePhase()
-        {
-            switch (AttackType)
-            {
-                case AttackType.Normal:
-                    return Phase.Weapon;
-                case AttackType.Melee:
-                    return Phase.Melee;
-                case AttackType.Kick:
-                    return Phase.Melee;
-                case AttackType.Punch:
-                    return Phase.Melee;
-                default:
-                    throw new NotImplementedException("Unknown weapon attack type encountered when trying to determine weapon use phase.");
-            }
         }
 
         /// <summary>
@@ -260,6 +226,56 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
             {
                 SpecialFeatures = new List<WeaponFeatureEntry> { new WeaponFeatureEntry { Data = "0", Type = WeaponFeature.None } };
             }
+        }
+
+        /// <summary>
+        /// Informs what phase this weapon is used in.
+        /// </summary>
+        /// <returns>The phase where this weapon is used in.</returns>
+        public Phase GetUsePhase()
+        {
+            switch (AttackType)
+            {
+                case AttackType.Normal:
+                    return Phase.Weapon;
+                case AttackType.Melee:
+                    return Phase.Melee;
+                case AttackType.Kick:
+                    return Phase.Melee;
+                case AttackType.Punch:
+                    return Phase.Melee;
+                default:
+                    throw new NotImplementedException("Unknown weapon attack type encountered when trying to determine weapon use phase.");
+            }
+        }
+
+        /// <summary>
+        /// Provides a shallow copy of a weapon.
+        /// </summary>
+        /// <returns>A shallow copy of this weapon entity.</returns>
+        private Weapon Copy()
+        {
+            return new Weapon
+            {
+                Ammo = Ammo,
+                AttackType = AttackType,
+                ClusterBonus = ClusterBonus,
+                ClusterDamage = ClusterDamage,
+                ClusterSize = ClusterSize,
+                ClusterTable = ClusterTable,
+                Damage = Damage,
+                DamageAerospace = DamageAerospace,
+                Heat = Heat,
+                HitModifier = HitModifier,
+                Name = Name,
+                Range = Range,
+                RangeAerospace = RangeAerospace,
+                RangeMinimum = RangeMinimum,
+                SpecialDamage = SpecialDamage,
+                SpecialFeatures = SpecialFeatures,
+                Type = Type,
+                UsesAmmo = UsesAmmo
+            };
         }
 
         private Dictionary<TKey, TValue> Fill<TKey, TValue>(List<TKey> keys, TValue value)

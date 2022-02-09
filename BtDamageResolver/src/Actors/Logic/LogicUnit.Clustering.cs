@@ -1,11 +1,11 @@
-﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+﻿using System;
+using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
-using System;
-using System.Threading.Tasks;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic
 {
@@ -14,11 +14,24 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
     /// </summary>
     public partial class LogicUnit
     {
+        /// <inheritdoc />
+        public virtual int TransformClusterRollBasedOnUnitType(DamageReport damageReport, int clusterRoll)
+        {
+            return clusterRoll;
+        }
+
+        /// <summary>
+        /// Resolve the cluster bonus.
+        /// </summary>
+        /// <param name="damageReport">The damage report to apply to.</param>
+        /// <param name="target">The target unit logic.</param>
+        /// <param name="combatAction">The combat action.</param>
+        /// <returns>The cluster bonus.</returns>
         protected int ResolveClusterBonus(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
         {
             var clusterBonus = combatAction.Weapon.Type == WeaponType.Missile ?
                 ResolveClusterBonusMissile(damageReport, target, combatAction) :
-                ResolveClusterBonusNonMissile(damageReport, target, combatAction);
+                ResolveClusterBonusNonMissile(damageReport, combatAction);
 
             if (target.IsGlancingBlow(combatAction.MarginOfSuccess))
             {
@@ -28,6 +41,59 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
 
             return clusterBonus;
+        }
+
+        /// <summary>
+        /// Resolver final cluster value.
+        /// </summary>
+        /// <param name="damageReport">The damage report to apply to.</param>
+        /// <param name="target">The target unit logic.</param>
+        /// <param name="combatAction">The combat action.</param>
+        /// <param name="damageValue">The damage value.</param>
+        /// <param name="clusterBonus">The cluster bonus.</param>
+        /// <returns>Result of the cluster calculation.</returns>
+        protected async Task<int> ResolveClusterValue(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageValue, int clusterBonus)
+        {
+            int clusterRoll = Random.D26();
+
+            clusterRoll = TransformClusterRollBasedOnWeaponFeatures(damageReport, combatAction, clusterRoll);
+            clusterRoll = target.TransformClusterRollBasedOnUnitType(damageReport, clusterRoll);
+
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Cluster", Number = clusterRoll });
+
+            clusterRoll = Math.Clamp(clusterRoll + clusterBonus, 2, 12);
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Modified cluster", Number = clusterRoll });
+
+            var damageTable = await GrainFactory.GetClusterTableRepository().Get(Names.DefaultClusterTableName);
+
+            var clusterDamage = damageTable.GetDamage(damageValue, clusterRoll);
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster result", Number = clusterDamage });
+
+            return clusterDamage;
+        }
+
+        private static int ResolveClusterBonusNonMissile(DamageReport damageReport, CombatAction combatAction)
+        {
+            // Non-missile weapons do not care about AMS or ECM
+            var clusterBonus = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
+
+            if (clusterBonus != 0)
+            {
+                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster modifier for range bracket {combatAction.RangeBracket}", Number = clusterBonus });
+            }
+
+            return clusterBonus;
+        }
+
+        private static int TransformClusterRollBasedOnWeaponFeatures(DamageReport damageReport, CombatAction combatAction, int clusterRoll)
+        {
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out _))
+            {
+                clusterRoll = 11;
+                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value by a streak weapon", Number = clusterRoll });
+            }
+
+            return clusterRoll;
         }
 
         private int ResolveClusterBonusMissile(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
@@ -65,63 +131,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
 
             return clusterBonus;
-        }
-
-        private int ResolveClusterBonusNonMissile(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
-        {
-            // Non-missile weapons do not care about AMS or ECM
-            var clusterBonus = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
-
-            if (clusterBonus != 0)
-            {
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster modifier for range bracket {combatAction.RangeBracket}", Number = clusterBonus });
-            }
-            
-            return clusterBonus;
-        }
-
-        protected async Task<int> ResolveClusterValue(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageValue, int clusterBonus)
-        {
-            int clusterRoll = ResolveClusterRoll(damageReport, combatAction);
-
-            clusterRoll = TransformClusterRollBasedOnWeaponFeatures(damageReport, combatAction, clusterRoll);
-            clusterRoll = target.TransformClusterRollBasedOnUnitType(damageReport, clusterRoll);
-
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Cluster", Number = clusterRoll });
-
-            clusterRoll = Math.Clamp(clusterRoll + clusterBonus, 2, 12);
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Modified cluster", Number = clusterRoll });
-
-            var damageTable = await GrainFactory.GetClusterTableRepository().Get(Names.DefaultClusterTableName);
-
-            var clusterDamage = damageTable.GetDamage(damageValue, clusterRoll);
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster result", Number = clusterDamage });
-
-            return clusterDamage;
-        }
-
-        private int ResolveClusterRoll(DamageReport damageReport, CombatAction combatAction)
-        {
-            int clusterRoll = Random.D26();
-            
-            return clusterRoll;
-        }
-
-        /// <inheritdoc />
-        public virtual int TransformClusterRollBasedOnUnitType(DamageReport damageReport, int clusterRoll)
-        {
-            return clusterRoll;
-        }
-
-        private int TransformClusterRollBasedOnWeaponFeatures(DamageReport damageReport, CombatAction combatAction, int clusterRoll)
-        {
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out _))
-            {
-                clusterRoll = 11;
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value by a streak weapon", Number = clusterRoll });
-            }
-
-            return clusterRoll;
         }
     }
 }

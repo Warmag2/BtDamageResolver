@@ -12,15 +12,6 @@ namespace Faemiyah.BtDamageResolver.Common.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationException"/> class.
         /// </summary>
-        /// <param name="serializationInfo">The serialization info.</param>
-        /// <param name="streamingContext">The streaming context.</param>
-        protected ConfigurationException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationException"/> class.
-        /// </summary>
         public ConfigurationException()
         {
         }
@@ -39,6 +30,15 @@ namespace Faemiyah.BtDamageResolver.Common.Exceptions
         /// <param name="errorMessage">The error message.</param>
         /// <param name="innerException">The inner exception.</param>
         public ConfigurationException(string errorMessage, Exception innerException) : base(errorMessage, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationException"/> class.
+        /// </summary>
+        /// <param name="serializationInfo">The serialization info.</param>
+        /// <param name="streamingContext">The streaming context.</param>
+        protected ConfigurationException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
         {
         }
     }

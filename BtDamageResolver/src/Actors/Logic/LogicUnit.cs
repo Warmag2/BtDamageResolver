@@ -13,14 +13,33 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
     /// </summary>
     public abstract partial class LogicUnit : ILogicUnit
     {
-        protected readonly ILogger<LogicUnit> Logger;
+        /// <summary>
+        /// The game options.
+        /// </summary>
         protected readonly GameOptions GameOptions;
+
+        /// <summary>
+        /// The grain factory.
+        /// </summary>
         protected readonly IGrainFactory GrainFactory;
+
+        /// <summary>
+        /// The logging interface.
+        /// </summary>
+        protected readonly ILogger<LogicUnit> Logger;
+
+        /// <summary>
+        /// The math expression solver.
+        /// </summary>
         protected readonly IMathExpression MathExpression;
+
+        /// <summary>
+        /// The random number generator.
+        /// </summary>
         protected readonly IResolverRandom Random;
 
         /// <summary>
-        /// General logic constructor.
+        /// Initializes a new instance of the <see cref="LogicUnit"/> class.
         /// </summary>
         /// <param name="logger">The logging interface.</param>
         /// <param name="gameoptions">The game options.</param>
@@ -28,7 +47,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="mathExpression">The mathematical expression solver.</param>
         /// <param name="random">The random number generator.</param>
         /// <param name="unit">The unit entry to construct this logic for.</param>
-        public LogicUnit(ILogger<LogicUnit> logger, GameOptions gameoptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit)
+        protected LogicUnit(ILogger<LogicUnit> logger, GameOptions gameoptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit)
         {
             Logger = logger;
             GameOptions = gameoptions;

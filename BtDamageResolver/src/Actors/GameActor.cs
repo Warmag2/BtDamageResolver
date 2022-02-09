@@ -27,7 +27,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         private readonly IPersistentState<GameActorState> _gameActorState;
 
         /// <summary>
-        /// Constructor for a Game actor.
+        /// Initializes a new instance of the <see cref="GameActor"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="communicationServiceClient">The communication service client.</param>
@@ -57,19 +57,6 @@ namespace Faemiyah.BtDamageResolver.Actors
             await base.OnDeactivateAsync();
         }
 
-        private GameState GetGameState()
-        {
-            return new GameState
-            {
-                AdminId = _gameActorState.State.AdminId,
-                GameId = this.GetPrimaryKeyString(),
-                Players = _gameActorState.State.PlayerStates,
-                TimeStamp = _gameActorState.State.TimeStamp,
-                Turn = _gameActorState.State.Turn,
-                TurnTimeStamp = _gameActorState.State.TurnTimeStamp
-            };
-        }
-
         /// <inheritdoc />
         public async Task<bool> IsUnitInGame(Guid authenticationToken, Guid unitId)
         {
@@ -82,7 +69,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState, List<Guid> updatedUnits)
+        public async Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState, List<Guid> unitIds)
         {
             if (!CheckAuthentication(authenticationToken))
             {
@@ -109,13 +96,14 @@ namespace Faemiyah.BtDamageResolver.Actors
                 {
                     _logger.LogInformation(
                         "Discarding update event. Timestamp {stampEvent}, is older than existing timestamp {stampState}.",
-                        playerState.TimeStamp, _gameActorState.State.PlayerStates[playerState.PlayerId].TimeStamp);
+                        playerState.TimeStamp,
+                        _gameActorState.State.PlayerStates[playerState.PlayerId].TimeStamp);
                 }
             }
 
             if (updated)
             {
-                await CheckGameStateUpdateEvents(updatedUnits);
+                await CheckGameStateUpdateEvents(unitIds);
                 return true;
             }
 
@@ -133,7 +121,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             var damageReport = await GrainFactory.GetGrain<IUnitActor>(damageInstance.UnitId).ProcessDamageInstance(damageInstance, _gameActorState.State.Options);
             damageReport.Turn = _gameActorState.State.Turn;
 
-            await DistributeDamageReportsToPlayers(new List<DamageReport> {damageReport});
+            await DistributeDamageReportsToPlayers(new List<DamageReport> { damageReport });
 
             return true;
         }
@@ -141,7 +129,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <inheritdoc />>
         public async Task<bool> JoinGame(Guid authenticationToken, string playerId, string password)
         {
-            if (string.IsNullOrWhiteSpace(playerId) || password==null)
+            if (string.IsNullOrWhiteSpace(playerId) || password == null)
             {
                 _logger.LogInformation("In Game {gameId}, player {playerId} game connection request is malformed.", this.GetPrimaryKeyString(), playerId);
                 return false;
@@ -151,7 +139,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             if (string.IsNullOrWhiteSpace(_gameActorState.State.Password) || string.Equals(_gameActorState.State.Password, password))
             {
                 _gameActorState.State.Password = password;
-                
+
                 if (_gameActorState.State.AuthenticationTokens.ContainsKey(authenticationToken))
                 {
                     _gameActorState.State.AuthenticationTokens[authenticationToken] = playerId;
@@ -163,7 +151,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                 _gameActorState.State.TimeStamp = DateTime.UtcNow;
                 await _gameActorState.WriteStateAsync();
-                
+
                 _logger.LogInformation("In Game {gameId}, Player {playerId} successfully connected to the game.", this.GetPrimaryKeyString(), playerId);
 
                 await CheckGameStateUpdateEvents();
@@ -249,6 +237,19 @@ namespace Faemiyah.BtDamageResolver.Actors
                     _logger.LogInformation("Game {gameId} has exactly 1 player. Setting admin id to that player.", this.GetPrimaryKeyString());
                 }
             }
+        }
+
+        private GameState GetGameState()
+        {
+            return new GameState
+            {
+                AdminId = _gameActorState.State.AdminId,
+                GameId = this.GetPrimaryKeyString(),
+                Players = _gameActorState.State.PlayerStates,
+                TimeStamp = _gameActorState.State.TimeStamp,
+                Turn = _gameActorState.State.Turn,
+                TurnTimeStamp = _gameActorState.State.TurnTimeStamp
+            };
         }
 
         private async Task UpdateStateForPlayer(string playerId)
