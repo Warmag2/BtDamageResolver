@@ -2,6 +2,12 @@
 
 namespace Faemiyah.BtDamageResolver.Api.Enums
 {
+    /// <summary>
+    /// The critical damage type.
+    /// </summary>
+    /// <remarks>
+    /// Indicates either a generic critical or an explicit item which has been damaged or destroyed.
+    /// </remarks>
     [Serializable]
     public enum CriticalDamageType
     {

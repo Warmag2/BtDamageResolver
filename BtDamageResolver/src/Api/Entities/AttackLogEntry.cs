@@ -3,17 +3,37 @@ using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities
 {
+    /// <summary>
+    /// The attack log entry.
+    /// </summary>
     [Serializable]
     public class AttackLogEntry
     {
+        /// <summary>
+        /// The attack log entry type.
+        /// </summary>
         public AttackLogEntryType Type { get; set; }
 
+        /// <summary>
+        /// The context string for this entry.
+        /// </summary>
         public string Context { get; set; }
 
+        /// <summary>
+        /// The number relevant for this log entry, if any.
+        /// </summary>
         public int? Number { get; set; }
 
+        /// <summary>
+        /// The location this log applies to, if any.
+        /// </summary>
         public Location? Location { get; set; }
 
+        /// <summary>
+        /// The standard sting conversion for attack log entries.
+        /// </summary>
+        /// <returns>The string representation of this attack log entry.</returns>
+        /// <exception cref="NotImplementedException">Thrown when unknown attack log type is encountered.</exception>
         public override string ToString()
         {
             switch (Type)

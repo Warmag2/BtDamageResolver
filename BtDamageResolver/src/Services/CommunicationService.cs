@@ -21,6 +21,15 @@ namespace Faemiyah.BtDamageResolver.Services
         private readonly ILogger<CommunicationService> _logger;
         private readonly IServerToClientCommunicator _serverToClientCommunicator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommunicationService"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="communicationOptions">The communication options.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="grainId">The grain ID.</param>
+        /// <param name="silo">The silo.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         public CommunicationService(
             ILogger<CommunicationService> logger,
             IOptions<CommunicationOptions> communicationOptions,

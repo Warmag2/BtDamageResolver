@@ -31,7 +31,7 @@
             @if (_selectedDataType == ResolverDataType.Weapon)
             {
                 <div class="resolver_div_componentrow">
-                    <FormComboBox @key="@_entryName" Options="@_commonData.CreateMapWeaponAmmo(_entryName)" SelectedOption=@_commonData.GetWeaponDefaultAmmo(_entryName) OnChanged="(string ammoName) => OnAmmoChanged(ammoName)"></FormComboBox>
+                    <FormComboBox @key="@_entryName" Options="@_commonData.FormMapWeaponAmmo(_entryName)" SelectedOption=@_commonData.GetWeaponDefaultAmmo(_entryName) OnChanged="(string ammoName) => OnAmmoChanged(ammoName)"></FormComboBox>
                 </div>
             }
             
@@ -76,19 +76,19 @@
         switch (_selectedDataType)
         {
             case ResolverDataType.ClusterTable:
-                _items = _commonData.MapClusterTable.Keys.ToList();
+                _items = _commonData.DictionaryClusterTable.Keys.ToList();
                 break;
             case ResolverDataType.CriticalDamageTable:
-                _items = _commonData.MapCriticalDamageTable.Keys.ToList();
+                _items = _commonData.DictionaryCriticalDamageTable.Keys.ToList();
                 break;
             case ResolverDataType.PaperDoll:
-                _items = _commonData.MapPaperDoll.Keys.ToList();
+                _items = _commonData.DictionaryPaperDoll.Keys.ToList();
                 break;
             case ResolverDataType.Unit:
-                _items = _commonData.GetSavedUnits().Keys.ToList();
+                _items = _commonData.GetSavedUnitNames().Keys.ToList();
                 break;
             case ResolverDataType.Weapon:
-                _items = _commonData.MapWeapon.Keys.ToList();
+                _items = _commonData.DictionaryWeapon.Keys.ToList();
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

@@ -2,6 +2,9 @@
 
 namespace Faemiyah.BtDamageResolver.Api.Enums
 {
+    /// <summary>
+    /// Possible hit locations.
+    /// </summary>
     [Serializable]
     public enum Location
     {

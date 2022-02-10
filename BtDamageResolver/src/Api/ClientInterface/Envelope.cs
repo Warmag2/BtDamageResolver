@@ -11,14 +11,17 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface
     public class Envelope
     {
         /// <summary>
-        /// Empty constructor. Only for serialization, do not use.
+        /// Initializes a new instance of the <see cref="Envelope"/> class.
         /// </summary>
+        /// <remarks>
+        /// Empty constructor for serialization purposes.
+        /// </remarks>
         public Envelope()
         {
         }
 
         /// <summary>
-        /// Base constructor for requests.
+        /// Initializes a new instance of the <see cref="Envelope"/> class.
         /// </summary>
         /// <param name="dataTypeHint">The type hint of the data.</param>
         /// <param name="data">The data to be contained in this event.</param>

@@ -5,6 +5,9 @@ using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
+    /// <summary>
+    /// Game actor methods related to authentication.
+    /// </summary>
     public partial class GameActor
     {
         private bool CheckAuthentication(Guid authenticationToken, string playerId = null)

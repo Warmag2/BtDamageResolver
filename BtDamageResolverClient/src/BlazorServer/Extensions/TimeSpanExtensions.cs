@@ -3,8 +3,16 @@ using Faemiyah.BtDamageResolver.Client.BlazorServer.Enums;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Extensions
 {
+    /// <summary>
+    /// Extensions for TimeSpans.
+    /// </summary>
     public static class TimeSpanExtensions
     {
+        /// <summary>
+        /// Gets the largest time unit in the given timespan.
+        /// </summary>
+        /// <param name="timeSpan">The timespan to check.</param>
+        /// <returns>The largest time unit that fits into the given timespan.</returns>
         public static TimeUnit GetLargestTimeUnit(this TimeSpan timeSpan)
         {
             if (timeSpan.TotalDays >= 1)

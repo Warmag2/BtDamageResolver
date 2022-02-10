@@ -2,6 +2,9 @@
 
 namespace Faemiyah.BtDamageResolver.Api.Enums
 {
+    /// <summary>
+    /// A special damage type.
+    /// </summary>
     [Serializable]
     public enum SpecialDamageType
     {

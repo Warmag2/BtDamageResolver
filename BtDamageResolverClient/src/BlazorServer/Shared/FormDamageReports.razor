@@ -54,11 +54,11 @@ else
     
     protected override void OnInitialized()
     {
-        _userStateController.OnDamageReportsChanged += StateHasChanged;
+        _userStateController.OnDamageReportsUpdated += StateHasChanged;
     }
 
     public void Dispose()
     {
-        _userStateController.OnDamageReportsChanged -= StateHasChanged;
+        _userStateController.OnDamageReportsUpdated -= StateHasChanged;
     }
 }

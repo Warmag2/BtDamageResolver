@@ -291,6 +291,28 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return 0;
         }
 
+        private static int GetMovementClassModifier(ILogicUnit target, Weapon weapon)
+        {
+            // Missile weapons ignore attacker movement modifier if the target is tagged
+            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
+            {
+                return 0;
+            }
+
+            return target.GetMovementClassModifierBasedOnUnitType();
+        }
+
+        private static int GetMovementModifierBase(ILogicUnit target, Weapon weapon)
+        {
+            // Missile weapons ignore defender movement modifier if the target is tagged
+            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
+            {
+                return 0;
+            }
+
+            return target.GetMovementModifier();
+        }
+
         /// <summary>
         /// Determine the range bracket for a ground weapon.
         /// </summary>
@@ -325,6 +347,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
 
             return RangeBracket.OutOfRange;
+        }
+
+        private static int GetWeaponModifier(Weapon weapon)
+        {
+            return weapon.HitModifier;
         }
 
         private int GetQuirkModifier(ILogicUnit target, Weapon weapon)
@@ -373,22 +400,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return penalty;
         }
 
-        private int GetWeaponModifier(Weapon weapon)
-        {
-            return weapon.HitModifier;
-        }
-
-        private int GetMovementClassModifier(ILogicUnit target, Weapon weapon)
-        {
-            // Missile weapons ignore attacker movement modifier if the target is tagged
-            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
-            {
-                return 0;
-            }
-
-            return target.GetMovementClassModifierBasedOnUnitType();
-        }
-
         private int GetMovementClassModifierInternal()
         {
             if (Unit.MovementClass == MovementClass.Immobile)
@@ -397,17 +408,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
 
             return 0;
-        }
-
-        private int GetMovementModifierBase(ILogicUnit target, Weapon weapon)
-        {
-            // Missile weapons ignore defender movement modifier if the target is tagged
-            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
-            {
-                return 0;
-            }
-
-            return target.GetMovementModifier();
         }
 
         private int GetRangeModifier(RangeBracket rangeBracket)

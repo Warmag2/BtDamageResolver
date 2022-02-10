@@ -15,7 +15,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// </summary>
         /// <param name="targetDamageReport">The damage report of the target.</param>
         /// <param name="combatAction">The combat action to process the heat for.</param>
-        /// <returns>Nothing.</returns>
         protected void ResolveHeat(DamageReport targetDamageReport, CombatAction combatAction)
         {
             if (!IsHeatTracking())

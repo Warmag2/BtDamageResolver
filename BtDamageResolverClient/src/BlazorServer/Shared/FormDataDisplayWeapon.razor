@@ -4,7 +4,7 @@
 @inject CommonData _commonData
 
 @{
-    if (!string.IsNullOrEmpty(WeaponName) && _commonData.MapWeapon.ContainsKey(WeaponName))
+    if (!string.IsNullOrEmpty(WeaponName) && _commonData.DictionaryWeapon.ContainsKey(WeaponName))
     {
         _weapon = _commonData.FormWeapon(WeaponName, Ammo);
     }

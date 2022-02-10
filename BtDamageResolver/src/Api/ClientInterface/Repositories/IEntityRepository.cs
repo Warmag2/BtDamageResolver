@@ -21,6 +21,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         /// <param name="entity">The entity to add to the repository.</param>
         /// <exception cref="DataAccessException"> with the error code AlreadyExists if the entity already exists.</exception>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
+        /// <returns>A task which finished when the event is added into the repository.</returns>
         Task AddAsync(TEntity entity);
 
         /// <summary>
@@ -28,6 +29,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         /// </summary>
         /// <param name="entity">The entity to add to the repository or to update with new values.</param>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
+        /// <returns>A task which finished when the event is added into or updated in the repository.</returns>
         Task AddOrUpdateAsync(TEntity entity);
 
         /// <summary>
@@ -79,8 +81,10 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories
         /// <summary>
         /// Updates a <see cref="TEntity"/> in the repository.
         /// </summary>
+        /// <param name="entity">The entity to update.</param>
         /// <exception cref="DataAccessException"> with the error code NotFound if the entity does not exist.</exception>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
+        /// <returns>A task which finished when the event is updated in the repository.</returns>
         Task UpdateAsync(TEntity entity);
     }
 }

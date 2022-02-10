@@ -60,7 +60,7 @@
                 <tr>
                     <td>Type</td>
                     <td>
-                        <FormSelect Options="@_commonData.MapUnitType" SelectedOption="@UnitEntry.Type" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(UnitType unitType) => OnUnitTypeChanged(unitType)"></FormSelect>
+                        <FormSelect Options="@_commonData.DictionaryUnitType" SelectedOption="@UnitEntry.Type" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(UnitType unitType) => OnUnitTypeChanged(unitType)"></FormSelect>
                     </td>
                 </tr>
                 <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetTonnageHidden(UnitEntry.Type)))">
@@ -84,7 +84,7 @@
                 <tr>
                     <td>Features <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="() => _formPickSetFeatures.ShowAddDialog()">+</button></td>
                     <td>
-                        <FormPickSet @ref="_formPickSetFeatures" Options="@_commonData.MapFeature" ShowAddButton="@false" ContainedItems="@UnitEntry.Features" Editable="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(HashSet<UnitFeature> features) => OnFeaturesChanged(features)"></FormPickSet>
+                        <FormPickSet @ref="_formPickSetFeatures" Options="@_commonData.DictionaryFeature" ShowAddButton="@false" ContainedItems="@UnitEntry.Features" Editable="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(HashSet<UnitFeature> features) => OnFeaturesChanged(features)"></FormPickSet>
                     </td>
                 </tr>
             </table>
@@ -112,19 +112,19 @@
                 <tr>
                     <td>Movement</td>
                     <td>
-                        <FormRadio Options="@_commonData.CreateMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
+                        <FormRadio Options="@_commonData.FormMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
                     </td>
                 </tr>
                 <tr>
                     <td>Hexes moved</td>
                     <td>
-                        <FormRadio Options="@_commonData.CreateMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
+                        <FormRadio Options="@_commonData.FormMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
                     </td>
                 </tr>
                 <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetStanceHidden(UnitEntry.Type)))">
                     <td>Stance</td>
                     <td>
-                        <FormRadio Options="@_commonData.CreateMapStance(UnitEntry.Type)" SelectedOption="@UnitEntry.Stance" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Stance stance) => OnStanceChanged(stance)"></FormRadio>
+                        <FormRadio Options="@_commonData.FormMapStance(UnitEntry.Type)" SelectedOption="@UnitEntry.Stance" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Stance stance) => OnStanceChanged(stance)"></FormRadio>
                     </td>
                 </tr>
                 <tr>
@@ -171,7 +171,7 @@
                 <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))))">
                     <td>Cover</td>
                     <td>
-                        <FormRadio Options="@_commonData.CreateMapCover(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))" SelectedOption="@UnitEntry.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
+                        <FormRadio Options="@_commonData.FormMapCover(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))" SelectedOption="@UnitEntry.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
                     </td>
                 </tr>
 
@@ -280,7 +280,7 @@
 
             <!-- Modal body -->
             <div class="resolver_modal_body">
-                <FormComboBox Options="@_commonData.GetSavedUnits()" OnChanged="(string unitName) => OnLoadedUnitNameChanged(unitName)"></FormComboBox>
+                <FormComboBox Options="@_commonData.GetSavedUnitNames()" OnChanged="(string unitName) => OnLoadedUnitNameChanged(unitName)"></FormComboBox>
             </div>
 
             <!-- Modal footer -->
@@ -662,7 +662,7 @@
     private async Task ModalLoad()
     {
         ModalClose();
-        UnitEntry.ImportFromUnit(await _commonData.GetUnitEntry(_modalUnitName));
+        UnitEntry.ImportFromUnit(await _commonData.GetUnit(_modalUnitName));
         await OnLoad.InvokeAsync(UnitEntry);
     }
 

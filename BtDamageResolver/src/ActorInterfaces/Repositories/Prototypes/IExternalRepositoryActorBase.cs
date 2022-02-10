@@ -21,6 +21,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Repositories.Prototypes
         /// <param name="entity">The entity to add to the repository.</param>
         /// <exception cref="DataAccessException"> with the error code AlreadyExists if the entity already exists.</exception>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
+        /// <returns>A task which finishes when the item has been added to the repository.</returns>
         Task Add(TEntity entity);
 
         /// <summary>
@@ -28,6 +29,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Repositories.Prototypes
         /// </summary>
         /// <param name="entity">The entity to add to the repository or to update with new values.</param>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
+        /// <returns>A task which finishes when the item has been added to or updated in the repository.</returns>
         Task AddOrUpdate(TEntity entity);
 
         /// <summary>
@@ -57,8 +59,10 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Repositories.Prototypes
         /// <summary>
         /// Updates a <see cref="TEntity"/> in the repository governed by this repository actor.
         /// </summary>
+        /// <param name="entity">The entity to update.</param>
         /// <exception cref="DataAccessException"> with the error code NotFound if the entity does not exist.</exception>
         /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
+        /// <returns>A task which finishes when the item has been updated in the repository.</returns>
         Task Update(TEntity entity);
     }
 }

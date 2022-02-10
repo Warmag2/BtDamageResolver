@@ -307,6 +307,46 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             return damageAmount;
         }
 
+        private static List<DamagePacket> TransformDamagePacketsBasedOnTargetType(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target)
+        {
+            foreach (var damagePacket in damagePackets)
+            {
+                foreach (var entry in damagePacket.SpecialDamageEntries)
+                {
+                    if (entry.Type == SpecialDamageType.Emp && !target.CanTakeEmpHits())
+                    {
+                        damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive EMP damage, removing special damage entry", Type = AttackLogEntryType.Information });
+                        entry.Clear();
+                    }
+
+                    if (entry.Type == SpecialDamageType.Heat && !target.IsHeatTracking())
+                    {
+                        damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive Heat damage, removing special damage entry", Type = AttackLogEntryType.Information });
+                        entry.Clear();
+                    }
+                }
+            }
+
+            return damagePackets;
+        }
+
+        private static List<DamagePacket> TransformDamagePacketsBasedOnWeaponFeatures(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target, CombatAction combatAction)
+        {
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.ArmorPiercing, out var armorPiercingEntry) && target.CanTakeCriticalHits())
+            {
+                damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = armorPiercingEntry.Data, Type = SpecialDamageType.Critical });
+                damageReport.Log(new AttackLogEntry { Context = "Armor Piercing weapon feature adds a potential critical hit", Type = AttackLogEntryType.Information });
+            }
+
+            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeCharge, out var chargeEntry) && target.CanTakeMotiveHits())
+            {
+                damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = chargeEntry.Data, Type = SpecialDamageType.Motive });
+                damageReport.Log(new AttackLogEntry { Context = "Melee charge adds a potential motive hit", Type = AttackLogEntryType.Information });
+            }
+
+            return damagePackets;
+        }
+
         private async Task<int> ResolveTotalOutgoingDamageInternal(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
         {
             if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
@@ -334,46 +374,6 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
 
             throw new InvalidOperationException($"Weapon {combatAction.Weapon.Name} does not have a melee special feature even though it is of type melee.");
-        }
-
-        private List<DamagePacket> TransformDamagePacketsBasedOnTargetType(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target)
-        {
-            foreach (var damagePacket in damagePackets)
-            {
-                foreach (var entry in damagePacket.SpecialDamageEntries)
-                {
-                    if (entry.Type == SpecialDamageType.Emp && !target.CanTakeEmpHits())
-                    {
-                        damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive EMP damage, removing special damage entry", Type = AttackLogEntryType.Information });
-                        entry.Clear();
-                    }
-
-                    if (entry.Type == SpecialDamageType.Heat && !target.IsHeatTracking())
-                    {
-                        damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive Heat damage, removing special damage entry", Type = AttackLogEntryType.Information });
-                        entry.Clear();
-                    }
-                }
-            }
-
-            return damagePackets;
-        }
-
-        private List<DamagePacket> TransformDamagePacketsBasedOnWeaponFeatures(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target, CombatAction combatAction)
-        {
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.ArmorPiercing, out var armorPiercingEntry) && target.CanTakeCriticalHits())
-            {
-                damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = armorPiercingEntry.Data, Type = SpecialDamageType.Critical });
-                damageReport.Log(new AttackLogEntry { Context = "Armor Piercing weapon feature adds a potential critical hit", Type = AttackLogEntryType.Information });
-            }
-
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeCharge, out var chargeEntry) && target.CanTakeMotiveHits())
-            {
-                damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = chargeEntry.Data, Type = SpecialDamageType.Motive });
-                damageReport.Log(new AttackLogEntry { Context = "Melee charge adds a potential motive hit", Type = AttackLogEntryType.Information });
-            }
-
-            return damagePackets;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
-using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+﻿using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;

@@ -1,5 +1,8 @@
 ﻿namespace Faemiyah.BtDamageResolver.Api.Constants
 {
+    /// <summary>
+    /// Constants for unit logic.
+    /// </summary>
     public static class LogicConstants
     {
         /// <summary>

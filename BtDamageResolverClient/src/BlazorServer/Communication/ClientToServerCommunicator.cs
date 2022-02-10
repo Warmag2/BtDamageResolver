@@ -7,10 +7,20 @@ using Microsoft.Extensions.Logging;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 {
+    /// <summary>
+    /// A Redis implementation of client-to-server communicator.
+    /// </summary>
     public class ClientToServerCommunicator : RedisClientToServerCommunicator
     {
         private readonly HubConnection _hubConnection;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientToServerCommunicator"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="connectionString">The Redis connection string.</param>
+        /// <param name="playerId">The player ID.</param>
+        /// <param name="hubConnection">The SignalR hub connection.</param>
         public ClientToServerCommunicator(ILogger logger, string connectionString, string playerId, HubConnection hubConnection) : base(logger, connectionString, playerId)
         {
             _hubConnection = hubConnection;
@@ -41,9 +51,9 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
         }
 
         /// <inheritdoc />
-        public override async Task<bool> HandleGameEntries(byte[] gameList, Guid correlationId)
+        public override async Task<bool> HandleGameEntries(byte[] gameEntries, Guid correlationId)
         {
-            await _hubConnection.SendAsync(EventNames.GameEntries, _hubConnection.ConnectionId, gameList);
+            await _hubConnection.SendAsync(EventNames.GameEntries, _hubConnection.ConnectionId, gameEntries);
 
             return true;
         }

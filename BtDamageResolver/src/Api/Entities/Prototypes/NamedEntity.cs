@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.Prototypes
 {
+    /// <summary>
+    /// A named entity.
+    /// </summary>
     [Serializable]
     public abstract class NamedEntity : EntityBase<string>
     {

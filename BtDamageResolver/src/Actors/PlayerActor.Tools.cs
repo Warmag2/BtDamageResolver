@@ -7,6 +7,9 @@ using Orleans.Concurrency;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
+    /// <summary>
+    /// Player Actor methods for player tools.
+    /// </summary>
     public partial class PlayerActor
     {
         /// <inheritdoc />

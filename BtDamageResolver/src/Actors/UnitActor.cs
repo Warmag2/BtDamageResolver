@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Actors.States;
@@ -137,11 +136,11 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <inheritdoc />
         public async Task<bool> SendState(UnitEntry unit)
         {
-            if (unit.TimeStamp > _unitActorState.State.UpdateTimeStamp)
+            if (unit.TimeStamp > _unitActorState.State.TimeStamp)
             {
                 _logger.LogInformation("Updating unit data for unit {unit} with new data from {timestamp}.", unit.Id, unit.TimeStamp);
 
-                _unitActorState.State.UpdateTimeStamp = unit.TimeStamp;
+                _unitActorState.State.TimeStamp = unit.TimeStamp;
                 _unitActorState.State.UnitEntry = unit;
                 _unitActorState.State.Initialized = true;
                 await _unitActorState.WriteStateAsync();
@@ -156,7 +155,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                 "Discarding update event for unit {unitId}. Timestamp {stampEvent}, is older than existing timestamp {stampState}.",
                 unit.Id,
                 unit.TimeStamp,
-                _unitActorState.State.UpdateTimeStamp);
+                _unitActorState.State.TimeStamp);
             return false;
         }
 

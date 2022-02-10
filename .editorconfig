@@ -1,0 +1,72 @@
+[*.cs]
+csharp_style_var_for_built_in_types=true:silent
+csharp_style_var_when_type_is_apparent=true:silent
+csharp_style_var_elsewhere=true:silent
+
+##
+## StyleCop.Analyzers
+##
+
+# XML comment analysis is disabled due to project configuration
+dotnet_diagnostic.SA0001.severity = None
+
+# Closing parenthesis should not be preceded by a space
+dotnet_diagnostic.SA1009.severity = None
+
+# Prefix local calls with this
+dotnet_diagnostic.SA1101.severity = None
+
+# Put constructor initializers on their own line
+dotnet_diagnostic.SA1128.severity = None
+
+# Using directive should appear within a namespace declaration
+dotnet_diagnostic.SA1200.severity = None
+
+# Fields should begin with a lowercase letter
+dotnet_diagnostic.SA1306.severity = None
+    
+# Field '_blah' should not begin with an underscore
+dotnet_diagnostic.SA1309.severity = None
+    
+# Fields can indeed be private
+dotnet_diagnostic.SA1401.severity = None
+
+# Arithmetic operation precedence is self-explanatory
+dotnet_diagnostic.SA1407.severity = None
+
+# Use trailing comma in multi-line initializers
+dotnet_diagnostic.SA1413.severity = None
+
+# Enumeration items should be documented
+dotnet_diagnostic.SA1602.severity = None
+
+# Allow properties to contain any kind of documentation line.
+dotnet_diagnostic.SA1623.severity = None
+
+# No need to always set header
+dotnet_diagnostic.SA1633.severity = None
+
+##
+## SonarAnalyzers.CSharp
+##
+
+# Remove this commented out code
+dotnet_diagnostic.S125.severity = Suggestion
+
+# There should be no need to always merge nested ifs
+dotnet_diagnostic.S1066.severity = Suggestion
+
+# LINQ suggester is too aggressive
+dotnet_diagnostic.S3267.severity = Suggestion
+
+# LINQ suggester is too aggressive
+dotnet_diagnostic.S3358.severity = Suggestion
+
+# Don't want to provide assembly versions.
+dotnet_diagnostic.S3904.severity = None
+
+##
+## MSVS
+##
+
+dotnet_diagnostic.IDE0005.severity = Error

@@ -5,6 +5,9 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
 {
+    /// <summary>
+    /// Interface for server-to-client communication.
+    /// </summary>
     public interface IServerToClientCommunicator
     {
         /// <summary>
@@ -13,6 +16,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="clientName">The target client where to send data.</param>
         /// <param name="envelopeType">The envelope type.</param>
         /// <param name="data">The data to send.</param>
+        /// <typeparam name="TType">The type of the data to send.</typeparam>
         /// <remarks>
         /// Envelope type is a processing hint for the recipient.
         /// </remarks>
@@ -23,6 +27,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// </summary>
         /// <param name="envelopeType">The envelope type.</param>
         /// <param name="data">The data to send.</param>
+        /// <typeparam name="TType">The type of the data to send.</typeparam>
         /// <remarks>
         /// Envelope type is a processing hint for the recipient.
         /// </remarks>
@@ -34,6 +39,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators
         /// <param name="clientNames">The target clients where to send data.</param>
         /// <param name="envelopeType">The envelope type.</param>
         /// <param name="data">The data to send.</param>
+        /// <typeparam name="TType">The type of the data to send.</typeparam>
         /// <remarks>
         /// Envelope type is a processing hint for the recipient.
         /// </remarks>

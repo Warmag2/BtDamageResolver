@@ -2,6 +2,9 @@
 
 namespace Faemiyah.BtDamageResolver.Api.Entities
 {
+    /// <summary>
+    /// The connection response.
+    /// </summary>
     [Serializable]
     public class ConnectionResponse
     {

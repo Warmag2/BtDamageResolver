@@ -5,6 +5,9 @@ using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 {
+    /// <summary>
+    /// An ammo entry.
+    /// </summary>
     [Serializable]
     public class Ammo : NamedEntity
     {

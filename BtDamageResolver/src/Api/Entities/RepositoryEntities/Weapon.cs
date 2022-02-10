@@ -249,6 +249,11 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
             }
         }
 
+        private static Dictionary<TKey, TValue> Fill<TKey, TValue>(List<TKey> keys, TValue value)
+        {
+            return keys.ToDictionary(k => k, k => value);
+        }
+
         /// <summary>
         /// Provides a shallow copy of a weapon.
         /// </summary>
@@ -276,11 +281,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
                 Type = Type,
                 UsesAmmo = UsesAmmo
             };
-        }
-
-        private Dictionary<TKey, TValue> Fill<TKey, TValue>(List<TKey> keys, TValue value)
-        {
-            return keys.ToDictionary(k => k, k => value);
         }
     }
 }

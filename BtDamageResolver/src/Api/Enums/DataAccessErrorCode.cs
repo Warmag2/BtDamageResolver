@@ -2,6 +2,9 @@
 
 namespace Faemiyah.BtDamageResolver.Api.Enums
 {
+    /// <summary>
+    /// A data access error code.
+    /// </summary>
     [Serializable]
     public enum DataAccessErrorCode
     {

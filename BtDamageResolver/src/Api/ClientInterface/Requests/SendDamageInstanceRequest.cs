@@ -10,6 +10,9 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Requests
     [Serializable]
     public class SendDamageInstanceRequest : AuthenticatedRequest
     {
+        /// <summary>
+        /// The damage instance.
+        /// </summary>
         public DamageInstance DamageInstance { get; set; }
     }
 }

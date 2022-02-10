@@ -10,9 +10,11 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
     public class WeaponEntry
     {
         /// <summary>
-        /// Parameterless constructor.
+        /// Initializes a new instance of the <see cref="WeaponEntry"/> class.
         /// </summary>
-        /// <remarks>Randomizes ID when created.</remarks>
+        /// <remarks>
+        /// Randomizes ID when created.
+        /// </remarks>
         public WeaponEntry()
         {
             Id = Guid.NewGuid();

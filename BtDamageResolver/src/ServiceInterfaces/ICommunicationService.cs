@@ -18,6 +18,7 @@ namespace Faemiyah.BtDamageResolver.Services.Interfaces
         /// <remarks>
         /// The envelope type is a hint for the recipient on how to process the data.
         /// </remarks>
+        /// <returns>A task which finishes when the envelope has been sent.</returns>
         Task Send(string playerId, string envelopeType, object data);
 
         /// <summary>
@@ -29,6 +30,7 @@ namespace Faemiyah.BtDamageResolver.Services.Interfaces
         /// <remarks>
         /// The envelope type is a hint for the recipient on how to process the data.
         /// </remarks>
+        /// <returns>A task which finishes when the envelope has been sent to all recipients.</returns>
         Task SendToMany(List<string> playerIds, string envelopeType, object data);
 
         /// <summary>
@@ -39,6 +41,7 @@ namespace Faemiyah.BtDamageResolver.Services.Interfaces
         /// <remarks>
         /// The envelope type is a hint for the recipient on how to process the data.
         /// </remarks>
+        /// <returns>A task which finishes when the envelope has been sent to all clients.</returns>
         Task SendToAllClients(string envelopeType, object data);
     }
 }

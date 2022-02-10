@@ -3,7 +3,6 @@ using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
-using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
@@ -23,23 +22,33 @@ using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer
 {
+    /// <summary>
+    /// Startup class for service.
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Startup"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration to use.</param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
+        /// <summary>
+        /// The service configuration.
+        /// </summary>
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// For more information on how to configure your application, see https://go.microsoft.com/fwlink/?LinkID=398940.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
             var configuration = GetConfiguration("CommunicationSettings.json");
-            //var clusterOptions = configuration.GetSection("ClusterOptions").Get<FaemiyahClusterOptions>();
-            //var client = ConnectClient(clusterOptions);
-            //var commonData = new CommonData(client);
 
             services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
             services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
@@ -81,18 +90,11 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
             services.AddScoped<UserStateController>();
         }
 
-        private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
-        {
-            var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
-            if (options != null)
-            {
-                return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString);
-            }
-
-            throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// Configure service.
+        /// </summary>
+        /// <param name="app">The application builder.</param>
+        /// <param name="env">The web host environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -114,6 +116,18 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer
                 endpoints.MapHub<ClientHub>("/ClientHub");
                 endpoints.MapFallbackToPage("/_Host");
             });
+        }
+
+        private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider)
+            where TType : class, IEntity<string>
+        {
+            var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
+            if (options != null)
+            {
+                return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString);
+            }
+
+            throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
         }
     }
 }

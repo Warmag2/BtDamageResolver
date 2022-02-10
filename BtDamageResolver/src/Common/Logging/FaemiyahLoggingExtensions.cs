@@ -20,9 +20,10 @@ namespace Faemiyah.BtDamageResolver.Common.Logging
     public static class FaemiyahLoggingExtensions
     {
         /// <summary>
-        /// Enables Thor system logging features (Currently ELK stack)
+        /// Register a Faemiyah LoggerFactory to the service builder.
         /// </summary>
         /// <param name="builder">The <see cref="ILoggingBuilder"/> to use.</param>
+        /// <returns>A logging builder.</returns>
         public static ILoggingBuilder AddFaemiyahLogging(this ILoggingBuilder builder)
         {
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerFactory, FaemiyahLoggerFactory>());
@@ -30,10 +31,11 @@ namespace Faemiyah.BtDamageResolver.Common.Logging
         }
 
         /// <summary>
-        /// Register FaemiyahLoggerFactory
+        /// Register a Faemiyah LoggerFactory to the service builder.
         /// </summary>
         /// <param name="builder">The <see cref="ILoggingBuilder"/> to use.</param>
         /// <param name="configure">A delegate to configure the <see cref="FaemiyahLoggingOptions"/>.</param>
+        /// <returns>A logging builder.</returns>
         public static ILoggingBuilder AddFaemiyahLogging(this ILoggingBuilder builder, Action<FaemiyahLoggingOptions> configure)
         {
             if (configure == null)

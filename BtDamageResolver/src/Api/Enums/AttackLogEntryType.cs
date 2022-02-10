@@ -2,6 +2,9 @@
 
 namespace Faemiyah.BtDamageResolver.Api.Enums
 {
+    /// <summary>
+    /// An attack log entry type.
+    /// </summary>
     [Serializable]
     public enum AttackLogEntryType
     {

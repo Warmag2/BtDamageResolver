@@ -46,9 +46,9 @@
             <br />
             @location.Value.Sum()
 
-            @if (DamagePaperDoll.CriticalDamageCollection.ContainsKey(location.Key))
+            @if (DamagePaperDoll.DamageCollectionCritical.ContainsKey(location.Key))
             {
-                foreach (var criticalDamageEntry in DamagePaperDoll.CriticalDamageCollection[location.Key])
+                foreach (var criticalDamageEntry in DamagePaperDoll.DamageCollectionCritical[location.Key])
                 {
                     <br />
                     switch (criticalDamageEntry.Type)
@@ -91,7 +91,7 @@
         </div>
         }
 
-        @foreach (var specialDamageEntryGroup in DamagePaperDoll.SpecialDamageCollection.SelectMany(p => p.Value).GroupBy(s => s.Type))
+        @foreach (var specialDamageEntryGroup in DamagePaperDoll.DamageCollectionSpecial.SelectMany(p => p.Value).GroupBy(s => s.Type))
         {
             <div class="damageentry">
                 <b>

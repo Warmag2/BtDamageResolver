@@ -11,6 +11,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories
     /// </summary>
     public class ClusterTableRepositoryActor : ExternalRepositoryActorBase<ClusterTable, string>, IClusterTableRepository
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClusterTableRepositoryActor"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="repository">The cluster damage repository.</param>
         public ClusterTableRepositoryActor(ILogger<ClusterTableRepositoryActor> logger, CachedEntityRepository<ClusterTable, string> repository) : base(logger, repository)
         {
         }

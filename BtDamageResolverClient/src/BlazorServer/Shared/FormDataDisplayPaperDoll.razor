@@ -93,9 +93,9 @@
 
     protected override void OnInitialized()
     {
-        if (!string.IsNullOrEmpty(PaperDollName) && _commonData.MapPaperDoll.ContainsKey(PaperDollName))
+        if (!string.IsNullOrEmpty(PaperDollName) && _commonData.DictionaryPaperDoll.ContainsKey(PaperDollName))
         {
-            _paperDoll = _commonData.MapPaperDoll[PaperDollName];
+            _paperDoll = _commonData.DictionaryPaperDoll[PaperDollName];
         }
     }
 }

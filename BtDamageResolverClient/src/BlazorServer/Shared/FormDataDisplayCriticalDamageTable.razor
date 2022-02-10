@@ -59,9 +59,9 @@
 
     protected override void OnInitialized()
     {
-        if (!string.IsNullOrEmpty(CriticalDamageTableName) && _commonData.MapCriticalDamageTable.ContainsKey(CriticalDamageTableName))
+        if (!string.IsNullOrEmpty(CriticalDamageTableName) && _commonData.DictionaryCriticalDamageTable.ContainsKey(CriticalDamageTableName))
         {
-            _criticalDamageTable = _commonData.MapCriticalDamageTable[CriticalDamageTableName];
+            _criticalDamageTable = _commonData.DictionaryCriticalDamageTable[CriticalDamageTableName];
         }
     }
 }

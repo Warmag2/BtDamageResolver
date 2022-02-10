@@ -75,7 +75,7 @@
                         @weaponEntry.WeaponName
                     </td>
                     <td>
-                        @_commonData.MapWeapon[weaponEntry.WeaponName].Ammo[weaponEntry.Ammo]
+                        @_commonData.DictionaryWeapon[weaponEntry.WeaponName].Ammo[weaponEntry.Ammo]
                     </td>
                 </tr>
             }
@@ -97,7 +97,7 @@
     {
         if (!string.IsNullOrEmpty(UnitName))
         {
-            _unitEntry = await _commonData.GetUnitEntry(UnitName);
+            _unitEntry = await _commonData.GetUnit(UnitName);
         }
     }
 

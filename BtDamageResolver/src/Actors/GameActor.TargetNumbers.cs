@@ -9,6 +9,9 @@ using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
+    /// <summary>
+    /// Game actor methods for target number calculation.
+    /// </summary>
     public partial class GameActor
     {
         /// <summary>

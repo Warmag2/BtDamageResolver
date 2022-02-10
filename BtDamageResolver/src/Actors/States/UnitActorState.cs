@@ -9,16 +9,28 @@ namespace Faemiyah.BtDamageResolver.Actors.States
     [Serializable]
     public class UnitActorState
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnitActorState"/> class.
+        /// </summary>
         public UnitActorState()
         {
             // When an unit is created, set this to zero so that we get all updates
-            UpdateTimeStamp = DateTime.MinValue;
+            TimeStamp = DateTime.MinValue;
         }
 
+        /// <summary>
+        /// Is the unit actor initialized.
+        /// </summary>
         public bool Initialized { get; set; }
 
+        /// <summary>
+        /// The unit entry for this unit actor.
+        /// </summary>
         public UnitEntry UnitEntry { get; set; }
 
-        public DateTime UpdateTimeStamp { get; set; }
+        /// <summary>
+        /// The update timestamp.
+        /// </summary>
+        public DateTime TimeStamp { get; set; }
     }
 }

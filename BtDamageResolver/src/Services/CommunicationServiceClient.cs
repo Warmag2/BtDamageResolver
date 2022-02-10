@@ -12,8 +12,9 @@ namespace Faemiyah.BtDamageResolver.Services
     public class CommunicationServiceClient : GrainServiceClient<ICommunicationService>, ICommunicationServiceClient
     {
         /// <summary>
-        /// Constructor for the BtDamageResolver server-to-client communication service.
+        /// Initializes a new instance of the <see cref="CommunicationServiceClient"/> class.
         /// </summary>
+        /// <param name="serviceProvider">The service provider.</param>
         public CommunicationServiceClient(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }

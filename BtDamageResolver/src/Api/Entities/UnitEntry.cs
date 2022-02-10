@@ -359,7 +359,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
             return copy;
         }
 
-        private string GenerateName(string name)
+        private static string GenerateName(string name)
         {
             var numbersAtEndOfString = name.AsEnumerable().Reverse().TakeWhile(char.IsNumber).Reverse().ToArray();
 

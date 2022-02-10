@@ -8,7 +8,7 @@
 @implements IDisposable
 
 <div class="resolver_div_login">
-    @if (!_userStateController.ConnectedToServer)
+    @if (!_userStateController.IsConnectedToServer)
     {
         <div class="resolver_div_componentrow">
             <div class="resolver_div_componentcell">
@@ -111,7 +111,7 @@
 
     private void RefreshGameList()
     {
-        if (!_userStateController.ConnectedToGame)
+        if (!_userStateController.IsConnectedToGame)
         {
             var games = _commonData.GetGameEntries();
 

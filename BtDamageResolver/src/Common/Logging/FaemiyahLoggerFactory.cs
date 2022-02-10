@@ -19,7 +19,7 @@ namespace Faemiyah.BtDamageResolver.Common.Logging
     /// </summary>
     public class FaemiyahLoggerFactory : ILoggerFactory, ILoggerProvider
     {
-        private static readonly SemaphoreSlim LogCreationSemaphore = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim LogCreationSemaphore = new(1, 1);
         private readonly ConcurrentDictionary<string, ILogger> _loggers;
         private readonly SerilogLoggerFactory _logFactory;
 
@@ -31,17 +31,6 @@ namespace Faemiyah.BtDamageResolver.Common.Logging
         {
             _logFactory = new SerilogLoggerFactory(InitializeLogging(options.Value ?? new FaemiyahLoggingOptions()));
             _loggers = new ConcurrentDictionary<string, ILogger>();
-        }
-
-        /// <summary>
-        /// Logs an information entry about a setting value.
-        /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="settingKey">The setting key.</param>
-        /// <param name="settingValue">The setting value.</param>
-        public static void LogInfoSettings(ILogger logger, string settingKey, object settingValue)
-        {
-            logger.LogInformation("Settings :: {0}={1}", settingKey, settingValue);
         }
 
         /// <inheritdoc />

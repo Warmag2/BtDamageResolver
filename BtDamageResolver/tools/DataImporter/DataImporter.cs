@@ -42,18 +42,12 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
         /// <returns>A task which finishes when data importing is completed.</returns>
         public async Task Work(DataImportOptions options)
         {
-            if (options.Extra)
-            {
-                // Nothing for now
-                return;
-            }
-
             var data = FetchData(options);
-            _logger.LogInformation($"{data.Count} data objects matched the filter(s)");
+            _logger.LogInformation("{count} data objects matched the filter(s)", data.Count);
 
             foreach (var dataObject in data)
             {
-                _logger.LogInformation(JsonConvert.SerializeObject(dataObject));
+                _logger.LogInformation("{object}", JsonConvert.SerializeObject(dataObject));
             }
 
             if (options.Import)

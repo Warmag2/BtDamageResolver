@@ -10,7 +10,7 @@
     var targetNumberUpdate = _userStateController.GetTargetNumber(WeaponEntry.Id);
     var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
-    var mapWeaponAmmo = _commonData.CreateMapWeaponAmmo(WeaponEntry.WeaponName);
+    var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName);
     
     if(WeaponEntry.Ammo == null || !mapWeaponAmmo.ContainsKey(WeaponEntry.Ammo))
     {
@@ -32,7 +32,7 @@
         }
         else
         {
-            <FormComboBox Options="@_commonData.CreateMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
+            <FormComboBox Options="@_commonData.FormMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
         }
     </td>
     <td>
@@ -80,7 +80,7 @@
         _weaponAmmo = WeaponEntry.Ammo;
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
-        _userStateController.OnTargetNumbersReceived += StateHasChanged;
+        _userStateController.OnTargetNumbersUpdated += StateHasChanged;
     }
 
     private void DeleteWeapon()
@@ -189,6 +189,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnTargetNumbersReceived -= StateHasChanged;
+        _userStateController.OnTargetNumbersUpdated -= StateHasChanged;
     }
 }

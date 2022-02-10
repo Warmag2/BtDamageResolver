@@ -3,6 +3,9 @@ using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities
 {
+    /// <summary>
+    /// A weapon feature entry.
+    /// </summary>
     [Serializable]
     public class WeaponFeatureEntry
     {
@@ -16,9 +19,10 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// </summary>
         public WeaponFeature Type { get; set; }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
-            var dataString = Data == null ? "null" : Data;
+            var dataString = Data ?? "null";
             return $"{Type} ({dataString})";
         }
     }

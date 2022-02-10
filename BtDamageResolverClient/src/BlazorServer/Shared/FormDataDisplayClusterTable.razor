@@ -68,9 +68,9 @@
 
     protected override void OnInitialized()
     {
-        if (!string.IsNullOrEmpty(ClusterTableName) && _commonData.MapClusterTable.ContainsKey(ClusterTableName))
+        if (!string.IsNullOrEmpty(ClusterTableName) && _commonData.DictionaryClusterTable.ContainsKey(ClusterTableName))
         {
-            _clusterTable = _commonData.MapClusterTable[ClusterTableName];
+            _clusterTable = _commonData.DictionaryClusterTable[ClusterTableName];
         }
     }
 }

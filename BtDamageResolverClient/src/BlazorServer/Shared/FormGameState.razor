@@ -5,7 +5,7 @@
 
 <ContainerAccordion Enabled="@_sectionEnabledYourUnits" Title="Units">
     <h2 class="resolver_header">
-        @_userStateController.PlayerName @(_userStateController.ConnectedToGame ? $" - {_userStateController.GameState.GameId} - Turn {_userStateController.GameState.Turn}" : string.Empty)
+        @_userStateController.PlayerName @(_userStateController.IsConnectedToGame ? $" - {_userStateController.GameState.GameId} - Turn {_userStateController.GameState.Turn}" : string.Empty)
     </h2>
     <FormPlayerState></FormPlayerState>
 </ContainerAccordion>

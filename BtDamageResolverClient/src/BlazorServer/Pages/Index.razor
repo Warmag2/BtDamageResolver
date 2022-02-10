@@ -21,39 +21,39 @@
     </verbatim>
 </div>
 
-<div style="@VisualStyleController.HideElement(_userStateController.ConnectedToGame)">
+<div style="@VisualStyleController.HideElement(_userStateController.IsConnectedToGame)">
     <FormServer @key="_userStateController.PlayerName" @ref="_formServer"></FormServer>
 </div>
 
-<ContainerTabSelector Enabled="@_userStateController.ConnectedToGame" SelectedTab="@_selectedTab" TabNames="@_tabs" OnTabSelected="@SelectTab">
+<ContainerTabSelector Enabled="@_userStateController.IsConnectedToGame" SelectedTab="@_selectedTab" TabNames="@_tabs" OnTabSelected="@SelectTab">
     <div class="resolver_div_tab resolver_style_alignright">
         <button @onclick="@LeaveGame" class="resolver_button_leave">X</button>
     </div>
 </ContainerTabSelector>
 
-<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="Data" TabSelection="@_selectedTab">
+<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Data" TabSelection="@_selectedTab">
     <FormData></FormData>
 </ContainerTab>
 
-<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
+<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
 <FormGameState></FormGameState>}
 </ContainerTab>
 
-<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
+<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
 <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>}
 </ContainerTab>
 
-<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
+<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
     @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
     {
 <FormDamageReports OnlyNewest="false"></FormDamageReports>}
 </ContainerTab>
 
-<ContainerTab Enabled="_userStateController.ConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
+<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
     @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
     {
 <FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>}
@@ -89,14 +89,14 @@
             if (connectionResponse.IsConnected)
             {
                 _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
-                _userStateController.ConnectedToServer = true;
+                _userStateController.IsConnectedToServer = true;
                 _userStateController.PlayerName = connectionResponse.PlayerId;
                 await _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword });
             }
             else
             {
                 _resolverCommunicator.SetAuthenticationToken(Guid.Empty);
-                _userStateController.ConnectedToServer = false;
+                _userStateController.IsConnectedToServer = false;
                 _userStateController.GameState = null;
                 _userStateController.PlayerName = null;
                 _userStateController.PlayerOptions = null;
@@ -148,9 +148,9 @@
             StateHasChanged();
         });
 
-        _userStateController.OnPlayerStateUpdated += UpdatePlayerState;
-        _userStateController.OnGameOptionsUpdated += UpdateGameOptions;
-        _userStateController.OnPlayerOptionsUpdated += UpdatePlayerOptions;
+        _userStateController.OnPlayerStateUpdated += SendPlayerState;
+        _userStateController.OnGameOptionsUpdated += SendGameOptions;
+        _userStateController.OnPlayerOptionsUpdated += SendPlayerOptions;
         _userStateController.OnDamageInstanceRequested += SendDamageInstance;
     }
 
@@ -175,17 +175,17 @@
         _resolverCommunicator.SendDamageInstance(_userStateController.DamageInstance);
     }
 
-    private void UpdatePlayerState()
+    private void SendPlayerState()
     {
         _resolverCommunicator.SendPlayerState(_userStateController.PlayerState);
     }
 
-    private void UpdateGameOptions()
+    private void SendGameOptions()
     {
         _resolverCommunicator.SendGameOptions(_userStateController.GameOptions);
     }
 
-    private void UpdatePlayerOptions()
+    private void SendPlayerOptions()
     {
         _resolverCommunicator.SendPlayerOptions(_userStateController.PlayerOptions);
     }
@@ -202,9 +202,9 @@
 
     public void Dispose()
     {
-        _userStateController.OnPlayerStateUpdated -= UpdatePlayerState;
-        _userStateController.OnGameOptionsUpdated -= UpdateGameOptions;
-        _userStateController.OnPlayerOptionsUpdated -= UpdatePlayerOptions;
+        _userStateController.OnPlayerStateUpdated -= SendPlayerState;
+        _userStateController.OnGameOptionsUpdated -= SendGameOptions;
+        _userStateController.OnPlayerOptionsUpdated -= SendPlayerOptions;
         _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
         _hubConnection?.DisposeAsync();
     }

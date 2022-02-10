@@ -2,6 +2,9 @@
 
 namespace Faemiyah.BtDamageResolver.Api.Enums
 {
+    /// <summary>
+    /// Unit types.
+    /// </summary>
     [Serializable]
     public enum UnitType
     {

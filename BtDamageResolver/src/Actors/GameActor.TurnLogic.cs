@@ -18,6 +18,57 @@ namespace Faemiyah.BtDamageResolver.Actors
     /// </summary>
     public partial class GameActor
     {
+        private static void ProcessUnitHeat(List<DamageReport> damageReports, UnitEntry unit)
+        {
+            var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitId == unit.Id).Sum(damageReport => damageReport.AttackerHeat);
+
+            switch (unit.MovementClass)
+            {
+                case MovementClass.Immobile:
+                case MovementClass.Stationary:
+                    heatGeneratedByThisUnit += 0;
+                    break;
+                case MovementClass.Normal:
+                    heatGeneratedByThisUnit += 1;
+                    break;
+                case MovementClass.Fast:
+                    heatGeneratedByThisUnit += 2;
+                    break;
+                case MovementClass.Masc:
+                    heatGeneratedByThisUnit += 5;
+                    break;
+                case MovementClass.OutOfControl:
+                    heatGeneratedByThisUnit += 2;
+                    break;
+                case MovementClass.Jump:
+                    heatGeneratedByThisUnit += Math.Max(3, unit.Movement);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(unit.Name, $"The movement class of the unit, {unit.MovementClass} is not handled.");
+            }
+
+            // Combat computer sinks 4 heat by itself
+            if (unit.HasFeature(UnitFeature.CombatComputer))
+            {
+                heatGeneratedByThisUnit -= 4;
+            }
+
+            // Only apply heat if the generation is positive and the unit tracks heat.
+            // Combat computer and other heat generation reductions never take the heat below 0.
+            if (heatGeneratedByThisUnit > 0)
+            {
+                unit.Heat += heatGeneratedByThisUnit;
+            }
+
+            unit.Heat -= unit.Sinks;
+
+            // Sinks won't take the heat to negative levels
+            if (unit.Heat < 0)
+            {
+                unit.Heat = 0;
+            }
+        }
+
         private async Task CheckGameStateUpdateEvents(List<Guid> updatedUnits = null)
         {
             // Don't check against the player timestamp. If we received new data, then this actor state has updated by definition
@@ -161,57 +212,6 @@ namespace Faemiyah.BtDamageResolver.Actors
                     var unitActor = GrainFactory.GetGrain<IUnitActor>(unit.Id);
                     await unitActor.SendState(unit);
                 }
-            }
-        }
-
-        private void ProcessUnitHeat(List<DamageReport> damageReports, UnitEntry unit)
-        {
-            var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitId == unit.Id).Sum(damageReport => damageReport.AttackerHeat);
-
-            switch (unit.MovementClass)
-            {
-                case MovementClass.Immobile:
-                case MovementClass.Stationary:
-                    heatGeneratedByThisUnit += 0;
-                    break;
-                case MovementClass.Normal:
-                    heatGeneratedByThisUnit += 1;
-                    break;
-                case MovementClass.Fast:
-                    heatGeneratedByThisUnit += 2;
-                    break;
-                case MovementClass.Masc:
-                    heatGeneratedByThisUnit += 5;
-                    break;
-                case MovementClass.OutOfControl:
-                    heatGeneratedByThisUnit += 2;
-                    break;
-                case MovementClass.Jump:
-                    heatGeneratedByThisUnit += Math.Max(3, unit.Movement);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(unit.Name, $"The movement class of the unit, {unit.MovementClass} is not handled.");
-            }
-
-            // Combat computer sinks 4 heat by itself
-            if (unit.HasFeature(UnitFeature.CombatComputer))
-            {
-                heatGeneratedByThisUnit -= 4;
-            }
-
-            // Only apply heat if the generation is positive and the unit tracks heat.
-            // Combat computer and other heat generation reductions never take the heat below 0.
-            if (heatGeneratedByThisUnit > 0)
-            {
-                unit.Heat += heatGeneratedByThisUnit;
-            }
-
-            unit.Heat -= unit.Sinks;
-
-            // Sinks won't take the heat to negative levels
-            if (unit.Heat < 0)
-            {
-                unit.Heat = 0;
             }
         }
 

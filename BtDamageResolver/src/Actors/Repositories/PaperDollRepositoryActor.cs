@@ -11,6 +11,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories
     /// </summary>
     public class PaperDollRepositoryActor : ExternalRepositoryActorBase<PaperDoll, string>, IPaperDollRepository
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PaperDollRepositoryActor"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="repository">The paper doll repository.</param>
         public PaperDollRepositoryActor(ILogger<PaperDollRepositoryActor> logger, CachedEntityRepository<PaperDoll, string> repository) : base(logger, repository)
         {
         }

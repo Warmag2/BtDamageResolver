@@ -11,6 +11,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories
     /// </summary>
     public class WeaponRepositoryActor : ExternalRepositoryActorBase<Weapon, string>, IWeaponRepository
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeaponRepositoryActor"/> class.
+        /// </summary>
+        /// <param name="logger">The logging interface.</param>
+        /// <param name="repository">The weapon repository.</param>
         public WeaponRepositoryActor(ILogger<WeaponRepositoryActor> logger, CachedEntityRepository<Weapon, string> repository) : base(logger, repository)
         {
         }

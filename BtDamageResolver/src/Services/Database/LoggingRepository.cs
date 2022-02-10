@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Data;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Faemiyah.BtDamageResolver.Services.Events;

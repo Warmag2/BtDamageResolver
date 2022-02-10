@@ -14,7 +14,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Entities
         /// Initializes a new instance of the <see cref="DamagePacket"/> class.
         /// </summary>
         /// <param name="damageAmount">The amount of damage for this packet.</param>
-        /// <param name="specialDamageEntry">Special damage for this packet, if any.</param>
+        /// <param name="specialDamageEntries">Special damage entries for this packet, if any.</param>
         public DamagePacket(int damageAmount, List<SpecialDamageEntry> specialDamageEntries)
         {
             Damage = damageAmount;
@@ -31,8 +31,14 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Entities
         {
         }
 
+        /// <summary>
+        /// The damage amount.
+        /// </summary>
         public int Damage { get; set; }
 
+        /// <summary>
+        /// The special damage entries.
+        /// </summary>
         public List<SpecialDamageEntry> SpecialDamageEntries { get; set; }
     }
 }
