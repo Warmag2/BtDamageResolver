@@ -36,7 +36,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         public SortedDictionary<int, bool> Visibility { get; set; }
 
         /// <summary>
-        /// Adds a damage report to this damage report collection.
+        /// Try to add a damage report to this damage report collection.
         /// </summary>
         /// <param name="damageReport">The damage report to add.</param>
         /// <returns><b>True</b> if the damage report was successfully added, <b>false</b> otherwise.</returns>
@@ -63,10 +63,12 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// Try to add multiple entries to this damage report collection.
         /// </summary>
         /// <param name="damageReports">The damage reports to add.</param>
-        /// <returns><b>True</b> if any reports were added, <b>false</b> otherwise.</returns>
-        public bool AddRange(List<DamageReport> damageReports)
+        public void AddRange(List<DamageReport> damageReports)
         {
-            return damageReports.Aggregate(false, (current, damageReport) => current || Add(damageReport));
+            foreach (var damageReport in damageReports)
+            {
+                Add(damageReport);
+            }
         }
 
         /// <summary>

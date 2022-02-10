@@ -20,6 +20,9 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// </remarks>
         public DamagePaperDoll()
         {
+            DamageCollection = new Dictionary<Location, List<int>>();
+            DamageCollectionSpecial = new Dictionary<Location, List<SpecialDamageEntry>>();
+            DamageCollectionCritical = new Dictionary<Location, List<CriticalDamageEntry>>();
         }
 
         /// <summary>
