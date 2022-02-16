@@ -1,1 +1,7 @@
 ﻿* text auto
+*.cdr -text
+*.exe -text
+*.dll -text
+*.pdf -text
+*.png -text
+*.svg -text
