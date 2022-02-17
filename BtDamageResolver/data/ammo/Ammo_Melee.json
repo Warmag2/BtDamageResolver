@@ -1,6 +1,7 @@
 ﻿[
   {
     "Name": "Melee-APStrike",
+    "HitModifier": 0,
     "SpecialFeatures": [ { "Data": "$tonnage/10", "Type": "Melee" }, { "Data": "0", "Type": "ArmorPiercing" } ]
   }
 ]
