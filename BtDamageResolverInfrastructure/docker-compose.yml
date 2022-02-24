@@ -65,7 +65,6 @@ services:
     restart: on-failure
     networks:
       - resolvernet
-    restart: on-failure
 
   # Grafana
   grafana:

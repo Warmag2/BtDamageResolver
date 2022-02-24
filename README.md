@@ -23,6 +23,20 @@ This will create a compliation docker image, create all BtDamageResolver project
 
 After the import data succeeds (should take a few seconds) the web client should be available and fully operational on port 8787 of localhost.
 
+### Troubleshooting
+
+> Unexpected characters in the .env file
+
+This can be caused by Docker Desktop. Disabling "Docker Compose V2" from the settings of Docker Desktop might fix this.
+
+> Build can't find the NuGet files
+
+If you downloaded the NuGet packages from GitHub manually, be sure that you renamed them correctly. The name should also contain the version number.
+
+> Unhandled exception rendering component: Cannot assign requested address (localhost:8080)
+
+In some setups, Docker does always allow accessing localhost addresses. You can replace "localhost" with "host.docker.internal".
+
 ### Services installed
 
 The following services are now available and running in containers:
