@@ -29,7 +29,6 @@
             <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowToolsOnMainScreenByDefault" OnChanged="@OnToolVisibilityChanged">Tools</FormCheckbox>
             <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormCheckbox>
             <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Other players' damage reports</FormCheckbox>
         </div>
 
         <h3 class="resolver_header">
@@ -38,6 +37,7 @@
 
         <div class="resolver_div_options">
             <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Attack logs</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Other players' damage reports</FormCheckbox>
         </div>
 
 
