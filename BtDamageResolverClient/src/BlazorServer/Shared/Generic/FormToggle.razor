@@ -1,7 +1,6 @@
-﻿<label class="resolver_label_toggle">
-  <span>@ChildContent</span>
-  <input type="checkbox" disabled="@Disabled" @bind="CheckedInternal">
-  <span class="checkmark"></span>
+﻿<label class="resolver_label_toggleradio">
+    <input class="" type="checkbox" disabled="@Disabled" @bind="CheckedInternal">
+    <span class="resolver_span_toggleradio @(Disabled ? "disabled" : string.Empty) @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")">@ChildContent</span>
 </label>
 
 @code

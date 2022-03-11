@@ -96,9 +96,9 @@
 }
 
 /*******************************************************************************
-    Checkbox and radio inputs
+    Toggle and radio inputs
 *******************************************************************************/
-.resolver_label_checkboxradio {
+.resolver_label_toggleradio {
     position: relative;
     float: left;
     padding: 0;
@@ -113,8 +113,7 @@
 }
 
 /* Hide the browser's default checkbox */
-
-.resolver_label_checkboxradio input {
+.resolver_label_toggleradio input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
@@ -122,7 +121,7 @@
     width: 0;
 }
 
-.resolver_span_checkboxradio {
+.resolver_span_toggleradio {
     display: inline-block;
     position: relative;
     padding-left: 4px;
@@ -135,52 +134,52 @@
     color: var(--color_text_unselected);
 }
 
-.resolver_label_checkboxradio:hover input:checked ~ .resolver_span_checkboxradio {
+.resolver_label_toggleradio:hover input:checked ~ .resolver_span_toggleradio {
     background-color: var(--color_bg_hover_selected);
     color: var(--color_text_hover_selected);
 }
 
-.resolver_label_checkboxradio:hover input ~ .resolver_span_checkboxradio {
+.resolver_label_toggleradio:hover input ~ .resolver_span_toggleradio {
     background-color: var(--color_bg_hover);
     color: var(--color_text_hover);
 }
 
-.resolver_label_checkboxradio input:checked ~ .resolver_span_checkboxradio {
+.resolver_label_toggleradio input:checked ~ .resolver_span_toggleradio {
     background-color: var(--color_bg_selected);
     color: var(--color_text_selected);
 }
 
-.resolver_span_checkboxradio.reminder {
+.resolver_span_toggleradio.reminder {
     background-color: var(--color_bg_reminder);
     color: var(--color_text_reminder);
 }
 
-.resolver_label_checkboxradio input:checked ~ .resolver_span_checkboxradio.reminder {
+.resolver_label_toggleradio input:checked ~ .resolver_span_toggleradio.reminder {
     background-color: var(--color_bg_reminder_selected);
     color: var(--color_text_reminder_selected);
 }
 
-.resolver_span_checkboxradio.disabled {
+.resolver_span_toggleradio.disabled {
     background-color: var(--color_bg_disabled);
     color: var(--color_text_disabled);
 }
 
-.resolver_label_checkboxradio input:checked ~ .resolver_span_checkboxradio.disabled {
+.resolver_label_toggleradio input:checked ~ .resolver_span_toggleradio.disabled {
     background-color: var(--color_bg_disabled_selected);
     color: var(--color_text_disabled_selected);
 }
 
-.resolver_span_checkboxradio.error {
+.resolver_span_toggleradio.error {
     background: var(--color_bg_error);
     color: var(--color_text_error);
 }
 
 /*******************************************************************************
-    Toggle input
+    CheckBox input
 *******************************************************************************/
 
 /* Customize the label (the container) */
-.resolver_label_toggle {
+.resolver_label_checkbox {
     display: block;
     position: relative;
     padding-left: 35px;
@@ -194,7 +193,7 @@
 }
 
 /* Hide the browser's default checkbox */
-.resolver_label_toggle input {
+.resolver_label_checkbox input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
@@ -209,23 +208,27 @@
     left: 0;
     height: 25px;
     width: 25px;
-    border: 1px solid #ccc !important;
+    border: 1px solid var(--color_text_selected) !important;
 }
 
 /* On mouse-over, add a grey background color */
-.resolver_label_toggle:hover input ~ .checkmark {
-    background-color: #ccc;
+.resolver_label_checkbox:hover input ~ .checkmark {
+    background-color: var(--color_bg_hover);
+}
+
+/* On mouse-over, add a background color when selected */
+.resolver_label_checkbox:hover input:checked ~ .checkmark {
+    background-color: var(--color_bg_hover_selected);
 }
 
 /* When the checkbox is not checked, add a khaki background color */
-.resolver_label_toggle input ~ .checkmark {
-    background-color: khaki;
+.resolver_label_checkbox input ~ .checkmark {
+    background-color: var(--color_bg_unselected);
 }
 
 /* When the checkbox is checked, add a lawngreen background */
-.resolver_label_toggle input:checked ~ .checkmark {
-    background-color: #2196F3;
-    background-color: lawngreen;
+.resolver_label_checkbox input:checked ~ .checkmark {
+    background-color: var(--color_bg_selected);
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
@@ -236,12 +239,12 @@
 }
 
 /* Show the checkmark when checked */
-.resolver_label_toggle input:checked ~ .checkmark:after {
+.resolver_label_checkbox input:checked ~ .checkmark:after {
     display: block;
 }
 
 /* Style the checkmark/indicator */
-.resolver_label_toggle .checkmark:after {
+.resolver_label_checkbox .checkmark:after {
     left: 9px;
     top: 5px;
     width: 5px;

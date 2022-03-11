@@ -6,9 +6,9 @@
 
 @foreach (var option in Options)
 {
-    <label class="resolver_label_checkboxradio">
+    <label class="resolver_label_toggleradio">
         <input type="radio" checked="@SelectedOption.Equals(option.Value)" name="@_name" value="@option.Key" disabled="@Disabled" @onchange="SelectionChanged">
-        <span class="resolver_span_checkboxradio @(invalidSelection ? "error" : string.Empty) @(Disabled ? "disabled" : string.Empty) @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" @onclick="UpdateTimestamp">@option.Key</span>
+        <span class="resolver_span_toggleradio @(invalidSelection ? "error" : string.Empty) @(Disabled ? "disabled" : string.Empty) @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" @onclick="UpdateTimestamp">@option.Key</span>
     </label>
 }
 
