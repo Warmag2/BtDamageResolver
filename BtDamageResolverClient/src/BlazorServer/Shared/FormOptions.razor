@@ -13,44 +13,36 @@
     }
 }
 
-<div class="resolver_div_componentrow">
+<div class="resolver_div_componentrow flexbox-column">
     
-    <h2 class="resolver_header">
+    <h2 class="resolver_header resolver_top_header">
         Player options
     </h2>
     
     @if (_userStateController.PlayerOptions != null)
     {
         <h3 class="resolver_header">
-            Default visibility of elements in the dashboard
+            Dashboard elements
         </h3>
 
         <div class="resolver_div_options">
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowToolsOnMainScreenByDefault" OnChanged="@OnToolVisibilityChanged">Tools</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormCheckbox>
+            <FormToggle Checked="@_userStateController.PlayerOptions.ShowToolsOnMainScreenByDefault" OnChanged="@OnToolVisibilityChanged">Tools</FormToggle>
+            <FormToggle Checked="@_userStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormToggle>
+            <FormToggle Checked="@_userStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormToggle>
+            <FormToggle Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Other players' damage reports</FormToggle>
         </div>
 
         <h3 class="resolver_header">
-            Default visibility of other players' damage reports on the dashboard
+            Damage report elements
         </h3>
 
         <div class="resolver_div_options">
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Show other players' damage reports on the dashboard</FormCheckbox>
-        </div>
-
-
-        <h3 class="resolver_header">
-            Default visibility of the attack log in damage reports
-        </h3>
-
-        <div class="resolver_div_options">
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Show attack logs</FormCheckbox>
+            <FormToggle Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Attack logs</FormToggle>
         </div>
 
 
         <h3 class="resolver_header">
-            Default visibility of individual attack log entries in the attack log
+            Attack log entries in the attack log
         </h3>
 
         <div class="resolver_div_options">
@@ -68,9 +60,9 @@
     }
 </div>
 
-<div class="resolver_div_componentrow">
+<div class="resolver_div_componentrow flexbox-column">
 
-    <h2 class="resolver_header">
+    <h2 class="resolver_header resolver_top_header">
         Game options
     </h2>
 
@@ -81,8 +73,7 @@
         </h3>
 
         <div class="resolver_div_options">
-            Use of floating critical rule
-            <FormCheckbox @key="@_userStateController.GameOptions.TimeStamp" Checked="@_userStateController.GameOptions.Rules[Rule.FloatingCritical]" Disabled="@(!adminRights)" OnChanged="@OnRuleFloatingCriticalChanged">Floating Critical</FormCheckbox>
+            <FormToggle Checked="@_userStateController.GameOptions.Rules[Rule.FloatingCritical]" Disabled="@(!adminRights)" OnChanged="@OnRuleFloatingCriticalChanged">Floating critical rule</FormToggle>
         </div>
 
 
@@ -91,19 +82,19 @@
         </h3>
 
         <div class="resolver_div_options">
-            Modifier to all weapon attacks
+            <label class="resolver_div_options_label">Modifier to all weapon attacks</label>
             <FormRadio @key="@_userStateController.GameOptions.TimeStamp" Options="@_commonData.MapAttackModifier" SelectedOption="@_userStateController.GameOptions.PenaltyAll" Disabled="@(!adminRights)" OnChanged="(int penalty) => OnWeatherModifierChangedAll(penalty)"></FormRadio>
         </div>
         <div class="resolver_div_options">
-            Modifier to Ballistic weapon attacks
+            <label class="resolver_div_options_label">Modifier to Ballistic weapon attacks</label>
             <FormRadio @key="@_userStateController.GameOptions.TimeStamp" Options="@_commonData.MapAttackModifier" SelectedOption="@_userStateController.GameOptions.PenaltyBallistic" Disabled="@(!adminRights)" OnChanged="(int penalty) => OnWeatherModifierChangedBallistic(penalty)"></FormRadio>
         </div>
         <div class="resolver_div_options">
-            Modifier to Energy weapon attacks
+            <label class="resolver_div_options_label">Modifier to Energy weapon attacks</label>
             <FormRadio @key="@_userStateController.GameOptions.TimeStamp" Options="@_commonData.MapAttackModifier" SelectedOption="@_userStateController.GameOptions.PenaltyEnergy" Disabled="@(!adminRights)" OnChanged="(int penalty) => OnWeatherModifierChangedEnergy(penalty)"></FormRadio>
         </div>
         <div class="resolver_div_options">
-            Modifier to Missile weapon attacks
+            <label class="resolver_div_options_label">Modifier to Missile weapon attacks</label>
             <FormRadio @key="@_userStateController.GameOptions.TimeStamp" Options="@_commonData.MapAttackModifier" SelectedOption="@_userStateController.GameOptions.PenaltyMissile" Disabled="@(!adminRights)" OnChanged="(int penalty) => OnWeatherModifierChangedMissile(penalty)"></FormRadio>
         </div>
     }
