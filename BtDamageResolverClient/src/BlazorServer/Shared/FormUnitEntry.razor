@@ -11,7 +11,7 @@
     <div class="resolver_div_componentrow">
         <div class="resolver_div_unitid">
             @UnitEntry.Id
-            <FormCheckbox Checked="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnStaticDataHiddenChanged">Editable</FormCheckbox>
+            <FormToggle Checked="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnStaticDataHiddenChanged">Editable</FormToggle>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveUp"><b>&uarr;</b></button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveDown"><b>&darr;</b></button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalLoad">Load</button>
@@ -133,8 +133,8 @@
                     </td>
                     <td>
                         <div>
-                            <FormCheckbox Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormCheckbox>
-                            <FormCheckbox Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormCheckbox>
+                            <FormToggle Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormToggle>
+                            <FormToggle Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
                         </div>
                     </td>
                 </tr>

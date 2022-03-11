@@ -26,10 +26,10 @@
         </h3>
 
         <div class="resolver_div_options">
-            <FormToggle Checked="@_userStateController.PlayerOptions.ShowToolsOnMainScreenByDefault" OnChanged="@OnToolVisibilityChanged">Tools</FormToggle>
-            <FormToggle Checked="@_userStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormToggle>
-            <FormToggle Checked="@_userStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormToggle>
-            <FormToggle Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Other players' damage reports</FormToggle>
+            <FormCheckBox Checked="@_userStateController.PlayerOptions.ShowToolsOnMainScreenByDefault" OnChanged="@OnToolVisibilityChanged">Tools</FormCheckBox>
+            <FormCheckBox Checked="@_userStateController.PlayerOptions.ShowDamageRequestGeneratorOnMainScreenByDefault" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormCheckBox>
+            <FormCheckBox Checked="@_userStateController.PlayerOptions.ShowDamageReportsOnMainScreenByDefault" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormCheckBox>
+            <FormCheckBox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReportsOnMainScreenByDefault" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Other players' damage reports</FormCheckBox>
         </div>
 
         <h3 class="resolver_header">
@@ -37,7 +37,7 @@
         </h3>
 
         <div class="resolver_div_options">
-            <FormToggle Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Attack logs</FormToggle>
+            <FormCheckBox Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Attack logs</FormCheckBox>
         </div>
 
 
@@ -48,7 +48,7 @@
         <div class="resolver_div_options">
             @foreach (var attackLogEntryType in _userStateController.PlayerOptions.AttackLogEntryVisibility)
             {
-                <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
+                <FormToggle Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormToggle>
             }
         </div>
     }
@@ -73,7 +73,8 @@
         </h3>
 
         <div class="resolver_div_options">
-            <FormToggle Checked="@_userStateController.GameOptions.Rules[Rule.FloatingCritical]" Disabled="@(!adminRights)" OnChanged="@OnRuleFloatingCriticalChanged">Floating critical rule</FormToggle>
+            <FormCheckBox Checked="@_userStateController.GameOptions.Rules[Rule.FloatingCritical]" Disabled="@(!adminRights)" OnChanged="@(e => OnRuleChanged(Rule.FloatingCritical, e))">Floating critical</FormCheckBox>
+            <FormCheckBox Checked="@_userStateController.GameOptions.Rules[Rule.ImprovedVehicleSurvivability]" Disabled="@(!adminRights)" OnChanged="@(e => OnRuleChanged(Rule.FloatingCritical, e))">Improved vehicle survivability</FormCheckBox>
         </div>
 
 
@@ -171,11 +172,11 @@
         }
     }
 
-    private void OnRuleFloatingCriticalChanged(bool ruleFloatingCritical)
+    private void OnRuleChanged(Rule rule, bool ruleNewState)
     {
-        if (_userStateController.GameOptions.Rules[Rule.FloatingCritical] != ruleFloatingCritical)
+        if (_userStateController.GameOptions.Rules[rule] != ruleNewState)
         {
-            _userStateController.GameOptions.Rules[Rule.FloatingCritical] = ruleFloatingCritical;
+            _userStateController.GameOptions.Rules[rule] = ruleNewState;
             NotifyGameOptionsChanged();
         }
     }

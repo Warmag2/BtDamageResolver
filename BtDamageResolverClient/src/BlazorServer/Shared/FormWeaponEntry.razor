@@ -23,7 +23,7 @@
         <b>@targetNumber</b>
     </td>
     <td>
-        <FormCheckbox Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormCheckbox>
+        <FormToggle Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(Unit.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormToggle>
     </td>
     <td class="resolver_td_weaponname">
         @if (Unit.StaticDataHidden)
