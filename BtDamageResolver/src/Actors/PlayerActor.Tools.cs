@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Microsoft.Extensions.Logging;
 using Orleans;
-using Orleans.Concurrency;
 
 namespace Faemiyah.BtDamageResolver.Actors
 {
