@@ -91,22 +91,24 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             attackLog.Append(new AttackLogEntry { Context = "Hit modifier from unit quirks", Type = AttackLogEntryType.Calculation, Number = modifierQuirks });
 
-            var modifierTotal = modifierBase +
-                                   modifierHeat +
-                                   Unit.Penalty +
-                                   Unit.FiringSolution.AttackModifier +
-                                   modifierRange +
-                                   modifierWeapon +
-                                   modifierUnitType +
-                                   modifierCover +
-                                   modifierStance +
-                                   modifierMovementDirection +
-                                   modifierMovementClass +
-                                   modifierMovement +
-                                   modifierOwnMovement +
-                                   modifierFeatures +
-                                   modifierWeather +
-                                   modifierQuirks;
+            var modifierTotal =
+                modifierBase +
+                modifierHeat +
+                Unit.Penalty +
+                Unit.FiringSolution.AttackModifier +
+                modifierRange +
+                modifierArmor +
+                modifierWeapon +
+                modifierUnitType +
+                modifierCover +
+                modifierStance +
+                modifierMovementDirection +
+                modifierMovementClass +
+                modifierMovement +
+                modifierOwnMovement +
+                modifierFeatures +
+                modifierWeather +
+                modifierQuirks;
 
             attackLog.Append(new AttackLogEntry { Context = "Target number", Type = AttackLogEntryType.Calculation, Number = modifierTotal });
 
