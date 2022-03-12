@@ -37,6 +37,13 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         public Task<bool> ForceReady(Guid authenticationToken);
 
         /// <summary>
+        /// Gets the ID of the game this player is currently in.
+        /// </summary>
+        /// <param name="authenticationToken">The authentication token.</param>
+        /// <returns>The ID of the game this player is currently in, or null, if not connected to a game.</returns>
+        Task<string> GetGameId(Guid authenticationToken);
+
+        /// <summary>
         /// Get the state of this player.
         /// </summary>
         /// <param name="authenticationToken">The authentication token.</param>
@@ -67,15 +74,6 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// <param name="authenticationToken">The authentication token.</param>
         /// <returns><b>True</b> if the client successfully left the game, <b>false</b> otherwise.</returns>
         Task<bool> LeaveGame(Guid authenticationToken);
-
-        /// <summary>
-        /// Attempts to moves an unit to another player in the same game as this player, provided you have the authority.
-        /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
-        /// <param name="unitId">The unit id to move.</param>
-        /// <param name="playerId">The player to move the unit to.</param>
-        /// <returns><b>True</b> if the unit was successfully moved, <b>false</b> otherwise.</returns>
-        public Task<bool> MoveUnit(Guid authenticationToken, Guid unitId, string playerId);
 
         /// <summary>
         /// Tries to receive an unit and mark it as the property of this player, provided you have the authority.

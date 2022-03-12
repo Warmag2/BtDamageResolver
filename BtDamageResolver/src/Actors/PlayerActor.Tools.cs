@@ -37,19 +37,6 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<bool> MoveUnit(Guid authenticationToken, Guid unitId, string playerId)
-        {
-            if (!await CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
-
-            _logger.LogInformation("Player {playerId} asking Game {gameId} to move Unit {unitId} to player {receivingPlayerId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, unitId, playerId);
-            return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).MoveUnit(authenticationToken, unitId, playerId);
-        }
-
-        /// <inheritdoc />
-        [AlwaysInterleave]
         public async Task<bool> RemoveUnit(Guid authenticationToken, Guid unitId)
         {
             if (!await CheckAuthentication(authenticationToken))
@@ -73,7 +60,6 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        [AlwaysInterleave]
         public async Task<bool> ReceiveUnit(Guid authenticationToken, Guid unitId, string owningPlayerId, Guid ownerAuthenticationToken)
         {
             if (!await CheckAuthentication(authenticationToken))

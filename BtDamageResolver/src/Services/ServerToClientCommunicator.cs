@@ -186,7 +186,9 @@ namespace Faemiyah.BtDamageResolver.Services
         {
             var unpackedMoveUnitRequest = Unpack<MoveUnitRequest>(moveUnitRequest);
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedMoveUnitRequest.PlayerName).MoveUnit(unpackedMoveUnitRequest.AuthenticationToken, unpackedMoveUnitRequest.UnitId, unpackedMoveUnitRequest.ReceivingPlayer))
+            var gameName = await _grainFactory.GetGrain<IPlayerActor>(unpackedMoveUnitRequest.PlayerName).GetGameId(unpackedMoveUnitRequest.AuthenticationToken);
+
+            if (!await _grainFactory.GetGrain<IGameActor>(gameName).MoveUnit(unpackedMoveUnitRequest.AuthenticationToken, unpackedMoveUnitRequest.UnitId, unpackedMoveUnitRequest.ReceivingPlayer))
             {
                 LogWarning(unpackedMoveUnitRequest);
             }

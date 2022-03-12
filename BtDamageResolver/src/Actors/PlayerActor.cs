@@ -42,6 +42,17 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
+        public async Task<string> GetGameId(Guid authenticationToken)
+        {
+            if (!await CheckAuthentication(authenticationToken))
+            {
+                return null;
+            }
+
+            return _playerActorState.State.GameId;
+        }
+
+        /// <inheritdoc />
         public async Task<PlayerState> GetPlayerState(Guid authenticationToken, bool markStateAsNew)
         {
             if (!await CheckAuthentication(authenticationToken))
