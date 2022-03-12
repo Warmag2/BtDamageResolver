@@ -35,9 +35,9 @@
 
     protected override void OnInitialized()
     {
-        _sectionEnabledTools = _userStateController.PlayerOptions?.ShowToolsOnMainScreenByDefault ?? false;
-        _sectionEnabledDamageReports = _userStateController.PlayerOptions?.ShowDamageReportsOnMainScreenByDefault ?? true;
-        _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.ShowDamageRequestGeneratorOnMainScreenByDefault ?? false;
+        _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
+        _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
+        _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
         _userStateController.OnPlayerUnitListChanged += StateHasChanged;
     }
 

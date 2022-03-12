@@ -4,6 +4,16 @@ csharp_style_var_when_type_is_apparent=true:silent
 csharp_style_var_elsewhere=true:silent
 
 ##
+## IDE
+##
+
+# Range operator is not clear coding in my opinion
+dotnet_diagnostic.IDE0057.severity = None
+
+# Switch expression does not need to be suggested
+dotnet_diagnostic.IDE0066.severity = None
+
+##
 ## StyleCop.Analyzers
 ##
 
@@ -55,6 +65,9 @@ dotnet_diagnostic.S125.severity = Suggestion
 
 # There should be no need to always merge nested ifs
 dotnet_diagnostic.S1066.severity = Suggestion
+
+# This one is just bugged
+dotnet_diagnostic.S1172.severity = None
 
 # LINQ suggester is too aggressive
 dotnet_diagnostic.S3267.severity = Suggestion

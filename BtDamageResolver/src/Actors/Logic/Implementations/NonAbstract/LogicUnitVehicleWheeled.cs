@@ -35,7 +35,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
         /// <inheritdoc />
         protected override int GetMotiveHitModifier()
         {
-            return 1;
+            if (GameOptions.Rules[Rule.ImprovedVehicleSurvivability])
+            {
+                return 1;
+            }
+
+            return 2;
         }
     }
 }

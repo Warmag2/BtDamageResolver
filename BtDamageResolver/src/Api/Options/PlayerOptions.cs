@@ -17,7 +17,7 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         public PlayerOptions()
         {
             AttackLogEntryVisibility = Enum.GetValues(typeof(AttackLogEntryType)).Cast<AttackLogEntryType>().ToDictionary(a => a, a => true);
-            ShowDamageReportsOnMainScreenByDefault = true;
+            DashboardShowDamageReportsByDefault = true;
         }
 
         /// <summary>
@@ -26,29 +26,29 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         public Dictionary<AttackLogEntryType, bool> AttackLogEntryVisibility { get; set; }
 
         /// <summary>
+        /// Should damage reports be expanded on the main screen by default.
+        /// </summary>
+        public bool DashboardShowDamageReportsByDefault { get; set; }
+
+        /// <summary>
+        /// Should the damage request generator be expanded on the main screen by default.
+        /// </summary>
+        public bool DashboardShowDamageRequestsByDefault { get; set; }
+
+        /// <summary>
+        /// Should the tools be expanded by default.
+        /// </summary>
+        public bool DashboardShowToolsByDefault { get; set; }
+
+        /// <summary>
         /// Should the attack log be visible by default.
         /// </summary>
         public bool ShowAttackLogByDefault { get; set; }
 
         /// <summary>
-        /// Should the tools be expanded by default.
+        /// Should also damage reports concerning other players be displayed.
         /// </summary>
-        public bool ShowToolsOnMainScreenByDefault { get; set; }
-
-        /// <summary>
-        /// Should damage reports be expanded on the main screen by default.
-        /// </summary>
-        public bool ShowDamageReportsOnMainScreenByDefault { get; set; }
-
-        /// <summary>
-        /// Only show damage repots concerning this player on the main screen.
-        /// </summary>
-        public bool ShowOtherPlayersDamageReportsOnMainScreenByDefault { get; set; }
-
-        /// <summary>
-        /// Should the damage request generator be expanded on the main screen by default.
-        /// </summary>
-        public bool ShowDamageRequestGeneratorOnMainScreenByDefault { get; set; }
+        public bool ShowOtherPlayersDamageReports { get; set; }
 
         /// <summary>
         /// The update timestamp.

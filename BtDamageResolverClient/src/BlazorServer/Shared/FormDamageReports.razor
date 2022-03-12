@@ -4,7 +4,7 @@
 @implements IDisposable
 
 @{
-    var showOtherPlayers = _userStateController.PlayerOptions?.ShowOtherPlayersDamageReportsOnMainScreenByDefault ?? true;
+    var showOtherPlayers = _userStateController.PlayerOptions?.ShowOtherPlayersDamageReports ?? true;
 }
 
 @if (_userStateController.DamageReportCollection.IsEmpty())
