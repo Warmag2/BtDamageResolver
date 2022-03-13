@@ -243,8 +243,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
         private void ClearUnitPenalties(bool clearPenalty, bool clearTag)
         {
-            // EMP/other firing difficulty effects for all units are reset after each turn
-            // However, do not clear anything if we just make a tagging attack
+            // EMP/other firing difficulty effects and tag are reset after each turn
             if (clearPenalty)
             {
                 foreach (var (_, playerState) in _gameActorState.State.PlayerStates)
