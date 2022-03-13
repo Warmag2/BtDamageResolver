@@ -133,8 +133,8 @@
                     </td>
                     <td>
                         <div>
-                            <FormToggle Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormToggle>
-                            <FormToggle Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
+                            <FormToggle @key=@($"{UnitEntry.Id}_{UnitEntry.TimeStamp}") Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormToggle>
+                            <FormToggle @key=@($"{UnitEntry.Id}_{UnitEntry.TimeStamp}") Checked="@UnitEntry.Narced" Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
                         </div>
                     </td>
                 </tr>
