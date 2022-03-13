@@ -60,7 +60,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<List<DamageReport>> ProcessFireEvent(GameOptions gameOptions)
+        public async Task<List<DamageReport>> ProcessFireEvent(GameOptions gameOptions, bool tagOnly)
         {
             _logger.LogInformation("Unit {unit} performing fire event.", this.GetPrimaryKey());
 
@@ -70,7 +70,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             var logicUnitAttacker = GetUnitLogic(gameOptions);
             var logicUnitDefender = await GetUnitLogic(gameOptions, _unitActorState.State.UnitEntry.FiringSolution.TargetUnit);
 
-            return await logicUnitAttacker.ResolveCombat(logicUnitDefender);
+            return await logicUnitAttacker.ResolveCombat(logicUnitDefender, tagOnly);
         }
 
         /// <summary>
@@ -104,13 +104,14 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                     (var targetNumber, _) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry);
 
-                    targetNumberUpdates.Add(new TargetNumberUpdate
-                    {
-                        CalculationLog = attackLog,
-                        TargetNumber = targetNumber,
-                        UnitId = this.GetPrimaryKey(),
-                        WeaponEntryId = weaponEntry.Id
-                    });
+                    targetNumberUpdates.Add(
+                        new TargetNumberUpdate
+                        {
+                            CalculationLog = attackLog,
+                            TargetNumber = targetNumber,
+                            UnitId = this.GetPrimaryKey(),
+                            WeaponEntryId = weaponEntry.Id
+                        });
                 }
             }
 

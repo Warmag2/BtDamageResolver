@@ -78,6 +78,8 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             var fireEventHappened = await CheckForFireEvent();
 
+            // If fire event happened or when given an empty unit set, process updated target numbers for everything.
+            // Otherwise, only for affected units.
             var targetNumberUpdates = fireEventHappened || updatedUnits == null
                 ? await ProcessTargetNumberUpdatesForUnits()
                 : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
@@ -122,29 +124,24 @@ namespace Faemiyah.BtDamageResolver.Actors
                     unit.TimeStamp = _gameActorState.State.TurnTimeStamp;
                 }
 
-                var damageReports = new List<DamageReport>();
+                _logger.LogInformation("Firing all tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
 
-                foreach (var unitId in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries).Select(u => u.Id))
-                {
-                    var unitActor = GrainFactory.GetGrain<IUnitActor>(unitId);
-                    var unit = await unitActor.GetUnit();
+                // Clear tagged state before firing this turn
+                ClearUnitPenalties(false, true);
+                var tagDamageReports = await ProcessFireEvent(true);
 
-                    // Do not fire at an unit which is not in the game
-                    if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
-                    {
-                        damageReports.AddRange(await unitActor.ProcessFireEvent(_gameActorState.State.Options));
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Player {playerId} unit {unitId} tried to fire at an unit {targetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), unit.Id, unit.FiringSolution.TargetUnit);
-                    }
-                }
+                // Apply effects from this turn's damage reports for tagging attacks
+                await ModifyGameStateBasedOnDamageReports(tagDamageReports, false);
 
-                // Mark that the damage reports happened during this turn
-                damageReports.ForEach(d => d.Turn = _gameActorState.State.Turn);
+                _logger.LogInformation("Firing all non-tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
 
-                _gameActorState.State.DamageReports.AddRange(damageReports);
-                await DistributeDamageReportsToPlayers(damageReports);
+                var damageReports = await ProcessFireEvent();
+
+                // Apply effects from this turn's damage reports
+                ClearUnitPenalties(true, false);
+                await ModifyGameStateBasedOnDamageReports(damageReports, true);
+
+                await DistributeDamageReportsToPlayers(_gameActorState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
 
                 // Unmark ready in local memory and for the actors themselves
                 foreach (var playerState in _gameActorState.State.PlayerStates.Values)
@@ -153,9 +150,6 @@ namespace Faemiyah.BtDamageResolver.Actors
                     playerState.TimeStamp = DateTime.UtcNow;
                     await GrainFactory.GetGrain<IPlayerActor>(playerState.PlayerId).UnReady();
                 }
-
-                // Apply effects from this turn's damage reports
-                await ModifyGameStateBasedOnDamageReports(damageReports);
 
                 // Log turns to permanent store
                 await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Turn, _gameActorState.State.Turn);
@@ -166,28 +160,60 @@ namespace Faemiyah.BtDamageResolver.Actors
             return false;
         }
 
-        private async Task ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports)
+        private async Task<List<DamageReport>> ProcessFireEvent(bool tagOnly = false)
         {
-            // EMP/other firing difficulty effects for all units are reset after each turn
-            foreach (var (_, playerState) in _gameActorState.State.PlayerStates)
+            var damageReports = new List<DamageReport>();
+
+            foreach (var unitId in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries).Select(u => u.Id))
             {
-                foreach (var unit in playerState.UnitEntries)
+                var unitActor = GrainFactory.GetGrain<IUnitActor>(unitId);
+                var unit = await unitActor.GetUnit();
+
+                // Do not fire at an unit which is not in the game
+                if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
                 {
-                    unit.Penalty = 0;
+                    damageReports.AddRange(await unitActor.ProcessFireEvent(_gameActorState.State.Options, tagOnly));
+                }
+                else
+                {
+                    _logger.LogWarning("Player {playerId} unit {unitId} tried to fire at an unit {targetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), unit.Id, unit.FiringSolution.TargetUnit);
                 }
             }
 
+            // Mark that the damage reports happened during this turn
+            damageReports.ForEach(d => d.Turn = _gameActorState.State.Turn);
+
+            _gameActorState.State.DamageReports.AddRange(damageReports);
+
+            return damageReports;
+        }
+
+        private async Task ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports, bool clearPenalty)
+        {
             // Comb through damage reports to find incoming heat damage and EMP damage effects
             foreach (var damageReport in damageReports)
             {
                 var heatToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Heat);
                 var empToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Emp);
+                var narcToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Narc);
+                var tagToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Tag);
+
+                var unit = GetUnit(damageReport.TargetUnitId);
 
                 if (heatToTarget > 0 || empToTarget > 0)
                 {
-                    var unit = GetUnit(damageReport.TargetUnitId);
                     unit.Heat += heatToTarget;
                     unit.Penalty += empToTarget;
+                }
+
+                if (narcToTarget > 0)
+                {
+                    unit.Narced = true;
+                }
+
+                if (tagToTarget > 0)
+                {
+                    unit.Tagged = true;
                 }
             }
 
@@ -211,6 +237,30 @@ namespace Faemiyah.BtDamageResolver.Actors
                     // Upload this update to the unit itself
                     var unitActor = GrainFactory.GetGrain<IUnitActor>(unit.Id);
                     await unitActor.SendState(unit);
+                }
+            }
+        }
+
+        private void ClearUnitPenalties(bool clearPenalty, bool clearTag)
+        {
+            // EMP/other firing difficulty effects for all units are reset after each turn
+            // However, do not clear anything if we just make a tagging attack
+            if (clearPenalty)
+            {
+                foreach (var (_, playerState) in _gameActorState.State.PlayerStates)
+                {
+                    foreach (var unit in playerState.UnitEntries)
+                    {
+                        if (clearPenalty)
+                        {
+                            unit.Penalty = 0;
+                        }
+
+                        if (clearTag)
+                        {
+                            unit.Tagged = false;
+                        }
+                    }
                 }
             }
         }

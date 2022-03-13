@@ -29,8 +29,9 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// Perform the fire event of the unit represented by this <see cref="IUnitActor"/> and return a damage report.
         /// </summary>
         /// <param name="gameOptions">The game options.</param>
+        /// <param name="tagOnly">Only process weapons which can tag.</param>
         /// <returns>A set of <see cref="DamageReport"/>s detailing the effects of the fire event.</returns>
-        Task<List<DamageReport>> ProcessFireEvent(GameOptions gameOptions);
+        Task<List<DamageReport>> ProcessFireEvent(GameOptions gameOptions, bool tagOnly);
 
         /// <summary>
         /// Process new target numbers for the unit represented by this <see cref="IUnitActor"/> and return them.

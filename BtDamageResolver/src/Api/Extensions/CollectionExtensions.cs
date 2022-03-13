@@ -74,7 +74,7 @@ namespace Faemiyah.BtDamageResolver.Api.Extensions
         /// or a dictionary with the all keys in the enum and either specified values from
         /// the value to fill with or the value already contained in the dictionary.
         /// </returns>
-        public static Dictionary<TKey, TValue> Fill<TKey, TValue>(this Dictionary<TKey,TValue> dictionary, bool acceptNull = false)
+        public static Dictionary<TKey, TValue> Fill<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, bool acceptNull = false)
             where TKey : Enum
         {
             TValue valueToFillWith = default;

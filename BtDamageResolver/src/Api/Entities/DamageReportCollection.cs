@@ -92,6 +92,21 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         }
 
         /// <summary>
+        /// Gets all damage reports for a specific turn in this damage report collection.
+        /// </summary>
+        /// <param name="turn">The turn.</param>
+        /// <returns>All the damage reports in this damage report collection for the specified turn, or an empty list, if none found.</returns>
+        public List<DamageReport> GetReportsForTurn(int turn)
+        {
+            if (DamageReports.ContainsKey(turn) && DamageReports[turn] != null)
+            {
+                return DamageReports[turn];
+            }
+
+            return new List<DamageReport>();
+        }
+
+        /// <summary>
         /// Removes a specific damage report from the damage report collection.
         /// </summary>
         /// <param name="damageReport">The damage report to remove.</param>

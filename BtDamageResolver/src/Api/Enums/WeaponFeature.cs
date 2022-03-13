@@ -15,10 +15,11 @@ namespace Faemiyah.BtDamageResolver.Api.Enums
         Cluster,
         Flak,
         Heat,
+        Homing,         // Can home to TAG and NARC
+        IndirectFire,
         Melee,
         MeleeCharge,
         MeleeDfa,
-        IndirectFire,
         Pulse,
         Rapid,
         Streak

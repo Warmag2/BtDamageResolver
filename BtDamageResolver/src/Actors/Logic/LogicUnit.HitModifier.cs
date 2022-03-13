@@ -295,8 +295,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private static int GetMovementClassModifier(ILogicUnit target, Weapon weapon)
         {
-            // Missile weapons ignore attacker movement modifier if the target is tagged
-            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
+            // Missile weapons ignore attacker movement modifier if the target is tagged and they have homing munitions
+            if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Homing, out _) && (target.Unit.Tagged || target.Unit.Narced))
             {
                 return 0;
             }
@@ -307,7 +307,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         private static int GetMovementModifierBase(ILogicUnit target, Weapon weapon)
         {
             // Missile weapons ignore defender movement modifier if the target is tagged
-            if (weapon.Type == WeaponType.Missile && target.Unit.Tagged && weapon.SpecialFeatures.HasFeature(WeaponFeature.IndirectFire, out _))
+            if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Homing, out _) && (target.Unit.Tagged || target.Unit.Narced))
             {
                 return 0;
             }

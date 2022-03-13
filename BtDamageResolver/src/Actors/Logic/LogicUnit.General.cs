@@ -14,13 +14,25 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
     public partial class LogicUnit
     {
         /// <inheritdoc />
-        public async Task<List<DamageReport>> ResolveCombat(ILogicUnit target)
+        public async Task<List<DamageReport>> ResolveCombat(ILogicUnit target, bool tagOnly)
         {
             var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
 
             foreach (var weaponEntry in Unit.Weapons.Where(w => w.State == WeaponState.Active))
             {
                 var weapon = await FormWeapon(weaponEntry);
+
+                // If not processing tags, skip tag weapons
+                if (weapon.SpecialDamage.Type == SpecialDamageType.Tag && !tagOnly)
+                {
+                    continue;
+                }
+
+                // If processing tags, skip non-tag weapons
+                if (weapon.SpecialDamage.Type != SpecialDamageType.Tag && tagOnly)
+                {
+                    continue;
+                }
 
                 var hitCalclulationDamageReport = new DamageReport
                 {
