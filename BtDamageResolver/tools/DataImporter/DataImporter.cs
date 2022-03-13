@@ -59,6 +59,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter
 
                     if (dataObject is Ammo ammo)
                     {
+                        ammo.FillMissingFields();
                         await client.GetAmmoRepository().AddOrUpdate(ammo);
                     }
                     else if (dataObject is ClusterTable clusterTable)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Faemiyah.BtDamageResolver.Api.Entities.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 {
@@ -70,5 +71,14 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         /// Special features of the weapon in each fire mode.
         /// </summary>
         public List<WeaponFeatureEntry> SpecialFeatures { get; set; }
+
+        /// <summary>
+        /// This method exists so that the user does not have to define all parameters
+        /// for a weapon, and that creating the database is easier.
+        /// </summary>
+        public void FillMissingFields()
+        {
+            ClusterBonus = ClusterBonus.Fill(true);
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Faemiyah.BtDamageResolver.Api.Entities.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 {
@@ -185,37 +186,15 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
                 Ammo = new Dictionary<string, string>();
             }
 
-            if (ClusterBonus == null)
-            {
-                ClusterBonus = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), 0);
-            }
-            else if (ClusterBonus.Count == 1)
-            {
-                ClusterBonus = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), ClusterBonus.Single().Value);
-            }
+            ClusterBonus = ClusterBonus.Fill();
 
             if (ClusterTable == null)
             {
                 ClusterTable = Constants.Names.DefaultClusterTableName;
             }
 
-            if (Damage == null)
-            {
-                Damage = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), 0);
-            }
-            else if (Damage.Count == 1)
-            {
-                Damage = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), Damage.Single().Value);
-            }
-
-            if (DamageAerospace == null)
-            {
-                DamageAerospace = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), 0);
-            }
-            else if (DamageAerospace.Count == 1)
-            {
-                DamageAerospace = Fill(Enum.GetValues(typeof(RangeBracket)).Cast<RangeBracket>().ToList(), DamageAerospace.Single().Value);
-            }
+            Damage = Damage.Fill();
+            DamageAerospace = DamageAerospace.Fill();
 
             if (SpecialDamage == null)
             {
@@ -247,11 +226,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
                 default:
                     throw new NotImplementedException("Unknown weapon attack type encountered when trying to determine weapon use phase.");
             }
-        }
-
-        private static Dictionary<TKey, TValue> Fill<TKey, TValue>(List<TKey> keys, TValue value)
-        {
-            return keys.ToDictionary(k => k, k => value);
         }
 
         /// <summary>

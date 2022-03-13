@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Faemiyah.BtDamageResolver.Api.Extensions
 {
@@ -57,6 +59,44 @@ namespace Faemiyah.BtDamageResolver.Api.Extensions
             {
                 inputList.Add(input);
             }
+        }
+
+        /// <summary>
+        /// If the specified dictionary only contains one value with an enum key type,
+        /// fill the dictionary with key from the specified enum and the given value.
+        /// </summary>
+        /// <typeparam name="TKey">The key type of the dictionary.</typeparam>
+        /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="acceptNull">If true, and the dictionary is null, this returns null.</param>
+        /// <returns>
+        /// Null if the dictionary is null and we should accept null,
+        /// or a dictionary with the all keys in the enum and either specified values from
+        /// the value to fill with or the value already contained in the dictionary.
+        /// </returns>
+        public static Dictionary<TKey, TValue> Fill<TKey, TValue>(this Dictionary<TKey,TValue> dictionary, bool acceptNull = false)
+            where TKey : Enum
+        {
+            TValue valueToFillWith = default;
+
+            if (dictionary == null)
+            {
+                if (acceptNull)
+                {
+#pragma warning disable S1168 // Empty arrays and collections should be returned instead of null
+                    return null;
+#pragma warning restore S1168 // Empty arrays and collections should be returned instead of null
+                }
+
+                return Enum.GetValues(typeof(TKey)).Cast<TKey>().ToDictionary(k => k, k => valueToFillWith);
+            }
+
+            if (dictionary.Count == 1)
+            {
+                return Enum.GetValues(typeof(TKey)).Cast<TKey>().ToDictionary(k => k, k => dictionary.Values.Single());
+            }
+
+            return dictionary;
         }
     }
 }
