@@ -7,7 +7,7 @@
     "DamageAerospace": {
       "Short": 3
     },
-    "SpecialFeatures": [ { "Type": "Cluster" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ]
   },
   {
     "Name": "LRM5+Artemis",
@@ -17,7 +17,7 @@
     "DamageAerospace": {
       "Short": 4
     },
-    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ],
     "ClusterBonus": {
       "Short": 2
     }
@@ -31,7 +31,7 @@
       "Short": 3
     },
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" }, { "Type": "IndirectFire" } ]
   },
   {
     "Name": "LRM10-Normal",
@@ -41,7 +41,7 @@
     "DamageAerospace": {
       "Short": 6
     },
-    "SpecialFeatures": [ { "Type": "Cluster" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ]
   },
   {
     "Name": "LRM10+Artemis",
@@ -51,7 +51,7 @@
     "DamageAerospace": {
       "Short": 8
     },
-    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ],
     "ClusterBonus": {
       "Short": 2
     }
@@ -65,7 +65,7 @@
       "Short": 6
     },
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" }, { "Type": "IndirectFire" } ]
   },
   {
     "Name": "LRM15-Normal",
@@ -75,7 +75,7 @@
     "DamageAerospace": {
       "Short": 9
     },
-    "SpecialFeatures": [ { "Type": "Cluster" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ]
   },
   {
     "Name": "LRM15+Artemis",
@@ -85,7 +85,7 @@
     "DamageAerospace": {
       "Short": 12
     },
-    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ],
     "ClusterBonus": {
       "Short": 2
     }
@@ -99,7 +99,7 @@
       "Short": 9
     },
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" }, { "Type": "IndirectFire" } ]
   },
   {
     "Name": "LRM20-Normal",
@@ -109,7 +109,7 @@
     "DamageAerospace": {
       "Short": 12
     },
-    "SpecialFeatures": [ { "Type": "Cluster" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ]
   },
   {
     "Name": "LRM20+Artemis",
@@ -119,7 +119,7 @@
     "DamageAerospace": {
       "Short": 16
     },
-    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ],
     "ClusterBonus": {
       "Short": 2
     }
@@ -133,6 +133,6 @@
       "Short": 12
     },
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" }, { "Type": "IndirectFire" } ]
   }
 ]

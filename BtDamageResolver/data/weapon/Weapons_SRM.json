@@ -3,8 +3,8 @@
     "Name": "SRM-2",
     "Type": "Missile",
     "Ammo": {
-      "Normal": "Missile",
-      "Artemis": "Missile+Artemis"
+      "Normal": "MissileHoming",
+      "Artemis": "MissileHoming+Artemis"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -31,8 +31,8 @@
     "Name": "SRM-4",
     "Type": "Missile",
     "Ammo": {
-      "Normal": "Missile",
-      "Artemis": "Missile+Artemis"
+      "Normal": "MissileHoming",
+      "Artemis": "MissileHoming+Artemis"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
@@ -59,8 +59,8 @@
     "Name": "SRM-6",
     "Type": "Missile",
     "Ammo": {
-      "Normal": "Missile",
-      "Artemis": "Missile+Artemis"
+      "Normal": "MissileHoming",
+      "Artemis": "MissileHoming+Artemis"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",

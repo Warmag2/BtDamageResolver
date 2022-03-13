@@ -14,9 +14,20 @@
     }
   },
   {
-    "Name": "Missile Indirect",
+    "Name": "MissileHoming",
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ]
+  },
+  {
+    "Name": "MissileHoming+Artemis",
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ],
+    "ClusterBonus": {
+      "Short": 2
+    }
+  },
+  {
+    "Name": "MissileHoming Indirect",
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "IndirectFire" } ]
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" }, { "Type": "IndirectFire" } ]
   },
   {
     "Name": "Rapid2",

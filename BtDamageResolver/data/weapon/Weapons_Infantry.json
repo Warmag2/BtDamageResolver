@@ -73,7 +73,7 @@
   },
   {
     "Name": "Infantry SRM",
-    "Type": "Missile",
+    "Type": "MissileHoming",
     "AttackType": "Normal",
     "Damage": {
       "Short": 0
@@ -101,8 +101,8 @@
     "Name": "Infantry LRM",
     "Type": "Missile",
     "Ammo": {
-      "Normal": "Missile",
-      "Indirect": "Missile Indirect"
+      "Normal": "MissileHoming",
+      "Indirect": "MissileHoming Indirect"
     },
     "AmmoDefault": "Normal",
     "AttackType": "Normal",
