@@ -37,10 +37,10 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <summary>
         /// Sends the game state update to all players.
         /// </summary>
-        private async Task DistributeGameStateToPlayers()
+        private async Task DistributeGameStateToPlayers(bool markStateAsNew)
         {
             _logger.LogInformation("Game {id} is sending a game state update to all players.", this.GetPrimaryKeyString());
-            var gameState = GetGameState();
+            var gameState = GetGameState(markStateAsNew);
 
             await _communicationServiceClient.SendToMany(gameState.Players.Keys.ToList(), EventNames.GameState, gameState);
         }
@@ -50,7 +50,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// </summary>
         private async Task DistributeGameStateToPlayer(Guid authenticationToken)
         {
-            await _communicationServiceClient.Send(GetPlayerForAuthenticationToken(authenticationToken), EventNames.GameState, GetGameState());
+            await _communicationServiceClient.Send(GetPlayerForAuthenticationToken(authenticationToken), EventNames.GameState, GetGameState(false));
         }
 
         /// <summary>

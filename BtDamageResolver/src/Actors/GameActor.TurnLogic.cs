@@ -85,7 +85,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                 : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
 
             await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
-            await DistributeGameStateToPlayers();
+            await DistributeGameStateToPlayers(fireEventHappened);
 
             // Save game actor state
             await _gameActorState.WriteStateAsync();

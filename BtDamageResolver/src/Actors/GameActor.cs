@@ -239,17 +239,29 @@ namespace Faemiyah.BtDamageResolver.Actors
             }
         }
 
-        private GameState GetGameState()
+        private GameState GetGameState(bool markStateAsNew)
         {
-            return new GameState
+            var timeStampNow = DateTime.UtcNow;
+
+            var gameState = new GameState
             {
                 AdminId = _gameActorState.State.AdminId,
                 GameId = this.GetPrimaryKeyString(),
                 Players = _gameActorState.State.PlayerStates,
-                TimeStamp = _gameActorState.State.TimeStamp,
+                TimeStamp = markStateAsNew ? timeStampNow : _gameActorState.State.TimeStamp,
                 Turn = _gameActorState.State.Turn,
                 TurnTimeStamp = _gameActorState.State.TurnTimeStamp
             };
+
+            if (markStateAsNew)
+            {
+                foreach (var player in gameState.Players)
+                {
+                    player.Value.TimeStamp = timeStampNow;
+                }
+            }
+
+            return gameState;
         }
 
         private async Task UpdateStateForPlayer(string playerId)
