@@ -73,7 +73,7 @@
   },
   {
     "Name": "Infantry SRM",
-    "Type": "MissileHoming",
+    "Type": "Missile",
     "AttackType": "Normal",
     "Damage": {
       "Short": 0
@@ -92,7 +92,7 @@
     "RangeAerospace": "Short",
     "Heat": 0,
     "UsesAmmo": true,
-    "SpecialFeatures": [ { "Type": "Cluster" } ],
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ],
     "ClusterTable": "InfantrySRM",
     "ClusterSize": 2,
     "ClusterDamage": 1
