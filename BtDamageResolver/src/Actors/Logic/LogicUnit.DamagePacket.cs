@@ -57,6 +57,26 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             var damagePackets = new List<DamagePacket>();
             var first = true;
 
+            // Some weapons deal no damage but have an effect. In these cases we still have to produce the effect, if nothing else.
+            if (totalDamage == 0 && specialDamage.Type != SpecialDamageType.None)
+            {
+                damagePackets.Add(
+                    new DamagePacket
+                    {
+                        Damage = 0,
+                        SpecialDamageEntries = new List<SpecialDamageEntry>
+                        {
+                            new SpecialDamageEntry
+                            {
+                                Data = MathExpression.Parse(specialDamage.Data).ToString(),
+                                Type = specialDamage.Type
+                            }
+                        }
+                    });
+
+                return damagePackets;
+            }
+
             while (totalDamage > 0)
             {
                 var currentClusterSize = Math.Clamp(totalDamage, 1, clusterSize);

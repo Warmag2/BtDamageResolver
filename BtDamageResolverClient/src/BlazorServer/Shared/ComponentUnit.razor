@@ -71,6 +71,26 @@
                 <td class="resolver_td_unitinformation_data">@UnitEntry.MovementClass - @UnitEntry.Movement</td>
             </tr>
             <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label">Stance</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.Stance</td>
+            </tr>
+            @if (UnitEntry.Narced || UnitEntry.Tagged)
+            {
+                <tr class="resolver_tr_unitinformation">
+                    <td class="resolver_td_unitinformation_label">Conditions</td>
+                    <td class="resolver_td_unitinformation_data">
+                        @if (UnitEntry.Narced)
+                        {
+                            <div class="resolver_div_unitinformation_data">Narced</div>
+                        }
+                        @if (UnitEntry.Tagged)
+                        {
+                            <div class="resolver_div_unitinformation_data">Tagged</div>
+                        }
+                    </td>
+                </tr>
+            }
+            <tr class="resolver_tr_unitinformation">
                 <td class="resolver_td_unitinformation_label">Target</td>
                 <td class="resolver_td_unitinformation_data">@_userStateController.GetUnitName(UnitEntry.FiringSolution.TargetUnit)</td>
             </tr>
