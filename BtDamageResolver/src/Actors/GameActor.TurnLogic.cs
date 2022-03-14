@@ -135,7 +135,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                 _logger.LogInformation("Firing all non-tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
 
-                var damageReports = await ProcessFireEvent();
+                var damageReports = await ProcessFireEvent(false);
 
                 // Apply effects from this turn's damage reports
                 ClearUnitPenalties(true, false);
@@ -160,7 +160,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             return false;
         }
 
-        private async Task<List<DamageReport>> ProcessFireEvent(bool tagOnly = false)
+        private async Task<List<DamageReport>> ProcessFireEvent(bool processOnlyTags)
         {
             var damageReports = new List<DamageReport>();
 
@@ -172,7 +172,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                 // Do not fire at an unit which is not in the game
                 if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
                 {
-                    damageReports.AddRange(await unitActor.ProcessFireEvent(_gameActorState.State.Options, tagOnly));
+                    damageReports.AddRange(await unitActor.ProcessFireEvent(_gameActorState.State.Options, processOnlyTags));
                 }
                 else
                 {
@@ -220,23 +220,23 @@ namespace Faemiyah.BtDamageResolver.Actors
             // Heat sinks for all units operate after damage resolution
             foreach (var (_, playerState) in _gameActorState.State.PlayerStates)
             {
-                foreach (var unit in playerState.UnitEntries)
+                foreach (var unitEntry in playerState.UnitEntries)
                 {
-                    if (unit.IsHeatTracking())
+                    if (unitEntry.IsHeatTracking())
                     {
-                        ProcessUnitHeat(damageReports, unit);
+                        ProcessUnitHeat(damageReports, unitEntry);
                     }
                     else
                     {
-                        unit.Heat = 0;
+                        unitEntry.Heat = 0;
                     }
 
                     // Unit has been modified
-                    unit.TimeStamp = DateTime.UtcNow;
+                    unitEntry.TimeStamp = DateTime.UtcNow;
 
                     // Upload this update to the unit itself
-                    var unitActor = GrainFactory.GetGrain<IUnitActor>(unit.Id);
-                    await unitActor.SendState(unit);
+                    var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
+                    await unitActor.SendState(unitEntry);
                 }
             }
         }
@@ -248,16 +248,16 @@ namespace Faemiyah.BtDamageResolver.Actors
             {
                 foreach (var (_, playerState) in _gameActorState.State.PlayerStates)
                 {
-                    foreach (var unit in playerState.UnitEntries)
+                    foreach (var unitEntry in playerState.UnitEntries)
                     {
                         if (clearPenalty)
                         {
-                            unit.Penalty = 0;
+                            unitEntry.Penalty = 0;
                         }
 
                         if (clearTag)
                         {
-                            unit.Tagged = false;
+                            unitEntry.Tagged = false;
                         }
                     }
                 }

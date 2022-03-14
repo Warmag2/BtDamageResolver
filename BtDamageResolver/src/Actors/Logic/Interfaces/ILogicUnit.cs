@@ -174,9 +174,9 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// Resolves combat for this unit logic.
         /// </summary>
         /// <param name="target">The target unit logic.</param>
-        /// <param name="tagOnly">Only process weapons with tagging features.</param>
+        /// <param name="processOnlyTags">Only process weapons with tagging features.</param>
         /// <returns>A set of damage reports caused by this unit attacking.</returns>
-        Task<List<DamageReport>> ResolveCombat(ILogicUnit target, bool tagOnly);
+        Task<List<DamageReport>> ResolveCombat(ILogicUnit target, bool processOnlyTags);
 
         /// <summary>
         /// Resolve the given damage instance.

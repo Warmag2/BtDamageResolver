@@ -48,19 +48,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public override async Task OnActivateAsync()
-        {
-            await base.OnActivateAsync();
-        }
-
-        /// <inheritdoc />
-        public override async Task OnDeactivateAsync()
-        {
-            await base.OnDeactivateAsync();
-        }
-
-        /// <inheritdoc />
-        public async Task<List<DamageReport>> ProcessFireEvent(GameOptions gameOptions, bool tagOnly)
+        public async Task<List<DamageReport>> ProcessFireEvent(GameOptions gameOptions, bool processOnlyTags)
         {
             _logger.LogInformation("Unit {unit} performing fire event.", this.GetPrimaryKey());
 
@@ -70,7 +58,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             var logicUnitAttacker = GetUnitLogic(gameOptions);
             var logicUnitDefender = await GetUnitLogic(gameOptions, _unitActorState.State.UnitEntry.FiringSolution.TargetUnit);
 
-            return await logicUnitAttacker.ResolveCombat(logicUnitDefender, tagOnly);
+            return await logicUnitAttacker.ResolveCombat(logicUnitDefender, processOnlyTags);
         }
 
         /// <summary>

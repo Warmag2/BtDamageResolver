@@ -7,7 +7,7 @@
     <h2 class="resolver_header">
         @_userStateController.PlayerName @(_userStateController.IsConnectedToGame ? $" - {_userStateController.GameState.GameId} - Turn {_userStateController.GameState.Turn}" : string.Empty)
     </h2>
-    <FormPlayerState></FormPlayerState>
+    <FormPlayerState @key=@($"{_userStateController?.PlayerName}_{_userStateController?.PlayerState?.TimeStamp}")></FormPlayerState>
 </ContainerAccordion>
 
 

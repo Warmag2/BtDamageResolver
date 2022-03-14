@@ -8,7 +8,7 @@
     <div class="resolver_div_componentlistcontainer">
         @foreach (var unitEntry in _userStateController.PlayerState.UnitEntries)
         {
-            <FormUnitEntry UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
+            <FormUnitEntry @key=@($"{unitEntry.Id}_{unitEntry.TimeStamp}") UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
         }
     </div>
     
