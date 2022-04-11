@@ -79,6 +79,8 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
         public void FillMissingFields()
         {
             ClusterBonus = ClusterBonus.Fill(true);
+            Damage = Damage.Fill(true);
+            DamageAerospace = DamageAerospace.Fill(true);
         }
     }
 }
