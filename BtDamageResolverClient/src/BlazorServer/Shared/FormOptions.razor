@@ -40,6 +40,14 @@
             <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReports" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Other players' damage reports</FormCheckbox>
         </div>
 
+        <h3 class="resolver_header">
+            User interface options
+        </h3>
+
+        <div class="resolver_div_options">
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.HighlightUnalteredFields" OnChanged="@OnHighlightFieldVisibilityChanged">Highlight unaltered fields</FormCheckbox>
+        </div>
+
 
         <h3 class="resolver_header">
             Attack log entries in the attack log
@@ -168,6 +176,15 @@
         if (_userStateController.PlayerOptions.AttackLogEntryVisibility[attackLogEntryType] != entryVisibility)
         {
             _userStateController.PlayerOptions.AttackLogEntryVisibility[attackLogEntryType] = entryVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnHighlightFieldVisibilityChanged(bool highlightUnalteredFields)
+    {
+        if (_userStateController.PlayerOptions.HighlightUnalteredFields != highlightUnalteredFields)
+        {
+            _userStateController.PlayerOptions.HighlightUnalteredFields = highlightUnalteredFields;
             NotifyPlayerOptionsChanged();
         }
     }

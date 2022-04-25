@@ -323,15 +323,9 @@
         SendUpdate();
     }
 
-    private void ToggleReady()
-    {
-        UnitEntry.Ready = !UnitEntry.Ready;
-        SendUpdate();
-    }
-
     public DateTime GetComparisonTime()
     {
-        return UnitEntry.Ready ? DateTime.MinValue : _userStateController.GameState.TurnTimeStamp;
+        return _userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue;
     }
 
     private void SendUpdate()

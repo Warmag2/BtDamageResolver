@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Microsoft.Orleans.Client" Version="3.6.0" />
-    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="3.6.0" />
+    <PackageReference Include="Microsoft.Orleans.Client" Version="3.6.2" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="3.6.2" />
     <PackageReference Include="Npgsql" Version="5.0.12" />
   </ItemGroup>
 

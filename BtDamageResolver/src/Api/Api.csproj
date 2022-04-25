@@ -5,7 +5,7 @@
     <RootNamespace>Faemiyah.BtDamageResolver.Api</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.Api</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.300</Version>
+    <Version>0.0.303</Version>
     <PackageProjectUrl>https://github.com/Warmag2/BtDamageResolver</PackageProjectUrl>
     <Authors>Warma</Authors>
     <Company>Faemiyah</Company>
@@ -18,7 +18,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="SevenZip.Compression.Lzma" Version="0.0.6" />
-    <PackageReference Include="StackExchange.Redis" Version="2.5.43" />
+    <PackageReference Include="StackExchange.Redis" Version="2.5.61" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 

@@ -117,29 +117,21 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                 _logger.LogInformation("All players in game {gameId} are ready. Incrementing turn to {turn} and performing fire event.", this.GetPrimaryKeyString(), _gameActorState.State.Turn);
 
-                // Mark all units not ready
-                foreach (var unit in _gameActorState.State.PlayerStates.Values.SelectMany(p => p.UnitEntries))
-                {
-                    unit.Ready = false;
-                    unit.TimeStamp = _gameActorState.State.TurnTimeStamp;
-                }
-
-                _logger.LogInformation("Firing all tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
-
-                // Clear tagged state before firing this turn
+                // Clear tagged state before firing tagging weapons
                 ClearUnitPenalties(false, true);
+                _logger.LogInformation("Firing all tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
                 var tagDamageReports = await ProcessFireEvent(true);
 
                 // Apply effects from this turn's damage reports for tagging attacks
-                await ModifyGameStateBasedOnDamageReports(tagDamageReports, false);
+                await ModifyGameStateBasedOnDamageReports(tagDamageReports);
 
+                // Fire non-tagging weapons
                 _logger.LogInformation("Firing all non-tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
-
                 var damageReports = await ProcessFireEvent(false);
 
                 // Apply effects from this turn's damage reports
                 ClearUnitPenalties(true, false);
-                await ModifyGameStateBasedOnDamageReports(damageReports, true);
+                await ModifyGameStateBasedOnDamageReports(damageReports);
 
                 await DistributeDamageReportsToPlayers(_gameActorState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
 
@@ -188,7 +180,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             return damageReports;
         }
 
-        private async Task ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports, bool clearPenalty)
+        private async Task ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports)
         {
             // Comb through damage reports to find incoming heat damage and EMP damage effects
             foreach (var damageReport in damageReports)
@@ -233,11 +225,15 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                     // Unit has been modified
                     unitEntry.TimeStamp = DateTime.UtcNow;
-
-                    // Upload this update to the unit itself
-                    var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
-                    await unitActor.SendState(unitEntry);
                 }
+            }
+
+            // Update all unit timestamps and save states
+            foreach (var unit in _gameActorState.State.PlayerStates.Values.SelectMany(p => p.UnitEntries))
+            {
+                unit.TimeStamp = _gameActorState.State.TurnTimeStamp;
+                var unitActor = GrainFactory.GetGrain<IUnitActor>(unit.Id);
+                await unitActor.SendState(unit);
             }
         }
 

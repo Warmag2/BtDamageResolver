@@ -18,6 +18,7 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         {
             AttackLogEntryVisibility = Enum.GetValues(typeof(AttackLogEntryType)).Cast<AttackLogEntryType>().ToDictionary(a => a, a => true);
             DashboardShowDamageReportsByDefault = true;
+            HighlightUnalteredFields = true;
         }
 
         /// <summary>
@@ -28,6 +29,9 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         /// <summary>
         /// Should damage reports be expanded on the main screen by default.
         /// </summary>
+        /// <remarks>
+        /// <b>True</b> by default.
+        /// </remarks>
         public bool DashboardShowDamageReportsByDefault { get; set; }
 
         /// <summary>
@@ -39,6 +43,14 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         /// Should the tools be expanded by default.
         /// </summary>
         public bool DashboardShowToolsByDefault { get; set; }
+
+        /// <summary>
+        /// Highlight fields on units, which have not been altered since last turn.
+        /// </summary>
+        /// <remarks>
+        /// <b>True</b> by default.
+        /// </remarks>
+        public bool HighlightUnalteredFields { get; set; }
 
         /// <summary>
         /// Should the attack log be visible by default.

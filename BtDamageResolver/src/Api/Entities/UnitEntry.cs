@@ -34,11 +34,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         public DateTime TimeStamp { get; set; }
 
         /// <summary>
-        /// Has this unit been marked ready.
-        /// </summary>
-        public bool Ready { get; set; }
-
-        /// <summary>
         /// Current amount of targeting difficulty -inducing effects for this unit (for now, only EMP).
         /// </summary>
         public int Penalty { get; set; }
@@ -317,7 +312,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
                 Name = GenerateName(Name),
                 Narced = Narced,
                 Penalty = Penalty,
-                Ready = Ready,
                 StaticDataHidden = StaticDataHidden,
                 Tagged = Tagged,
                 TimeStamp = DateTime.UtcNow
