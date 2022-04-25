@@ -118,20 +118,23 @@ namespace Faemiyah.BtDamageResolver.Actors
                 _logger.LogInformation("All players in game {gameId} are ready. Incrementing turn to {turn} and performing fire event.", this.GetPrimaryKeyString(), _gameActorState.State.Turn);
 
                 // Clear tagged state before firing tagging weapons
-                ClearUnitPenalties(false, true);
+                await ClearUnitPenalties(false, true);
                 _logger.LogInformation("Firing all tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
                 var tagDamageReports = await ProcessFireEvent(true);
 
                 // Apply effects from this turn's damage reports for tagging attacks
-                await ModifyGameStateBasedOnDamageReports(tagDamageReports);
+                await ModifyGameStateBasedOnNarcAndTag(tagDamageReports);
 
                 // Fire non-tagging weapons
                 _logger.LogInformation("Firing all non-tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
                 var damageReports = await ProcessFireEvent(false);
 
-                // Apply effects from this turn's damage reports
-                ClearUnitPenalties(true, false);
-                await ModifyGameStateBasedOnDamageReports(damageReports);
+                // Apply effects from this turns damage reports for narc attacks
+                await ModifyGameStateBasedOnNarcAndTag(damageReports);
+
+                // Apply all effects and heat from this turn's damage reports
+                await ClearUnitPenalties(true, false);
+                await ModifyGameStateBasedOnDamageReports(tagDamageReports.Concat(damageReports).ToList());
 
                 await DistributeDamageReportsToPlayers(_gameActorState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
 
@@ -180,6 +183,37 @@ namespace Faemiyah.BtDamageResolver.Actors
             return damageReports;
         }
 
+        private async Task ModifyGameStateBasedOnNarcAndTag(List<DamageReport> damageReports)
+        {
+            // Comb through damage reports to find incoming heat damage and EMP damage effects
+            foreach (var damageReport in damageReports)
+            {
+                var altered = false;
+                var narcToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Narc);
+                var tagToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Tag);
+
+                var unitEntry = GetUnit(damageReport.TargetUnitId);
+
+                if (narcToTarget > 0)
+                {
+                    unitEntry.Narced = true;
+                    altered = true;
+                }
+
+                if (tagToTarget > 0)
+                {
+                    unitEntry.Tagged = true;
+                    altered = true;
+                }
+
+                if (altered)
+                {
+                    var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
+                    await unitActor.SendState(unitEntry);
+                }
+            }
+        }
+
         private async Task ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports)
         {
             // Comb through damage reports to find incoming heat damage and EMP damage effects
@@ -187,26 +221,11 @@ namespace Faemiyah.BtDamageResolver.Actors
             {
                 var heatToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Heat);
                 var empToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Emp);
-                var narcToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Narc);
-                var tagToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Tag);
 
-                var unit = GetUnit(damageReport.TargetUnitId);
+                var unitEntry = GetUnit(damageReport.TargetUnitId);
 
-                if (heatToTarget > 0 || empToTarget > 0)
-                {
-                    unit.Heat += heatToTarget;
-                    unit.Penalty += empToTarget;
-                }
-
-                if (narcToTarget > 0)
-                {
-                    unit.Narced = true;
-                }
-
-                if (tagToTarget > 0)
-                {
-                    unit.Tagged = true;
-                }
+                unitEntry.Heat += heatToTarget;
+                unitEntry.Penalty += empToTarget;
             }
 
             // Heat sinks for all units operate after damage resolution
@@ -223,21 +242,14 @@ namespace Faemiyah.BtDamageResolver.Actors
                         unitEntry.Heat = 0;
                     }
 
-                    // Unit has been modified
-                    unitEntry.TimeStamp = DateTime.UtcNow;
+                    unitEntry.TimeStamp = _gameActorState.State.TurnTimeStamp;
+                    var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
+                    await unitActor.SendState(unitEntry);
                 }
-            }
-
-            // Update all unit timestamps and save states
-            foreach (var unit in _gameActorState.State.PlayerStates.Values.SelectMany(p => p.UnitEntries))
-            {
-                unit.TimeStamp = _gameActorState.State.TurnTimeStamp;
-                var unitActor = GrainFactory.GetGrain<IUnitActor>(unit.Id);
-                await unitActor.SendState(unit);
             }
         }
 
-        private void ClearUnitPenalties(bool clearPenalty, bool clearTag)
+        private async Task ClearUnitPenalties(bool clearPenalty, bool clearTag)
         {
             // EMP/other firing difficulty effects and tag are reset after each turn
             if (clearPenalty)
@@ -246,14 +258,24 @@ namespace Faemiyah.BtDamageResolver.Actors
                 {
                     foreach (var unitEntry in playerState.UnitEntries)
                     {
-                        if (clearPenalty)
+                        var altered = false;
+
+                        if (clearPenalty && unitEntry.Penalty != 0)
                         {
                             unitEntry.Penalty = 0;
+                            altered = true;
                         }
 
-                        if (clearTag)
+                        if (clearTag && unitEntry.Tagged)
                         {
                             unitEntry.Tagged = false;
+                            altered = true;
+                        }
+
+                        if (altered)
+                        {
+                            var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
+                            await unitActor.SendState(unitEntry);
                         }
                     }
                 }
