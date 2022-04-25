@@ -251,32 +251,28 @@ namespace Faemiyah.BtDamageResolver.Actors
 
         private async Task ClearUnitPenalties(bool clearPenalty, bool clearTag)
         {
-            // EMP/other firing difficulty effects and tag are reset after each turn
-            if (clearPenalty)
+            foreach (var (_, playerState) in _gameActorState.State.PlayerStates)
             {
-                foreach (var (_, playerState) in _gameActorState.State.PlayerStates)
+                foreach (var unitEntry in playerState.UnitEntries)
                 {
-                    foreach (var unitEntry in playerState.UnitEntries)
+                    var altered = false;
+
+                    if (clearPenalty && unitEntry.Penalty != 0)
                     {
-                        var altered = false;
+                        unitEntry.Penalty = 0;
+                        altered = true;
+                    }
 
-                        if (clearPenalty && unitEntry.Penalty != 0)
-                        {
-                            unitEntry.Penalty = 0;
-                            altered = true;
-                        }
+                    if (clearTag && unitEntry.Tagged)
+                    {
+                        unitEntry.Tagged = false;
+                        altered = true;
+                    }
 
-                        if (clearTag && unitEntry.Tagged)
-                        {
-                            unitEntry.Tagged = false;
-                            altered = true;
-                        }
-
-                        if (altered)
-                        {
-                            var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
-                            await unitActor.SendState(unitEntry);
-                        }
+                    if (altered)
+                    {
+                        var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
+                        await unitActor.SendState(unitEntry);
                     }
                 }
             }
