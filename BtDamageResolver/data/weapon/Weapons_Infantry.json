@@ -114,12 +114,12 @@
     },
     "Range": {
       "PointBlank": 0,
-      "Short": 3,
-      "Medium": 6,
-      "Long": 9,
-      "Extreme": 9
+      "Short": 7,
+      "Medium": 14,
+      "Long": 21,
+      "Extreme": 21
     },
-    "RangeMinimum": 0,
+    "RangeMinimum": 6,
     "RangeAerospace": "Short",
     "Heat": 0,
     "UsesAmmo": true,
