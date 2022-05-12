@@ -10,7 +10,7 @@
   },
   "ClusterOptions": {
     "Invariant": "Npgsql",
-    "ConnectionString": "User ID=USERNAME;Password=PASSWORD;Host=orleansdb;Port=5432;Database=BtDamageResolver;SSL Mode=Require;Trust Server Certificate=true;"
+    "ConnectionString": "User ID=USERNAME;Password=PASSWORD;Host=orleansdb;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
   },
   "CommunicationOptions": {
     "ConnectionString": "redis:6379,password=PASSWORD"

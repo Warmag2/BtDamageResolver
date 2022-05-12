@@ -8,7 +8,7 @@ services:
     image: resolver:latest
     environment:
       RESOLVER_ENVIRONMENT: Release
-      ClusterOptions__ConnectionString: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=orleansdb;Port=5432;Database=BtDamageResolver;SSL Mode=Require;Trust Server Certificate=true;"
+      ClusterOptions__ConnectionString: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=orleansdb;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
       CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     networks:
       - resolvernet
@@ -24,7 +24,7 @@ services:
     image: resolverdataimporter:latest
     environment:
       RESOLVER_ENVIRONMENT: Release
-      ClusterOptions__ConnectionString: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=orleansdb;Port=5432;Database=BtDamageResolver;SSL Mode=Require;Trust Server Certificate=true;"
+      ClusterOptions__ConnectionString: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=orleansdb;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
     networks:
       - resolvernet
     depends_on:
