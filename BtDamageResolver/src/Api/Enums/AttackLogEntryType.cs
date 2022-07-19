@@ -13,6 +13,7 @@ namespace Faemiyah.BtDamageResolver.Api.Enums
         Damage,
         DiceRoll,
         Fire,
+        FiringSolution,
         Heat,
         Hit,
         Information,

@@ -782,9 +782,15 @@
     padding: 4px;
 }
 
-.resolver_div_attacklog_fire {
+.resolver_div_attacklog_firingsolution {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+    font-weight: bold;
+}
+
+.resolver_div_attacklog_fire {
+    padding-left: 1rem;
+    padding-right: 1rem;
     font-weight: bold;
 }
 

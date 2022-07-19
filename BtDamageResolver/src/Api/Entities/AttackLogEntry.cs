@@ -48,6 +48,8 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
                     return $"{Context} roll is {Number}.";
                 case AttackLogEntryType.Fire:
                     return $"{Context} fires.";
+                case AttackLogEntryType.FiringSolution:
+                    return $"{Context} prepares to fire.";
                 case AttackLogEntryType.Heat:
                     return Number == 0 ? $"{Context} causes no heat." : $"{Context} causes {Number} heat.";
                 case AttackLogEntryType.Hit:

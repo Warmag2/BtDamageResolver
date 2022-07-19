@@ -146,7 +146,18 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         /// <summary>
         /// The player state.
         /// </summary>
-        public PlayerState PlayerState => PlayerName == null ? null : GameState?.Players?.ContainsKey(PlayerName) == true ? GameState.Players[PlayerName] : null;
+        public PlayerState PlayerState
+        {
+            get
+            {
+                if (PlayerName == null)
+                {
+                    return null;
+                }
+
+                return GameState?.Players?.ContainsKey(PlayerName) == true ? GameState.Players[PlayerName] : null;
+            }
+        }
 
         /// <summary>
         /// The damage reports.
