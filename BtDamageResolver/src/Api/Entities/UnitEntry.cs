@@ -333,7 +333,8 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
             Speed = unit.Speed;
             Tonnage = unit.Tonnage;
             Troopers = unit.Troopers;
-            Weapons = Weapons.Select(w => w.Copy()).ToList();
+            Type = unit.Type;
+            Weapons = unit.Weapons.Select(w => w.Copy()).ToList();
         }
 
         /// <summary>
