@@ -54,7 +54,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Weapon weapon)
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} prepares to fire", Type = AttackLogEntryType.Information });
+            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} prepares to fire", Type = AttackLogEntryType.FiringSolution });
 
             var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weapon);
 
