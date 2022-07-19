@@ -20,6 +20,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 combatAction.ActionHappened = false;
                 targetDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} does not obtain lock and does not fire", Type = AttackLogEntryType.Information });
             }
+            else
+            {
+                targetDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Fire, Context = $"{combatAction.Weapon.Name}" });
+            }
 
             // Single missile handling. If AMS destroys the only missile, this causes a total miss.
             // In this type of a case, streak missiles such as a hypothetical SRM-1 would still have fired.
@@ -50,6 +54,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
         private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Weapon weapon)
         {
+            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} prepares to fire.", Type = AttackLogEntryType.Information });
+
             var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weapon);
 
             // Weapons with target numbers above 12 cannot hit
@@ -59,21 +65,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = $"{weapon.Name} cannot hit" });
             }
 
-            hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Fire, Context = $"{weapon.Name}" });
-
             var hitRoll = Random.D26();
             hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "To-hit roll", Number = hitRoll });
 
             var hitHappened = hitRoll >= targetNumber;
-
-            if (hitHappened)
-            {
-                hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Hit, Context = weapon.Name });
-            }
-            else
-            {
-                hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Miss, Context = weapon.Name });
-            }
 
             var combatAction = new CombatAction
             {
@@ -88,6 +83,15 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             // Transform combat action if necessary
             target.TransformCombatAction(hitCalculationDamageReport, combatAction);
+
+            if (hitHappened)
+            {
+                hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Hit, Context = weapon.Name });
+            }
+            else
+            {
+                hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Miss, Context = weapon.Name });
+            }
 
             // Calculate heat
             ResolveHeat(hitCalculationDamageReport, combatAction);
