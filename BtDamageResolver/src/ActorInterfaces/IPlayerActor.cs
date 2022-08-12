@@ -23,6 +23,13 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         Task<bool> Connect(string password);
 
         /// <summary>
+        /// Connect to the selected player actor.
+        /// </summary>
+        /// <param name="authenticationToken">The authentication token.</param>
+        /// <returns><b>True</b> if the connection request succeeded, <b>false</b> otherwise.</returns>
+        Task<bool> Connect(Guid authenticationToken);
+
+        /// <summary>
         /// Disconnect the selected player actor from all games and external data endpoints.
         /// </summary>
         /// <param name="authenticationToken">The authentication token.</param>

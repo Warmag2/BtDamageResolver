@@ -17,10 +17,10 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <summary>
         /// Send all damage reports which have been recorded in this game to the designated player.
         /// </summary>
-        /// <param name="playerAuthenticationToken">The authentication token of the player to send the damage reports to.</param>
-        private async Task DistributeAllDamageReportsToPlayer(Guid playerAuthenticationToken)
+        /// <param name="playerId">The player ID of the player to send the damage reports to.</param>
+        private async Task DistributeAllDamageReportsToPlayer(string playerId)
         {
-            await _communicationServiceClient.Send(_gameActorState.State.AuthenticationTokens[playerAuthenticationToken], EventNames.DamageReports, _gameActorState.State.DamageReports.GetAll());
+            await _communicationServiceClient.Send(playerId, EventNames.DamageReports, _gameActorState.State.DamageReports.GetAll());
         }
 
         /// <summary>
@@ -31,31 +31,34 @@ namespace Faemiyah.BtDamageResolver.Actors
         {
             _logger.LogInformation("Game {id} is sending an damage reports to all players.", this.GetPrimaryKeyString());
 
-            await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerStates.Keys.ToList(), EventNames.DamageReports, damageReports);
+            await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.DamageReports, damageReports);
         }
 
         /// <summary>
         /// Sends the game state update to all players.
         /// </summary>
+        /// <param name="markStateAsNew">Mark the game state to be as recent as possible.</param>
         private async Task DistributeGameStateToPlayers(bool markStateAsNew)
         {
             _logger.LogInformation("Game {id} is sending a game state update to all players.", this.GetPrimaryKeyString());
             var gameState = GetGameState(markStateAsNew);
 
-            await _communicationServiceClient.SendToMany(gameState.Players.Keys.ToList(), EventNames.GameState, gameState);
+            await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.GameState, gameState);
         }
 
         /// <summary>
         /// Sends the game state to a single player.
         /// </summary>
-        private async Task DistributeGameStateToPlayer(Guid authenticationToken)
+        /// <param name="playerId">The player ID of the player to send the game state to.</param>
+        private async Task DistributeGameStateToPlayer(string playerId)
         {
-            await _communicationServiceClient.Send(GetPlayerForAuthenticationToken(authenticationToken), EventNames.GameState, GetGameState(false));
+            await _communicationServiceClient.Send(playerId, EventNames.GameState, GetGameState(false));
         }
 
         /// <summary>
-        /// Sends the game options to a players.
+        /// Sends the game options to a player.
         /// </summary>
+        /// <param name="playerId">The player ID of the player to send the game options to.</param>
         private async Task DistributeGameOptionsToPlayer(string playerId)
         {
             _logger.LogInformation("Game {id} is sending an options update to player {player}.", this.GetPrimaryKeyString(), playerId);
@@ -70,7 +73,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         {
             _logger.LogInformation("Game {id} is sending an options update to all players.", this.GetPrimaryKeyString());
 
-            await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerStates.Keys.ToList(), EventNames.GameOptions, _gameActorState.State.Options);
+            await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.GameOptions, _gameActorState.State.Options);
         }
 
         /// <summary>
@@ -90,7 +93,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         {
             _logger.LogInformation("Game {id} is sending target number updates to all players.", this.GetPrimaryKeyString());
 
-            await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerStates.Keys.ToList(), EventNames.TargetNumbers, targetNumberUpdates);
+            await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.TargetNumbers, targetNumberUpdates);
         }
     }
 }

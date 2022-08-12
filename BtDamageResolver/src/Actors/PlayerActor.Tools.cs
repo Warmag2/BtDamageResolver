@@ -20,7 +20,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             }
 
             _logger.LogInformation("Player {playerId} asking Game {gameId} to force ready state for all players.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
-            return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).ForceReady(_playerActorState.State.AuthenticationToken);
+            return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).ForceReady(this.GetPrimaryKeyString());
         }
 
         /// <inheritdoc />
@@ -32,7 +32,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             }
 
             _logger.LogInformation("Player {playerId} asking Game {gameId} to kick Player {kickedPlayerId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, playerId);
-            return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).KickPlayer(_playerActorState.State.AuthenticationToken, playerId);
+            return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).KickPlayer(this.GetPrimaryKeyString(), playerId);
         }
 
         /// <inheritdoc />

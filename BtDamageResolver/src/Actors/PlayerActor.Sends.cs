@@ -28,9 +28,9 @@ namespace Faemiyah.BtDamageResolver.Actors
             {
                 var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
 
-                if (await gameActor.IsUnitInGame(_playerActorState.State.AuthenticationToken, damageInstance.UnitId))
+                if (await gameActor.IsUnitInGame(damageInstance.UnitId))
                 {
-                    return await gameActor.SendDamageInstance(_playerActorState.State.AuthenticationToken, damageInstance);
+                    return await gameActor.SendDamageInstance(this.GetPrimaryKeyString(), damageInstance);
                 }
 
                 _logger.LogWarning("Player {playerId} asked for a damage request against unit {unitId}, but the said unit is not in the game.", this.GetPrimaryKeyString(), damageInstance.UnitId);
@@ -55,7 +55,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             if (_playerActorState.State.GameId != null)
             {
-                return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendGameOptions(authenticationToken, gameOptions);
+                return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendGameOptions(this.GetPrimaryKeyString(), gameOptions);
             }
 
             return false;
@@ -68,6 +68,8 @@ namespace Faemiyah.BtDamageResolver.Actors
             {
                 return false;
             }
+
+            var success = false;
 
             try
             {
@@ -97,7 +99,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                     {
                         // If we are connected to the game, also push player state to the game actor to be distributed to other players.
                         // The result is ignored, because we don't actually have to wait here to see the results.
-                        await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendPlayerState(_playerActorState.State.AuthenticationToken, playerState, updatedUnits);
+                        success = await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendPlayerState(this.GetPrimaryKeyString(), playerState, updatedUnits);
                     }
 
                     // Log the number of updated units to permanent store
@@ -117,7 +119,7 @@ namespace Faemiyah.BtDamageResolver.Actors
                 await SendErrorMessageToClient($"{ex.Message}\n{ex.StackTrace}");
             }
 
-            return true;
+            return success;
         }
 
         /// <inheritdoc />

@@ -17,7 +17,7 @@ namespace Faemiyah.BtDamageResolver.Actors.States
         public GameActorState()
         {
             TimeStamp = DateTime.UtcNow;
-            AuthenticationTokens = new Dictionary<Guid, string>();
+            PlayerIds = new HashSet<string>();
             DamageReports = new DamageReportCollection();
             Options = new GameOptions();
             Password = string.Empty;
@@ -30,9 +30,9 @@ namespace Faemiyah.BtDamageResolver.Actors.States
         public string AdminId { get; set; }
 
         /// <summary>
-        /// The player authentication tokens.
+        /// The players in the game.
         /// </summary>
-        public Dictionary<Guid, string> AuthenticationTokens { get; set; }
+        public HashSet<string> PlayerIds { get; set; }
 
         /// <summary>
         /// The damage reports.

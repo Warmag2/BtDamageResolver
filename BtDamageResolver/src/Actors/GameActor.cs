@@ -58,20 +58,16 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<bool> IsUnitInGame(Guid authenticationToken, Guid unitId)
+        public Task<bool> IsUnitInGame(Guid unitId)
         {
-            if (!CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
-
-            return await IsUnitInGame(unitId);
+            return Task.FromResult(_gameActorState.State.PlayerStates.Any(p => p.Value.UnitEntries.Any(u => u.Id == unitId)));
         }
 
         /// <inheritdoc />
-        public async Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState, List<Guid> unitIds)
+        public async Task<bool> SendPlayerState(string sendingPlayerId, PlayerState playerState, List<Guid> unitIds)
         {
-            if (!CheckAuthentication(authenticationToken))
+            // Do not accept player states from players who are not in the game.
+            if (!_gameActorState.State.PlayerIds.Contains(sendingPlayerId))
             {
                 return false;
             }
@@ -80,7 +76,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             if (!_gameActorState.State.PlayerStates.ContainsKey(playerState.PlayerId))
             {
-                _logger.LogInformation("A new player id {player} has entered the game.", playerState.PlayerId);
+                _logger.LogInformation("Receiving data from player {player} with no previous data.", playerState.PlayerId);
                 _gameActorState.State.PlayerStates.Add(playerState.PlayerId, playerState);
                 updated = true;
             }
@@ -111,9 +107,10 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<bool> SendDamageInstance(Guid authenticationToken, DamageInstance damageInstance)
+        public async Task<bool> SendDamageInstance(string sendingPlayerId, DamageInstance damageInstance)
         {
-            if (!CheckAuthentication(authenticationToken))
+            // Do not accept damage instances from players who are not in the game.
+            if (!_gameActorState.State.PlayerIds.Contains(sendingPlayerId))
             {
                 return false;
             }
@@ -127,7 +124,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />>
-        public async Task<bool> JoinGame(Guid authenticationToken, string playerId, string password)
+        public async Task<bool> JoinGame(string playerId, string password)
         {
             if (string.IsNullOrWhiteSpace(playerId) || password == null)
             {
@@ -139,16 +136,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             if (string.IsNullOrWhiteSpace(_gameActorState.State.Password) || string.Equals(_gameActorState.State.Password, password))
             {
                 _gameActorState.State.Password = password;
-
-                if (_gameActorState.State.AuthenticationTokens.ContainsKey(authenticationToken))
-                {
-                    _gameActorState.State.AuthenticationTokens[authenticationToken] = playerId;
-                }
-                else
-                {
-                    _gameActorState.State.AuthenticationTokens.Add(authenticationToken, playerId);
-                }
-
+                _gameActorState.State.PlayerIds.Add(playerId);
                 _gameActorState.State.TimeStamp = DateTime.UtcNow;
                 await _gameActorState.WriteStateAsync();
 
@@ -176,7 +164,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<bool> LeaveGame(Guid authenticationToken, string playerId)
+        public async Task<bool> LeaveGame(string playerId)
         {
             if (string.IsNullOrWhiteSpace(playerId))
             {
@@ -184,16 +172,10 @@ namespace Faemiyah.BtDamageResolver.Actors
                 return false;
             }
 
-            if (!CheckAuthentication(authenticationToken, playerId))
-            {
-                _logger.LogWarning("In Game {gameId}, player {playerId} disconnection request has no authority.", this.GetPrimaryKeyString(), playerId);
-                return false;
-            }
-
             if (_gameActorState.State.PlayerStates.ContainsKey(playerId))
             {
                 _gameActorState.State.PlayerStates.Remove(playerId);
-                _gameActorState.State.AuthenticationTokens.Remove(authenticationToken);
+                _gameActorState.State.PlayerIds.Remove(playerId);
                 _gameActorState.State.TimeStamp = DateTime.UtcNow;
                 await CheckGameStateUpdateEvents();
 
@@ -266,7 +248,8 @@ namespace Faemiyah.BtDamageResolver.Actors
 
         private async Task UpdateStateForPlayer(string playerId)
         {
-            _gameActorState.State.PlayerStates[playerId] = await GrainFactory.GetGrain<IPlayerActor>(playerId).GetPlayerState(GetAuthenticationTokenForPlayer(playerId), true);
+            var token = await GrainFactory.GetAuthenticationTokenRepository().GetToken(playerId);
+            _gameActorState.State.PlayerStates[playerId] = await GrainFactory.GetGrain<IPlayerActor>(playerId).GetPlayerState(token, true);
         }
     }
 }

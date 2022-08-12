@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Orleans;
@@ -14,7 +15,7 @@ namespace Faemiyah.BtDamageResolver.Actors
     {
         private async Task<bool> CheckAuthentication(Guid token)
         {
-            if (_playerActorState.State.AuthenticationToken == token)
+            if (await GrainFactory.GetAuthenticationTokenRepository().Match(this.GetPrimaryKeyString(), token))
             {
                 return true;
             }
@@ -23,17 +24,17 @@ namespace Faemiyah.BtDamageResolver.Actors
             return false;
         }
 
-        private ConnectionResponse GetConnectionResponse(bool isConnected)
+        private async Task<ConnectionResponse> GetConnectionResponse(bool isConnected)
         {
             var connectionResponse = new ConnectionResponse
             {
-                AuthenticationToken = _playerActorState.State.AuthenticationToken,
+                AuthenticationToken = await GrainFactory.GetAuthenticationTokenRepository().GetToken(this.GetPrimaryKeyString()),
                 GameId = _playerActorState.State.GameId,
                 GamePassword = _playerActorState.State.GamePassword,
                 IsConnected = isConnected,
                 PlayerId = this.GetPrimaryKeyString(),
-                PlayerPassword = _playerActorState.State.Password
             };
+
             return connectionResponse;
         }
 
