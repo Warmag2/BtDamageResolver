@@ -15,13 +15,18 @@ namespace Faemiyah.BtDamageResolver.Actors.States
         /// </summary>
         public PlayerActorState()
         {
-            // When a player is created, set this to zero so that we get all updates
-            UpdateTimeStamp = DateTime.MinValue;
             AuthenticationToken = Guid.NewGuid();
             Options = new PlayerOptions();
+            PasswordHash = null;
+            PasswordSalt = null;
             UnitEntryIds = new HashSet<Guid>();
-            Password = string.Empty;
+            UpdateTimeStamp = DateTime.MinValue; // When a player is created, set this to zero so that we get all updates
         }
+
+        /// <summary>
+        /// The authentication token of the player.
+        /// </summary>
+        public Guid AuthenticationToken { get; set; }
 
         /// <summary>
         /// The ID of the game this player is in.
@@ -34,14 +39,14 @@ namespace Faemiyah.BtDamageResolver.Actors.States
         public string GamePassword { get; set; }
 
         /// <summary>
-        /// The password for the player.
+        /// The password hash for the player.
         /// </summary>
-        public string Password { get; set; }
+        public byte[] PasswordHash { get; set; }
 
         /// <summary>
-        /// The authentication token for this player.
+        /// The password hash for the player.
         /// </summary>
-        public Guid AuthenticationToken { get; set; }
+        public byte[] PasswordSalt { get; set; }
 
         /// <summary>
         /// Is the player ready to proceed to the next turn.

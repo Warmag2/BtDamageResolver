@@ -22,7 +22,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             if (IsConnectedToGame())
             {
-                await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).RequestDamageReports(authenticationToken);
+                await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).RequestDamageReports(this.GetPrimaryKeyString());
                 return true;
             }
 
@@ -41,7 +41,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             if (_playerActorState.State.GameId != null)
             {
                 var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
-                await gameActor.RequestGameOptions(authenticationToken);
+                await gameActor.RequestGameOptions(this.GetPrimaryKeyString());
             }
 
             return true;
@@ -57,7 +57,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             if (IsConnectedToGame())
             {
-                await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).RequestGameState(authenticationToken);
+                await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).RequestGameState(this.GetPrimaryKeyString());
             }
             else
             {
@@ -93,7 +93,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             if (_playerActorState.State.GameId != null)
             {
                 var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
-                await gameActor.RequestTargetNumbers(authenticationToken);
+                await gameActor.RequestTargetNumbers(this.GetPrimaryKeyString());
             }
 
             return true;

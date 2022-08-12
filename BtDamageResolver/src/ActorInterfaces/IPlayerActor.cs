@@ -23,6 +23,13 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         Task<bool> Connect(string password);
 
         /// <summary>
+        /// Connect to the selected player actor.
+        /// </summary>
+        /// <param name="authenticationToken">The authentication token.</param>
+        /// <returns><b>True</b> if the connection request succeeded, <b>false</b> otherwise.</returns>
+        Task<bool> Connect(Guid authenticationToken);
+
+        /// <summary>
         /// Disconnect the selected player actor from all games and external data endpoints.
         /// </summary>
         /// <param name="authenticationToken">The authentication token.</param>
@@ -46,10 +53,9 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// <summary>
         /// Get the state of this player.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
         /// <param name="markStateAsNew">Should the state be marked as a new state.</param>
         /// <returns>The <see cref="PlayerState"/> object containing the properties of this unit actor.</returns>
-        public Task<PlayerState> GetPlayerState(Guid authenticationToken, bool markStateAsNew);
+        public Task<PlayerState> GetPlayerState(bool markStateAsNew);
 
         /// <summary>
         /// Join a game. If successful, the game ID and password are stored.
@@ -76,22 +82,28 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         Task<bool> LeaveGame(Guid authenticationToken);
 
         /// <summary>
+        /// Leave the current game.
+        /// </summary>
+        /// <remarks>
+        /// Overload for game actors to use without authentication.
+        /// </remarks>
+        /// <returns><b>True</b> if the client successfully left the game, <b>false</b> otherwise.</returns>
+        Task<bool> LeaveGame();
+
+        /// <summary>
         /// Tries to receive an unit and mark it as the property of this player, provided you have the authority.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
         /// <param name="unitId">The unit id to receive.</param>
         /// <param name="owningPlayerId">The player id of the player who owns the unit.</param>
-        /// <param name="ownerAuthenticationToken">The authentication token of the owner of this unit.</param>
         /// <returns><b>True</b> if the unit was successfully received, <b>false</b> otherwise.</returns>
-        public Task<bool> ReceiveUnit(Guid authenticationToken, Guid unitId, string owningPlayerId, Guid ownerAuthenticationToken);
+        public Task<bool> ReceiveUnit(Guid unitId, string owningPlayerId);
 
         /// <summary>
         /// Asks the player to remove an unit.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
         /// <param name="unitId">The unit to remove.</param>
-        /// <returns><b>True</b> if the removal is authorized and successful, <b>false</b> otherwise.</returns>
-        public Task<bool> RemoveUnit(Guid authenticationToken, Guid unitId);
+        /// <returns><b>True</b> if the removal was successful, <b>false</b> otherwise.</returns>
+        public Task<bool> RemoveUnit(Guid unitId);
 
         /// <summary>
         /// Request a full list of damage reports from the game the player is currently connected to.

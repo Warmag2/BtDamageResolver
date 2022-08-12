@@ -1,5 +1,6 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 @inject VisualStyleController _visualStyleController
@@ -72,7 +73,7 @@
     public EventCallback<WeaponEntry> OnDeleted { get; set; }
 
     [Parameter]
-    public EventCallback<(int draggedIndex, int targetIndex)> OnSwap { get; set; }
+    public EventCallback<SwapTuple> OnSwap { get; set; }
 
     protected override void OnInitialized()
     {
@@ -139,7 +140,7 @@
 
         if (index >= 1)
         {
-            OnSwap.InvokeAsync((index - 1, index));
+            OnSwap.InvokeAsync(new SwapTuple(index - 1, index));
         }
     }
 
@@ -149,7 +150,7 @@
 
         if (index < Unit.Weapons.Count - 1)
         {
-            OnSwap.InvokeAsync((index, index + 1));
+            OnSwap.InvokeAsync(new SwapTuple(index, index + 1));
         }
     }
 
@@ -170,7 +171,7 @@
             if (unitIndex == _userStateController.DraggedUnitIndex)
             {
                 var targetWeaponIndex = _userStateController.PlayerState.UnitEntries[unitIndex].Weapons.IndexOf(weaponEntry);
-                OnSwap.InvokeAsync((_userStateController.DraggedWeaponIndex, targetWeaponIndex));
+                OnSwap.InvokeAsync(new SwapTuple(_userStateController.DraggedWeaponIndex, targetWeaponIndex));
             }
         }
     }

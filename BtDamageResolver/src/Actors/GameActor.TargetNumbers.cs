@@ -15,16 +15,6 @@ namespace Faemiyah.BtDamageResolver.Actors
     public partial class GameActor
     {
         /// <summary>
-        /// Tells whether an unit with a specific id is in this game.
-        /// </summary>
-        /// <param name="unitId">The unit id to search for.</param>
-        /// <returns><b>True</b> if the unit is in the game, <b>false</b> otherwise.</returns>
-        private Task<bool> IsUnitInGame(Guid unitId)
-        {
-            return Task.FromResult(_gameActorState.State.PlayerStates.Any(p => p.Value.UnitEntries.Any(u => u.Id == unitId)));
-        }
-
-        /// <summary>
         /// Get all units which target this specific unit.
         /// </summary>
         /// <param name="unitId">The unit id whose targets should be processed.</param>

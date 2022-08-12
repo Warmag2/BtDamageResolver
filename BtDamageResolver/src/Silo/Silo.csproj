@@ -10,10 +10,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="3.6.2" />
-    <PackageReference Include="Microsoft.Orleans.Core" Version="3.6.2" />
-    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.6.2" />
-    <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="3.6.2" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="3.6.4" />
+    <PackageReference Include="Microsoft.Orleans.Core" Version="3.6.4" />
+    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.6.4" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="3.6.4" />
   </ItemGroup>
 
   <ItemGroup>

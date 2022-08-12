@@ -12,10 +12,12 @@ namespace Faemiyah.BtDamageResolver.Actors
     public partial class GameActor
     {
         /// <inheritdoc />
-        public async Task<bool> SendGameOptions(Guid authenticationToken, GameOptions gameOptions)
+        public async Task<bool> SendGameOptions(string askingPlayerId, GameOptions gameOptions)
         {
-            if (!CheckAuthentication(authenticationToken, _gameActorState.State.AdminId))
+            if (askingPlayerId != _gameActorState.State.AdminId)
             {
+                _logger.LogWarning("Game {gameId} options not set. Player {playerId} does not have authority.", this.GetPrimaryKeyString(), askingPlayerId);
+
                 return false;
             }
 

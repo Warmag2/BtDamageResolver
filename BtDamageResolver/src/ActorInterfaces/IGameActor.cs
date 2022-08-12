@@ -15,103 +15,100 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// <summary>
         /// Ask whether a certain unit is in this game.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
         /// <param name="unitId">The id of the unit.</param>
         /// <returns><b>True</b> if the unit is in this game, <b>false</b> otherwise.</returns>
-        Task<bool> IsUnitInGame(Guid authenticationToken, Guid unitId);
+        Task<bool> IsUnitInGame(Guid unitId);
 
         /// <summary>
         /// Forces a ready state for all players in the game.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
+        /// <param name="askingPlayerId">The player asking for force ready.</param>
         /// <returns><b>True</b> if the state was successfully forced, <b>false</b> otherwise.</returns>
-        Task<bool> ForceReady(Guid authenticationToken);
+        Task<bool> ForceReady(string askingPlayerId);
 
         /// <summary>
         /// Connect a player to this game.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
-        /// <param name="playerId">The player ID to connect to the game.</param>
+        /// <param name="playerId">The player ID wanting to connect to the game.</param>
         /// <param name="password">The password to use when connecting.</param>
         /// <returns><b>True</b> if the connection was successful, <b>false</b> otherwise.</returns>
-        Task<bool> JoinGame(Guid authenticationToken, string playerId, string password);
+        Task<bool> JoinGame(string playerId, string password);
 
         /// <summary>
         /// Disconnect a player from this game.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
-        /// <param name="playerId">The player ID to disconnect from the game.</param>
+        /// <param name="playerId">The player ID wanting to disconnect from the game.</param>
         /// <returns><b>True</b> if the disconnection succeeds, <b>false</b> otherwise.</returns>
-        Task<bool> LeaveGame(Guid authenticationToken, string playerId);
+        Task<bool> LeaveGame(string playerId);
 
         /// <summary>
         /// Kick a player from this game.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
+        /// <param name="askingPlayerId">The asking player Id.</param>
         /// <param name="playerId">The player ID to disconnect from the game.</param>
         /// <returns><b>True</b> if the disconnection succeeds, <b>false</b> otherwise.</returns>
-        Task<bool> KickPlayer(Guid authenticationToken, string playerId);
+        Task<bool> KickPlayer(string askingPlayerId, string playerId);
 
         /// <summary>
         /// Moves an unit to another player in the game.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
+        /// <param name="askingPlayerId">The asking player Id.</param>
         /// <param name="unitId">The unit id to move.</param>
         /// <param name="playerId">The player id to move to.</param>
         /// <returns><b>True</b> if the unit was successfully moved, <b>false</b> otherwise.</returns>
-        Task<bool> MoveUnit(Guid authenticationToken, Guid unitId, string playerId);
+        Task<bool> MoveUnit(string askingPlayerId, Guid unitId, string playerId);
 
         /// <summary>
         /// Request the game actor to send all damage reports which have happened in the game so far to the asking player.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
+        /// <param name="askingPlayerId">The asking player Id.</param>
         /// <returns><b>True</b> if the damage reports were sent, <b>false</b> otherwise.</returns>
-        Task<bool> RequestDamageReports(Guid authenticationToken);
+        Task RequestDamageReports(string askingPlayerId);
 
         /// <summary>
         /// Request the game actor to send the game options to the asking player.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
+        /// <param name="askingPlayerId">The asking player Id.</param>
         /// <returns><b>True</b> if the game options were sent, <b>false</b> otherwise.</returns>
-        Task<bool> RequestGameOptions(Guid authenticationToken);
+        Task RequestGameOptions(string askingPlayerId);
 
         /// <summary>
         /// Request the game actor to send the game state to the asking player.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
+        /// <param name="askingPlayerId">The asking player Id.</param>
         /// <returns><b>True</b> if the game state was sent, <b>false</b> otherwise.</returns>
-        Task<bool> RequestGameState(Guid authenticationToken);
+        Task RequestGameState(string askingPlayerId);
 
         /// <summary>
         /// Request the game actor to send the current target numbers to the asking player.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
-        /// <returns><b>True</b> if the target numbers were sent, <b>false</b> otherwise.</returns>
-        Task<bool> RequestTargetNumbers(Guid authenticationToken);
+        /// <param name="askingPlayerId">The asking player Id.</param>
+        /// <returns>A task which finishes when the request was processed.</returns>
+        Task RequestTargetNumbers(string askingPlayerId);
 
         /// <summary>
         /// Receive a damage instance, process it and distribute the results to other players in the game.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
+        /// <param name="sendingPlayerId">The sending player Id.</param>
         /// <param name="damageInstance">The damage instance.</param>
-        /// <returns><b>True</b> if processing the damage instance succeeded, <b>false</b> otherwise.</returns>
-        Task<bool> SendDamageInstance(Guid authenticationToken, DamageInstance damageInstance);
+        /// <returns>A task which finishes when the damage instance was processed.</returns>
+        Task<bool> SendDamageInstance(string sendingPlayerId, DamageInstance damageInstance);
 
         /// <summary>
         /// Receives new game options and distribute them to other players in the game.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
+        /// <param name="askingPlayerId">The asking player Id.</param>
         /// <param name="gameOptions">A <see cref="GameOptions"/> object containing the new game options.</param>
         /// <returns><b>True</b> if the game options were successfully updated, <b>false</b> otherwise.</returns>
-        Task<bool> SendGameOptions(Guid authenticationToken, GameOptions gameOptions);
+        Task<bool> SendGameOptions(string askingPlayerId, GameOptions gameOptions);
 
         /// <summary>
         /// Receives a player state and distribute the new state to other players in the game.
         /// </summary>
-        /// <param name="authenticationToken">The authentication token.</param>
+        /// <param name="sendingPlayerId">The sending player Id.</param>
         /// <param name="playerState">A <see cref="PlayerState"/> object containing the player state to be distributed.</param>
         /// <param name="unitIds">List of unit IDs which were actually updated in this update request.</param>
-        /// <returns><b>True</b> if the player state was successfully updated, <b>false</b> otherwise.</returns>
-        Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState, List<Guid> unitIds);
+        /// <returns>A task which finishes when the player state was processed.</returns>
+        Task<bool> SendPlayerState(string sendingPlayerId, PlayerState playerState, List<Guid> unitIds);
     }
 }

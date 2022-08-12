@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -12,64 +11,35 @@ namespace Faemiyah.BtDamageResolver.Actors
     public partial class GameActor
     {
         /// <inheritdoc />
-        public async Task<bool> RequestDamageReports(Guid authenticationToken)
+        public async Task RequestDamageReports(string askingPlayerId)
         {
-            if (!CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
+            _logger.LogInformation("Game {gameId} is delivering a list of all damage reports to player actor {playerId}", this.GetPrimaryKeyString(), askingPlayerId);
 
-            _logger.LogInformation("Game {gameId} is delivering a list of all damage reports to player actor {playerId}", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
-
-            await DistributeAllDamageReportsToPlayer(authenticationToken);
-
-            return true;
+            await DistributeAllDamageReportsToPlayer(askingPlayerId);
         }
 
         /// <inheritdoc />
-        public async Task<bool> RequestGameOptions(Guid authenticationToken)
+        public async Task RequestGameOptions(string askingPlayerId)
         {
-            if (!CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
-
-            await DistributeGameOptionsToPlayer(GetPlayerForAuthenticationToken(authenticationToken));
-
-            return true;
+            await DistributeGameOptionsToPlayer(askingPlayerId);
         }
 
         /// <inheritdoc />
-        public async Task<bool> RequestGameState(Guid authenticationToken)
+        public async Task RequestGameState(string askingPlayerId)
         {
-            if (!CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
+            _logger.LogInformation("Game {gameId} is delivering the game state to player actor {playerId}", this.GetPrimaryKeyString(), askingPlayerId);
 
-            _logger.LogInformation("Game {gameId} is delivering the game state to player actor {playerId}", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
-
-            await DistributeGameStateToPlayer(authenticationToken);
-
-            return true;
+            await DistributeGameStateToPlayer(askingPlayerId);
         }
 
         /// <inheritdoc />
-        public async Task<bool> RequestTargetNumbers(Guid authenticationToken)
+        public async Task RequestTargetNumbers(string askingPlayerId)
         {
-            if (!CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
-
-            var player = GetPlayerForAuthenticationToken(authenticationToken);
-            var units = _gameActorState.State.PlayerStates[player].UnitEntries.Select(u => u.Id).ToList();
+            var units = _gameActorState.State.PlayerStates[askingPlayerId].UnitEntries.Select(u => u.Id).ToList();
 
             var targetNumbersForPlayer = await ProcessTargetNumberUpdatesForUnits(units);
 
-            await DistributeTargetNumberUpdatesToPlayer(player, targetNumbersForPlayer);
-
-            return true;
+            await DistributeTargetNumberUpdatesToPlayer(askingPlayerId, targetNumbersForPlayer);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.Actors.Cryptography;
 using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Common.Constants;
@@ -19,6 +20,7 @@ namespace Faemiyah.BtDamageResolver.Actors
     {
         private readonly ILogger<PlayerActor> _logger;
         private readonly ICommunicationServiceClient _communicationServiceClient;
+        private readonly IHasher _hasher;
         private readonly ILoggingServiceClient _loggingServiceClient;
         private readonly IPersistentState<PlayerActorState> _playerActorState;
 
@@ -27,16 +29,19 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="communicationServiceClient">The communication service client.</param>
+        /// <param name="hasher">The password hasher.</param>
         /// <param name="loggingServiceClient">The logging service client.</param>
         /// <param name="playerActorState">The state object for this actor.</param>
         public PlayerActor(
             ILogger<PlayerActor> logger,
             ICommunicationServiceClient communicationServiceClient,
+            IHasher hasher,
             ILoggingServiceClient loggingServiceClient,
             [PersistentState(nameof(PlayerActorState), Settings.ActorStateStoreName)]IPersistentState<PlayerActorState> playerActorState)
         {
             _logger = logger;
             _communicationServiceClient = communicationServiceClient;
+            _hasher = hasher;
             _loggingServiceClient = loggingServiceClient;
             _playerActorState = playerActorState;
         }
@@ -53,25 +58,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<PlayerState> GetPlayerState(Guid authenticationToken, bool markStateAsNew)
-        {
-            if (!await CheckAuthentication(authenticationToken))
-            {
-                return null;
-            }
-
-            return await GetPlayerState(markStateAsNew);
-        }
-
-        /// <inheritdoc />
-        public async Task UnReady()
-        {
-            _playerActorState.State.IsReady = false;
-            _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
-            await _playerActorState.WriteStateAsync();
-        }
-
-        private async Task<PlayerState> GetPlayerState(bool markStateAsNew)
+        public async Task<PlayerState> GetPlayerState(bool markStateAsNew)
         {
             if (markStateAsNew)
             {
@@ -93,6 +80,14 @@ namespace Faemiyah.BtDamageResolver.Actors
             };
 
             return playerState;
+        }
+
+        /// <inheritdoc />
+        public async Task UnReady()
+        {
+            _playerActorState.State.IsReady = false;
+            _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
+            await _playerActorState.WriteStateAsync();
         }
     }
 }

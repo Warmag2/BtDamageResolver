@@ -32,8 +32,8 @@ namespace Faemiyah.BtDamageResolver.Actors
                 GamePassword = _playerActorState.State.GamePassword,
                 IsConnected = isConnected,
                 PlayerId = this.GetPrimaryKeyString(),
-                PlayerPassword = _playerActorState.State.Password
             };
+
             return connectionResponse;
         }
 

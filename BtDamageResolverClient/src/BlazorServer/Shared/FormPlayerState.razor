@@ -1,4 +1,5 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @implements IDisposable
@@ -49,11 +50,11 @@
         _userStateController.AddUnit(unit);
     }
 
-    public void OnUnitSwap((int ix1, int ix2) swapTuple)
+    public void OnUnitSwap(SwapTuple swapTuple)
     {
-        if (swapTuple.ix1 != swapTuple.ix2)
+        if (swapTuple.From != swapTuple.To)
         {
-            SwapUnits(swapTuple.ix1, swapTuple.ix2);
+            SwapUnits(swapTuple.From, swapTuple.To);
         }
     }
 

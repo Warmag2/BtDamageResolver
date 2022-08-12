@@ -9,7 +9,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
     public class ConnectionResponse
     {
         /// <summary>
-        /// The authentication token for this player.
+        /// The authentication token for the player who made the connection request.
         /// </summary>
         public Guid AuthenticationToken { get; set; }
 
@@ -32,10 +32,5 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         /// The ID of the player which made the connection request.
         /// </summary>
         public string PlayerId { get; set; }
-
-        /// <summary>
-        /// The password of the player which made the connection request.
-        /// </summary>
-        public string PlayerPassword { get; set; }
     }
 }

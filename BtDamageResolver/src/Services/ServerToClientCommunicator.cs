@@ -48,9 +48,19 @@ namespace Faemiyah.BtDamageResolver.Services
                 return false;
             }
 
-            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedConnectRequest.Credentials.Name).Connect(unpackedConnectRequest.Credentials.Password))
+            if (unpackedConnectRequest.Credentials.AuthenticationToken.HasValue)
             {
-                LogWarning(unpackedConnectRequest);
+                if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedConnectRequest.Credentials.Name).Connect(unpackedConnectRequest.Credentials.AuthenticationToken.Value))
+                {
+                    LogWarning(unpackedConnectRequest);
+                }
+            }
+            else
+            {
+                if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedConnectRequest.Credentials.Name).Connect(unpackedConnectRequest.Credentials.Password))
+                {
+                    LogWarning(unpackedConnectRequest);
+                }
             }
 
             return true;
@@ -188,7 +198,13 @@ namespace Faemiyah.BtDamageResolver.Services
 
             var gameName = await _grainFactory.GetGrain<IPlayerActor>(unpackedMoveUnitRequest.PlayerName).GetGameId(unpackedMoveUnitRequest.AuthenticationToken);
 
-            if (!await _grainFactory.GetGrain<IGameActor>(gameName).MoveUnit(unpackedMoveUnitRequest.AuthenticationToken, unpackedMoveUnitRequest.UnitId, unpackedMoveUnitRequest.ReceivingPlayer))
+            // Early bail if the player is not in a game or the authentication failed
+            if (string.IsNullOrWhiteSpace(gameName))
+            {
+                return false;
+            }
+
+            if (!await _grainFactory.GetGrain<IGameActor>(gameName).MoveUnit(unpackedMoveUnitRequest.PlayerName, unpackedMoveUnitRequest.UnitId, unpackedMoveUnitRequest.ReceivingPlayer))
             {
                 LogWarning(unpackedMoveUnitRequest);
             }

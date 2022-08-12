@@ -13,54 +13,54 @@ namespace Faemiyah.BtDamageResolver.Actors
     public partial class GameActor
     {
         /// <inheritdoc />
-        public Task<bool> KickPlayer(Guid authenticationToken, string playerId)
+        public Task<bool> KickPlayer(string askingPlayerId, string playerId)
         {
-            if (!CheckAuthentication(authenticationToken, _gameActorState.State.AdminId))
+            if (askingPlayerId != _gameActorState.State.AdminId)
             {
-                _logger.LogWarning("In Game {gameId}, Player {playerId} failed to kick player {playerToKickId}.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken], playerId);
+                _logger.LogWarning("In Game {gameId}, Player {playerId} failed to kick player {playerToKickId}. No admin authority.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
                 return Task.FromResult(false);
             }
 
-            if (_gameActorState.State.AuthenticationTokens[authenticationToken] == playerId)
+            if (askingPlayerId == playerId)
             {
-                _logger.LogWarning("In Game {gameId}, Player {playerId} tried to kick himself. Disallowing.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
+                _logger.LogWarning("In Game {gameId}, Player {playerId} tried to kick himself. Disallowing.", this.GetPrimaryKeyString(), playerId);
                 return Task.FromResult(false);
             }
 
             var playerActor = GrainFactory.GetGrain<IPlayerActor>(playerId);
 
-            // Perform the disconnect through the player actor, since the game knows his authentication token
-            playerActor.LeaveGame(_gameActorState.State.AuthenticationTokens.SingleOrDefault(a => a.Value == playerId).Key).Ignore();
+            // Perform the disconnect through the player actor
+            playerActor.LeaveGame().Ignore();
 
-            _logger.LogInformation("In Game {gameId}, Player {playerId} successfully kicked player {playerToKickId}.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken], playerId);
+            _logger.LogInformation("In Game {gameId}, Player {playerId} successfully kicked player {playerToKickId}.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
 
             return Task.FromResult(true);
         }
 
         /// <inheritdoc />
-        public async Task<bool> ForceReady(Guid authenticationToken)
+        public async Task<bool> ForceReady(string askingPlayerId)
         {
-            if (CheckAuthentication(authenticationToken, _gameActorState.State.AdminId))
+            if (askingPlayerId == _gameActorState.State.AdminId)
             {
                 foreach (var state in _gameActorState.State.PlayerStates.Values)
                 {
                     state.IsReady = true;
                 }
 
-                _logger.LogInformation("In Game {gameId}, Player {playerId} successfully forced ready state for all players.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
+                _logger.LogInformation("In Game {gameId}, Player {playerId} successfully forced ready state for all players.", this.GetPrimaryKeyString(), _gameActorState.State.AdminId);
 
                 await CheckGameStateUpdateEvents();
 
                 return true;
             }
 
-            _logger.LogWarning("In Game {gameId}, Player {playerId} failed to force ready state for all players.", this.GetPrimaryKeyString(), _gameActorState.State.AuthenticationTokens[authenticationToken]);
+            _logger.LogWarning("In Game {gameId}, Player {playerId} failed to force ready state for all players. No admin authority.", this.GetPrimaryKeyString(), askingPlayerId);
 
             return false;
         }
 
         /// <inheritdoc />
-        public async Task<bool> MoveUnit(Guid authenticationToken, Guid unitId, string playerId)
+        public async Task<bool> MoveUnit(string askingPlayerId, Guid unitId, string playerId)
         {
             var unitOwner = _gameActorState.State.PlayerStates.Single(p => p.Value.UnitEntries.Any(u => u.Id == unitId)).Key;
 
@@ -71,11 +71,11 @@ namespace Faemiyah.BtDamageResolver.Actors
                 return false;
             }
 
-            if (CheckAuthentication(authenticationToken, unitOwner) || CheckAuthentication(authenticationToken, _gameActorState.State.AdminId))
+            if ((askingPlayerId == unitOwner) || (askingPlayerId == _gameActorState.State.AdminId))
             {
                 var playerActorReceivingUnit = GrainFactory.GetGrain<IPlayerActor>(playerId);
 
-                if (await playerActorReceivingUnit.ReceiveUnit(GetAuthenticationTokenForPlayer(playerId), unitId, unitOwner, GetAuthenticationTokenForPlayer(unitOwner)))
+                if (await playerActorReceivingUnit.ReceiveUnit(unitId, unitOwner))
                 {
                     await UpdateStateForPlayer(unitOwner);
                     await UpdateStateForPlayer(playerId);
