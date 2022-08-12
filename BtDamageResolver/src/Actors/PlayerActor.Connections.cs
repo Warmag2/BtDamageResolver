@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
 using Microsoft.Extensions.Logging;
@@ -35,9 +34,9 @@ namespace Faemiyah.BtDamageResolver.Actors
             if (_hasher.Verify(password, _playerActorState.State.PasswordSalt, _playerActorState.State.PasswordHash))
             {
                 // Invalidate any previous authentication token when connecting
-                var newToken = await GrainFactory.GetAuthenticationTokenRepository().Renew(this.GetPrimaryKeyString());
+                _playerActorState.State.AuthenticationToken = Guid.NewGuid();
 
-                await PerformConnectionActions(newToken);
+                await PerformConnectionActions();
 
                 return true;
             }
@@ -52,9 +51,9 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <inheritdoc/>
         public async Task<bool> Connect(Guid authenticationToken)
         {
-            if (await GrainFactory.GetAuthenticationTokenRepository().Match(this.GetPrimaryKeyString(), authenticationToken))
+            if (await CheckAuthentication(authenticationToken))
             {
-                await PerformConnectionActions(authenticationToken);
+                await PerformConnectionActions();
 
                 return true;
             }
@@ -115,6 +114,12 @@ namespace Faemiyah.BtDamageResolver.Actors
             }
 
             return await JoinGameInternal(gameId, password);
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> LeaveGame()
+        {
+            return await LeaveGame(_playerActorState.State.AuthenticationToken);
         }
 
         /// <inheritdoc />
@@ -183,7 +188,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
         }
 
-        private async Task PerformConnectionActions(Guid authenticationToken)
+        private async Task PerformConnectionActions()
         {
             _logger.LogInformation("Player {playerId} received a successful connection request from a client.", this.GetPrimaryKeyString());
 
@@ -192,10 +197,10 @@ namespace Faemiyah.BtDamageResolver.Actors
             await SendDataToClient(EventNames.PlayerOptions, _playerActorState.State.Options);
 
             // Ask for game-related state objects
-            await RequestGameState(authenticationToken);
-            await RequestGameOptions(authenticationToken);
-            await RequestTargetNumbers(authenticationToken);
-            await RequestDamageReports(authenticationToken);
+            await RequestGameState(_playerActorState.State.AuthenticationToken);
+            await RequestGameOptions(_playerActorState.State.AuthenticationToken);
+            await RequestTargetNumbers(_playerActorState.State.AuthenticationToken);
+            await RequestDamageReports(_playerActorState.State.AuthenticationToken);
 
             // Log the login to permanent store
             await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Login, 0);

@@ -36,13 +36,8 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<bool> RemoveUnit(Guid authenticationToken, Guid unitId)
+        public Task<bool> RemoveUnit(Guid unitId)
         {
-            if (!await CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
-
             if (_playerActorState.State.UnitEntryIds.Contains(unitId))
             {
                 _playerActorState.State.UnitEntryIds.Remove(unitId);
@@ -50,25 +45,20 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                 _logger.LogInformation("Player {playerId} removed Unit {unitId} from their inventory.", this.GetPrimaryKeyString(), unitId);
 
-                return true;
+                return Task.FromResult(true);
             }
 
             _logger.LogWarning("Player {playerId} failed to remove Unit {unitId} from their inventory.", this.GetPrimaryKeyString(), unitId);
 
-            return false;
+            return Task.FromResult(false);
         }
 
         /// <inheritdoc />
-        public async Task<bool> ReceiveUnit(Guid authenticationToken, Guid unitId, string owningPlayerId, Guid ownerAuthenticationToken)
+        public async Task<bool> ReceiveUnit(Guid unitId, string owningPlayerId)
         {
-            if (!await CheckAuthentication(authenticationToken))
-            {
-                return false;
-            }
-
             var owningPlayerActor = GrainFactory.GetGrain<IPlayerActor>(owningPlayerId);
 
-            if (!_playerActorState.State.UnitEntryIds.Contains(unitId) && await owningPlayerActor.RemoveUnit(ownerAuthenticationToken, unitId))
+            if (!_playerActorState.State.UnitEntryIds.Contains(unitId) && await owningPlayerActor.RemoveUnit(unitId))
             {
                 _playerActorState.State.UnitEntryIds.Add(unitId);
                 _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;

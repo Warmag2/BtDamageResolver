@@ -1,5 +1,4 @@
 ﻿using Faemiyah.BtDamageResolver.ActorInterfaces.Repositories;
-using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Orleans;
 
 namespace Faemiyah.BtDamageResolver.ActorInterfaces.Extensions
@@ -19,16 +18,6 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Extensions
         public static IAmmoRepository GetAmmoRepository(this IGrainFactory grainFactory)
         {
             return grainFactory.GetGrain<IAmmoRepository>(RepositoryActorCommonId);
-        }
-
-        /// <summary>
-        /// Gets the authentication token repository.
-        /// </summary>
-        /// <param name="grainFactory">The grain factory.</param>
-        /// <returns>The authentication token repository.</returns>
-        public static IAuthenticationTokenRepository GetAuthenticationTokenRepository(this IGrainFactory grainFactory)
-        {
-            return grainFactory.GetGrain<IAuthenticationTokenRepository>(RepositoryActorCommonId);
         }
 
         /// <summary>

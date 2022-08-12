@@ -15,12 +15,18 @@ namespace Faemiyah.BtDamageResolver.Actors.States
         /// </summary>
         public PlayerActorState()
         {
+            AuthenticationToken = Guid.NewGuid();
             Options = new PlayerOptions();
             PasswordHash = null;
             PasswordSalt = null;
             UnitEntryIds = new HashSet<Guid>();
             UpdateTimeStamp = DateTime.MinValue; // When a player is created, set this to zero so that we get all updates
         }
+
+        /// <summary>
+        /// The authentication token of the player.
+        /// </summary>
+        public Guid AuthenticationToken { get; set; }
 
         /// <summary>
         /// The ID of the game this player is in.

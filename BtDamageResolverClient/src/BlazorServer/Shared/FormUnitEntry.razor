@@ -1,6 +1,7 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Api.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 @inject VisualStyleController _visualStyleController
@@ -305,7 +306,7 @@
     public EventCallback<UnitEntry> OnLoad { get; set; }
 
     [Parameter]
-    public EventCallback<(int draggedIndex, int targetIndex)> OnSwap { get; set; }
+    public EventCallback<SwapTuple> OnSwap { get; set; }
 
     public void AddWeapon()
     {
@@ -564,11 +565,11 @@
         SendUpdate();
     }
 
-    public void OnWeaponSwap((int ix1, int ix2) swapTuple)
+    public void OnWeaponSwap(SwapTuple swapTuple)
     {
-        if (swapTuple.ix1 != swapTuple.ix2)
+        if (swapTuple.From != swapTuple.To)
         {
-            SwapWeapons(swapTuple.ix1, swapTuple.ix2);
+            SwapWeapons(swapTuple.From, swapTuple.To);
         }
     }
 
@@ -584,7 +585,7 @@
 
         if (index >= 1)
         {
-            OnSwap.InvokeAsync((index - 1, index));
+            OnSwap.InvokeAsync(new SwapTuple(index - 1, index));
         }
     }
 
@@ -594,7 +595,7 @@
 
         if (index < _userStateController.PlayerState.UnitEntries.Count - 1)
         {
-            OnSwap.InvokeAsync((index, index + 1));
+            OnSwap.InvokeAsync(new SwapTuple(index, index + 1));
         }
     }
 
@@ -612,7 +613,7 @@
         if (unit != null)
         {
             var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-            OnSwap.InvokeAsync((_userStateController.DraggedUnitIndex, targetUnitIndex));
+            OnSwap.InvokeAsync(new SwapTuple(_userStateController.DraggedUnitIndex, targetUnitIndex));
         }
     }
 

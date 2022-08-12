@@ -91,7 +91,7 @@
                 _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
                 _userStateController.IsConnectedToServer = true;
                 _userStateController.PlayerName = connectionResponse.PlayerId;
-                await _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, Password = connectionResponse.PlayerPassword });
+                await _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, AuthenticationToken = connectionResponse.AuthenticationToken });
             }
             else
             {

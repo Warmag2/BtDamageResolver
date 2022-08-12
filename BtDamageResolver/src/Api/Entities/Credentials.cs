@@ -18,6 +18,16 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         }
 
         /// <summary>
+        /// User authentication token, if any.
+        /// </summary>
+        /// <remarks>
+        /// This can be used in place of user password, if you know it.
+        /// It should be stored in browser local storage to avoid storing passwords.
+        /// Transient.
+        /// </remarks>
+        public Guid? AuthenticationToken { get; set; }
+
+        /// <summary>
         /// User or game name.
         /// </summary>
         [Required]

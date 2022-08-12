@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
@@ -14,29 +13,28 @@ namespace Faemiyah.BtDamageResolver.Actors
     public partial class GameActor
     {
         /// <inheritdoc />
-        public async Task<bool> KickPlayer(string askingPlayerId, string playerId)
+        public Task<bool> KickPlayer(string askingPlayerId, string playerId)
         {
             if (askingPlayerId != _gameActorState.State.AdminId)
             {
                 _logger.LogWarning("In Game {gameId}, Player {playerId} failed to kick player {playerToKickId}. No admin authority.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
-                return false;
+                return Task.FromResult(false);
             }
 
             if (askingPlayerId == playerId)
             {
                 _logger.LogWarning("In Game {gameId}, Player {playerId} tried to kick himself. Disallowing.", this.GetPrimaryKeyString(), playerId);
-                return false;
+                return Task.FromResult(false);
             }
 
             var playerActor = GrainFactory.GetGrain<IPlayerActor>(playerId);
-            var tokenPlayerToKick = await GrainFactory.GetAuthenticationTokenRepository().GetToken(playerId);
 
             // Perform the disconnect through the player actor
-            playerActor.LeaveGame(tokenPlayerToKick).Ignore();
+            playerActor.LeaveGame().Ignore();
 
             _logger.LogInformation("In Game {gameId}, Player {playerId} successfully kicked player {playerToKickId}.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
 
-            return true;
+            return Task.FromResult(true);
         }
 
         /// <inheritdoc />
@@ -77,10 +75,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             {
                 var playerActorReceivingUnit = GrainFactory.GetGrain<IPlayerActor>(playerId);
 
-                var tokenForTarget = await GrainFactory.GetAuthenticationTokenRepository().GetToken(playerId);
-                var tokenForSender = await GrainFactory.GetAuthenticationTokenRepository().GetToken(unitOwner);
-
-                if (await playerActorReceivingUnit.ReceiveUnit(tokenForTarget, unitId, unitOwner, tokenForSender))
+                if (await playerActorReceivingUnit.ReceiveUnit(unitId, unitOwner))
                 {
                     await UpdateStateForPlayer(unitOwner);
                     await UpdateStateForPlayer(playerId);

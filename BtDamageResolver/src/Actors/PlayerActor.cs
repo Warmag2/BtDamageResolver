@@ -58,25 +58,7 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public async Task<PlayerState> GetPlayerState(Guid authenticationToken, bool markStateAsNew)
-        {
-            if (!await CheckAuthentication(authenticationToken))
-            {
-                return null;
-            }
-
-            return await GetPlayerState(markStateAsNew);
-        }
-
-        /// <inheritdoc />
-        public async Task UnReady()
-        {
-            _playerActorState.State.IsReady = false;
-            _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
-            await _playerActorState.WriteStateAsync();
-        }
-
-        private async Task<PlayerState> GetPlayerState(bool markStateAsNew)
+        public async Task<PlayerState> GetPlayerState(bool markStateAsNew)
         {
             if (markStateAsNew)
             {
@@ -98,6 +80,14 @@ namespace Faemiyah.BtDamageResolver.Actors
             };
 
             return playerState;
+        }
+
+        /// <inheritdoc />
+        public async Task UnReady()
+        {
+            _playerActorState.State.IsReady = false;
+            _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
+            await _playerActorState.WriteStateAsync();
         }
     }
 }

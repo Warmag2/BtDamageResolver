@@ -248,8 +248,7 @@ namespace Faemiyah.BtDamageResolver.Actors
 
         private async Task UpdateStateForPlayer(string playerId)
         {
-            var token = await GrainFactory.GetAuthenticationTokenRepository().GetToken(playerId);
-            _gameActorState.State.PlayerStates[playerId] = await GrainFactory.GetGrain<IPlayerActor>(playerId).GetPlayerState(token, true);
+            _gameActorState.State.PlayerStates[playerId] = await GrainFactory.GetGrain<IPlayerActor>(playerId).GetPlayerState(true);
         }
     }
 }
