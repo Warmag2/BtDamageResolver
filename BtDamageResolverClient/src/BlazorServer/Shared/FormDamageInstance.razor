@@ -5,52 +5,55 @@
 @inject VisualStyleController _visualStyleController
 @inject UserStateController _userStateController
 
-<div class="resolver_div_componentcontainer">
-    
-    <h3 class="resolver_header">
-        Generate damage
-    </h3>
+@if (_userStateController.PlayerState != null)
+{
+    <div class="resolver_div_componentcontainer">
 
-    <div class="resolver_div_unit">
-        <table>
-            <tr>
-                <td>Target</td>
-                <td>
-                    <FormComboBox Options="@_userStateController.GetUnitIds()" SelectedOption="@_targetUnit" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
-                </td>
-            </tr>
-            <tr>
-                <td>Damage</td>
-                <td>
-                    <FormNumber SelectedOption="@_damage" Min="0" Max="1000" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnDamageChanged"></FormNumber>
-                </td>
-            </tr>
-            <tr>
-                <td>Clustering</td>
-                <td>
-                    <FormRadio Options="@_clusterSizeList" SelectedOption="@_clusterSize" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(int clusterSize) => OnClusterSizeChanged(clusterSize)"></FormRadio>
-                </td>
-            </tr>
-            <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetDirectionHidden(_userStateController.GetUnitType(_targetUnit))))">
-                <td>Direction</td>
-                <td>
-                    <FormRadio Options="@_commonData.MapFacing" SelectedOption="@_direction" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
-                </td>
-            </tr>
-            <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(_targetUnit))))">
-                <td>Cover</td>
-                <td>
-                    <FormRadio Options="@_commonData.FormMapCover(_userStateController.GetUnitType(_targetUnit))" SelectedOption="@_cover" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
+        <h3 class="resolver_header">
+            Generate damage
+        </h3>
+
+        <div class="resolver_div_unit">
+            <table>
+                <tr>
+                    <td>Target</td>
+                    <td>
+                        <FormComboBox Options="@_userStateController.GetUnitIds()" SelectedOption="@_targetUnit" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Damage</td>
+                    <td>
+                        <FormNumber SelectedOption="@_damage" Min="0" Max="1000" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnDamageChanged"></FormNumber>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Clustering</td>
+                    <td>
+                        <FormRadio Options="@_clusterSizeList" SelectedOption="@_clusterSize" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(int clusterSize) => OnClusterSizeChanged(clusterSize)"></FormRadio>
+                    </td>
+                </tr>
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetDirectionHidden(_userStateController.GetUnitType(_targetUnit))))">
+                    <td>Direction</td>
+                    <td>
+                        <FormRadio Options="@_commonData.MapFacing" SelectedOption="@_direction" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
+                    </td>
+                </tr>
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(_targetUnit))))">
+                    <td>Cover</td>
+                    <td>
+                        <FormRadio Options="@_commonData.FormMapCover(_userStateController.GetUnitType(_targetUnit))" SelectedOption="@_cover" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
                         <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="Execute">Execute</button>
-                </td>
-            </tr>
-        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
-</div>
+}
 
 @code {
     private int _damage;
@@ -91,8 +94,6 @@
         }
     }
 
-    #region Property changing delegates
-
     private void OnDamageChanged(int damage)
     {
         _damage = damage;
@@ -117,6 +118,4 @@
     {
         _cover = cover;
     }
-
-    #endregion
 }

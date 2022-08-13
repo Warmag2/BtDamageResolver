@@ -6,46 +6,42 @@
 @implements IDisposable
 
 <ContainerAccordion Enabled="@_sectionEnabledYourUnits" Title="Units">
-    <h2 class="resolver_header">
-        @_userStateController.PlayerName @(_userStateController.IsConnectedToGame ? $" - {_userStateController.GameState.GameId} - Turn {_userStateController.GameState.Turn}" : string.Empty)
-    </h2>
-
-    <!-- Former player state component -->
-    @if (_userStateController.PlayerState != null)
+    @if (_userStateController.PlayerName != null)
     {
-        <div class="resolver_div_componentlistcontainer">
-            @foreach (var unitEntry in _userStateController.PlayerState.UnitEntries)
-            {
-                <FormUnitEntry @key=@($"{unitEntry.Id}_{unitEntry.TimeStamp}") UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
-            }
-        </div>
+        <h2 class="resolver_header">
+            @_userStateController.PlayerName @(_userStateController.IsConnectedToGame ? $" - {_userStateController.GameState?.GameId} - Turn {_userStateController.GameState?.Turn}" : string.Empty)
+        </h2>
 
-        <div class="resolver_div_hr">
-            <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">+</button>
-            <button class="resolver_button resolver_button_ready" @onclick="Ready">@(_userStateController.PlayerState.IsReady ? "UnReady" : "Ready")</button>
-        </div> <!-- This is here because we only want exactly one /-->
+        if (_userStateController.PlayerState != null)
+        {
+            <div class="resolver_div_componentlistcontainer">
+                @foreach (var unitEntry in _userStateController.PlayerState.UnitEntries)
+                {
+                    <FormUnitEntry @key=@($"{unitEntry.Id}_{unitEntry.TimeStamp}") UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
+                }
+            </div>
 
-        <div id="resolver_tooltip_targetnumber" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
+            <div class="resolver_div_hr">
+                <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">+</button>
+                <button class="resolver_button resolver_button_ready" @onclick="Ready">@(_userStateController.PlayerState.IsReady ? "UnReady" : "Ready")</button>
+            </div> <!-- This is here because we only want exactly one /-->
+
+            <div id="resolver_tooltip_targetnumber" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
+        }
     }
-
-    <!-- <FormPlayerState @key=@($"{_userStateController?.PlayerName}_{_userStateController?.PlayerState?.TimeStamp}")></FormPlayerState>  -->
 </ContainerAccordion>
 
+<ContainerAccordion Enabled="@_sectionEnabledDamageRequests" Title="Damage requests">
+    <FormDamageInstance @key="@_userStateController.GameState?.TimeStamp" DamageInstance=@_userStateController.DamageInstance></FormDamageInstance>
+</ContainerAccordion>
 
-@if (_userStateController.GameState?.GameId != null)
-{
-    <ContainerAccordion Enabled="@_sectionEnabledDamageRequests" Title="Damage requests">
-        <FormDamageInstance @key="@_userStateController.GameState.TimeStamp" DamageInstance=@_userStateController.DamageInstance></FormDamageInstance>
-    </ContainerAccordion>
+<ContainerAccordion Enabled="@_sectionEnabledDamageReports" Title="Damage reports">
+    <FormDamageReports OnlyNewest="true"></FormDamageReports>
+</ContainerAccordion>
 
-    <ContainerAccordion Enabled="@_sectionEnabledDamageReports" Title="Damage reports">
-        <FormDamageReports OnlyNewest="true"></FormDamageReports>
-    </ContainerAccordion>
-
-    <ContainerAccordion Enabled="@_sectionEnabledTools" Title="Admin tools">
-        <FormTools @key="@_userStateController.GameState.TimeStamp"></FormTools>
-    </ContainerAccordion>
-}
+<ContainerAccordion Enabled="@_sectionEnabledTools" Title="Admin tools">
+    <FormTools @key="@_userStateController.GameState?.TimeStamp"></FormTools>
+</ContainerAccordion>
 
 @code
 {

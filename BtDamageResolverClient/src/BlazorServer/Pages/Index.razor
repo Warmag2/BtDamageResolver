@@ -36,27 +36,19 @@
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
-    @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
-    {
-<FormGameState></FormGameState>}
+    <FormGameState></FormGameState>
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
-    @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
-    {
-<ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>}
+    <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
-    @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
-    {
-<FormDamageReports OnlyNewest="false"></FormDamageReports>}
+    <FormDamageReports OnlyNewest="false"></FormDamageReports>
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
-    @if (_userStateController.GameOptions != null && _userStateController.PlayerOptions != null)
-    {
-<FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>}
+    <FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>
 </ContainerTab>
 
 @code
@@ -78,9 +70,11 @@
         {
             var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
-            // If we have disconnected from a game, clear damage reports and game options to make sure
+            // If we have disconnected from a game, clear the game state, damage reports
+            // and game options to make sure user state agrees with server and visuals.
             if (connectionResponse.GameId == null)
             {
+                _userStateController.GameState = null;
                 _userStateController.GameOptions = null;
                 _userStateController.DamageReportCollection.Clear();
                 _userStateController.NotifyDamageReportsChanged();

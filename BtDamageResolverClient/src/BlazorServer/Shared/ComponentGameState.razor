@@ -1,13 +1,13 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 
-@if (_userStateController.GameState != null)
+@if (_userStateController.PlayerName != null && _userStateController.GameState != null)
 {
-     var playerStateList = DisplayOwnUnits ?
-            _userStateController.GameState.Players.Select(p => p.Value) :
-            _userStateController.GameState.Players.Where(p => p.Value.PlayerId != _userStateController.PlayerName).Select(p => p.Value);
+    var playerStateList = DisplayOwnUnits ?
+           _userStateController.GameState.Players.Select(p => p.Value) :
+           _userStateController.GameState.Players.Where(p => p.Value.PlayerId != _userStateController.PlayerName).Select(p => p.Value);
 
-    @foreach(var player in playerStateList)
+    @foreach (var player in playerStateList)
     {
         <ComponentPlayerState @key=@($"{player.PlayerId}_{player.TimeStamp}") PlayerId = "@player.PlayerId" ></ComponentPlayerState>
     }
