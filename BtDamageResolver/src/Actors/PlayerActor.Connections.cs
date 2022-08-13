@@ -35,6 +35,7 @@ namespace Faemiyah.BtDamageResolver.Actors
             {
                 // Invalidate any previous authentication token when connecting
                 _playerActorState.State.AuthenticationToken = Guid.NewGuid();
+                await _playerActorState.WriteStateAsync();
 
                 await PerformConnectionActions();
 

@@ -1,4 +1,6 @@
-﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @inject VisualStyleController _visualStyleController
 @implements IDisposable
@@ -7,7 +9,26 @@
     <h2 class="resolver_header">
         @_userStateController.PlayerName @(_userStateController.IsConnectedToGame ? $" - {_userStateController.GameState.GameId} - Turn {_userStateController.GameState.Turn}" : string.Empty)
     </h2>
-    <FormPlayerState @key=@($"{_userStateController?.PlayerName}_{_userStateController?.PlayerState?.TimeStamp}")></FormPlayerState>
+
+    <!-- Former player state component -->
+    @if (_userStateController.PlayerState != null)
+    {
+        <div class="resolver_div_componentlistcontainer">
+            @foreach (var unitEntry in _userStateController.PlayerState.UnitEntries)
+            {
+                <FormUnitEntry @key=@($"{unitEntry.Id}_{unitEntry.TimeStamp}") UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
+            }
+        </div>
+
+        <div class="resolver_div_hr">
+            <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">+</button>
+            <button class="resolver_button resolver_button_ready" @onclick="Ready">@(_userStateController.PlayerState.IsReady ? "UnReady" : "Ready")</button>
+        </div> <!-- This is here because we only want exactly one /-->
+
+        <div id="resolver_tooltip_targetnumber" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
+    }
+
+    <!-- <FormPlayerState @key=@($"{_userStateController?.PlayerName}_{_userStateController?.PlayerState?.TimeStamp}")></FormPlayerState>  -->
 </ContainerAccordion>
 
 
@@ -38,11 +59,47 @@
         _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
         _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
         _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
-        //_userStateController.OnPlayerUnitListChanged += StateHasChanged;
+        _userStateController.OnPlayerUnitListChanged += StateHasChanged;
+    }
+
+    private void AddUnit()
+    {
+        _userStateController.AddUnit();
+    }
+
+    public void Ready()
+    {
+        _userStateController.PlayerState.IsReady = !_userStateController.PlayerState.IsReady;
+        _userStateController.NotifyPlayerDataUpdated();
+    }
+
+    private void OnUnitDeleted(UnitEntry unit)
+    {
+        _userStateController.RemoveUnit(unit);
+    }
+
+    private void OnUnitLoad(UnitEntry unit)
+    {
+        _userStateController.RemoveUnit(unit);
+        _userStateController.AddUnit(unit);
+    }
+
+    public void OnUnitSwap(SwapTuple swapTuple)
+    {
+        if (swapTuple.From != swapTuple.To)
+        {
+            SwapUnits(swapTuple.From, swapTuple.To);
+        }
+    }
+
+    private void SwapUnits(int ix1, int ix2)
+    {
+        (_userStateController.PlayerState.UnitEntries[ix1], _userStateController.PlayerState.UnitEntries[ix2]) = (_userStateController.PlayerState.UnitEntries[ix2], _userStateController.PlayerState.UnitEntries[ix1]);
+        _userStateController.NotifyPlayerDataUpdated();
     }
 
     public void Dispose()
     {
-        //_userStateController.OnPlayerUnitListChanged -= StateHasChanged;
+        _userStateController.OnPlayerUnitListChanged -= StateHasChanged;
     }
 }
