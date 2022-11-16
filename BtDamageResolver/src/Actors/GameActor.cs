@@ -46,18 +46,6 @@ namespace Faemiyah.BtDamageResolver.Actors
         }
 
         /// <inheritdoc />
-        public override async Task OnActivateAsync()
-        {
-            await base.OnActivateAsync();
-        }
-
-        /// <inheritdoc />
-        public override async Task OnDeactivateAsync()
-        {
-            await base.OnDeactivateAsync();
-        }
-
-        /// <inheritdoc />
         public Task<bool> IsUnitInGame(Guid unitId)
         {
             return Task.FromResult(_gameActorState.State.PlayerStates.Any(p => p.Value.UnitEntries.Any(u => u.Id == unitId)));
