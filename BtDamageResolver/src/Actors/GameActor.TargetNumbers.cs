@@ -52,11 +52,11 @@ namespace Faemiyah.BtDamageResolver.Actors
                 // Only fire at units which are in the game
                 if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
                 {
-                    targetNumberUpdates.AddRange(await unitActor.ProcessTargetNumbers(_gameActorState.State.Options));
+                    targetNumberUpdates.Add(await unitActor.ProcessTargetNumbers(_gameActorState.State.Options));
                 }
                 else
                 {
-                    targetNumberUpdates.AddRange(await unitActor.ProcessTargetNumbers(_gameActorState.State.Options, true));
+                    targetNumberUpdates.Add(await unitActor.ProcessTargetNumbers(_gameActorState.State.Options, true));
 
                     _logger.LogWarning(
                         "In Game {gameId}, unit {unitId} tried to calculate target numbers for target {targetUnitId} which does not exist or is not in the same game.",

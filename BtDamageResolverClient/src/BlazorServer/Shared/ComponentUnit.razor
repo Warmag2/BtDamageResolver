@@ -46,26 +46,30 @@
                 <td class="resolver_td_unitinformation_label">Troopers</td>
                 <td class="resolver_td_unitinformation_data">@UnitEntry.Troopers</td>
             </tr>
+            @if (UnitEntry.Features.Any())
+            {
                 <tr class="resolver_tr_unitinformation">
-                    <td class="resolver_td_unitinformation_label" colspan="2">
-                        <div style="@(VisualStyleController.HideElement(!UnitEntry.Narced))" class="resolver_div_unitinformation_data">Narced</div>
-                        <div style="@(VisualStyleController.HideElement(!UnitEntry.Tagged))" class="resolver_div_unitinformation_data">Tagged</div>
+                    <td class="resolver_td_unitinformation_label">Features</td>
+                    <td class="resolver_td_unitinformation_data">
+                        @foreach (var feature in UnitEntry.Features)
+                        {
+                            <div class="resolver_div_unitinformation_data">
+                                @($"{feature}")
+                            </div>
+                        }
                     </td>
                 </tr>
-                @if (UnitEntry.Features.Any())
-                {
-                    <tr class="resolver_tr_unitinformation">
-                        <td class="resolver_td_unitinformation_label">Features</td>
-                        <td class="resolver_td_unitinformation_data">
-                            @foreach (var feature in UnitEntry.Features)
-                            {
-                                <div class="resolver_div_unitinformation_data">
-                                    @($"{feature}")
-                                </div>
-                            }
-                        </td>
-                    </tr>
-                }
+            }
+            <tr class="resolver_tr_unitinformation" style="@(VisualStyleController.HideElement(_visualStyleController.GetSinksHidden(UnitEntry.Type)))">
+                <td class="resolver_td_unitinformation_label">Sinks</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.Sinks</td>
+            </tr>
+            <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label" colspan="2">
+                    <div style="@(VisualStyleController.HideElement(!UnitEntry.Narced))" class="resolver_div_unitinformation_data">Narced</div>
+                    <div style="@(VisualStyleController.HideElement(!UnitEntry.Tagged))" class="resolver_div_unitinformation_data">Tagged</div>
+                </td>
+            </tr>
             <tr class="resolver_tr_unitinformation">
                 <td class="resolver_td_unitinformation_label">Movement</td>
                 <td class="resolver_td_unitinformation_data">@UnitEntry.MovementClass - @UnitEntry.Movement</td>
@@ -115,7 +119,7 @@
                     <table>
                         @foreach (var weaponEntry in UnitEntry.Weapons)
                         {
-                            <ComponentWeaponEntry WeaponEntry=@weaponEntry></ComponentWeaponEntry> // Removed key from here
+                            <ComponentWeaponEntry Unit=@UnitEntry WeaponEntry=@weaponEntry></ComponentWeaponEntry>
                         }
                     </table>
                 </td>

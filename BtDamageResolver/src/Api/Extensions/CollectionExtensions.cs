@@ -62,6 +62,54 @@ namespace Faemiyah.BtDamageResolver.Api.Extensions
         }
 
         /// <summary>
+        /// Increment item with a specific key in dictionary.
+        /// </summary>
+        /// <typeparam name="TKey">The key type.</typeparam>
+        /// <param name="dict">The dictionary.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="countable">The countable element.</param>
+        public static void AddIfNotZero<TKey>(this Dictionary<TKey, int> dict, TKey key, int countable)
+        {
+            if (countable == 0)
+            {
+                return;
+            }
+
+            if (dict.ContainsKey(key))
+            {
+                dict[key] += countable;
+            }
+            else
+            {
+                dict.Add(key, countable);
+            }
+        }
+
+        /// <summary>
+        /// Increment item with a specific key in dictionary.
+        /// </summary>
+        /// <typeparam name="TKey">The key type.</typeparam>
+        /// <param name="dict">The dictionary.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="countable">The countable element.</param>
+        public static void AddIfNotZero<TKey>(this Dictionary<TKey, double> dict, TKey key, double countable)
+        {
+            if (countable == 0d)
+            {
+                return;
+            }
+
+            if (dict.ContainsKey(key))
+            {
+                dict[key] += countable;
+            }
+            else
+            {
+                dict.Add(key, countable);
+            }
+        }
+
+        /// <summary>
         /// If the specified dictionary only contains one value with an enum key type,
         /// fill the dictionary with key from the specified enum and the given value.
         /// </summary>

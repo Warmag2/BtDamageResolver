@@ -5,7 +5,7 @@
 @inject UserStateController _userStateController
 
 @{
-    var targetNumberUpdate = _userStateController.GetTargetNumber(WeaponEntry.Id);
+    var targetNumberUpdate = _userStateController.GetTargetNumberUpdateSingleWeapon(Unit.Id, WeaponEntry.Id);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
 }
 
@@ -26,6 +26,9 @@
 
 @code
 {
+    [Parameter]
+    public UnitEntry Unit { get; set; }
+
     [Parameter]
     public WeaponEntry WeaponEntry { get; set; }
 }

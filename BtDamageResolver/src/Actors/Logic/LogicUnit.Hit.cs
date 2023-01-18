@@ -52,6 +52,34 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
         }
 
+        /// <summary>
+        /// Gets an estimated hit chance for the given target number.
+        /// </summary>
+        /// <param name="targetNumber">The target number.</param>
+        /// <returns>The hit chance.</returns>
+        protected static double GetHitChanceForTargetNumber(int targetNumber)
+        {
+            if (targetNumber > 12)
+            {
+                return 0d;
+            }
+
+            switch (targetNumber)
+            {
+                case 3: return 35d / 36d;
+                case 4: return 33d / 36d;
+                case 5: return 30d / 36d;
+                case 6: return 26d / 36d;
+                case 7: return 21d / 36d;
+                case 8: return 15d / 36d;
+                case 9: return 10d / 36d;
+                case 10: return 6d / 36d;
+                case 11: return 3d / 36d;
+                case 12: return 1d / 36d;
+                default: return 1d;
+            }
+        }
+
         private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Weapon weapon)
         {
             hitCalculationDamageReport.Log(new AttackLogEntry { Context = weapon.Name, Type = AttackLogEntryType.FiringSolution });
@@ -59,10 +87,20 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weapon);
 
             // Weapons with target numbers above 12 cannot hit
-            // However, at this point, we will always fire the weapon
             if (targetNumber > 12)
             {
-                hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = $"{weapon.Name} cannot hit" });
+                hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = $"{weapon.Name} cannot hit and will not fire" });
+
+                return new CombatAction
+                {
+                    ActionHappened = false,
+                    HitHappened = false,
+                    MarginOfSuccess = 0,
+                    RangeBracket = rangeBracket,
+                    UnitType = Unit.Type,
+                    Troopers = Unit.Troopers,
+                    Weapon = weapon
+                };
             }
 
             var hitRoll = Random.D26();
@@ -93,10 +131,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
                 hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Miss, Context = weapon.Name });
             }
 
-            // Calculate heat
+            // Calculate heat based on whether action happened / hit happened
             ResolveHeat(hitCalculationDamageReport, combatAction);
 
-            // Calculate ammo
+            // Calculate ammo based on whether action happened / hit happened
             ResolveAmmo(hitCalculationDamageReport, combatAction);
 
             return combatAction;

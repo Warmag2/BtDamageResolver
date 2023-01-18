@@ -8,7 +8,7 @@
 @implements IDisposable
 
 @{
-    var targetNumberUpdate = _userStateController.GetTargetNumber(WeaponEntry.Id);
+    var targetNumberUpdate = _userStateController.GetTargetNumberUpdateSingleWeapon(Unit.Id, WeaponEntry.Id);
     var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
     var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName);

@@ -8,6 +8,7 @@ using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
@@ -67,21 +68,21 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <param name="gameOptions">The game options.</param>
         /// <param name="setBlankNumbers">Should blank numbers be set.</param>
         /// <returns>A list of target number updates.</returns>
-        public async Task<List<TargetNumberUpdate>> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers = false)
+        public async Task<TargetNumberUpdate> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers = false)
         {
-            var targetNumberUpdates = new List<TargetNumberUpdate>();
+            var targetNumberUpdates = new TargetNumberUpdate() { UnitId = this.GetPrimaryKey() };
 
             foreach (var weaponEntry in _unitActorState.State.UnitEntry.Weapons)
             {
                 if (setBlankNumbers)
                 {
-                    targetNumberUpdates.Add(new TargetNumberUpdate
-                    {
-                        CalculationLog = new AttackLog(),
-                        TargetNumber = LogicConstants.InvalidTargetNumber,
-                        UnitId = this.GetPrimaryKey(),
-                        WeaponEntryId = weaponEntry.Id
-                    });
+                    targetNumberUpdates.TargetNumbers.Add(
+                        weaponEntry.Id,
+                        new TargetNumberUpdateSingleWeapon
+                        {
+                            CalculationLog = new AttackLog(),
+                            TargetNumber = LogicConstants.InvalidTargetNumber,
+                        });
                 }
                 else
                 {
@@ -92,13 +93,21 @@ namespace Faemiyah.BtDamageResolver.Actors
 
                     (var targetNumber, _) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry);
 
-                    targetNumberUpdates.Add(
-                        new TargetNumberUpdate
+                    (var ammoEstimate, var ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, weaponEntry);
+                    (var heatEstimate, var heatMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, weaponEntry);
+
+                    targetNumberUpdates.AmmoEstimate.AddIfNotZero(weaponEntry.Ammo, ammoEstimate);
+                    targetNumberUpdates.AmmoWorstCase.AddIfNotZero(weaponEntry.Ammo, ammoMax);
+
+                    targetNumberUpdates.HeatEstimate += heatEstimate;
+                    targetNumberUpdates.HeatWorstCase += heatMax;
+
+                    targetNumberUpdates.TargetNumbers.Add(
+                        weaponEntry.Id,
+                        new TargetNumberUpdateSingleWeapon
                         {
                             CalculationLog = attackLog,
                             TargetNumber = targetNumber,
-                            UnitId = this.GetPrimaryKey(),
-                            WeaponEntryId = weaponEntry.Id
                         });
                 }
             }

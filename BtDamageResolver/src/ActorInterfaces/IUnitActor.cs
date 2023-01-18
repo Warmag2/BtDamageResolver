@@ -39,8 +39,8 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces
         /// <param name="gameOptions">The game options.</param>
         /// <param name="setBlankNumbers">Just blank the numbers instead of really calculating them.</param>
         /// <remarks>Blanking is required for units which target invalid units or are not in a game.</remarks>
-        /// <returns>A list of <see cref="TargetNumberUpdate"/> events corresponding to new target numbers for the unit represented by this <see cref="IUnitActor"/>.</returns>
-        Task<List<TargetNumberUpdate>> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers = false);
+        /// <returns>A <see cref="TargetNumberUpdate"/> event corresponding to new target numbers, heat and ammo estimates for the unit represented by this <see cref="IUnitActor"/>.</returns>
+        Task<TargetNumberUpdate> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers = false);
 
         /// <summary>
         /// Receive a new state for this unit.

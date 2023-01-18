@@ -7,6 +7,10 @@
 @inject VisualStyleController _visualStyleController
 @inject UserStateController _userStateController
 
+@{
+    var targetNumberUpdate = _userStateController.GetTargetNumberUpdate(UnitEntry.Id);
+}
+
 <div class="resolver_div_componentcontainer alternatingcolors" ondragover="event.preventDefault();">
 
     <div class="resolver_div_componentrow">
@@ -212,10 +216,38 @@
                         </span>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="5">
-                    </td>
-                </tr>
+                @if (targetNumberUpdate != null && targetNumberUpdate.HeatEstimate > 0)
+                {
+                    <tr>
+                        <td colspan="5">
+                            Projected heat: @targetNumberUpdate.HeatEstimate
+                            @if(targetNumberUpdate.HeatEstimate != targetNumberUpdate.HeatWorstCase)
+                            {
+                                @($" ({targetNumberUpdate.HeatWorstCase})")
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (targetNumberUpdate != null && targetNumberUpdate.AmmoEstimate.Any())
+                {
+                    <tr>
+                        <td colspan="5">
+                            Projected ammo usage: @targetNumberUpdate.HeatEstimate
+                        </td>
+                    </tr>
+                    foreach (var item in targetNumberUpdate.AmmoEstimate)
+                    {
+                        <tr>
+                            <td colspan="5">
+                                @($"{item.Key}: {item.Value}")
+                                @if (targetNumberUpdate.AmmoWorstCase[item.Key] != targetNumberUpdate.AmmoEstimate[item.Key])
+                                {
+                                    @($" ({targetNumberUpdate.AmmoWorstCase[item.Key]})")
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
             </table>
         </div>
     </div>

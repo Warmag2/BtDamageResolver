@@ -126,6 +126,22 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         bool IsGlancingBlow(int marginOfSuccess);
 
         /// <summary>
+        /// Calculates projected ammo usage for weapon.
+        /// </summary>
+        /// <param name="targetNumber">The target number.</param>
+        /// <param name="weaponEntry">The weapon entry to calculate projection for.</param>
+        /// <returns>A tuple containing the estimated and maximum ammo usage.</returns>
+        Task<(double Estimate, int Max)> ProjectAmmo(int targetNumber, WeaponEntry weaponEntry);
+
+        /// <summary>
+        /// Calculates projected heat generation for weapon.
+        /// </summary>
+        /// <param name="targetNumber">The target number.</param>
+        /// <param name="weaponEntry">The weapon entry to calculate projection for.</param>
+        /// <returns>A tuple containing the estimated and maximum heat generation.</returns>
+        Task<(double Estimate, int Max)> ProjectHeat(int targetNumber, WeaponEntry weaponEntry);
+
+        /// <summary>
         /// Transforms a cluster roll based on unit type and possible other properties.
         /// </summary>
         /// <param name="damageReport">The damage report to append to.</param>

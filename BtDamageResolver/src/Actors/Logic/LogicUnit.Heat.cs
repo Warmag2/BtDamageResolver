@@ -1,4 +1,5 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+﻿using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
@@ -10,16 +11,51 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
     /// </summary>
     public partial class LogicUnit
     {
-        /// <summary>
-        /// Resolves the heat generation of a combat action.
-        /// </summary>
-        /// <param name="targetDamageReport">The damage report of the target.</param>
-        /// <param name="combatAction">The combat action to process the heat for.</param>
-        protected void ResolveHeat(DamageReport targetDamageReport, CombatAction combatAction)
+        /// <inheritdoc/>
+        public async Task<(double Estimate, int Max)> ProjectHeat(int targetNumber, WeaponEntry weaponEntry)
         {
             if (!IsHeatTracking())
             {
-                targetDamageReport.Log(new AttackLogEntry { Context = $"Units of type {Unit.Type} do not track heat, so {combatAction.Weapon.Name} causes no heat.", Type = AttackLogEntryType.Information });
+                return (0d, 0);
+            }
+
+            var hitChance = GetHitChanceForTargetNumber(targetNumber);
+
+            int heatGenerated = 0;
+
+            var weapon = await FormWeapon(weaponEntry);
+
+            if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+            {
+                heatGenerated = MathExpression.Parse(rapidFeatureEntry.Data) * weapon.Heat;
+            }
+
+            if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out var _))
+            {
+                return (hitChance * heatGenerated, heatGenerated);
+            }
+            else
+            {
+                return (heatGenerated, heatGenerated);
+            }
+        }
+
+        /// <summary>
+        /// Resolves the heat generation of a combat action.
+        /// </summary>
+        /// <param name="hitCalculationDamageReport">The damage report for hit calculation.</param>
+        /// <param name="combatAction">The combat action to process the heat for.</param>
+        protected void ResolveHeat(DamageReport hitCalculationDamageReport, CombatAction combatAction)
+        {
+            if (!combatAction.ActionHappened)
+            {
+                hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"Combat action was canceled for {combatAction.Weapon.Name} and no heat will be generated", Type = AttackLogEntryType.Information });
+                return;
+            }
+
+            if (!IsHeatTracking())
+            {
+                hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"Units of type {Unit.Type} do not track heat, so {combatAction.Weapon.Name} causes no heat.", Type = AttackLogEntryType.Information });
                 return;
             }
 
@@ -30,16 +66,15 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             {
                 var multiplier = MathExpression.Parse(rapidFeatureEntry.Data);
                 heat = calculatedSingleHitheat * multiplier;
-                targetDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} rate of fire multiplier for heat", Number = multiplier, Type = AttackLogEntryType.Calculation });
+                hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} rate of fire multiplier for heat", Number = multiplier, Type = AttackLogEntryType.Calculation });
             }
             else
             {
                 heat = calculatedSingleHitheat;
             }
 
-            targetDamageReport.Log(new AttackLogEntry { Context = combatAction.Weapon.Name, Type = AttackLogEntryType.Heat, Number = heat });
-
-            targetDamageReport.AttackerHeat += heat;
+            hitCalculationDamageReport.Log(new AttackLogEntry { Context = combatAction.Weapon.Name, Type = AttackLogEntryType.Heat, Number = heat });
+            hitCalculationDamageReport.AttackerHeat += heat;
         }
     }
 }

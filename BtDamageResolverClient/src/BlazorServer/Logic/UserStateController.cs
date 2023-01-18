@@ -363,20 +363,36 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         {
             foreach (var targetNumberUpdate in targetNumberUpdates)
             {
-                _targetNumbers.AddOrUpdate(targetNumberUpdate.WeaponEntryId, targetNumberUpdate, (_, update) => update.TimeStamp > targetNumberUpdate.TimeStamp ? update : targetNumberUpdate);
+                _targetNumbers.AddOrUpdate(targetNumberUpdate.UnitId, targetNumberUpdate, (_, update) => update.TimeStamp > targetNumberUpdate.TimeStamp ? update : targetNumberUpdate);
             }
 
             OnTargetNumbersUpdated?.Invoke();
         }
 
         /// <summary>
-        /// Gets the target number for a given weapon entry.
+        /// Gets the target number update for a given unit.
         /// </summary>
         /// <param name="weaponEntryId">The weapon entry ID.</param>
         /// <returns>The target number for the weapon entry.</returns>
-        public TargetNumberUpdate GetTargetNumber(Guid weaponEntryId)
+        public TargetNumberUpdate GetTargetNumberUpdate(Guid weaponEntryId)
         {
             return _targetNumbers.TryGetValue(weaponEntryId, out var targetNumberUpdate) ? targetNumberUpdate : null;
+        }
+
+        /// <summary>
+        /// Gets the target number update for a given weapon entry.
+        /// </summary>
+        /// <param name="unitId">The unit ID.</param>
+        /// <param name="weaponEntryId">The weapon entry ID.</param>
+        /// <returns>The target number for the weapon entry.</returns>
+        public TargetNumberUpdateSingleWeapon GetTargetNumberUpdateSingleWeapon(Guid unitId, Guid weaponEntryId)
+        {
+            if (_targetNumbers.TryGetValue(unitId, out var targetNumberUpdate))
+            {
+                return targetNumberUpdate.TargetNumbers.TryGetValue(weaponEntryId, out var singleTargetNumberUpdate) ? singleTargetNumberUpdate : null;
+            }
+
+            return null;
         }
 
         private void UpdateUnitList()
@@ -398,7 +414,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                 _unitList.Clear();
             }
 
-            newUnitList.TryAdd(Guid.Empty, ("N/A", new UnitEntry { Id = Guid.Empty, Name = "NO TARGET" }));
+            newUnitList.TryAdd(Guid.Empty, (" N/A", new UnitEntry { Id = Guid.Empty, Name = "NO TARGET" }));
 
             // Only perform dictionary swap if the list has actually changed
             // Be careful about this optimization. Might be wisest to always change the unit list.

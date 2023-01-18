@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities
 {
@@ -22,23 +23,33 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
         public DateTime TimeStamp { get; set; }
 
         /// <summary>
-        /// Target number calculation log shows how the target number was calculated.
+        /// Projected ammo, estimate.
         /// </summary>
-        public AttackLog CalculationLog { get; set; }
+        public Dictionary<string, double> AmmoEstimate { get; set; }
 
         /// <summary>
-        /// The target number.
+        /// Projected ammo, worst-case.
         /// </summary>
-        public int TargetNumber { get; set; }
+        public Dictionary<string, int> AmmoWorstCase { get; set; }
+
+        /// <summary>
+        /// Projected heat, estimate.
+        /// </summary>
+        public double HeatEstimate { get; set; }
+
+        /// <summary>
+        /// Projected heat, worst-case.
+        /// </summary>
+        public int HeatWorstCase { get; set; }
+
+        /// <summary>
+        /// The target numbers.
+        /// </summary>
+        public Dictionary<Guid, TargetNumberUpdateSingleWeapon> TargetNumbers { get; set; }
 
         /// <summary>
         /// The unit ID for this calculated target number.
         /// </summary>
         public Guid UnitId { get; set; }
-
-        /// <summary>
-        /// The weapon entry ID for this calculated target number.
-        /// </summary>
-        public Guid WeaponEntryId { get; set; }
     }
 }
