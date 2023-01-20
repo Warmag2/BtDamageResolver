@@ -22,39 +22,8 @@ namespace Faemiyah.BtDamageResolver.Actors
         {
             var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitId == unit.Id).Sum(damageReport => damageReport.AttackerHeat);
 
-            switch (unit.MovementClass)
-            {
-                case MovementClass.Immobile:
-                case MovementClass.Stationary:
-                    heatGeneratedByThisUnit += 0;
-                    break;
-                case MovementClass.Normal:
-                    heatGeneratedByThisUnit += 1;
-                    break;
-                case MovementClass.Fast:
-                    heatGeneratedByThisUnit += 2;
-                    break;
-                case MovementClass.Masc:
-                    heatGeneratedByThisUnit += 5;
-                    break;
-                case MovementClass.OutOfControl:
-                    heatGeneratedByThisUnit += 2;
-                    break;
-                case MovementClass.Jump:
-                    heatGeneratedByThisUnit += Math.Max(3, unit.Movement);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(unit.Name, $"The movement class of the unit, {unit.MovementClass} is not handled.");
-            }
-
-            // Combat computer sinks 4 heat by itself
-            if (unit.HasFeature(UnitFeature.CombatComputer))
-            {
-                heatGeneratedByThisUnit -= 4;
-            }
-
             // Only apply heat if the generation is positive and the unit tracks heat.
-            // Combat computer and other heat generation reductions never take the heat below 0.
+            // However, combat computer and other heat generation reductions never take the heat generated below 0.
             if (heatGeneratedByThisUnit > 0)
             {
                 unit.Heat += heatGeneratedByThisUnit;

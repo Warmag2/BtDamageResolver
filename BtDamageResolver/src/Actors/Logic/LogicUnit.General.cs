@@ -51,10 +51,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             }
 
             // If we have no actions at all, return an empty list.
-            if (!damageReportCombatActionPairs.Any())
+            // No longer relevant
+            /*if (!damageReportCombatActionPairs.Any())
             {
                 return new List<DamageReport>();
-            }
+            }*/
 
             var allDamageReports = new List<DamageReport>();
 
@@ -85,6 +86,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
                 allDamageReports.AddIfNotNull(targetDamageReportsForPhase.Merge());
                 allDamageReports.AddIfNotNull(selfDamageReportsForPhase.Merge());
+            }
+
+            if (!processOnlyTags)
+            {
+                allDamageReports.Add(await ResolveNonWeaponHeat());
             }
 
             return allDamageReports;

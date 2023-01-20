@@ -58,6 +58,14 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         public bool ShowAttackLogByDefault { get; set; }
 
         /// <summary>
+        /// Should also damage reports concerning the unit's own movement be shown.
+        /// </summary>
+        /// <remarks>
+        /// This is simply clutter so it is disabled by default.
+        /// </remarks>
+        public bool ShowMovementDamageReports { get; set; }
+
+        /// <summary>
         /// Should also damage reports concerning other players be displayed.
         /// </summary>
         public bool ShowOtherPlayersDamageReports { get; set; }

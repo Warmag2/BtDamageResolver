@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
 
@@ -21,13 +24,17 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             var hitChance = GetHitChanceForTargetNumber(targetNumber);
 
-            int heatGenerated = 0;
+            int heatGenerated;
 
             var weapon = await FormWeapon(weaponEntry);
 
             if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
             {
                 heatGenerated = MathExpression.Parse(rapidFeatureEntry.Data) * weapon.Heat;
+            }
+            else
+            {
+                heatGenerated = weapon.Heat;
             }
 
             if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out var _))
@@ -38,6 +45,58 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             {
                 return (heatGenerated, heatGenerated);
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task<DamageReport> ResolveNonWeaponHeat()
+        {
+            // Create a movement damage report
+            var nonWeaponDamageReport = new DamageReport
+            {
+                Phase = Phase.Movement,
+                DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, Direction.Front, new List<WeaponFeature>()),
+                FiringUnitId = Unit.Id,
+                FiringUnitName = Unit.Name,
+                TargetUnitId = Unit.Id,
+                TargetUnitName = Unit.Name,
+                InitialTroopers = Unit.Troopers
+            };
+
+            switch (Unit.MovementClass)
+            {
+                case MovementClass.Immobile:
+                case MovementClass.Stationary:
+                    nonWeaponDamageReport.AttackerHeat += 0;
+                    break;
+                case MovementClass.Normal:
+                    nonWeaponDamageReport.AttackerHeat += 1;
+                    break;
+                case MovementClass.Fast:
+                    nonWeaponDamageReport.AttackerHeat += 2;
+                    break;
+                case MovementClass.Masc:
+                    nonWeaponDamageReport.AttackerHeat += 5;
+                    break;
+                case MovementClass.OutOfControl:
+                    nonWeaponDamageReport.AttackerHeat += 2;
+                    break;
+                case MovementClass.Jump:
+                    nonWeaponDamageReport.AttackerHeat += Math.Max(3, Unit.Movement);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException($"The movement class {Unit.MovementClass} is not handled.");
+            }
+
+            nonWeaponDamageReport.Log(new AttackLogEntry { Context = $"Unit movement class {Unit.MovementClass}", Number = nonWeaponDamageReport.AttackerHeat, Type = AttackLogEntryType.Heat });
+
+            // Combat computer sinks 4 heat by itself
+            if (Unit.HasFeature(UnitFeature.CombatComputer))
+            {
+                nonWeaponDamageReport.Log(new AttackLogEntry { Context = $"Combat computer", Number = -4, Type = AttackLogEntryType.Heat });
+                nonWeaponDamageReport.AttackerHeat -= 4;
+            }
+
+            return nonWeaponDamageReport;
         }
 
         /// <summary>

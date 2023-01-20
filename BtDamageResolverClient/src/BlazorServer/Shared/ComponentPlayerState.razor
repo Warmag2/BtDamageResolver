@@ -1,5 +1,6 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
+@implements IDisposable
 
 <div class="resolver_div_componentlistcontainer resolver_div_componentrow">
     <h3 class="resolver_header @(_userStateController.GameState.Players[PlayerId].IsReady ? "ready" : string.Empty)">
@@ -15,4 +16,14 @@
 @code {
     [Parameter]
     public string PlayerId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _userStateController.OnTargetNumbersUpdated += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnTargetNumbersUpdated -= StateHasChanged;
+    }
 }

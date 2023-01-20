@@ -10,7 +10,7 @@
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Microsoft.Orleans.Client" Version="3.6.5" />
     <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="3.6.5" />
-    <PackageReference Include="Npgsql" Version="5.0.14" />
+    <PackageReference Include="Npgsql" Version="5.0.15" />
   </ItemGroup>
 
   <ItemGroup>

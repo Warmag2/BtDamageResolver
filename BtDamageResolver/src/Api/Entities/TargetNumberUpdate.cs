@@ -10,14 +10,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities
     public class TargetNumberUpdate
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TargetNumberUpdate"/> class.
-        /// </summary>
-        public TargetNumberUpdate()
-        {
-            TimeStamp = DateTime.UtcNow;
-        }
-
-        /// <summary>
         /// The update timestamp.
         /// </summary>
         public DateTime TimeStamp { get; set; }

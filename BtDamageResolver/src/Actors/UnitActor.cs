@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.Actors.Logic;
@@ -70,13 +71,23 @@ namespace Faemiyah.BtDamageResolver.Actors
         /// <returns>A list of target number updates.</returns>
         public async Task<TargetNumberUpdate> ProcessTargetNumbers(GameOptions gameOptions, bool setBlankNumbers = false)
         {
-            var targetNumberUpdates = new TargetNumberUpdate() { UnitId = this.GetPrimaryKey() };
+            var targetNumberUpdate = new TargetNumberUpdate()
+            {
+                AmmoEstimate = new Dictionary<string, double>(),
+                AmmoWorstCase = new Dictionary<string, int>(),
+                TargetNumbers = new Dictionary<Guid, TargetNumberUpdateSingleWeapon>(),
+                TimeStamp = DateTime.UtcNow,
+                UnitId = this.GetPrimaryKey()
+            };
 
-            foreach (var weaponEntry in _unitActorState.State.UnitEntry.Weapons)
+            var logicUnitAttacker = GetUnitLogic(gameOptions);
+            var logicUnitDefender = await GetUnitLogic(gameOptions, _unitActorState.State.UnitEntry.FiringSolution.TargetUnit);
+
+            foreach (var weaponEntry in _unitActorState.State.UnitEntry.Weapons.Where(w => w.State == WeaponState.Active))
             {
                 if (setBlankNumbers)
                 {
-                    targetNumberUpdates.TargetNumbers.Add(
+                    targetNumberUpdate.TargetNumbers.Add(
                         weaponEntry.Id,
                         new TargetNumberUpdateSingleWeapon
                         {
@@ -88,21 +99,32 @@ namespace Faemiyah.BtDamageResolver.Actors
                 {
                     var attackLog = new AttackLog();
 
-                    var logicUnitAttacker = GetUnitLogic(gameOptions);
-                    var logicUnitDefender = await GetUnitLogic(gameOptions, _unitActorState.State.UnitEntry.FiringSolution.TargetUnit);
-
                     (var targetNumber, _) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry);
 
                     (var ammoEstimate, var ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, weaponEntry);
-                    (var heatEstimate, var heatMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, weaponEntry);
+                    (var heatEstimate, var heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, weaponEntry);
 
-                    targetNumberUpdates.AmmoEstimate.AddIfNotZero(weaponEntry.Ammo, ammoEstimate);
-                    targetNumberUpdates.AmmoWorstCase.AddIfNotZero(weaponEntry.Ammo, ammoMax);
+                    string weaponAmmoCombinedString;
 
-                    targetNumberUpdates.HeatEstimate += heatEstimate;
-                    targetNumberUpdates.HeatWorstCase += heatMax;
+                    if (!string.IsNullOrEmpty(weaponEntry.Ammo))
+                    {
+                        weaponAmmoCombinedString = $"{weaponEntry.WeaponName} {weaponEntry.Ammo}";
+                    }
+                    else
+                    {
+                        weaponAmmoCombinedString = $"{weaponEntry.WeaponName}";
+                    }
 
-                    targetNumberUpdates.TargetNumbers.Add(
+                    targetNumberUpdate.AmmoEstimate.AddIfNotZero(weaponAmmoCombinedString, ammoEstimate);
+                    targetNumberUpdate.AmmoWorstCase.AddIfNotZero(weaponAmmoCombinedString, ammoMax);
+
+                    if (logicUnitAttacker.IsHeatTracking())
+                    {
+                        targetNumberUpdate.HeatEstimate += heatEstimate;
+                        targetNumberUpdate.HeatWorstCase += heatMax;
+                    }
+
+                    targetNumberUpdate.TargetNumbers.Add(
                         weaponEntry.Id,
                         new TargetNumberUpdateSingleWeapon
                         {
@@ -112,9 +134,17 @@ namespace Faemiyah.BtDamageResolver.Actors
                 }
             }
 
+            if (logicUnitAttacker.IsHeatTracking())
+            {
+                var nonWeaponHeatDamageReport = await logicUnitAttacker.ResolveNonWeaponHeat();
+
+                targetNumberUpdate.HeatEstimate += nonWeaponHeatDamageReport.AttackerHeat;
+                targetNumberUpdate.HeatWorstCase += nonWeaponHeatDamageReport.AttackerHeat;
+            }
+
             _logger.LogInformation("UnitActor {unitId} finished calculating new target number values.", this.GetPrimaryKey());
 
-            return targetNumberUpdates;
+            return targetNumberUpdate;
         }
 
         /// <inheritdoc />

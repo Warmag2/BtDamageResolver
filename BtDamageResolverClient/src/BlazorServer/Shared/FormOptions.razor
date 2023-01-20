@@ -37,6 +37,7 @@
 
         <div class="resolver_div_options">
             <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Attack logs</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowMovementDamageReports" OnChanged="@OnMovementDamageReportVisibilityChanged">Unit movement damage reports</FormCheckbox>
             <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReports" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Other players' damage reports</FormCheckbox>
         </div>
 
@@ -158,6 +159,15 @@
         if (_userStateController.PlayerOptions.DashboardShowDamageReportsByDefault != damageReportVisibility)
         {
             _userStateController.PlayerOptions.DashboardShowDamageReportsByDefault = damageReportVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnMovementDamageReportVisibilityChanged(bool damageReportVisibility)
+    {
+        if (_userStateController.PlayerOptions.ShowMovementDamageReports != damageReportVisibility)
+        {
+            _userStateController.PlayerOptions.ShowMovementDamageReports = damageReportVisibility;
             NotifyPlayerOptionsChanged();
         }
     }

@@ -372,11 +372,11 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
         /// <summary>
         /// Gets the target number update for a given unit.
         /// </summary>
-        /// <param name="weaponEntryId">The weapon entry ID.</param>
-        /// <returns>The target number for the weapon entry.</returns>
-        public TargetNumberUpdate GetTargetNumberUpdate(Guid weaponEntryId)
+        /// <param name="unitEntryId">The unit entry ID.</param>
+        /// <returns>The target number update for the unit entry.</returns>
+        public TargetNumberUpdate GetTargetNumberUpdate(Guid unitEntryId)
         {
-            return _targetNumbers.TryGetValue(weaponEntryId, out var targetNumberUpdate) ? targetNumberUpdate : null;
+            return _targetNumbers.TryGetValue(unitEntryId, out var targetNumberUpdate) ? targetNumberUpdate : null;
         }
 
         /// <summary>
@@ -414,7 +414,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
                 _unitList.Clear();
             }
 
-            newUnitList.TryAdd(Guid.Empty, (" N/A", new UnitEntry { Id = Guid.Empty, Name = "NO TARGET" }));
+            newUnitList.TryAdd(Guid.Empty, ("N/A", new UnitEntry { Id = Guid.Empty, Name = " NO TARGET" }));
 
             // Only perform dictionary swap if the list has actually changed
             // Be careful about this optimization. Might be wisest to always change the unit list.

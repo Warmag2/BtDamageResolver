@@ -220,5 +220,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <param name="weaponEntry">The weapon entry used.</param>
         /// <returns>A tuple with the hit modifier and the range bracket.</returns>
         Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry);
+
+        /// <summary>
+        /// Calculates all heat buildup not related to weapon fire.
+        /// </summary>
+        /// <returns>A damage report with non-weapon heat information.</returns>
+        Task<DamageReport> ResolveNonWeaponHeat();
     }
 }

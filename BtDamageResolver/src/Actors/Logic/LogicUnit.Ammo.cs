@@ -16,7 +16,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         {
             var hitChance = GetHitChanceForTargetNumber(targetNumber);
 
-            int ammoUsed = 0;
+            int ammoUsed;
 
             var weapon = await FormWeapon(weaponEntry);
 
@@ -28,6 +28,10 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
             if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
             {
                 ammoUsed = MathExpression.Parse(rapidFeatureEntry.Data);
+            }
+            else
+            {
+                ammoUsed = 1;
             }
 
             if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out var _))

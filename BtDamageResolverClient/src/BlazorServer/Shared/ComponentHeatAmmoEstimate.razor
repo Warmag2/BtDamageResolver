@@ -1,0 +1,63 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject UserStateController _userStateController
+@implements IDisposable
+
+@{
+    var targetNumberUpdate = _userStateController.GetTargetNumberUpdate(Unit.Id);
+}
+
+@if (targetNumberUpdate != null)
+{
+    <table>
+        @if (targetNumberUpdate.HeatWorstCase > 0)
+        {
+            <tr>
+                <td>
+                    Projected heat: @targetNumberUpdate.HeatEstimate
+                    @if (targetNumberUpdate.HeatEstimate != targetNumberUpdate.HeatWorstCase)
+                    {
+                        @($" ({targetNumberUpdate.HeatWorstCase})")
+                    }
+                </td>
+            </tr>
+        }
+
+        @if (targetNumberUpdate.AmmoEstimate.Any())
+        {
+            <tr>
+                <td>
+                    Projected ammo usage:
+                </td>
+            </tr>
+            foreach (var item in targetNumberUpdate.AmmoEstimate)
+            {
+                <tr>
+                    <td>
+                        @($"{item.Key}: {item.Value}")
+                        @if (targetNumberUpdate.AmmoWorstCase[item.Key] != targetNumberUpdate.AmmoEstimate[item.Key])
+                        {
+                            @($" ({targetNumberUpdate.AmmoWorstCase[item.Key]})")
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+}
+
+@code
+{
+    [Parameter]
+    public UnitEntry Unit { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _userStateController.OnTargetNumbersUpdated += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnTargetNumbersUpdated -= StateHasChanged;
+    }
+}
