@@ -17,8 +17,6 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         public PlayerOptions()
         {
             AttackLogEntryVisibility = Enum.GetValues(typeof(AttackLogEntryType)).Cast<AttackLogEntryType>().ToDictionary(a => a, a => true);
-            DashboardShowDamageReportsByDefault = true;
-            HighlightUnalteredFields = true;
         }
 
         /// <summary>
@@ -32,7 +30,7 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         /// <remarks>
         /// <b>True</b> by default.
         /// </remarks>
-        public bool DashboardShowDamageReportsByDefault { get; set; }
+        public bool DashboardShowDamageReportsByDefault { get; set; } = true;
 
         /// <summary>
         /// Should the damage request generator be expanded on the main screen by default.
@@ -50,7 +48,7 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         /// <remarks>
         /// <b>True</b> by default.
         /// </remarks>
-        public bool HighlightUnalteredFields { get; set; }
+        public bool HighlightUnalteredFields { get; set; } = true;
 
         /// <summary>
         /// Should the attack log be visible by default.
@@ -68,7 +66,7 @@ namespace Faemiyah.BtDamageResolver.Api.Options
         /// <summary>
         /// Should also damage reports concerning other players be displayed.
         /// </summary>
-        public bool ShowOtherPlayersDamageReports { get; set; }
+        public bool ShowOtherPlayersDamageReports { get; set; } = true;
 
         /// <summary>
         /// The update timestamp.

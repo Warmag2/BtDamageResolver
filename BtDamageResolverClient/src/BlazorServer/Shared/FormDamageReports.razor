@@ -1,10 +1,12 @@
-﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+﻿@using Faemiyah.BtDamageResolver.Api.Enums;
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @inject VisualStyleController _visualStyleController
 @implements IDisposable
 
 @{
-    var showOtherPlayers = _userStateController.PlayerOptions?.ShowOtherPlayersDamageReports ?? true;
+    var showOtherPlayers = _userStateController.PlayerOptions?.ShowOtherPlayersDamageReports ?? false;
+    var showMovement = _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false;
 }
 
 @if (_userStateController.DamageReportCollection.IsEmpty())
@@ -19,11 +21,14 @@ else
     {
         @foreach (var damageReport in _userStateController.DamageReportCollection.DamageReports.Last().Value)
         {
-            if (showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport))
+            if (_userStateController.DamageReportConcernsPlayer(damageReport))
             {
-                <div class="resolver_div_componentlistcontainer alternatingcolors">
-                    <FormDamageReport DamageReport=@damageReport></FormDamageReport>
-                </div>
+                if (showMovement || damageReport.Phase != Phase.Movement)
+                {
+                    <div class="resolver_div_componentlistcontainer alternatingcolors">
+                        <FormDamageReport DamageReport=@damageReport></FormDamageReport>
+                    </div>
+                }
             }
         }
     }
@@ -31,15 +36,21 @@ else
     {
         @foreach (var singleTurnDamageReports in _userStateController.DamageReportCollection.DamageReports.Reverse())
         {
-             <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))" @onclick="@(e => _userStateController.DamageReportCollection.ToggleVisible(singleTurnDamageReports.Key))"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Turn @singleTurnDamageReports.Key</button>
-             <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))" style="@VisualStyleController.HideElement(!_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))">
-                 @foreach (var damageReport in singleTurnDamageReports.Value)
-                 {
-                     <div class="resolver_div_componentlistcontainer alternatingcolors">
-                         <FormDamageReport DamageReport=@damageReport></FormDamageReport>
-                     </div>
-                 }
-             </div>
+            <button class="resolver_button_accordion @_visualStyleController.GetActiveClass(_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))" @onclick="@(e => _userStateController.DamageReportCollection.ToggleVisible(singleTurnDamageReports.Key))"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Turn @singleTurnDamageReports.Key</button>
+            <div class="resolver_div_accordioncontent @_visualStyleController.GetActiveClass(_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))" style="@VisualStyleController.HideElement(!_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))">
+               @foreach (var damageReport in singleTurnDamageReports.Value)
+               {
+                   if (showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport))
+                   {
+                       if (showMovement || damageReport.Phase != Phase.Movement)
+                       {
+                           <div class="resolver_div_componentlistcontainer alternatingcolors">
+                               <FormDamageReport DamageReport=@damageReport></FormDamageReport>
+                           </div>
+                       }
+                   }
+               }
+            </div>
         }
     }
 }
