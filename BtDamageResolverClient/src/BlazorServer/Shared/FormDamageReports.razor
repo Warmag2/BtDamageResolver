@@ -62,14 +62,16 @@ else
 {
     [Parameter]
     public bool OnlyNewest { get; set; }
-    
+
     protected override void OnInitialized()
     {
         _userStateController.OnDamageReportsUpdated += StateHasChanged;
+        _userStateController.OnPlayerOptionsUpdated += StateHasChanged;
     }
 
     public void Dispose()
     {
         _userStateController.OnDamageReportsUpdated -= StateHasChanged;
+        _userStateController.OnPlayerOptionsUpdated -= StateHasChanged;
     }
 }
