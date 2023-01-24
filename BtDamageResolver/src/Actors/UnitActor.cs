@@ -81,21 +81,17 @@ namespace Faemiyah.BtDamageResolver.Actors
             };
 
             var logicUnitAttacker = GetUnitLogic(gameOptions);
-            var logicUnitDefender = await GetUnitLogic(gameOptions, _unitActorState.State.UnitEntry.FiringSolution.TargetUnit);
+
+            ILogicUnit logicUnitDefender = null;
+
+            if (!setBlankNumbers)
+            {
+                logicUnitDefender = await GetUnitLogic(gameOptions, _unitActorState.State.UnitEntry.FiringSolution.TargetUnit);
+            }
 
             foreach (var weaponEntry in _unitActorState.State.UnitEntry.Weapons.Where(w => w.State == WeaponState.Active))
             {
-                if (setBlankNumbers)
-                {
-                    targetNumberUpdate.TargetNumbers.Add(
-                        weaponEntry.Id,
-                        new TargetNumberUpdateSingleWeapon
-                        {
-                            CalculationLog = new AttackLog(),
-                            TargetNumber = LogicConstants.InvalidTargetNumber,
-                        });
-                }
-                else
+                if (!setBlankNumbers)
                 {
                     var attackLog = new AttackLog();
 
@@ -130,6 +126,16 @@ namespace Faemiyah.BtDamageResolver.Actors
                         {
                             CalculationLog = attackLog,
                             TargetNumber = targetNumber,
+                        });
+                }
+                else
+                {
+                    targetNumberUpdate.TargetNumbers.Add(
+                        weaponEntry.Id,
+                        new TargetNumberUpdateSingleWeapon
+                        {
+                            CalculationLog = new AttackLog(),
+                            TargetNumber = LogicConstants.InvalidTargetNumber,
                         });
                 }
             }

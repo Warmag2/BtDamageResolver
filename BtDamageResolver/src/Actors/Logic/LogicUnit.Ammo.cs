@@ -20,7 +20,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
 
             var weapon = await FormWeapon(weaponEntry);
 
-            if (!weapon.UsesAmmo)
+            if (!weapon.UsesAmmo || hitChance == 0d)
             {
                 return (0d, 0);
             }

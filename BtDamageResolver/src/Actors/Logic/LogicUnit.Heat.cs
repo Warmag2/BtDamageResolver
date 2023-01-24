@@ -17,12 +17,12 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic
         /// <inheritdoc/>
         public async Task<(double Estimate, int Max)> ProjectHeat(int targetNumber, WeaponEntry weaponEntry)
         {
-            if (!IsHeatTracking())
+            var hitChance = GetHitChanceForTargetNumber(targetNumber);
+
+            if (!IsHeatTracking() || hitChance == 0d)
             {
                 return (0d, 0);
             }
-
-            var hitChance = GetHitChanceForTargetNumber(targetNumber);
 
             int heatGenerated;
 
