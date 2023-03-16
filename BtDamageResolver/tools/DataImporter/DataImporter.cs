@@ -52,7 +52,7 @@ public class DataImporter
             _logger.LogInformation("{object}", JsonConvert.SerializeObject(dataObject));
         }
 
-        var host = ConnectClient(options);
+        using var host = ConnectClient(options);
 
         var client = host.Services.GetRequiredService<IClusterClient>();
 
@@ -137,7 +137,7 @@ public class DataImporter
         return importedDataObjects;
     }
 
-    private IHost ConnectClient(DataImportOptions dataImportOptions)
+    private async Task<IHost> ConnectClient(DataImportOptions dataImportOptions)
     {
         var configuration = GetConfiguration("DataImporterSettings.json");
         var section = configuration.GetSection(Settings.ClusterOptionsBlockName);
@@ -157,12 +157,14 @@ public class DataImporter
                         options.OpenConnectionTimeout = TimeSpan.FromSeconds(30);
                     }).UseAdoNetClustering(options =>
                     {
-                        options.Invariant = clusterOptions.Invariant;
-                        options.ConnectionString = clusterOptions.ConnectionString;
+                        options.Invariant = clusterOptions?.Invariant;
+                        options.ConnectionString = clusterOptions?.ConnectionString;
                     });
             }).Build();
 
         _logger.LogInformation("Host successfully created.");
+
+        await hostBuilder.StartAsync();
 
         return hostBuilder;
     }
