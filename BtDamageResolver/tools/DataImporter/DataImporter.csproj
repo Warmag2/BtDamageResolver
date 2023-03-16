@@ -2,14 +2,16 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Faemiyah.BtDamageResolver.Tools.DataImporter</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Microsoft.Orleans.Client" Version="3.6.5" />
-    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="3.6.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Orleans.Client" Version="7.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="7.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.0" />
     <PackageReference Include="Npgsql" Version="5.0.15" />
   </ItemGroup>
 
