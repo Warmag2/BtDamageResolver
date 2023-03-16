@@ -13,6 +13,19 @@ dotnet_diagnostic.IDE0057.severity = None
 # Switch expression does not need to be suggested
 dotnet_diagnostic.IDE0066.severity = None
 
+# Disallow multiple empty lines in a row
+dotnet_style_allow_multiple_blank_lines_experimental = false:warning
+
+# File scoped namespaces reduce indentation are just a good practice
+csharp_style_namespace_declarations = file_scoped:warning
+
+# Tuple names are a good practice for clarity
+dotnet_style_explicit_tuple_names = true:warning
+
+# Conditionals for clarity, not enforced
+dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
+dotnet_style_prefer_conditional_expression_over_return = true:suggestion
+
 ##
 ## StyleCop.Analyzers
 ##
