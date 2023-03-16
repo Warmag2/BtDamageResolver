@@ -52,7 +52,7 @@ public class DataImporter
             _logger.LogInformation("{object}", JsonConvert.SerializeObject(dataObject));
         }
 
-        using var host = ConnectClient(options);
+        using var host = await ConnectClient();
 
         var client = host.Services.GetRequiredService<IClusterClient>();
 
@@ -137,7 +137,7 @@ public class DataImporter
         return importedDataObjects;
     }
 
-    private async Task<IHost> ConnectClient(DataImportOptions dataImportOptions)
+    private async Task<IHost> ConnectClient()
     {
         var configuration = GetConfiguration("DataImporterSettings.json");
         var section = configuration.GetSection(Settings.ClusterOptionsBlockName);
