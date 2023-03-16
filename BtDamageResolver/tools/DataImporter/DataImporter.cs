@@ -144,7 +144,7 @@ public class DataImporter
         var clusterOptions = section.Get<FaemiyahClusterOptions>();
 
         var hostBuilder = new HostBuilder()
-            .UseOrleansClient((context, clientBuilder) =>
+            .UseOrleansClient((_, clientBuilder) =>
             {
                 clientBuilder.Configure<ClusterOptions>(options =>
                     {

@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Orleans;
 
-namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes
+namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
+
+/// <summary>
+/// Base class for requests.
+/// </summary>
+[GenerateSerializer]
+public abstract class RequestBase
 {
     /// <summary>
-    /// Base class for requests.
+    /// The name of the player producing this request.
     /// </summary>
-    [Serializable]
-    public abstract class RequestBase
-    {
-        /// <summary>
-        /// The name of the player producing this request.
-        /// </summary>
-        public string PlayerName { get; set; }
-    }
+    [Id(0)]
+    public string PlayerName { get; set; }
 }
