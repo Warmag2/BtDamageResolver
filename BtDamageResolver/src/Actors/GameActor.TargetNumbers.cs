@@ -55,10 +55,12 @@ public partial class GameActor
             if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
             {
                 targetNumberUpdates.Add(await unitActor.ProcessTargetNumbers(_gameActorState.State.Options));
+                _logger.LogInformation("GameActor succeeded in processing target numbers for unit {unitId}", unitActor.GetPrimaryKey());
             }
             else
             {
                 targetNumberUpdates.Add(await unitActor.ProcessTargetNumbers(_gameActorState.State.Options, true));
+                _logger.LogInformation("GameActor succeeded in setting blank target numbers for unit {unitId}", unitActor.GetPrimaryKey());
 
                 if (unit.FiringSolution.TargetUnit == Guid.Empty)
                 {
