@@ -48,7 +48,7 @@ public partial class GameActor : Grain, IGameActor
     /// <inheritdoc />
     public Task<bool> IsUnitInGame(Guid unitId)
     {
-        return Task.FromResult(_gameActorState.State.PlayerStates.Any(p => p.Value.UnitEntries.Any(u => u.Id == unitId)));
+        return Task.FromResult(_gameActorState.State.PlayerStates.Any(p => p.Value.UnitEntries.Exists(u => u.Id == unitId)));
     }
 
     /// <inheritdoc />

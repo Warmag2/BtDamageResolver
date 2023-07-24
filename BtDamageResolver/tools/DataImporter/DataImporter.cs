@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
+using Orleans.Serialization;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
@@ -159,6 +160,10 @@ public class DataImporter
                     {
                         options.Invariant = clusterOptions?.Invariant;
                         options.ConnectionString = clusterOptions?.ConnectionString;
+                    })
+                    .Services.AddSerializer(serializerBuilder =>
+                    {
+                        serializerBuilder.AddNewtonsoftJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
                     });
             }).Build();
 

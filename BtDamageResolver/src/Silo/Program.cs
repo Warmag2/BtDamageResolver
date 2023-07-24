@@ -115,6 +115,11 @@ public static class Program
             .UseOrleans(siloBuilder =>
             {
                 siloBuilder
+                    .Services.AddSerializer(serializerBuilder =>
+                    {
+                        serializerBuilder.AddNewtonsoftJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
+                    });
+                siloBuilder
                     /*.Configure<JsonSerializerOptions>(options =>
                     {
                         options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -166,10 +171,6 @@ public static class Program
                     .AddGrainService<LoggingService>()
                     .ConfigureServices(services =>
                     {
-                        services.AddSerializer(serializerBuilder =>
-                        {
-                            serializerBuilder.AddNewtonsoftJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
-                        });
                         services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
                         services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
                         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
