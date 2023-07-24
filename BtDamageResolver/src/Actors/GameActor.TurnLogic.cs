@@ -45,7 +45,11 @@ public partial class GameActor
 
         CheckForPlayerCountEvents();
 
+        _logger.LogInformation("DEBUG LOG - GameActor {gameId} Checked for player count events.", this.GetPrimaryKeyString());
+
         var fireEventHappened = await CheckForFireEvent();
+
+        _logger.LogInformation("DEBUG LOG - GameActor {gameId} checked for fire events.", this.GetPrimaryKeyString());
 
         // If fire event happened or when given an empty unit set, process updated target numbers for everything.
         // Otherwise, only for affected units.
@@ -53,11 +57,17 @@ public partial class GameActor
             ? await ProcessTargetNumberUpdatesForUnits()
             : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
 
+        _logger.LogInformation("DEBUG LOG - GameActor {gameId} processed target numbers.", this.GetPrimaryKeyString());
+
         await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
         await DistributeGameStateToPlayers(fireEventHappened);
 
+        _logger.LogInformation("DEBUG LOG - GameActor {gameId} distributed target numbers and game state.", this.GetPrimaryKeyString());
+
         // Save game actor state
         await _gameActorState.WriteStateAsync();
+
+        _logger.LogInformation("DEBUG LOG - GameActor {gameId} wrote game state.", this.GetPrimaryKeyString());
 
         // Log update to permanent store
         await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
@@ -71,6 +81,8 @@ public partial class GameActor
                 Players = _gameActorState.State.PlayerStates.Count,
                 TimeStamp = DateTime.UtcNow
             });
+
+        _logger.LogInformation("DEBUG LOG - GameActor {gameId} logged events.", this.GetPrimaryKeyString());
     }
 
     /// <summary>

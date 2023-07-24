@@ -132,16 +132,12 @@ public partial class GameActor : Grain, IGameActor
 
             await CheckGameStateUpdateEvents();
 
+            _logger.LogInformation("DEBUG LOG - GameActor {gameId} checked for game state update events.", this.GetPrimaryKeyString());
+
             // Log logins to permanent store
             await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
-            await GrainFactory.GetGameEntryRepository().AddOrUpdate(
-                new GameEntry
-                {
-                    Name = this.GetPrimaryKeyString(),
-                    PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
-                    Players = _gameActorState.State.PlayerStates.Count,
-                    TimeStamp = DateTime.UtcNow
-                });
+
+            _logger.LogInformation("DEBUG LOG - GameActor {gameId} logged login events.", this.GetPrimaryKeyString());
 
             return true;
         }
@@ -176,14 +172,8 @@ public partial class GameActor : Grain, IGameActor
 
         // Log logins to permanent store
         await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.LogOut, 0);
-        await GrainFactory.GetGameEntryRepository().AddOrUpdate(
-            new GameEntry
-            {
-                Name = this.GetPrimaryKeyString(),
-                PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
-                Players = _gameActorState.State.PlayerStates.Count,
-                TimeStamp = DateTime.UtcNow
-            });
+
+        _logger.LogInformation("DEBUG LOG - GameActor {gameId} logged login events.", this.GetPrimaryKeyString());
 
         return true;
     }
