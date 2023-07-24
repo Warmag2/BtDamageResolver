@@ -205,6 +205,8 @@ namespace Faemiyah.BtDamageResolver.Actors
 
             // Log the login to permanent store
             await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Login, 0);
+
+            _logger.LogInformation("DEBUG - Player {playerId} finished with connection actions from a client.", this.GetPrimaryKeyString());
         }
     }
 }
