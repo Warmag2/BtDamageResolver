@@ -133,9 +133,9 @@ public static class Program
                     .Configure<GrainCollectionOptions>(options => { options.CollectionAge = TimeSpan.FromDays(1); })
                     .Configure<ClusterMembershipOptions>(options =>
                     {
-                        options.DefunctSiloCleanupPeriod = TimeSpan.FromMinutes(15);
-                        options.DefunctSiloExpiration = TimeSpan.FromMinutes(5);
+                        options.DefunctSiloExpiration = TimeSpan.FromHours(1);
                         options.NumMissedProbesLimit = 3;
+                        options.NumMissedTableIAmAliveLimit = 1;
                         options.NumVotesForDeathDeclaration = 1;
                     })
                     .Configure<SiloMessagingOptions>(options =>
