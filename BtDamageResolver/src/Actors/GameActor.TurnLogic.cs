@@ -112,7 +112,7 @@ public partial class GameActor
             {
                 playerState.IsReady = false;
                 playerState.TimeStamp = DateTime.UtcNow;
-                await GrainFactory.GetGrain<IPlayerActor>(playerState.PlayerId).UnReady();
+                GrainFactory.GetGrain<IPlayerActor>(playerState.PlayerId).UnReady().Ignore(); // Must be ignored because this may come through the player actor call chain
             }
 
             // Log turns to permanent store

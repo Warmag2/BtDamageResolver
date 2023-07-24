@@ -98,7 +98,6 @@ namespace Faemiyah.BtDamageResolver.Actors
                     if (IsConnectedToGame())
                     {
                         // If we are connected to the game, also push player state to the game actor to be distributed to other players.
-                        // The result is ignored, because we don't actually have to wait here to see the results.
                         success = await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendPlayerState(this.GetPrimaryKeyString(), playerState, updatedUnits);
                     }
 
