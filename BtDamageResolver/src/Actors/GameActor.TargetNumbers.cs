@@ -19,7 +19,7 @@ public partial class GameActor
     /// </summary>
     /// <param name="unitId">The unit id whose targets should be processed.</param>
     /// <returns>A list of unit IDs which target this unit.</returns>
-    private Task<List<Guid>> GetAllUnitsWhichTargetUnit(Guid unitId)
+    private List<Guid> GetAllUnitsWhichTargetUnit(Guid unitId)
     {
         var targetingUnits = new List<Guid>();
 
@@ -30,7 +30,7 @@ public partial class GameActor
             targetingUnits.AddRange(player.UnitEntries.Where(u => u.FiringSolution.TargetUnit == unitId).Select(u => u.Id).ToList());
         }
 
-        return Task.FromResult(targetingUnits);
+        return targetingUnits;
     }
 
     /// <summary>
@@ -48,6 +48,8 @@ public partial class GameActor
 
             var unitActor = GrainFactory.GetGrain<IUnitActor>(unitId);
             var unit = await unitActor.GetUnit();
+
+            _logger.LogInformation("GameActor received unit actor for unit {unitId}", unitActor.GetPrimaryKey());
 
             // Only fire at units which are in the game
             if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
@@ -84,7 +86,7 @@ public partial class GameActor
             foreach (var unitId in unitIds)
             {
                 // Also Update the target numbers for all units which target these units
-                unitIdsToUpdate.AddRange(await GetAllUnitsWhichTargetUnit(unitId));
+                unitIdsToUpdate.AddRange(GetAllUnitsWhichTargetUnit(unitId));
             }
 
             targetNumberUpdates.AddRange(await UpdateTargetNumbers(unitIdsToUpdate.Distinct()));

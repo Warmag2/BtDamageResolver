@@ -100,17 +100,7 @@ public class UnitActor : Grain, IUnitActor
                 (var ammoEstimate, var ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, weaponEntry);
                 (var heatEstimate, var heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, weaponEntry);
 
-                string weaponAmmoCombinedString;
-
-                if (!string.IsNullOrEmpty(weaponEntry.Ammo))
-                {
-                    weaponAmmoCombinedString = $"{weaponEntry.WeaponName} {weaponEntry.Ammo}";
-                }
-                else
-                {
-                    weaponAmmoCombinedString = $"{weaponEntry.WeaponName}";
-                }
-
+                var weaponAmmoCombinedString = string.IsNullOrEmpty(weaponEntry.Ammo) ? $"{weaponEntry.WeaponName}" : $"{weaponEntry.WeaponName} {weaponEntry.Ammo}";
                 targetNumberUpdate.AmmoEstimate.AddIfNotZero(weaponAmmoCombinedString, ammoEstimate);
                 targetNumberUpdate.AmmoWorstCase.AddIfNotZero(weaponAmmoCombinedString, ammoMax);
 
