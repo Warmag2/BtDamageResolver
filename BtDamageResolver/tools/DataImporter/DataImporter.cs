@@ -178,7 +178,7 @@ public class DataImporter
     /// <exception cref="InvalidOperationException">If data type could not be inferred from file name.</exception>
     private IEnumerable<object> ProcessFile(string path)
     {
-        var fileNamePrefix = Path.GetFileName(path).Split("_").First();
+        var fileNamePrefix = Path.GetFileName(path).Split("_")[0];
 
         _logger.LogInformation("Loading file: {file}", path);
 

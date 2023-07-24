@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Cryptography;
@@ -25,6 +23,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
+using Orleans.Serialization;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Silo;
@@ -116,11 +115,11 @@ public static class Program
             .UseOrleans(siloBuilder =>
             {
                 siloBuilder
-                    .Configure<JsonSerializerOptions>(options =>
+                    /*.Configure<JsonSerializerOptions>(options =>
                     {
                         options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                         options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                    })
+                    })*/
                     .Configure<ClusterOptions>(options =>
                     {
                         options.ClusterId = "faemiyah";
@@ -167,6 +166,10 @@ public static class Program
                     .AddGrainService<LoggingService>()
                     .ConfigureServices(services =>
                     {
+                        services.AddSerializer(serializerBuilder =>
+                        {
+                            serializerBuilder.AddNewtonsoftJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
+                        });
                         services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
                         services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
                         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
@@ -208,12 +211,9 @@ public static class Program
         where TType : class, IEntity<string>
     {
         var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
-        if (options != null)
-        {
-            return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString);
-        }
-
-        throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
+        return options != null
+            ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString)
+            : throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
     }
 
     /*private static SqlEntityRepository<TType> GetSqlEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>

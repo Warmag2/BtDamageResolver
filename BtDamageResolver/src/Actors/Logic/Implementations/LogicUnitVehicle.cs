@@ -9,95 +9,94 @@ using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
+namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations;
+
+/// <summary>
+/// Abstract logic class for all ground vechicles and VTOLs.
+/// </summary>
+public abstract class LogicUnitVehicle : LogicUnit
 {
     /// <summary>
-    /// Abstract logic class for all ground vechicles and VTOLs.
+    /// Initializes a new instance of the <see cref="LogicUnitVehicle"/> class.
     /// </summary>
-    public abstract class LogicUnitVehicle : LogicUnit
+    /// <param name="logger">The logging interface.</param>
+    /// <param name="gameOptions">The game options.</param>
+    /// <param name="grainFactory">The grain factory.</param>
+    /// <param name="mathExpression">The math expression parser.</param>
+    /// <param name="random">The random number generator.</param>
+    /// <param name="unit">The unit.</param>
+    protected LogicUnitVehicle(ILogger<LogicUnitVehicle> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LogicUnitVehicle"/> class.
-        /// </summary>
-        /// <param name="logger">The logging interface.</param>
-        /// <param name="gameOptions">The game options.</param>
-        /// <param name="grainFactory">The grain factory.</param>
-        /// <param name="mathExpression">The math expression parser.</param>
-        /// <param name="random">The random number generator.</param>
-        /// <param name="unit">The unit.</param>
-        protected LogicUnitVehicle(ILogger<LogicUnitVehicle> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+    }
+
+    /// <inheritdoc />
+    public override bool CanTakeMotiveHits()
+    {
+        return true;
+    }
+
+    /// <inheritdoc />
+    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
+    {
+        return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
+    }
+
+    /// <summary>
+    /// Gets the modifier to motive hits for this unit type.
+    /// </summary>
+    /// <returns>The modifier to motive hit application.</returns>
+    protected abstract int GetMotiveHitModifier();
+
+    /// <inheritdoc />
+    protected override int GetOwnMovementModifier()
+    {
+        switch (Unit.MovementClass)
         {
+            case MovementClass.Normal:
+                return 1;
+            case MovementClass.Fast:
+            case MovementClass.Masc:
+                return Unit.HasFeature(UnitFeature.StabilizedWeapons) ? 1 : 2;
+            default:
+                return 0;
         }
+    }
 
-        /// <inheritdoc />
-        public override bool CanTakeMotiveHits()
+    /// <inheritdoc />
+    protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
+    {
+        var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
+
+        if (criticalDamageTableType == CriticalDamageTableType.Motive)
         {
-            return true;
-        }
-
-        /// <inheritdoc />
-        public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
-        {
-            return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
-        }
-
-        /// <summary>
-        /// Gets the modifier to motive hits for this unit type.
-        /// </summary>
-        /// <returns>The modifier to motive hit application.</returns>
-        protected abstract int GetMotiveHitModifier();
-
-        /// <inheritdoc />
-        protected override int GetOwnMovementModifier()
-        {
-            switch (Unit.MovementClass)
+            switch (Unit.Type)
             {
-                case MovementClass.Normal:
-                    return 1;
-                case MovementClass.Fast:
-                case MovementClass.Masc:
-                    return Unit.HasFeature(UnitFeature.StabilizedWeapons) ? 1 : 2;
-                default:
-                    return 0;
-            }
-        }
-
-        /// <inheritdoc />
-        protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
-        {
-            var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
-
-            if (criticalDamageTableType == CriticalDamageTableType.Motive)
-            {
-                switch (Unit.Type)
-                {
-                    case UnitType.VehicleHover:
-                        criticalThreatRoll += 2;
-                        break;
-                    case UnitType.VehicleWheeled:
-                        criticalThreatRoll += 1;
-                        break;
-                }
-
-                damageReport.Log(new AttackLogEntry
-                {
-                    Context = "Critical Threat roll modified by unit type",
-                    Number = criticalThreatRoll,
-                    Type = AttackLogEntryType.Calculation
-                });
+                case UnitType.VehicleHover:
+                    criticalThreatRoll += 2;
+                    break;
+                case UnitType.VehicleWheeled:
+                    criticalThreatRoll += 1;
+                    break;
             }
 
-            if (criticalDamageTable.Mapping[criticalThreatRoll].Any(c => c != CriticalDamageType.None))
+            damageReport.Log(new AttackLogEntry
             {
-                damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
-                damageReport.Log(new AttackLogEntry
-                {
-                    Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
-                    Number = transformedDamage,
-                    Location = location,
-                    Type = AttackLogEntryType.Critical
-                });
-            }
+                Context = "Critical Threat roll modified by unit type",
+                Number = criticalThreatRoll,
+                Type = AttackLogEntryType.Calculation
+            });
+        }
+
+        if (criticalDamageTable.Mapping[criticalThreatRoll].Exists(c => c != CriticalDamageType.None))
+        {
+            damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
+            damageReport.Log(new AttackLogEntry
+            {
+                Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
+                Number = transformedDamage,
+                Location = location,
+                Type = AttackLogEntryType.Critical
+            });
         }
     }
 }
