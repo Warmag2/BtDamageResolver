@@ -57,7 +57,7 @@
                 _selectedOption = value;
                 _updateTimeStamp = DateTime.UtcNow;
                 OnChanged.InvokeAsync(Options[value]);
-                StateHasChanged();
+                InvokeAsync(StateHasChanged);
             }
         }
     }

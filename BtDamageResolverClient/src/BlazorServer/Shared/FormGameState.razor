@@ -55,7 +55,12 @@
         _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
         _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
         _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
-        _userStateController.OnPlayerUnitListChanged += StateHasChanged;
+        _userStateController.OnPlayerUnitListChanged += AsyncStateChange;
+    }
+
+    protected void AsyncStateChange()
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     private void AddUnit()
@@ -96,6 +101,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnPlayerUnitListChanged -= StateHasChanged;
+        _userStateController.OnPlayerUnitListChanged -= AsyncStateChange;
     }
 }

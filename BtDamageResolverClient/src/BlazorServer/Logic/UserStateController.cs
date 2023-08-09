@@ -279,8 +279,8 @@ public class UserStateController
         if (PlayerState != null)
         {
             PlayerState.TimeStamp = DateTime.UtcNow;
-            OnPlayerStateUpdated?.Invoke();
-            OnPlayerUnitListChanged?.Invoke();
+            OnPlayerStateUpdated();
+            OnPlayerUnitListChanged();
         }
     }
 

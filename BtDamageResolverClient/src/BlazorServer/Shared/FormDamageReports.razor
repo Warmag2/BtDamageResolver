@@ -63,15 +63,20 @@ else
     [Parameter]
     public bool OnlyNewest { get; set; }
 
+    protected void AsyncStateChange()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     protected override void OnInitialized()
     {
-        _userStateController.OnDamageReportsUpdated += StateHasChanged;
-        _userStateController.OnPlayerOptionsUpdated += StateHasChanged;
+        _userStateController.OnDamageReportsUpdated += AsyncStateChange;
+        _userStateController.OnPlayerOptionsUpdated += AsyncStateChange;
     }
 
     public void Dispose()
     {
-        _userStateController.OnDamageReportsUpdated -= StateHasChanged;
-        _userStateController.OnPlayerOptionsUpdated -= StateHasChanged;
+        _userStateController.OnDamageReportsUpdated -= AsyncStateChange;
+        _userStateController.OnPlayerOptionsUpdated -= AsyncStateChange;
     }
 }

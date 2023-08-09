@@ -31,6 +31,6 @@
     public void Select(string input)
     {
         OnTabSelected.InvokeAsync(input);
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 }

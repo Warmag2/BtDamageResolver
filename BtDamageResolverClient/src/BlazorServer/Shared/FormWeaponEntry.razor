@@ -75,13 +75,18 @@
     [Parameter]
     public EventCallback<SwapTuple> OnSwap { get; set; }
 
+    protected void AsyncStateChange()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     protected override void OnInitialized()
     {
         // Necessary to set this way, because otherwise disabling the controls may emit null or incorrect values upwards.
         _weaponAmmo = WeaponEntry.Ammo;
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
-        _userStateController.OnTargetNumbersUpdated += StateHasChanged;
+        _userStateController.OnTargetNumbersUpdated += AsyncStateChange;
     }
 
     private void DeleteWeapon()
@@ -190,6 +195,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnTargetNumbersUpdated -= StateHasChanged;
+        _userStateController.OnTargetNumbersUpdated -= AsyncStateChange;
     }
 }

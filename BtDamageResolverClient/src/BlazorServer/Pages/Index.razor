@@ -97,7 +97,7 @@
                 await _localStorage.RemoveUserCredentials();
             }
 
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         });
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
@@ -110,37 +110,37 @@
         _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
         {
             _errorMessage = DataHelper.Unpack<string>(errorMessage);
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         });
 
         _hubConnection.On<byte[]>(EventNames.GameEntries, gameEntries =>
         {
             _userStateController.GameEntries = DataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetId(), g => g);
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         });
 
         _hubConnection.On<byte[]>(EventNames.GameOptions, gameOptionsData =>
         {
             _userStateController.GameOptions = DataHelper.Unpack<GameOptions>(gameOptionsData);
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         });
 
         _hubConnection.On<byte[]>(EventNames.GameState, gameStateData =>
         {
             _userStateController.GameState = DataHelper.Unpack<GameState>(gameStateData);
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         });
 
         _hubConnection.On<byte[]>(EventNames.PlayerOptions, playerOptionsData =>
         {
             _userStateController.PlayerOptions = DataHelper.Unpack<PlayerOptions>(playerOptionsData);
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         });
 
         _hubConnection.On<byte[]>(EventNames.TargetNumbers, targetNumberUpdateData =>
         {
             _userStateController.RecordTargetNumberUpdates(DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         });
 
         _userStateController.OnPlayerStateUpdated += SendPlayerState;

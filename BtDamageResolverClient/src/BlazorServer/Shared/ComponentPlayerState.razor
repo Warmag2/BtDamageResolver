@@ -17,13 +17,18 @@
     [Parameter]
     public string PlayerId { get; set; }
 
+    protected void AsyncStateChange()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     protected override void OnInitialized()
     {
-        _userStateController.OnTargetNumbersUpdated += StateHasChanged;
+        _userStateController.OnTargetNumbersUpdated += AsyncStateChange;
     }
 
     public void Dispose()
     {
-        _userStateController.OnTargetNumbersUpdated -= StateHasChanged;
+        _userStateController.OnTargetNumbersUpdated -= AsyncStateChange;
     }
 }
