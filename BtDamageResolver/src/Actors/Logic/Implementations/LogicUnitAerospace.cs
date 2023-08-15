@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -13,175 +14,174 @@ using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations
+namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations;
+
+/// <summary>
+/// Abstract base logic class for all aerospace units.
+/// </summary>
+public abstract class LogicUnitAerospace : LogicUnit
 {
     /// <summary>
-    /// Abstract base logic class for all aerospace units.
+    /// Initializes a new instance of the <see cref="LogicUnitAerospace"/> class.
     /// </summary>
-    public abstract class LogicUnitAerospace : LogicUnit
+    /// <param name="logger">The logging interface.</param>
+    /// <param name="gameOptions">The game options.</param>
+    /// <param name="grainFactory">The grain factory.</param>
+    /// <param name="mathExpression">The math expression parser.</param>
+    /// <param name="random">The random number generator.</param>
+    /// <param name="unit">The unit.</param>
+    protected LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LogicUnitAerospace"/> class.
-        /// </summary>
-        /// <param name="logger">The logging interface.</param>
-        /// <param name="gameOptions">The game options.</param>
-        /// <param name="grainFactory">The grain factory.</param>
-        /// <param name="mathExpression">The math expression parser.</param>
-        /// <param name="random">The random number generator.</param>
-        /// <param name="unit">The unit.</param>
-        protected LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+    }
+
+    /// <inheritdoc />
+    public override int GetFeatureModifier(Weapon weapon)
+    {
+        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
         {
+            return MathExpression.Parse(flakFeatureEntry.Data);
         }
 
-        /// <inheritdoc />
-        public override int GetFeatureModifier(Weapon weapon)
+        return 0;
+    }
+
+    /// <inheritdoc />
+    public override int GetMovementDirectionModifier(Direction direction)
+    {
+        switch (direction)
         {
-            if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
+            case Direction.Rear:
+                return 0;
+            case Direction.Front:
+                return 1;
+            case Direction.Left:
+            case Direction.Right:
+            case Direction.Bottom:
+            case Direction.Top:
+                return 2;
+            default:
+                throw new InvalidOperationException($"Unexpected direction: {direction}");
+        }
+    }
+
+    /// <inheritdoc />
+    public override int GetMovementModifier()
+    {
+        return 0;
+    }
+
+    /// <inheritdoc />
+    protected override int GetMinimumRangeModifier(Weapon weapon)
+    {
+        return 0;
+    }
+
+    /// <inheritdoc />
+    protected override int GetOwnMovementModifier()
+    {
+        return Unit.MovementClass == MovementClass.OutOfControl || Unit.MovementClass == MovementClass.Fast ? 2 : 0;
+    }
+
+    /// <inheritdoc />
+    protected override RangeBracket GetRangeBracket(Weapon weapon)
+    {
+        return GetRangeBracketAerospace(weapon, Unit.FiringSolution.Distance);
+    }
+
+    /// <inheritdoc />
+    protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
+    {
+        var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
+
+        if (criticalThreatRoll > 7)
+        {
+            var aerospaceCriticalHitRoll = Random.D26();
+            damageReport.Log(new AttackLogEntry
             {
-                return MathExpression.Parse(flakFeatureEntry.Data);
-            }
+                Context = "Aerospace critical hit roll",
+                Number = aerospaceCriticalHitRoll,
+                Type = AttackLogEntryType.DiceRoll
+            });
 
-            return 0;
-        }
-
-        /// <inheritdoc />
-        public override int GetMovementDirectionModifier(Direction direction)
-        {
-            switch (direction)
+            damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
+            damageReport.Log(new AttackLogEntry
             {
-                case Direction.Rear:
-                    return 0;
-                case Direction.Front:
-                    return 1;
-                case Direction.Left:
-                case Direction.Right:
-                case Direction.Bottom:
-                case Direction.Top:
-                    return 2;
-                default:
-                    throw new InvalidOperationException($"Unexpected direction: {direction}");
-            }
+                Context = string.Join(", ", criticalDamageTable.Mapping[aerospaceCriticalHitRoll].Select(c => c.ToString())),
+                Number = transformedDamage,
+                Location = location,
+                Type = AttackLogEntryType.Critical
+            });
+        }
+    }
+
+    /// <inheritdoc />
+    protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
+    {
+        // Missile weapons which do 0 damage have been shot down. Return an empty list.
+        if (combatAction.Weapon.Type == WeaponType.Missile && damage == 0)
+        {
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile weapon has been shot down and does no damage" });
+            return new List<DamagePacket>();
         }
 
-        /// <inheritdoc />
-        public override int GetMovementModifier()
+        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
         {
-            return 0;
+            return Clusterize(5, damage, combatAction.Weapon.SpecialDamage);
         }
 
-        /// <inheritdoc />
-        protected override int GetMinimumRangeModifier(Weapon weapon)
+        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
-            return 0;
+            return Clusterize((int)Math.Ceiling((decimal)damage / MathExpression.Parse(rapidFeatureEntry.Data)), damage, combatAction.Weapon.SpecialDamage);
         }
 
-        /// <inheritdoc />
-        protected override int GetOwnMovementModifier()
-        {
-            return Unit.MovementClass == MovementClass.OutOfControl || Unit.MovementClass == MovementClass.Fast ? 2 : 0;
-        }
+        return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage);
+    }
 
-        /// <inheritdoc />
-        protected override RangeBracket GetRangeBracket(Weapon weapon)
-        {
-            return GetRangeBracketAerospace(weapon, Unit.FiringSolution.Distance);
-        }
+    /// <inheritdoc />
+    protected override Task<int> ResolveTotalOutgoingDamage(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
+    {
+        var damageValue = 0;
 
-        /// <inheritdoc />
-        protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
+        switch (combatAction.Weapon.Type)
         {
-            var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
-
-            if (criticalThreatRoll > 7)
-            {
-                var aerospaceCriticalHitRoll = Random.D26();
-                damageReport.Log(new AttackLogEntry
+            case WeaponType.Missile:
+                if (target.Unit.HasFeature(UnitFeature.Ams))
                 {
-                    Context = "Aerospace critical hit roll",
-                    Number = aerospaceCriticalHitRoll,
-                    Type = AttackLogEntryType.DiceRoll
-                });
+                    if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.AmsImmune, out _))
+                    {
+                        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is immune to AMS defenses" });
+                    }
+                    else
+                    {
+                        var amsPenalty = Random.Next(6);
+                        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender AMS roll for cluster damage reduction", Number = amsPenalty });
+                        damageValue -= amsPenalty;
 
-                damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
-                damageReport.Log(new AttackLogEntry
+                        damageReport.SpendAmmoDefender("AMS", 1);
+                    }
+                }
+
+                if (target.Unit.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
                 {
-                    Context = string.Join(", ", criticalDamageTable.Mapping[aerospaceCriticalHitRoll].Select(c => c.ToString())),
-                    Number = transformedDamage,
-                    Location = location,
-                    Type = AttackLogEntryType.Critical
-                });
-            }
+                    var ecmPenalty = Random.Next(3);
+                    damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender ECM roll for cluster damage reduction", Number = ecmPenalty });
+                    damageValue -= ecmPenalty;
+                }
+
+                break;
         }
 
-        /// <inheritdoc />
-        protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
+        // Glancing blow for cluster aerospace weapons (improvised rule, since aerospace units do not normally use clustering)
+        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
         {
-            // Missile weapons which do 0 damage have been shot down. Return an empty list.
-            if (combatAction.Weapon.Type == WeaponType.Missile && damage == 0)
-            {
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile weapon has been shot down and does no damage" });
-                return new List<DamagePacket>();
-            }
-
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
-            {
-                return Clusterize(5, damage, combatAction.Weapon.SpecialDamage);
-            }
-
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
-            {
-                return Clusterize((int)Math.Ceiling((decimal)damage / MathExpression.Parse(rapidFeatureEntry.Data)), damage, combatAction.Weapon.SpecialDamage);
-            }
-
-            return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage);
+            var glancingBlowPenalty = Random.Next(6);
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender roll for cluster damage reduction from glancing blow", Number = glancingBlowPenalty });
+            damageValue -= glancingBlowPenalty;
         }
 
-        /// <inheritdoc />
-        protected override Task<int> ResolveTotalOutgoingDamage(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
-        {
-            var damageValue = 0;
+        damageValue += Math.Clamp(combatAction.Weapon.DamageAerospace[combatAction.RangeBracket], 0, int.MaxValue);
+        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total damage value", Number = damageValue });
 
-            switch (combatAction.Weapon.Type)
-            {
-                case WeaponType.Missile:
-                    if (target.Unit.HasFeature(UnitFeature.Ams))
-                    {
-                        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.AmsImmune, out _))
-                        {
-                            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is immune to AMS defenses" });
-                        }
-                        else
-                        {
-                            var amsPenalty = Random.Next(6);
-                            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender AMS roll for cluster damage reduction", Number = amsPenalty });
-                            damageValue -= amsPenalty;
-
-                            damageReport.SpendAmmoDefender("AMS", 1);
-                        }
-                    }
-
-                    if (target.Unit.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
-                    {
-                        var ecmPenalty = Random.Next(3);
-                        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender ECM roll for cluster damage reduction", Number = ecmPenalty });
-                        damageValue -= ecmPenalty;
-                    }
-
-                    break;
-            }
-
-            // Glancing blow for cluster aerospace weapons (improvised rule, since aerospace units do not normally use clustering)
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
-            {
-                var glancingBlowPenalty = Random.Next(6);
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender roll for cluster damage reduction from glancing blow", Number = glancingBlowPenalty });
-                damageValue -= glancingBlowPenalty;
-            }
-
-            damageValue += Math.Clamp(combatAction.Weapon.DamageAerospace[combatAction.RangeBracket], 0, int.MaxValue);
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total damage value", Number = damageValue });
-
-            return Task.FromResult(damageValue);
-        }
+        return Task.FromResult(damageValue);
     }
 }

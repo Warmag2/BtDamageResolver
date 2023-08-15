@@ -1,12 +1,11 @@
-﻿namespace Faemiyah.BtDamageResolver.Services.Interfaces.Enums
+﻿namespace Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
+
+/// <summary>
+/// The player action type.
+/// </summary>
+public enum PlayerActionType
 {
-    /// <summary>
-    /// The player action type.
-    /// </summary>
-    public enum PlayerActionType
-    {
-        Login,
-        Logout,
-        UpdateUnit
-    }
+    Login,
+    Logout,
+    UpdateUnit
 }

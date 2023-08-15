@@ -22,4 +22,8 @@
     <ProjectReference Include="..\ServiceInterfaces\ServiceInterfaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="States\Types\" />
+  </ItemGroup>
+
 </Project>

@@ -2,68 +2,67 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Faemiyah.BtDamageResolver.Actors.Cryptography
+namespace Faemiyah.BtDamageResolver.Actors.Cryptography;
+
+/// <summary>
+/// Shitty implementation of a password hasher.
+/// </summary>
+public class FaemiyahPasswordHasher : IHasher
 {
+    private const int SaltLength = 32;
+    private readonly SHA512 _sha;
+
     /// <summary>
-    /// Shitty implementation of a password hasher.
+    /// Initializes a new instance of the <see cref="FaemiyahPasswordHasher"/> class.
     /// </summary>
-    public class FaemiyahPasswordHasher : IHasher
+    public FaemiyahPasswordHasher()
     {
-        private const int SaltLength = 32;
-        private readonly SHA512 _sha;
+        _sha = SHA512.Create();
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FaemiyahPasswordHasher"/> class.
-        /// </summary>
-        public FaemiyahPasswordHasher()
+    /// <inheritdoc/>
+    public (byte[] Hash, byte[] Salt) Hash(string password)
+    {
+        var salt = GetSalt();
+
+        var hash = _sha.ComputeHash(GetSaltedBytes(password, salt));
+
+        return (hash, salt);
+    }
+
+    /// <inheritdoc/>
+    public bool Verify(string password, byte[] salt, byte[] referenceHash)
+    {
+        var hash = _sha.ComputeHash(GetSaltedBytes(password, salt));
+
+        return CompareHashes(hash, referenceHash);
+    }
+
+    private static bool CompareHashes(byte[] hash1, byte[] hash2)
+    {
+        if (hash1.Length != hash2.Length)
         {
-            _sha = SHA512.Create();
+            return false;
         }
 
-        /// <inheritdoc/>
-        public (byte[] Hash, byte[] Salt) Hash(string password)
+        for (int ii = 0; ii < hash1.Length; ii++)
         {
-            var salt = GetSalt();
-
-            var hash = _sha.ComputeHash(GetSaltedBytes(password, salt));
-
-            return (hash, salt);
-        }
-
-        /// <inheritdoc/>
-        public bool Verify(string password, byte[] salt, byte[] referenceHash)
-        {
-            var hash = _sha.ComputeHash(GetSaltedBytes(password, salt));
-
-            return CompareHashes(hash, referenceHash);
-        }
-
-        private static bool CompareHashes(byte[] hash1, byte[] hash2)
-        {
-            if (hash1.Length != hash2.Length)
+            if (hash1[ii] != hash2[ii])
             {
                 return false;
             }
-
-            for (int ii = 0; ii < hash1.Length; ii++)
-            {
-                if (hash1[ii] != hash2[ii])
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
-        private static byte[] GetSalt()
-        {
-            return RandomNumberGenerator.GetBytes(SaltLength);
-        }
+        return true;
+    }
 
-        private static byte[] GetSaltedBytes(string password, byte[] salt)
-        {
-            return Encoding.UTF8.GetBytes(password).Concat(salt).ToArray();
-        }
+    private static byte[] GetSalt()
+    {
+        return RandomNumberGenerator.GetBytes(SaltLength);
+    }
+
+    private static byte[] GetSaltedBytes(string password, byte[] salt)
+    {
+        return Encoding.UTF8.GetBytes(password).Concat(salt).ToArray();
     }
 }

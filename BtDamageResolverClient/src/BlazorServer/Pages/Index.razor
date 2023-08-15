@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@inherits BaseFaemiyahComponent
+@page "/"
 @using SevenZip.Compression.LZMA
 @using Microsoft.AspNetCore.SignalR.Client
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
@@ -97,7 +98,7 @@
                 await _localStorage.RemoveUserCredentials();
             }
 
-            await InvokeAsync(StateHasChanged);
+            InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
@@ -110,37 +111,37 @@
         _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
         {
             _errorMessage = DataHelper.Unpack<string>(errorMessage);
-            InvokeAsync(StateHasChanged);
+            InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.GameEntries, gameEntries =>
         {
             _userStateController.GameEntries = DataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetId(), g => g);
-            InvokeAsync(StateHasChanged);
+            InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.GameOptions, gameOptionsData =>
         {
             _userStateController.GameOptions = DataHelper.Unpack<GameOptions>(gameOptionsData);
-            InvokeAsync(StateHasChanged);
+            InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.GameState, gameStateData =>
         {
             _userStateController.GameState = DataHelper.Unpack<GameState>(gameStateData);
-            InvokeAsync(StateHasChanged);
+            InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.PlayerOptions, playerOptionsData =>
         {
             _userStateController.PlayerOptions = DataHelper.Unpack<PlayerOptions>(playerOptionsData);
-            InvokeAsync(StateHasChanged);
+            InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.TargetNumbers, targetNumberUpdateData =>
         {
             _userStateController.RecordTargetNumberUpdates(DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
-            InvokeAsync(StateHasChanged);
+            InvokeStateChange();
         });
 
         _userStateController.OnPlayerStateUpdated += SendPlayerState;

@@ -1,35 +1,34 @@
 ﻿using System;
 using Faemiyah.BtDamageResolver.Api;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver
+namespace Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+
+/// <summary>
+/// The math expression solver.
+/// </summary>
+public class MathExpression : IMathExpression
 {
+    private readonly IResolverRandom _random;
+
     /// <summary>
-    /// The math expression solver.
+    /// Initializes a new instance of the <see cref="MathExpression"/> class.
     /// </summary>
-    public class MathExpression : IMathExpression
+    /// <param name="random">The random number generator.</param>
+    public MathExpression(IResolverRandom random)
     {
-        private readonly IResolverRandom _random;
+        _random = random;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MathExpression"/> class.
-        /// </summary>
-        /// <param name="random">The random number generator.</param>
-        public MathExpression(IResolverRandom random)
+    /// <inheritdoc/>
+    public int Parse(string expression)
+    {
+        if (string.IsNullOrWhiteSpace(expression))
         {
-            _random = random;
+            return 0;
         }
 
-        /// <inheritdoc/>
-        public int Parse(string expression)
-        {
-            if (string.IsNullOrWhiteSpace(expression))
-            {
-                return 0;
-            }
+        var expressionObject = new Expression(_random, expression);
 
-            var expressionObject = new Expression(_random, expression);
-
-            return decimal.ToInt32(Math.Round(expressionObject.Parse(), MidpointRounding.AwayFromZero));
-        }
+        return decimal.ToInt32(Math.Round(expressionObject.Parse(), MidpointRounding.AwayFromZero));
     }
 }

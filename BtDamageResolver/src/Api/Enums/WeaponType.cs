@@ -1,17 +1,16 @@
 ﻿using System;
 
-namespace Faemiyah.BtDamageResolver.Api.Enums
+namespace Faemiyah.BtDamageResolver.Api.Enums;
+
+/// <summary>
+/// Weapon types.
+/// </summary>
+[Serializable]
+public enum WeaponType
 {
-    /// <summary>
-    /// Weapon types.
-    /// </summary>
-    [Serializable]
-    public enum WeaponType
-    {
-        None,
-        Ballistic,
-        Energy,
-        Melee,
-        Missile
-    }
+    None,
+    Ballistic,
+    Energy,
+    Melee,
+    Missile
 }

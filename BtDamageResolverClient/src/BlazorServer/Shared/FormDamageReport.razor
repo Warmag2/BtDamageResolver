@@ -1,4 +1,5 @@
-﻿@using Faemiyah.BtDamageResolver.Api.Entities
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
@@ -153,7 +154,7 @@
         if (_logLineVisibility[attackLogEntryType] != entryVisibility)
         {
             _logLineVisibility[attackLogEntryType] = entryVisibility;
-            InvokeAsync(StateHasChanged);
+            InvokeStateChange();
         }
     }
 }

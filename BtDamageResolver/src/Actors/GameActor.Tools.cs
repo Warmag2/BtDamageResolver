@@ -29,7 +29,8 @@ public partial class GameActor
 
         var playerActor = GrainFactory.GetGrain<IPlayerActor>(playerId);
 
-        // Perform the disconnect through the player actor
+        // Perform the disconnect through the player actor.
+        // Must be ignored because the player actor may be sending data simultaneously.
         playerActor.LeaveGame().Ignore();
 
         _logger.LogInformation("In Game {gameId}, Player {playerId} successfully kicked player {playerToKickId}.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
@@ -71,24 +72,27 @@ public partial class GameActor
             return false;
         }
 
-        if ((askingPlayerId == unitOwner) || (askingPlayerId == _gameActorState.State.AdminId))
+        if (!_gameActorState.State.PlayerStates.ContainsKey(playerId))
         {
-            var playerActorReceivingUnit = GrainFactory.GetGrain<IPlayerActor>(playerId);
+            _logger.LogWarning("Game {gameId} refusing to move unit {unitId} to Player {sendingPlayerId}. Receiving player is not in the game.", this.GetPrimaryKeyString(), unitId, unitOwner);
 
-            if (await playerActorReceivingUnit.ReceiveUnit(unitId, unitOwner))
+            return false;
+        }
+
+        if (askingPlayerId == unitOwner || askingPlayerId == _gameActorState.State.AdminId)
+        {
+            var unit = GetUnit(unitId);
+
+            if (_gameActorState.State.PlayerStates[unitOwner].UnitEntries.Remove(unit))
             {
-                await UpdateStateForPlayer(unitOwner);
-                await UpdateStateForPlayer(playerId);
-
-                _logger.LogInformation("Game {gameId} successfully moved Unit {unitId} from Player {sendingPlayerId} to Player {receivingPlayerId}.", this.GetPrimaryKeyString(), unitId, unitOwner, playerId);
-
+                _gameActorState.State.PlayerStates[playerId].UnitEntries.Add(unit);
                 await CheckGameStateUpdateEvents();
 
                 return true;
             }
         }
 
-        _logger.LogWarning("Game {gameId} failed to move Unit {unitId} from Player {sendingPlayerId} to Player {receivingPlayerId}.", this.GetPrimaryKeyString(), unitId, unitOwner, playerId);
+        _logger.LogWarning("Game {gameId} failed to move Unit {unitId} from Player {sendingPlayerId} to Player {receivingPlayerId}. Unknown error.", this.GetPrimaryKeyString(), unitId, unitOwner, playerId);
 
         return false;
     }

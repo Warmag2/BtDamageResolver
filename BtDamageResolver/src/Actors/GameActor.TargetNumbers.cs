@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -46,21 +45,20 @@ public partial class GameActor
         {
             _logger.LogInformation("GameActor {gameId} is asking unit {unitId} to update its target numbers", this.GetPrimaryKeyString(), unitId);
 
-            var unitActor = GrainFactory.GetGrain<IUnitActor>(unitId);
-            var unit = await unitActor.GetUnit();
+            var unit = GetUnit(unitId);
 
-            _logger.LogInformation("GameActor received unit actor for unit {unitId}", unitActor.GetPrimaryKey());
+            _logger.LogInformation("GameActor received unit actor for unit {unitId}", unitId);
 
             // Only fire at units which are in the game
             if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
             {
-                targetNumberUpdates.Add(await unitActor.ProcessTargetNumbers(_gameActorState.State.Options));
-                _logger.LogInformation("GameActor succeeded in processing target numbers for unit {unitId}", unitActor.GetPrimaryKey());
+                targetNumberUpdates.Add(await ProcessUnitTargetNumbers(unit));
+                _logger.LogInformation("GameActor succeeded in processing target numbers for unit {unitId}", unitId);
             }
             else
             {
-                targetNumberUpdates.Add(await unitActor.ProcessTargetNumbers(_gameActorState.State.Options, true));
-                _logger.LogInformation("GameActor succeeded in setting blank target numbers for unit {unitId}", unitActor.GetPrimaryKey());
+                targetNumberUpdates.Add(await ProcessUnitTargetNumbers(unit, true));
+                _logger.LogInformation("GameActor succeeded in setting blank target numbers for unit {unitId}", unitId);
 
                 if (unit.FiringSolution.TargetUnit == Guid.Empty)
                 {

@@ -1,4 +1,5 @@
-﻿@using Faemiyah.BtDamageResolver.Api.Entities
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @using System.Timers
@@ -80,13 +81,8 @@
 
     protected override void OnInitialized()
     {
-        _userStateController.OnGameEntriesReceived += AsyncStateChange;
+        _userStateController.OnGameEntriesReceived += InvokeStateChange;
         RefreshGameList();
-    }
-
-    protected void AsyncStateChange()
-    {
-        InvokeAsync(StateHasChanged);
     }
 
     private void OnTimerInterval(object sender, ElapsedEventArgs e)
@@ -122,7 +118,7 @@
 
             _userStateController.GameEntries = games.ToDictionary(s => s.GetId(), s => s);
 
-            InvokeAsync(StateHasChanged);
+            InvokeStateChange();
         }
     }
 
@@ -151,6 +147,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnGameEntriesReceived -= AsyncStateChange;
+        _userStateController.OnGameEntriesReceived -= InvokeStateChange;
     }
 }

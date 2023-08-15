@@ -1,18 +1,17 @@
 ﻿using System;
 
-namespace Faemiyah.BtDamageResolver.Api.Enums
+namespace Faemiyah.BtDamageResolver.Api.Enums;
+
+/// <summary>
+/// A range bracket.
+/// </summary>
+[Serializable]
+public enum RangeBracket
 {
-    /// <summary>
-    /// A range bracket.
-    /// </summary>
-    [Serializable]
-    public enum RangeBracket
-    {
-        PointBlank,
-        Short,
-        Medium,
-        Long,
-        Extreme,
-        OutOfRange
-    }
+    PointBlank,
+    Short,
+    Medium,
+    Long,
+    Extreme,
+    OutOfRange
 }

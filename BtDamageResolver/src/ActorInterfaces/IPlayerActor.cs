@@ -51,13 +51,6 @@ public interface IPlayerActor : IGrainWithStringKey
     Task<string> GetGameId(Guid authenticationToken);
 
     /// <summary>
-    /// Get the state of this player.
-    /// </summary>
-    /// <param name="markStateAsNew">Should the state be marked as a new state.</param>
-    /// <returns>The <see cref="PlayerState"/> object containing the properties of this unit actor.</returns>
-    public Task<PlayerState> GetPlayerState(bool markStateAsNew);
-
-    /// <summary>
     /// Join a game. If successful, the game ID and password are stored.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
@@ -91,21 +84,6 @@ public interface IPlayerActor : IGrainWithStringKey
     Task<bool> LeaveGame();
 
     /// <summary>
-    /// Tries to receive an unit and mark it as the property of this player, provided you have the authority.
-    /// </summary>
-    /// <param name="unitId">The unit id to receive.</param>
-    /// <param name="owningPlayerId">The player id of the player who owns the unit.</param>
-    /// <returns><b>True</b> if the unit was successfully received, <b>false</b> otherwise.</returns>
-    public Task<bool> ReceiveUnit(Guid unitId, string owningPlayerId);
-
-    /// <summary>
-    /// Asks the player to remove an unit.
-    /// </summary>
-    /// <param name="unitId">The unit to remove.</param>
-    /// <returns><b>True</b> if the removal was successful, <b>false</b> otherwise.</returns>
-    public Task<bool> RemoveUnit(Guid unitId);
-
-    /// <summary>
     /// Request a full list of damage reports from the game the player is currently connected to.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
@@ -132,13 +110,6 @@ public interface IPlayerActor : IGrainWithStringKey
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns><b>True</b> if the player options were successfully requested, <b>false</b> otherwise.</returns>
     Task<bool> RequestPlayerOptions(Guid authenticationToken);
-
-    /// <summary>
-    /// Request target numbers for the units this player controls.
-    /// </summary>
-    /// <param name="authenticationToken">The authentication token.</param>
-    /// <returns><b>True</b> if the target numbers were successfully requested, <b>false</b> otherwise.</returns>
-    Task<bool> RequestTargetNumbers(Guid authenticationToken);
 
     /// <summary>
     /// Process a damage instance.

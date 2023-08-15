@@ -20,7 +20,7 @@ public partial class PlayerActor
             return false;
         }
 
-        _logger.LogInformation("Player {playerId} requested target numbers.", this.GetPrimaryKeyString());
+        _logger.LogInformation("Player {playerId} requested damage reports.", this.GetPrimaryKeyString());
 
         if (IsConnectedToGame())
         {
@@ -83,21 +83,27 @@ public partial class PlayerActor
         return true;
     }
 
-    /// <inheritdoc />
-    public async Task<bool> RequestTargetNumbers(Guid authenticationToken)
+    /// <summary>
+    /// Request target numbers for the units this player controls.
+    /// </summary>
+    /// <param name="authenticationToken">The authentication token.</param>
+    /// <returns><b>True</b> if the target numbers were successfully requested, <b>false</b> otherwise.</returns>
+    private async Task RequestTargetNumbers(Guid authenticationToken)
     {
         if (!await CheckAuthentication(authenticationToken))
         {
-            return false;
+            return;
         }
 
-        _logger.LogInformation("Player {playerId} requested target numbers.", this.GetPrimaryKeyString());
         if (_playerActorState.State.GameId != null)
         {
+            _logger.LogInformation("Player {playerId} requesting target numbers from game {gameId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
             var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
             await gameActor.RequestTargetNumbers(this.GetPrimaryKeyString());
         }
-
-        return true;
+        else
+        {
+            _logger.LogInformation("Player {playerId} is not in a game and won't ask for target numbers.", this.GetPrimaryKeyString());
+        }
     }
 }

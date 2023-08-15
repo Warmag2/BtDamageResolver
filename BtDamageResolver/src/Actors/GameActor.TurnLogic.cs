@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -45,11 +48,7 @@ public partial class GameActor
 
         CheckForPlayerCountEvents();
 
-        _logger.LogInformation("DEBUG LOG - GameActor {gameId} Checked for player count events.", this.GetPrimaryKeyString());
-
         var fireEventHappened = await CheckForFireEvent();
-
-        _logger.LogInformation("DEBUG LOG - GameActor {gameId} checked for fire events.", this.GetPrimaryKeyString());
 
         // If fire event happened or when given an empty unit set, process updated target numbers for everything.
         // Otherwise, only for affected units.
@@ -57,17 +56,11 @@ public partial class GameActor
             ? await ProcessTargetNumberUpdatesForUnits()
             : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
 
-        _logger.LogInformation("DEBUG LOG - GameActor {gameId} processed target numbers.", this.GetPrimaryKeyString());
-
         await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
         await DistributeGameStateToPlayers(fireEventHappened);
 
-        _logger.LogInformation("DEBUG LOG - GameActor {gameId} distributed target numbers and game state.", this.GetPrimaryKeyString());
-
         // Save game actor state
         await _gameActorState.WriteStateAsync();
-
-        _logger.LogInformation("DEBUG LOG - GameActor {gameId} wrote game state.", this.GetPrimaryKeyString());
 
         // Log update to permanent store
         await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
@@ -81,8 +74,6 @@ public partial class GameActor
                 Players = _gameActorState.State.PlayerStates.Count,
                 TimeStamp = DateTime.UtcNow
             });
-
-        _logger.LogInformation("DEBUG LOG - GameActor {gameId} logged events.", this.GetPrimaryKeyString());
     }
 
     /// <summary>
@@ -99,23 +90,23 @@ public partial class GameActor
             _logger.LogInformation("All players in game {gameId} are ready. Incrementing turn to {turn} and performing fire event.", this.GetPrimaryKeyString(), _gameActorState.State.Turn);
 
             // Clear tagged state before firing tagging weapons
-            await ClearUnitPenalties(false, true);
+            ClearUnitPenalties(false, true);
             _logger.LogInformation("Firing all tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
             var tagDamageReports = await ProcessFireEvent(true);
 
             // Apply effects from this turn's damage reports for tagging attacks
-            await ModifyGameStateBasedOnNarcAndTag(tagDamageReports);
+            ModifyGameStateBasedOnNarcAndTag(tagDamageReports);
 
             // Fire non-tagging weapons
             _logger.LogInformation("Firing all non-tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
             var damageReports = await ProcessFireEvent(false);
 
             // Apply effects from this turns damage reports for narc attacks
-            await ModifyGameStateBasedOnNarcAndTag(damageReports);
+            ModifyGameStateBasedOnNarcAndTag(damageReports);
 
             // Apply all effects and heat from this turn's damage reports
-            await ClearUnitPenalties(true, false);
-            await ModifyGameStateBasedOnDamageReports(tagDamageReports.Concat(damageReports).ToList());
+            ClearUnitPenalties(true, false);
+            ModifyGameStateBasedOnDamageReports(tagDamageReports.Concat(damageReports).ToList());
 
             await DistributeDamageReportsToPlayers(_gameActorState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
 
@@ -136,19 +127,23 @@ public partial class GameActor
         return false;
     }
 
+    private async Task<DamageReport> ProcessDamageInstance(DamageInstance damageInstance)
+    {
+        var logicUnit = GetUnitLogic(damageInstance.UnitId);
+
+        return await logicUnit.ResolveDamageInstance(damageInstance, Phase.End, false);
+    }
+
     private async Task<List<DamageReport>> ProcessFireEvent(bool processOnlyTags)
     {
         var damageReports = new List<DamageReport>();
 
-        foreach (var unitId in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries).Select(u => u.Id))
+        foreach (var unit in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries))
         {
-            var unitActor = GrainFactory.GetGrain<IUnitActor>(unitId);
-            var unit = await unitActor.GetUnit();
-
             // Do not fire at an unit which is not in the game
             if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
             {
-                damageReports.AddRange(await unitActor.ProcessFireEvent(_gameActorState.State.Options, processOnlyTags));
+                damageReports.AddRange(await ProcessUnitFireEvent(unit, processOnlyTags));
             }
             else
             {
@@ -164,12 +159,98 @@ public partial class GameActor
         return damageReports;
     }
 
-    private async Task ModifyGameStateBasedOnNarcAndTag(List<DamageReport> damageReports)
+    private async Task<List<DamageReport>> ProcessUnitFireEvent(UnitEntry unit, bool processOnlyTags)
+    {
+        var logicUnitAttacker = GetUnitLogic(unit);
+        var logicUnitDefender = GetUnitLogic(unit.FiringSolution.TargetUnit);
+
+        return await logicUnitAttacker.ResolveCombat(logicUnitDefender, processOnlyTags);
+    }
+
+    /// <summary>
+    /// Processes the target numbers for a given unit.
+    /// </summary>
+    /// <param name="unitEntry">The unit to calculate target numbers for.</param>
+    /// <param name="setBlankNumbers">Should blank numbers be set.</param>
+    /// <returns>A list of target number updates.</returns>
+    private async Task<TargetNumberUpdate> ProcessUnitTargetNumbers(UnitEntry unitEntry, bool setBlankNumbers = false)
+    {
+        var targetNumberUpdate = new TargetNumberUpdate
+        {
+            AmmoEstimate = new Dictionary<string, double>(),
+            AmmoWorstCase = new Dictionary<string, int>(),
+            TargetNumbers = new Dictionary<Guid, TargetNumberUpdateSingleWeapon>(),
+            TimeStamp = DateTime.UtcNow,
+            UnitId = unitEntry.Id
+        };
+
+        var logicUnitAttacker = GetUnitLogic(unitEntry);
+        ILogicUnit logicUnitDefender = null;
+
+        if (!setBlankNumbers)
+        {
+            logicUnitDefender = GetUnitLogic(unitEntry.FiringSolution.TargetUnit);
+        }
+
+        foreach (var weaponEntry in unitEntry.Weapons.Where(w => w.State == WeaponState.Active))
+        {
+            if (!setBlankNumbers)
+            {
+                var attackLog = new AttackLog();
+
+                var (targetNumber, _) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry);
+
+                var (ammoEstimate, ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, weaponEntry);
+                var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, weaponEntry);
+
+                var weaponAmmoCombinedString = string.IsNullOrEmpty(weaponEntry.Ammo) ? $"{weaponEntry.WeaponName}" : $"{weaponEntry.WeaponName} {weaponEntry.Ammo}";
+                targetNumberUpdate.AmmoEstimate.AddIfNotZero(weaponAmmoCombinedString, ammoEstimate);
+                targetNumberUpdate.AmmoWorstCase.AddIfNotZero(weaponAmmoCombinedString, ammoMax);
+
+                if (logicUnitAttacker.IsHeatTracking())
+                {
+                    targetNumberUpdate.HeatEstimate += heatEstimate;
+                    targetNumberUpdate.HeatWorstCase += heatMax;
+                }
+
+                targetNumberUpdate.TargetNumbers.Add(
+                    weaponEntry.Id,
+                    new TargetNumberUpdateSingleWeapon
+                    {
+                        CalculationLog = attackLog,
+                        TargetNumber = targetNumber,
+                    });
+            }
+            else
+            {
+                targetNumberUpdate.TargetNumbers.Add(
+                    weaponEntry.Id,
+                    new TargetNumberUpdateSingleWeapon
+                    {
+                        CalculationLog = new AttackLog(),
+                        TargetNumber = LogicConstants.InvalidTargetNumber,
+                    });
+            }
+        }
+
+        if (logicUnitAttacker.IsHeatTracking())
+        {
+            var nonWeaponHeatDamageReport = await logicUnitAttacker.ResolveNonWeaponHeat();
+
+            targetNumberUpdate.HeatEstimate += nonWeaponHeatDamageReport.AttackerHeat;
+            targetNumberUpdate.HeatWorstCase += nonWeaponHeatDamageReport.AttackerHeat;
+        }
+
+        _logger.LogInformation("Unit {unitId} finished calculating new target number values.", unitEntry.Id);
+
+        return targetNumberUpdate;
+    }
+
+    private void ModifyGameStateBasedOnNarcAndTag(List<DamageReport> damageReports)
     {
         // Comb through damage reports to find incoming heat damage and EMP damage effects
         foreach (var damageReport in damageReports)
         {
-            var altered = false;
             var narcToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Narc);
             var tagToTarget = damageReport.DamagePaperDoll.GetTotalDamageOfType(SpecialDamageType.Tag);
 
@@ -178,24 +259,16 @@ public partial class GameActor
             if (narcToTarget > 0)
             {
                 unitEntry.Narced = true;
-                altered = true;
             }
 
             if (tagToTarget > 0)
             {
                 unitEntry.Tagged = true;
-                altered = true;
-            }
-
-            if (altered)
-            {
-                var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
-                await unitActor.SendState(unitEntry);
             }
         }
     }
 
-    private async Task ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports)
+    private void ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports)
     {
         // Comb through damage reports to find incoming heat damage and EMP damage effects
         foreach (var damageReport in damageReports)
@@ -224,50 +297,26 @@ public partial class GameActor
                 }
 
                 unitEntry.TimeStamp = _gameActorState.State.TurnTimeStamp;
-                var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
-                await unitActor.SendState(unitEntry);
             }
         }
     }
 
-    private async Task ClearUnitPenalties(bool clearPenalty, bool clearTag)
+    private void ClearUnitPenalties(bool clearPenalty, bool clearTag)
     {
         foreach (var (_, playerState) in _gameActorState.State.PlayerStates)
         {
             foreach (var unitEntry in playerState.UnitEntries)
             {
-                var altered = false;
-
                 if (clearPenalty && unitEntry.Penalty != 0)
                 {
                     unitEntry.Penalty = 0;
-                    altered = true;
                 }
 
                 if (clearTag && unitEntry.Tagged)
                 {
                     unitEntry.Tagged = false;
-                    altered = true;
-                }
-
-                if (altered)
-                {
-                    var unitActor = GrainFactory.GetGrain<IUnitActor>(unitEntry.Id);
-                    await unitActor.SendState(unitEntry);
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// Gets a single unit in this game's state.
-    /// </summary>
-    /// <param name="unitId">The ID of the unit to get.</param>
-    /// <exception cref="InvalidOperationException">Thrown when the unit cannot be found.</exception>
-    /// <remarks>Should never fail, since the unit has just produced a <see cref="DamageReport"/> or has been part of one.</remarks>
-    /// <returns>The unit with the given ID.</returns>
-    private UnitEntry GetUnit(Guid unitId)
-    {
-        return _gameActorState.State.PlayerStates.Values.Single(p => p.UnitEntries.Exists(u => u.Id == unitId)).UnitEntries.Single(u => u.Id == unitId);
     }
 }

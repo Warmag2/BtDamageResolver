@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.Actors.States.Types;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
@@ -72,21 +71,12 @@ public partial class PlayerActor
         {
             if (playerState.TimeStamp > _playerActorState.State.UpdateTimeStamp)
             {
+                var updatedUnits = _playerActorState.State.UnitEntries.AreNewOrNewer(playerState.UnitEntries);
+
                 _logger.LogInformation("Updating player {playerId} state with new data from {timestamp}", this.GetPrimaryKeyString(), playerState.TimeStamp);
                 _playerActorState.State.IsReady = playerState.IsReady;
                 _playerActorState.State.UpdateTimeStamp = playerState.TimeStamp;
-                _playerActorState.State.UnitEntryIds = playerState.UnitEntries.Select(u => u.Id).ToHashSet();
-
-                var updatedUnits = new List<Guid>();
-
-                foreach (var unit in playerState.UnitEntries)
-                {
-                    var unitActor = GrainFactory.GetGrain<IUnitActor>(unit.Id);
-                    if (await unitActor.SendState(unit))
-                    {
-                        updatedUnits.Add(unit.Id);
-                    }
-                }
+                _playerActorState.State.UnitEntries = new UnitList(playerState.UnitEntries);
 
                 // Save this state first and wait for save to finish to avoid any race conditions
                 // arising from changes incurred by uploading the state to the game actor.

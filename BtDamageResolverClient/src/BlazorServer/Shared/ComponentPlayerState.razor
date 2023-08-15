@@ -1,4 +1,5 @@
-﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @implements IDisposable
 
@@ -17,18 +18,13 @@
     [Parameter]
     public string PlayerId { get; set; }
 
-    protected void AsyncStateChange()
-    {
-        InvokeAsync(StateHasChanged);
-    }
-
     protected override void OnInitialized()
     {
-        _userStateController.OnTargetNumbersUpdated += AsyncStateChange;
+        _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
     }
 
     public void Dispose()
     {
-        _userStateController.OnTargetNumbersUpdated -= AsyncStateChange;
+        _userStateController.OnTargetNumbersUpdated -= InvokeStateChange;
     }
 }

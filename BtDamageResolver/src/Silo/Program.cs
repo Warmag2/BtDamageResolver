@@ -117,14 +117,9 @@ public static class Program
                 siloBuilder
                     .Services.AddSerializer(serializerBuilder =>
                     {
-                        serializerBuilder.AddNewtonsoftJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
+                        serializerBuilder.AddNewtonsoftJsonSerializer(isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
                     });
                 siloBuilder
-                    /*.Configure<JsonSerializerOptions>(options =>
-                    {
-                        options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                    })*/
                     .Configure<ClusterOptions>(options =>
                     {
                         options.ClusterId = "faemiyah";
@@ -134,7 +129,7 @@ public static class Program
                     .Configure<ClusterMembershipOptions>(options =>
                     {
                         options.DefunctSiloExpiration = TimeSpan.FromHours(1);
-                        options.NumMissedProbesLimit = 3;
+                        options.NumMissedProbesLimit = 2;
                         options.NumMissedTableIAmAliveLimit = 1;
                         options.NumVotesForDeathDeclaration = 1;
                     })
@@ -152,8 +147,8 @@ public static class Program
                     })
                     .UseAdoNetClustering(options =>
                     {
-                        options.Invariant = clusterOptions.Invariant;
-                        options.ConnectionString = clusterOptions.ConnectionString;
+                        options.Invariant = clusterOptions?.Invariant;
+                        options.ConnectionString = clusterOptions?.ConnectionString;
                     })
                     .AddGrainStorage(Settings.ActorStateStoreName, clusterOptions)
                     .AddGrainStorage(Settings.SessionStateStoreName, clusterOptions)
@@ -238,13 +233,4 @@ public static class Program
 
         return siloHostBuilder;
     }
-
-    /*
-    private static void ConfigureJsonSerializerSettings(JsonSerializerSettings settings)
-    {
-        settings.Culture = CultureInfo.InvariantCulture;
-        settings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
-        settings.NullValueHandling = NullValueHandling.Ignore;
-    }
-    */
 }

@@ -26,7 +26,6 @@ public class LoggingService : GrainService, ILoggingService
     private readonly LoggingRepository _loggingRepository;
     private readonly ConcurrentQueue<GameLogEntry> _gameLogEntries;
     private readonly ConcurrentQueue<PlayerLogEntry> _playerLogEntries;
-    private readonly ConcurrentQueue<UnitLogEntry> _unitLogEntries;
     private bool _writerActive;
 
     /// <summary>
@@ -50,7 +49,6 @@ public class LoggingService : GrainService, ILoggingService
         _loggingOptions = loggingOptions.Value;
         _gameLogEntries = new ConcurrentQueue<GameLogEntry>();
         _playerLogEntries = new ConcurrentQueue<PlayerLogEntry>();
-        _unitLogEntries = new ConcurrentQueue<UnitLogEntry>();
         _loggingRepository = new LoggingRepository(loggerFactory.CreateLogger<LoggingRepository>(), clusterOptions.Value);
     }
 
@@ -94,22 +92,11 @@ public class LoggingService : GrainService, ILoggingService
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc />
-    public Task LogUnitAction(DateTime timeStamp, string unitId, UnitActionType unitActionType, int actionData)
-    {
-        if (_loggingOptions.LogToDatabase)
-        {
-            _unitLogEntries.Enqueue(new UnitLogEntry { ActionData = actionData, ActionType = unitActionType, UnitId = unitId, TimeStamp = timeStamp });
-        }
-
-        return Task.CompletedTask;
-    }
-
     private async Task LogWriteLoop()
     {
         while (_writerActive)
         {
-            if (_gameLogEntries.IsEmpty && _playerLogEntries.IsEmpty && _unitLogEntries.IsEmpty)
+            if (_gameLogEntries.IsEmpty && _playerLogEntries.IsEmpty)
             {
                 _logger.LogDebug("LoggingService has nothing to do, sleeping for {delay} milliseconds.", LoggingDelayMilliseconds);
                 await Task.Delay(LoggingDelayMilliseconds);
@@ -126,12 +113,6 @@ public class LoggingService : GrainService, ILoggingService
                 {
                     _logger.LogDebug("LoggingService writing {count} user log entries.", _playerLogEntries.Count);
                     await _loggingRepository.WriteUserLogEntries(_playerLogEntries);
-                }
-
-                if (!_unitLogEntries.IsEmpty)
-                {
-                    _logger.LogDebug("LoggingService writing {count} unit log entries.", _unitLogEntries.Count);
-                    await _loggingRepository.WriteUnitLogEntries(_unitLogEntries);
                 }
             }
         }

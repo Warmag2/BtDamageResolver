@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace Faemiyah.BtDamageResolver.Api.Enums
+namespace Faemiyah.BtDamageResolver.Api.Enums;
+
+/// <summary>
+/// A critical damage table type.
+/// </summary>
+[Serializable]
+public enum CriticalDamageTableType
 {
-    /// <summary>
-    /// A critical damage table type.
-    /// </summary>
-    [Serializable]
-    public enum CriticalDamageTableType
-    {
-        None,
-        Critical,
-        Motive
-    }
+    None,
+    Critical,
+    Motive
 }

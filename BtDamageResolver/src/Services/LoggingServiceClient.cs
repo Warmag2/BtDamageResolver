@@ -28,8 +28,4 @@ public class LoggingServiceClient : GrainServiceClient<ILoggingService>, ILoggin
     /// <inheritdoc/>
     public Task LogPlayerAction(DateTime timeStamp, string userId, PlayerActionType playerActionType, int actionData) =>
         GrainService.LogPlayerAction(timeStamp, userId, playerActionType, actionData);
-
-    /// <inheritdoc/>
-    public Task LogUnitAction(DateTime timeStamp, string unitId, UnitActionType unitActionType, int actionData) =>
-        GrainService.LogUnitAction(timeStamp, unitId, unitActionType, actionData);
 }

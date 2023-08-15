@@ -29,14 +29,4 @@ public interface ILoggingService : IGrainService
     /// <param name="actionData">The action data.</param>
     /// <returns>A task which finishes when the item has been logged.</returns>
     Task LogPlayerAction(DateTime timeStamp, string userId, PlayerActionType playerActionType, int actionData);
-
-    /// <summary>
-    /// Logs an unit action.
-    /// </summary>
-    /// <param name="timeStamp">The timestamp of the action.</param>
-    /// <param name="unitId">The unit ID.</param>
-    /// <param name="unitActionType">The unit action type.</param>
-    /// <param name="actionData">The action data.</param>
-    /// <returns>A task which finishes when the item has been logged.</returns>
-    Task LogUnitAction(DateTime timeStamp, string unitId, UnitActionType unitActionType, int actionData);
 }

@@ -351,8 +351,8 @@ public class UserStateController
     public bool DamageReportConcernsPlayer(DamageReport damageReport)
     {
         return damageReport.FiringUnitId == Guid.Empty ||
-               PlayerState.UnitEntries.Any(u => u.Id == damageReport.FiringUnitId) ||
-               PlayerState.UnitEntries.Any(u => u.Id == damageReport.TargetUnitId);
+               PlayerState.UnitEntries.Exists(u => u.Id == damageReport.FiringUnitId) ||
+               PlayerState.UnitEntries.Exists(u => u.Id == damageReport.TargetUnitId);
     }
 
     /// <summary>

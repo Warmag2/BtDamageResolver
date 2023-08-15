@@ -17,6 +17,23 @@ services:
       - redis       # Communication bus
     restart: on-failure
 
+  # Battletech Damage Resolver Client
+  resolverclient:
+    container_name: resolverclient
+    hostname: resolverclient
+    image: resolverclient:latest
+    environment:
+      ASPNETCORE_URLS: "http://+:8787"
+      RESOLVER_ENVIRONMENT: Release
+      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+    ports:
+      - 8787:8787
+    networks:
+      - resolvernet
+    depends_on:
+      - resolver    # No sense to start until the server is up
+    restart: on-failure
+
   # Data Importer
   resolverdataimporter:
     container_name: resolverdataimporter
@@ -30,23 +47,26 @@ services:
     depends_on:
       - resolver
 
-  # Battletech Damage Resolver (blazor client)
-  resolverclient:
-    container_name: resolverclient
-    hostname: resolverclient
-    image: resolverclient:latest
+  # Grafana
+  grafana:
+    container_name: grafana
+    image: resolvergrafana:latest
     environment:
-      RESOLVER_ENVIRONMENT: Release
-      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+      GF_SECURITY_ADMIN_USER: "${RESOLVER_USER:?err}"
+      GF_SECURITY_ADMIN_PASSWORD: "${RESOLVER_PASSWORD:?err}"
+      DATASOURCE_USER: "${RESOLVER_USER:?err}"
+      DATASOURCE_PASSWORD: "${RESOLVER_PASSWORD:?err}"
     ports:
-      - 8787:80
+      - 63000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
     networks:
       - resolvernet
     depends_on:
-      - resolver    # No sense to start until the server is up
+      - orleansdb # Data source
     restart: on-failure
 
-  # Postgresql for Orleans
+  # Postgresql (for Orleans)
   orleansdb:
     container_name: orleansdb
     hostname: orleansdb
@@ -63,25 +83,6 @@ services:
     networks:
       - resolvernet
 
-  # Grafana
-  grafana:
-    container_name: grafana
-    image: resolvergrafana:latest
-    environment:
-      GF_SECURITY_ADMIN_USER: "${RESOLVER_USER:?err}"
-      GF_SECURITY_ADMIN_PASSWORD: "${RESOLVER_PASSWORD:?err}"
-      DATASOURCE_USER: "${RESOLVER_USER:?err}"
-      DATASOURCE_PASSWORD: "${RESOLVER_PASSWORD:?err}"
-    ports:
-      - "63000:3000"
-    volumes:
-      - grafana-data:/var/lib/grafana
-    networks:
-      - resolvernet
-    depends_on:
-      - orleansdb # Data source
-    restart: on-failure
-
   # Redis
   redis:
     container_name: redis
@@ -89,7 +90,7 @@ services:
     environment:
       REDIS_PASSWORD: "${RESOLVER_PASSWORD:?err}"
     ports:
-      - "63790:6379"
+      - 63790:6379
     volumes:
       - redis-data:/data
     networks:

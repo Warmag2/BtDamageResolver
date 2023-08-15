@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Entities;
-using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
@@ -25,24 +24,28 @@ public partial class GameActor : Grain, IGameActor
     private readonly ICommunicationServiceClient _communicationServiceClient;
     private readonly ILoggingServiceClient _loggingServiceClient;
     private readonly IPersistentState<GameActorState> _gameActorState;
+    private readonly ILogicUnitFactory _logicUnitFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameActor"/> class.
     /// </summary>
+    /// <param name="gameActorState">The state object for this actor.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="communicationServiceClient">The communication service client.</param>
+    /// <param name="logicUnitFactory">The unit logic factory.</param>
     /// <param name="loggingServiceClient">The logging service client.</param>
-    /// <param name="gameActorState">The state object for this actor.</param>
     public GameActor(
+        [PersistentState(nameof(GameActorState), Settings.ActorStateStoreName)] IPersistentState<GameActorState> gameActorState,
         ILogger<GameActor> logger,
         ICommunicationServiceClient communicationServiceClient,
-        ILoggingServiceClient loggingServiceClient,
-        [PersistentState(nameof(GameActorState), Settings.ActorStateStoreName)]IPersistentState<GameActorState> gameActorState)
+        ILogicUnitFactory logicUnitFactory,
+        ILoggingServiceClient loggingServiceClient)
     {
+        _gameActorState = gameActorState;
         _logger = logger;
         _communicationServiceClient = communicationServiceClient;
+        _logicUnitFactory = logicUnitFactory;
         _loggingServiceClient = loggingServiceClient;
-        _gameActorState = gameActorState;
     }
 
     /// <inheritdoc />
@@ -103,7 +106,7 @@ public partial class GameActor : Grain, IGameActor
             return false;
         }
 
-        var damageReport = await GrainFactory.GetGrain<IUnitActor>(damageInstance.UnitId).ProcessDamageInstance(damageInstance, _gameActorState.State.Options);
+        var damageReport = await ProcessDamageInstance(damageInstance);
         damageReport.Turn = _gameActorState.State.Turn;
 
         await DistributeDamageReportsToPlayers(new List<DamageReport> { damageReport });
@@ -222,10 +225,5 @@ public partial class GameActor : Grain, IGameActor
         }
 
         return gameState;
-    }
-
-    private async Task UpdateStateForPlayer(string playerId)
-    {
-        _gameActorState.State.PlayerStates[playerId] = await GrainFactory.GetGrain<IPlayerActor>(playerId).GetPlayerState(true);
     }
 }

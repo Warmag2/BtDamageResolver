@@ -7,6 +7,12 @@ csharp_style_var_elsewhere=true:silent
 ## IDE
 ##
 
+# Ternary operator suggestions are not needed, I'll use it when I want to
+dotnet_diagnostic.IDE0045.severity = None
+
+# Ternary operator suggestions are not needed, I'll use it when I want to
+dotnet_diagnostic.IDE0046.severity = None
+
 # Range operator is not clear coding in my opinion
 dotnet_diagnostic.IDE0057.severity = None
 

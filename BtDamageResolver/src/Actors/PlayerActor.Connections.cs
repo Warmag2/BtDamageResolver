@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
@@ -164,7 +163,7 @@ public partial class PlayerActor
             await _playerActorState.WriteStateAsync();
 
             // When we connect to a game, the game is not guaranteed to have our state. Send it and mark all units as updated.
-            await gameActor.SendPlayerState(this.GetPrimaryKeyString(), await GetPlayerState(false), _playerActorState.State.UnitEntryIds.ToList());
+            await gameActor.SendPlayerState(this.GetPrimaryKeyString(), await GetPlayerState(), _playerActorState.State.UnitEntries.UnitIds);
 
             // Fetch game options on join
             await gameActor.RequestGameOptions(this.GetPrimaryKeyString());
