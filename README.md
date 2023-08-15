@@ -4,7 +4,9 @@ A combat resolver for the classic Battletech boardgame
 
 ## Usage
 
-TODO: Write this, or create Youtube videos or something
+Youtube video: https://www.youtube.com/watch?v=27BzMTPgLZc
+
+TODO: Write something actually useful here.
 
 ## Building BtDamageResolver
 
@@ -35,7 +37,7 @@ If you downloaded the NuGet packages from GitHub manually, be sure that you rena
 
 > Unhandled exception rendering component: Cannot assign requested address (localhost:8080)
 
-In some setups, Docker does always allow accessing localhost addresses. You can replace "localhost" with "host.docker.internal".
+In some setups, Docker does not allow accessing localhost addresses. You can replace "localhost" with "host.docker.internal".
 
 ### Services installed
 
