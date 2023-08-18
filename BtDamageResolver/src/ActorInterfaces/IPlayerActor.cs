@@ -142,10 +142,4 @@ public interface IPlayerActor : IGrainWithStringKey
     /// <param name="playerState">A <see cref="PlayerState"/> object containing the new state for this player.</param>
     /// <returns><b>True</b> if the actor has detected that its observer is in a faulted state <b>false</b> otherwise.</returns>
     Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState);
-
-    /// <summary>
-    /// Removes the ready status from this player.
-    /// </summary>
-    /// <returns>A task which finishes when the player ready state has been cleared.</returns>
-    public Task UnReady();
 }

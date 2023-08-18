@@ -56,12 +56,7 @@ public partial class PlayerActor
 
     private bool IsConnectedToGame()
     {
-        if (string.IsNullOrEmpty(_playerActorState.State.GameId))
-        {
-            return false;
-        }
-
-        return true;
+        return !string.IsNullOrEmpty(_playerActorState.State.GameId);
     }
 
     private async Task SendOnlyThisPlayerGameStateToClient()

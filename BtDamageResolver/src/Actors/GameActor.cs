@@ -172,8 +172,6 @@ public partial class GameActor : Grain, IGameActor
         // Log logins to permanent store
         await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.LogOut, 0);
 
-        _logger.LogInformation("DEBUG LOG - GameActor {gameId} logged login events.", this.GetPrimaryKeyString());
-
         return true;
     }
 

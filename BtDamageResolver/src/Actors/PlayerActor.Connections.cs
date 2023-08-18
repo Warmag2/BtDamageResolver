@@ -197,14 +197,12 @@ public partial class PlayerActor
         await SendDataToClient(EventNames.PlayerOptions, _playerActorState.State.Options);
 
         // Ask for game-related state objects
-        await RequestGameState(_playerActorState.State.AuthenticationToken);
         await RequestGameOptions(_playerActorState.State.AuthenticationToken);
-        await RequestTargetNumbers(_playerActorState.State.AuthenticationToken);
+        await RequestGameState(_playerActorState.State.AuthenticationToken);
         await RequestDamageReports(_playerActorState.State.AuthenticationToken);
+        await RequestTargetNumbers(_playerActorState.State.AuthenticationToken);
 
         // Log the login to permanent store
         await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Login, 0);
-
-        _logger.LogInformation("DEBUG - Player {playerId} finished with connection actions from a client.", this.GetPrimaryKeyString());
     }
 }

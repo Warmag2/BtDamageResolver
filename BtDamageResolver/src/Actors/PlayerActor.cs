@@ -54,12 +54,4 @@ public partial class PlayerActor : Grain, IPlayerActor
 
         return _playerActorState.State.GameId;
     }
-
-    /// <inheritdoc />
-    public async Task UnReady()
-    {
-        _playerActorState.State.IsReady = false;
-        _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
-        await _playerActorState.WriteStateAsync();
-    }
 }

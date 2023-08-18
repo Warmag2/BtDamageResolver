@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Constants;
@@ -110,12 +109,11 @@ public partial class GameActor
 
             await DistributeDamageReportsToPlayers(_gameActorState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
 
-            // Unmark ready in local memory and for the actors themselves
+            // Unmark ready in local memory
             foreach (var playerState in _gameActorState.State.PlayerStates.Values)
             {
                 playerState.IsReady = false;
                 playerState.TimeStamp = DateTime.UtcNow;
-                GrainFactory.GetGrain<IPlayerActor>(playerState.PlayerId).UnReady().Ignore(); // Must be ignored because this may come through the player actor call chain
             }
 
             // Log turns to permanent store

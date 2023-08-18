@@ -43,24 +43,22 @@ public partial class GameActor
 
         foreach (var unitId in unitIds)
         {
-            _logger.LogInformation("GameActor {gameId} is asking unit {unitId} to update its target numbers", this.GetPrimaryKeyString(), unitId);
+            _logger.LogInformation("GameActor {gameId} is calculating updated target numbers for unit {unitId}.", this.GetPrimaryKeyString(), unitId);
 
             var unit = GetUnit(unitId);
-
-            _logger.LogInformation("GameActor received unit actor for unit {unitId}", unitId);
 
             // Only fire at units which are in the game
             if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
             {
                 targetNumberUpdates.Add(await ProcessUnitTargetNumbers(unit));
-                _logger.LogInformation("GameActor succeeded in processing target numbers for unit {unitId}", unitId);
+                _logger.LogInformation("GameActor succeeded in calculating target numbers for unit {unitId}.", unitId);
             }
             else
             {
                 targetNumberUpdates.Add(await ProcessUnitTargetNumbers(unit, true));
-                _logger.LogInformation("GameActor succeeded in setting blank target numbers for unit {unitId}", unitId);
+                _logger.LogInformation("GameActor succeeded in setting blank target numbers for unit {unitId}.", unitId);
 
-                if (unit.FiringSolution.TargetUnit == Guid.Empty)
+                if (unit.FiringSolution.TargetUnit != Guid.Empty)
                 {
                     _logger.LogWarning(
                         "In Game {gameId}, unit {unitId} tried to calculate target numbers for target {targetUnitId} which does not exist or is not in the same game.",
