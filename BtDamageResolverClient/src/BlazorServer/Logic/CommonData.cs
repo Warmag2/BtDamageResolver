@@ -240,9 +240,9 @@ public class CommonData
     /// <returns>The default ammo for the given weapon, or null, if none found.</returns>
     public string GetWeaponDefaultAmmo(string weaponName)
     {
-        if (DictionaryWeapon.ContainsKey(weaponName))
+        if (DictionaryWeapon.TryGetValue(weaponName, out var weapon))
         {
-            return DictionaryWeapon[weaponName].AmmoDefault;
+            return weapon.AmmoDefault;
         }
 
         return null;
@@ -255,9 +255,9 @@ public class CommonData
     /// <returns><b>True</b> if the weapon has ammo options, <b>false</b> otherwise.</returns>
     public bool WeaponHasAmmo(string weaponName)
     {
-        if (DictionaryWeapon.ContainsKey(weaponName))
+        if (DictionaryWeapon.TryGetValue(weaponName, out var weapon))
         {
-            return DictionaryWeapon[weaponName].Ammo.Any();
+            return weapon.Ammo.Any();
         }
 
         return false;

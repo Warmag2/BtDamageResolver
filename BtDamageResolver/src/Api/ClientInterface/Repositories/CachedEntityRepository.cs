@@ -32,7 +32,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         _logger = logger;
         _repository = repository;
         _cache = new Dictionary<TKey, TEntity>();
-        FillCache().Wait();
+        _logger.LogInformation("Filled entity cache for type {type} with {n} items.", typeof(TEntity).Name, FillCache().Result);
     }
 
     /// <inheritdoc />
@@ -148,12 +148,16 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
     }
 
-    private async Task FillCache()
+    private async Task<int> FillCache()
     {
         var items = await _repository.GetAllAsync();
+        var count = 0;
         foreach (var item in items)
         {
             _cache.Add(item.GetId(), item);
+            count++;
         }
+
+        return count;
     }
 }

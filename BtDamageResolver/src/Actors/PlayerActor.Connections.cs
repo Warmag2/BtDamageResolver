@@ -200,7 +200,7 @@ public partial class PlayerActor
         await RequestGameOptions(_playerActorState.State.AuthenticationToken);
         await RequestGameState(_playerActorState.State.AuthenticationToken);
         await RequestDamageReports(_playerActorState.State.AuthenticationToken);
-        //await RequestTargetNumbers();
+        await RequestTargetNumbers();
 
         // Log the login to permanent store
         await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Login, 0);

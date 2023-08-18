@@ -195,8 +195,8 @@ public static class Program
                         services.AddSingleton<CachedEntityRepository<PaperDoll, string>, CachedEntityRepository<PaperDoll, string>>();
                         services.AddSingleton<CachedEntityRepository<Unit, string>, CachedEntityRepository<Unit, string>>();
                         services.AddSingleton<CachedEntityRepository<Weapon, string>, CachedEntityRepository<Weapon, string>>();
-                    })
-                    .AddStartupTask((serviceProvider, _) =>
+                    });
+                    /*.AddStartupTask((serviceProvider, _) =>
                     {
                         var ammoRepository = serviceProvider.GetService<CachedEntityRepository<Ammo, string>>();
                         var clusterTableRepository = serviceProvider.GetService<CachedEntityRepository<ClusterTable, string>>();
@@ -204,7 +204,8 @@ public static class Program
                         var paperDollRepository = serviceProvider.GetService<CachedEntityRepository<PaperDoll, string>>();
                         var unitRepository = serviceProvider.GetService<CachedEntityRepository<Unit, string>>();
                         var weaponRepository = serviceProvider.GetService<CachedEntityRepository<Weapon, string>>();
-                        var logger = serviceProvider.GetService<ILogger>();
+                        var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+                        var logger = loggerFactory.CreateLogger("Startup");
                         logger.LogInformation("AmmoRepository ready with {n} items.", ammoRepository.GetAll().Count);
                         logger.LogInformation("CriticalDamageRepository ready with {n} items.", clusterTableRepository.GetAll().Count);
                         logger.LogInformation("CriticalDamageRepository ready with {n} items.", criticalDamageRepository.GetAll().Count);

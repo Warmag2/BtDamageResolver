@@ -46,6 +46,7 @@ services:
       - resolvernet
     depends_on:
       - resolver
+    restart: on-failure
 
   # Grafana
   grafana:
