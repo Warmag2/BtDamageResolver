@@ -86,15 +86,10 @@ public partial class PlayerActor
     /// <summary>
     /// Request target numbers for the units this player controls.
     /// </summary>
-    /// <param name="authenticationToken">The authentication token.</param>
+    /// <remarks>No outside call path so authentication is not needed.</remarks>
     /// <returns><b>True</b> if the target numbers were successfully requested, <b>false</b> otherwise.</returns>
-    private async Task RequestTargetNumbers(Guid authenticationToken)
+    private async Task RequestTargetNumbers()
     {
-        if (!await CheckAuthentication(authenticationToken))
-        {
-            return;
-        }
-
         if (_playerActorState.State.GameId != null)
         {
             _logger.LogInformation("Player {playerId} requesting target numbers from game {gameId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);

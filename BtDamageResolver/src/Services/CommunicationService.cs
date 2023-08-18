@@ -6,7 +6,6 @@ using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
-using Orleans.Concurrency;
 using Orleans.Runtime;
 
 namespace Faemiyah.BtDamageResolver.Services;
@@ -14,7 +13,6 @@ namespace Faemiyah.BtDamageResolver.Services;
 /// <summary>
 /// Provides client-server communication to the silo and server-to-client communication for grains.
 /// </summary>
-[Reentrant]
 public class CommunicationService : GrainService, ICommunicationService
 {
     private readonly ILogger<CommunicationService> _logger;

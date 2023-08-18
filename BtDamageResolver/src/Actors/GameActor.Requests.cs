@@ -27,7 +27,7 @@ public partial class GameActor
     /// <inheritdoc />
     public async Task RequestGameState(string askingPlayerId)
     {
-        _logger.LogInformation("Game {gameId} is delivering the game state to player actor {playerId}", this.GetPrimaryKeyString(), askingPlayerId);
+        _logger.LogInformation("Game {gameId} is delivering the game state to player {playerId}", this.GetPrimaryKeyString(), askingPlayerId);
 
         await DistributeGameStateToPlayer(askingPlayerId);
     }

@@ -57,7 +57,7 @@ public partial class GameActor
 
         await DistributeGameStateToPlayers(fireEventHappened);
         await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
-        
+
         // Save game actor state
         await _gameActorState.WriteStateAsync();
 
