@@ -87,7 +87,6 @@ public partial class PlayerActor
     /// Request target numbers for the units this player controls.
     /// </summary>
     /// <remarks>No outside call path so authentication is not needed.</remarks>
-    /// <returns><b>True</b> if the target numbers were successfully requested, <b>false</b> otherwise.</returns>
     private async Task RequestTargetNumbers()
     {
         if (_playerActorState.State.GameId != null)
