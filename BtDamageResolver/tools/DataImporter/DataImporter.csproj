@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="7.2.1" />
     <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.2.1" />
     <PackageReference Include="Microsoft.Orleans.Serialization.NewtonsoftJson" Version="7.2.1" />
-    <PackageReference Include="Npgsql" Version="5.0.15" />
+    <PackageReference Include="Npgsql" Version="7.0.4" />
   </ItemGroup>
 
   <ItemGroup>

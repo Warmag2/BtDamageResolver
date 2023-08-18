@@ -135,12 +135,8 @@ public partial class GameActor : Grain, IGameActor
 
             await CheckGameStateUpdateEvents();
 
-            _logger.LogInformation("DEBUG LOG - GameActor {gameId} checked for game state update events.", this.GetPrimaryKeyString());
-
             // Log logins to permanent store
             await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
-
-            _logger.LogInformation("DEBUG LOG - GameActor {gameId} logged login events.", this.GetPrimaryKeyString());
 
             return true;
         }
