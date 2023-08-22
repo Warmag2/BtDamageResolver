@@ -135,14 +135,13 @@ public static class Program
                     })
                     .Configure<SiloMessagingOptions>(options =>
                     {
-                        options.ClientDropTimeout = TimeSpan.FromHours(1);
-                        options.MaxRequestProcessingTime = TimeSpan.FromMinutes(1);
+                        options.MaxRequestProcessingTime = TimeSpan.FromSeconds(15);
+                        options.SystemResponseTimeout = TimeSpan.FromSeconds(15);
                     })
                     .Configure<MessagingOptions>(options =>
                     {
-                        options.MaxMessageBodySize = 1048576;
-                        options.MaxMessageHeaderSize = 1048576;
-                        options.ResponseTimeout = TimeSpan.FromMinutes(1);
+                        options.DropExpiredMessages = true;
+                        options.ResponseTimeout = TimeSpan.FromSeconds(15);
                         options.ResponseTimeoutWithDebugger = TimeSpan.FromMinutes(15);
                     })
                     .UseAdoNetClustering(options =>
