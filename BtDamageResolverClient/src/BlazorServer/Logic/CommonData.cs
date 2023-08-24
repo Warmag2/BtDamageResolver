@@ -639,7 +639,7 @@ public class CommonData
 
         if (allChangeLocations.Count % 2 != 0)
         {
-            pickBrackets.Add(new PickBracket { Begin = allChangeLocations.Last(), End = allChangeLocations.Last() });
+            pickBrackets.Add(new PickBracket { Begin = allChangeLocations[^1], End = allChangeLocations[^1] });
         }
 
         return pickBrackets;

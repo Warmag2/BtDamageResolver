@@ -184,7 +184,7 @@ public class UserStateController
     {
         if (unit == null)
         {
-            var newUnit = PlayerState.UnitEntries.Any() ? PlayerState.UnitEntries.Last().Copy() : CommonData.GetBlankUnit();
+            var newUnit = PlayerState.UnitEntries.Any() ? PlayerState.UnitEntries[^1].Copy() : CommonData.GetBlankUnit();
             PlayerState.UnitEntries.Add(newUnit);
         }
         else
