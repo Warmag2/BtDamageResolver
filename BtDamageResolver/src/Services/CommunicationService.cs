@@ -5,6 +5,7 @@ using Faemiyah.BtDamageResolver.Common.Options;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Orleans;
 using Orleans.Runtime;
 
@@ -23,6 +24,7 @@ public class CommunicationService : GrainService, ICommunicationService
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="communicationOptions">The communication options.</param>
+    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
     /// <param name="grainFactory">The grain factory.</param>
     /// <param name="grainId">The grain ID.</param>
     /// <param name="silo">The silo.</param>
@@ -30,13 +32,14 @@ public class CommunicationService : GrainService, ICommunicationService
     public CommunicationService(
         ILogger<CommunicationService> logger,
         IOptions<CommunicationOptions> communicationOptions,
+        JsonSerializerSettings jsonSerializerSettings,
         IGrainFactory grainFactory,
         GrainId grainId,
         Silo silo,
         ILoggerFactory loggerFactory) : base(grainId, silo, loggerFactory)
     {
         _logger = logger;
-        _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), communicationOptions.Value.ConnectionString, grainFactory);
+        _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), jsonSerializerSettings, communicationOptions.Value.ConnectionString, grainFactory);
     }
 
     /// <inheritdoc />

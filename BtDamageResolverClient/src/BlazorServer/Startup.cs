@@ -130,7 +130,7 @@ public class Startup
         var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
         if (options != null)
         {
-            return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), options.Value.ConnectionString);
+            return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<JsonSerializerSettings>(), options.Value.ConnectionString);
         }
 
         throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");

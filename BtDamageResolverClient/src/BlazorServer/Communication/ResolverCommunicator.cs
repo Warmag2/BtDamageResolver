@@ -7,6 +7,7 @@ using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 
@@ -16,6 +17,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 public class ResolverCommunicator
 {
     private readonly ILogger<ResolverCommunicator> _logger;
+    private readonly JsonSerializerSettings _jsonSerializerSettings;
     private readonly CommunicationOptions _communicationOptions;
     private HubConnection _hubConnection;
 
@@ -28,9 +30,11 @@ public class ResolverCommunicator
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="communicationOptions">The communication options.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions)
+    /// <param name="jsonSerializerSettings">The JSON serializer settings.</param>
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, JsonSerializerSettings jsonSerializerSettings)
     {
         _logger = logger;
+        _jsonSerializerSettings = jsonSerializerSettings;
         _communicationOptions = communicationOptions.Value;
     }
 
@@ -314,7 +318,7 @@ public class ResolverCommunicator
 
     private void Reset()
     {
-        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _communicationOptions.ConnectionString, _playerName, _hubConnection);
+        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerSettings, _communicationOptions.ConnectionString, _playerName, _hubConnection);
     }
 
     private void SendErrorMessage(string errorMessage)

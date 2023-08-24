@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 
@@ -15,8 +16,9 @@ public abstract class RedisServerToClientCommunicator : RedisCommunicator, IServ
     /// Initializes a new instance of the <see cref="RedisServerToClientCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
+    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
     /// <param name="connectionString">The connection string for Redis.</param>
-    protected RedisServerToClientCommunicator(ILogger logger, string connectionString) : base(logger, connectionString, ServerStreamAddress)
+    protected RedisServerToClientCommunicator(ILogger logger, JsonSerializerSettings jsonSerializerSettings, string connectionString) : base(logger, jsonSerializerSettings, connectionString, ServerStreamAddress)
     {
     }
 
