@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer;
@@ -60,6 +61,10 @@ public class Startup
         {
             options.ApplicationMaxBufferSize = 1048576;
             options.TransportMaxBufferSize = 1048576;
+        });
+        services.Configure<JsonSerializerSettings>(options =>
+        {
+            options.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
         });
 
         services.AddBlazoredLocalStorage();
