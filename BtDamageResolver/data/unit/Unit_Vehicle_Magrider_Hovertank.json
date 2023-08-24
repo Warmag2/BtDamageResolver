@@ -5,7 +5,7 @@
     [],
     "JumpJets": 0,
     "Speed": 9,
-    "Type": 9,
+    "Type": "VehicleHover",
     "Tonnage": 25,
     "Troopers": 1,
     "Sinks": 0,
@@ -16,8 +16,7 @@
             "Ammo": "Normal"
         },
         {
-            "WeaponName": "Machine Gun",
-            "Ammo": null
+            "WeaponName": "Machine Gun"
         }
     ],
     "Name": "Magrider Hovertank"
