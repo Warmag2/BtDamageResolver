@@ -64,6 +64,7 @@ public class Startup
         });
         services.Configure<JsonSerializerSettings>(options =>
         {
+            options.NullValueHandling = NullValueHandling.Ignore;
             options.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
         });
 

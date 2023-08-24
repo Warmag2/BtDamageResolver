@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -143,6 +144,11 @@ public static class Program
                         options.DropExpiredMessages = true;
                         options.ResponseTimeout = TimeSpan.FromSeconds(15);
                         options.ResponseTimeoutWithDebugger = TimeSpan.FromMinutes(15);
+                    })
+                    .Configure<JsonSerializerSettings>(options =>
+                    {
+                        options.NullValueHandling = NullValueHandling.Ignore;
+                        options.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                     })
                     .UseAdoNetClustering(options =>
                     {
