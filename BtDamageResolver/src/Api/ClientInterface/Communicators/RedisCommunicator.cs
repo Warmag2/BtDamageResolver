@@ -26,6 +26,8 @@ public abstract class RedisCommunicator
     /// </summary>
     protected readonly ILogger Logger;
 
+    protected readonly JsonSerializerSettings JsonSerializerSettings;
+
     /// <summary>
     /// The Redis subscriber.
     /// </summary>
@@ -40,11 +42,13 @@ public abstract class RedisCommunicator
     /// Initializes a new instance of the <see cref="RedisCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
+    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
     /// <param name="connectionString">The server connection string.</param>
     /// <param name="listenTarget">The target channel to listen to.</param>
-    protected RedisCommunicator(ILogger logger, string connectionString, string listenTarget)
+    protected RedisCommunicator(ILogger logger, JsonSerializerSettings jsonSerializerSettings, string connectionString, string listenTarget)
     {
         Logger = logger;
+        JsonSerializerSettings = jsonSerializerSettings;
         _connectionString = connectionString;
         _listenTarget = listenTarget;
 
@@ -84,7 +88,7 @@ public abstract class RedisCommunicator
     protected void SendEnvelope(string target, Envelope data)
     {
         CheckChannelConnection(target);
-        RedisSubscriber.Publish(target, JsonConvert.SerializeObject(data), CommandFlags.FireAndForget);
+        RedisSubscriber.Publish(target, JsonConvert.SerializeObject(data, JsonSerializerSettings), CommandFlags.FireAndForget);
     }
 
     /// <summary>
@@ -118,7 +122,7 @@ public abstract class RedisCommunicator
     {
         RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
         _listenedMessageQueue = RedisSubscriber.Subscribe(_listenTarget);
-        _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
+        _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message, JsonSerializerSettings)).ConfigureAwait(false));
         SubscribeAdditional();
     }
 

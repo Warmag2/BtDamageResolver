@@ -15,9 +15,10 @@ public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClie
     /// Initializes a new instance of the <see cref="RedisClientToServerCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
+    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
     /// <param name="connectionString">The Redis connection string.</param>
     /// <param name="playerId">The player ID to listen for events from.</param>
-    protected RedisClientToServerCommunicator(ILogger logger, string connectionString, string playerId) : base(logger, connectionString, playerId)
+    protected RedisClientToServerCommunicator(ILogger logger, JsonSerializerSettings jsonSerializerSettings, string connectionString, string playerId) : base(logger, jsonSerializerSettings, connectionString, playerId)
     {
     }
 
@@ -90,7 +91,7 @@ public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClie
     protected override void SubscribeAdditional()
     {
         var listenedClientQueue = RedisSubscriber.Subscribe(ClientStreamAddress);
-        listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message)).ConfigureAwait(false));
+        listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message, JsonSerializerSettings)).ConfigureAwait(false));
 
         base.SubscribeAdditional();
     }
