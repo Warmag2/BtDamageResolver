@@ -17,7 +17,6 @@
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveDown"><b>&darr;</b></button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalLoad">Load</button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalSave">Save</button>
-            <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalExport">Export</button>
             <button class="resolver_button resolver_button_delete" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalDelete">X</button>
         </div>
     </div>
@@ -286,24 +285,6 @@
             <div class="resolver_modal_footer">
                 <button type="button" class="resolver_button" @onclick=@ModalLoad>Submit</button>
                 <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
-            </div>
-        </div>
-    </div>
-}
-
-@if (_showModalExport)
-{
-    <div class="resolver_modal_background">
-        <div class="resolver_modal" style="display:block" role="dialog">
-            <!-- Modal Header -->
-            <div class="resolver_modal_header resolver_header">
-                <h4 class="resolver_modal_title">Exported Unit Data</h4>
-                <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="resolver_modal_body">
-                <FormTextArea Text="@JsonConvert.SerializeObject(UnitEntry.ToUnit())" ComparisonTimeStamp="@DateTime.MinValue" Disabled="@false" OnChanged="_ => { }"></FormTextArea>
             </div>
         </div>
     </div>
@@ -640,7 +621,6 @@
     private bool _showModalDelete = false;
     private bool _showModalLoad = false;
     private bool _showModalSave = false;
-    private bool _showModalExport = false;
     private string _modalUnitName = string.Empty;
 
     private void ShowModalDelete()
@@ -658,17 +638,11 @@
         _showModalSave = true;
     }
 
-    private void ShowModalExport()
-    {
-        _showModalExport = true;
-    }
-
     private void ModalClose()
     {
         _showModalDelete = false;
         _showModalLoad = false;
         _showModalSave = false;
-        _showModalExport = false;
     }
 
     private async Task ModalSave()
