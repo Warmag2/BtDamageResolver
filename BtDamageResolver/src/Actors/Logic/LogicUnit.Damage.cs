@@ -38,7 +38,7 @@ public partial class LogicUnit
 
         var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, new SpecialDamageEntry { Type = SpecialDamageType.None });
 
-        await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, TargetUnit = damageInstance.UnitId }, 0);
+        await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, TargetUnit = damageInstance.UnitId }, false, 0);
 
         return damageReport;
     }
@@ -127,7 +127,7 @@ public partial class LogicUnit
         damagePackets = TransformDamagePacketsBasedOnTargetType(damageReport, damagePackets, target);
 
         // Finally, apply damage packets
-        await target.ApplyDamagePackets(damageReport, damagePackets, Unit.FiringSolution, combatAction.MarginOfSuccess);
+        await target.ApplyDamagePackets(damageReport, damagePackets, Unit.FiringSolution, false, combatAction.MarginOfSuccess);
 
         return damageReport;
     }
@@ -217,8 +217,6 @@ public partial class LogicUnit
                         },
                         Phase.Melee,
                         true));
-
-                return damageReport;
             }
             else
             {
@@ -238,12 +236,56 @@ public partial class LogicUnit
                         },
                         Phase.Melee,
                         true));
-
-                return damageReport;
             }
+
+            await CheckWeakLegs(damageReport);
+
+            return damageReport;
+        }
+
+        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeKick, out _))
+        {
+            await CheckWeakLegs(damageReport);
+
+            return damageReport;
         }
 
         return null;
+    }
+
+    private async Task CheckWeakLegs(DamageReport damageReport)
+    {
+        if (Unit.HasFeature(UnitFeature.WeakLegs))
+        {
+            damageReport.Log(new AttackLogEntry
+            {
+                Context = "Attacker has weak legs and its attack forces a critical threat check.",
+                Type = AttackLogEntryType.Information
+            });
+            await ApplyDamagePackets(
+                damageReport,
+                new List<DamagePacket>
+                {
+                    new()
+                    {
+                        Damage = 0,
+                        SpecialDamageEntries = new List<SpecialDamageEntry>
+                        {
+                            new()
+                            {
+                                Data = "0",
+                                Type = SpecialDamageType.Critical
+                            }
+                        }
+                    }
+                },
+                new FiringSolution
+                {
+                    Cover = Cover.Upper, Direction = Direction.Front, TargetUnit = Unit.Id
+                },
+                true,
+                0);
+        }
     }
 
     /// <summary>

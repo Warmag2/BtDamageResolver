@@ -20,6 +20,7 @@ public enum WeaponFeature
     Melee,
     MeleeCharge,
     MeleeDfa,
+    MeleeKick,
     Pulse,
     Rapid,
     Streak

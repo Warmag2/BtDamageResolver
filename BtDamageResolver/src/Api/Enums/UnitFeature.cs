@@ -24,11 +24,29 @@ public enum UnitFeature
     // Always generates 4 points less heat
     CombatComputer,
 
+    // Better initiative rolls (no effect yet)
+    CommandMech,
+
+    // Better initiative rolls (no effect yet)
+    Cowl,
+
+    // Unit is easy to pilot (no effect yet)
+    EasyToPilot,
+
     // Unit has ECM
     Ecm,
 
-    // Unit has improved communications systems (for satellite uplinks)
+    // Unit can torso twist one more hex side (no effect yet)
+    ExtendedTorsoTwist,
+
+    // Unit is hard to pilot (no effect yet) PS: This quirk is EXACTLY THE SAME as Cramped Cockpit, so the latter is not included!
+    HardToPilot,
+
+    // Unit has improved communications systems (no effect yet)
     ImprovedCommunications,
+
+    // The main weapon of this unit is externally carried and can be picked up and put down during combat (no effect yet)
+    JettisonableWeapon,
 
     // Unit has MASC
     Masc,
@@ -39,11 +57,20 @@ public enum UnitFeature
     // Jumping provides 1 more evasion bonus
     NimbleJumper,
 
+    // Unit has no arms or minimal arms (no effect yet)
+    NoMinimalArms,
+
+    // Unit cannot go from standstill to running speed in one turn (no effect yet)
+    PoorPerformance,
+
     // Half damage to legs from DFAs
     ReinforcedLegs,
 
     // Running only gives -1 to hit
     StabilizedWeapons,
+
+    // +1 to resist falling from impacts and attacks (no effect yet)
+    Stable,
 
     // Bonus of 2 to hit air units
     TargetingAntiAir,
@@ -58,5 +85,11 @@ public enum UnitFeature
     TargetingMediumRange,
 
     // Bonus of 1 to hit at short range
-    TargetingShortRange
+    TargetingShortRange,
+
+    // -1 to piloting when entering difficult terrain hexes (no effect yet)
+    Unbalanced,
+
+    // Unit is liable to damage its own legs if it tries to kick/dfa
+    WeakLegs
 }
