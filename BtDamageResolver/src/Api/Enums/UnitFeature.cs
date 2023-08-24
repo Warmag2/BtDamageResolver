@@ -15,7 +15,7 @@ public enum UnitFeature
     // Stealth armor bestows -1 to hit from medium and -2 to hit from long range
     ArmorStealth,
 
-    // Unit has a beagle active probe
+    // Unit has a beagle active probe (or the Improved Sensors quirk)
     Bap,
 
     // Bonus of 1 to hit in melee
@@ -26,6 +26,9 @@ public enum UnitFeature
 
     // Unit has ECM
     Ecm,
+
+    // Unit has improved communications systems (for satellite uplinks)
+    ImprovedCommunications,
 
     // Unit has MASC
     Masc,
