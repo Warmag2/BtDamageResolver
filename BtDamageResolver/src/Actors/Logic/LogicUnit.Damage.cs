@@ -253,6 +253,25 @@ public partial class LogicUnit
         return null;
     }
 
+    /// <summary>
+    /// Resolve extra normal damage to unit from heat.
+    /// </summary>
+    /// <param name="damageReport">The damage report to apply to.</param>
+    /// <param name="combatAction">The combat action.</param>
+    /// <param name="damage">The damage.</param>
+    /// <returns>Total damage with heat effects applied.</returns>
+    protected int ResolveHeatExtraDamage(DamageReport damageReport, CombatAction combatAction, int damage)
+    {
+        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Heat, out var heatFeatureEntry))
+        {
+            var addDamage = MathExpression.Parse(heatFeatureEntry.Data);
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Bonus damage from heat-inflicting weapon", Number = addDamage });
+            return damage + addDamage;
+        }
+
+        return damage;
+    }
+
     private async Task CheckWeakLegs(DamageReport damageReport)
     {
         if (Unit.HasFeature(UnitFeature.WeakLegs))
@@ -286,25 +305,6 @@ public partial class LogicUnit
                 true,
                 0);
         }
-    }
-
-    /// <summary>
-    /// Resolve extra normal damage to unit from heat.
-    /// </summary>
-    /// <param name="damageReport">The damage report to apply to.</param>
-    /// <param name="combatAction">The combat action.</param>
-    /// <param name="damage">The damage.</param>
-    /// <returns>Total damage with heat effects applied.</returns>
-    protected int ResolveHeatExtraDamage(DamageReport damageReport, CombatAction combatAction, int damage)
-    {
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Heat, out var heatFeatureEntry))
-        {
-            var addDamage = MathExpression.Parse(heatFeatureEntry.Data);
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Bonus damage from heat-inflicting weapon", Number = addDamage });
-            return damage + addDamage;
-        }
-
-        return damage;
     }
 
     /// <summary>
