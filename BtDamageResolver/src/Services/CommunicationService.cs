@@ -32,7 +32,7 @@ public class CommunicationService : GrainService, ICommunicationService
     public CommunicationService(
         ILogger<CommunicationService> logger,
         IOptions<CommunicationOptions> communicationOptions,
-        JsonSerializerSettings jsonSerializerSettings,
+        IOptions<JsonSerializerSettings> jsonSerializerSettings,
         IGrainFactory grainFactory,
         GrainId grainId,
         Silo silo,

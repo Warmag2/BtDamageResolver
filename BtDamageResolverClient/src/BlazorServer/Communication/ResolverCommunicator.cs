@@ -17,7 +17,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 public class ResolverCommunicator
 {
     private readonly ILogger<ResolverCommunicator> _logger;
-    private readonly JsonSerializerSettings _jsonSerializerSettings;
+    private readonly IOptions<JsonSerializerSettings> _jsonSerializerSettings;
     private readonly CommunicationOptions _communicationOptions;
     private HubConnection _hubConnection;
 
@@ -31,7 +31,7 @@ public class ResolverCommunicator
     /// <param name="logger">The logging interface.</param>
     /// <param name="communicationOptions">The communication options.</param>
     /// <param name="jsonSerializerSettings">The JSON serializer settings.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, JsonSerializerSettings jsonSerializerSettings)
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, IOptions<JsonSerializerSettings> jsonSerializerSettings)
     {
         _logger = logger;
         _jsonSerializerSettings = jsonSerializerSettings;

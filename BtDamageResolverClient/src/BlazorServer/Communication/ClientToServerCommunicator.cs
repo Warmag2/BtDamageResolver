@@ -4,6 +4,7 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
@@ -23,7 +24,7 @@ public class ClientToServerCommunicator : RedisClientToServerCommunicator
     /// <param name="connectionString">The Redis connection string.</param>
     /// <param name="playerId">The player ID.</param>
     /// <param name="hubConnection">The SignalR hub connection.</param>
-    public ClientToServerCommunicator(ILogger logger, JsonSerializerSettings jsonSerializerSettings, string connectionString, string playerId, HubConnection hubConnection) : base(logger, jsonSerializerSettings, connectionString, playerId)
+    public ClientToServerCommunicator(ILogger logger, IOptions<JsonSerializerSettings> jsonSerializerSettings, string connectionString, string playerId, HubConnection hubConnection) : base(logger, jsonSerializerSettings, connectionString, playerId)
     {
         _hubConnection = hubConnection;
     }

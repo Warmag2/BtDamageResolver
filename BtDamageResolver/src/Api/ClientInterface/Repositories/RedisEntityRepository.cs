@@ -7,6 +7,7 @@ using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Exceptions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
@@ -33,10 +34,10 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     /// <param name="logger">The logging interface.</param>
     /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
     /// <param name="connectionString">The connection string.</param>
-    public RedisEntityRepository(ILogger<RedisEntityRepository<TEntity>> logger, JsonSerializerSettings jsonSerializerSettings, string connectionString)
+    public RedisEntityRepository(ILogger<RedisEntityRepository<TEntity>> logger, IOptions<JsonSerializerSettings> jsonSerializerSettings, string connectionString)
     {
         _logger = logger;
-        _jsonSerializerSettings = jsonSerializerSettings;
+        _jsonSerializerSettings = jsonSerializerSettings.Value;
         _connectionString = connectionString;
         _keyPrefix = $"Resolver{typeof(TEntity).Name}";
         _redisConnectionMultiplexer = ConnectionMultiplexer.Connect(_connectionString);

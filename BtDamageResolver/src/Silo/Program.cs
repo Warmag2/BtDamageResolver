@@ -230,7 +230,7 @@ public static class Program
     {
         var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
         return options != null
-            ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<JsonSerializerSettings>(), options.Value.ConnectionString)
+            ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerSettings>>(), options.Value.ConnectionString)
             : throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
     }
 

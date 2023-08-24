@@ -9,6 +9,7 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Orleans;
 
@@ -31,7 +32,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
     /// <param name="connectionString">The Redis connection string.</param>
     /// <param name="grainFactory">The grain factory.</param>
-    public ServerToClientCommunicator(ILogger<ServerToClientCommunicator> logger, JsonSerializerSettings jsonSerializerSettings, string connectionString, IGrainFactory grainFactory) : base(logger, jsonSerializerSettings, connectionString)
+    public ServerToClientCommunicator(ILogger<ServerToClientCommunicator> logger, IOptions<JsonSerializerSettings> jsonSerializerSettings, string connectionString, IGrainFactory grainFactory) : base(logger, jsonSerializerSettings, connectionString)
     {
         _logger = logger;
         _grainFactory = grainFactory;
