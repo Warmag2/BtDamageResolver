@@ -1,8 +1,9 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@using Microsoft.Extensions.Options
 @using Newtonsoft.Json
 @inject CommonData _commonData
-@inject JsonSerializerSettings _jsonSerializerSettings
+@inject IOptions<JsonSerializerSettings> _jsonSerializerSettings
 
 @if (_unit != null)
 {
@@ -104,7 +105,7 @@
 
                 <!-- Modal body -->
                 <div class="resolver_modal_body">
-                    <FormTextArea Text="@JsonConvert.SerializeObject(_unit, _jsonSerializerSettings)" ComparisonTimeStamp="@DateTime.MinValue" Disabled="@false" OnChanged="_ => { }"></FormTextArea>
+                    <FormTextArea Text="@JsonConvert.SerializeObject(_unit, _jsonSerializerSettings.Value)" ComparisonTimeStamp="@DateTime.MinValue" Disabled="@false" OnChanged="_ => { }"></FormTextArea>
                 </div>
             </div>
         </div>
