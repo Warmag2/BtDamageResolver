@@ -79,6 +79,11 @@ public class UnitEntry : Unit
     public Stance Stance { get; set; }
 
     /// <summary>
+    /// The weapons this unit has equipped.
+    /// </summary>
+    public new List<WeaponEntry> Weapons { get; set; }
+
+    /// <summary>
     /// Is the unit "finished", i.e. should its editing settings be shown by default.
     /// </summary>
     /// <remarks>
@@ -116,29 +121,14 @@ public class UnitEntry : Unit
             return 0;
         }
 
-        var result = 0;
-
-        if (Heat >= 8)
+        return Heat switch
         {
-            result += 1;
-        }
-
-        if (Heat >= 13)
-        {
-            result += 1;
-        }
-
-        if (Heat >= 17)
-        {
-            result += 1;
-        }
-
-        if (Heat >= 24)
-        {
-            result += 1;
-        }
-
-        return result;
+            >= 24 => 4,
+            >= 17 => 3,
+            >= 13 => 2,
+            >= 8 => 1,
+            _ => 0
+        };
     }
 
     /// <summary>
@@ -152,34 +142,15 @@ public class UnitEntry : Unit
             return 0;
         }
 
-        var result = 0;
-
-        if (Heat >= 5)
+        return Heat switch
         {
-            result += 1;
-        }
-
-        if (Heat >= 10)
-        {
-            result += 1;
-        }
-
-        if (Heat >= 15)
-        {
-            result += 1;
-        }
-
-        if (Heat >= 20)
-        {
-            result += 1;
-        }
-
-        if (Heat >= 25)
-        {
-            result += 1;
-        }
-
-        return result;
+            >= 25 => 5,
+            >= 20 => 4,
+            >= 15 => 3,
+            >= 10 => 2,
+            >= 5 => 1,
+            _ => 0
+        };
     }
 
     /// <summary>
@@ -193,22 +164,13 @@ public class UnitEntry : Unit
             return 0;
         }
 
-        if (Heat >= 28)
+        return Heat switch
         {
-            return 8;
-        }
-
-        if (Heat >= 23)
-        {
-            return 6;
-        }
-
-        if (Heat >= 19)
-        {
-            return 4;
-        }
-
-        return 0;
+            >= 28 => 8,
+            >= 23 => 6,
+            >= 19 => 4,
+            _ => 0
+        };
     }
 
     /// <summary>
@@ -222,32 +184,15 @@ public class UnitEntry : Unit
             return 0;
         }
 
-        if (Heat >= 30)
+        return Heat switch
         {
-            return 13;
-        }
-
-        if (Heat >= 26)
-        {
-            return 10;
-        }
-
-        if (Heat >= 22)
-        {
-            return 8;
-        }
-
-        if (Heat >= 18)
-        {
-            return 6;
-        }
-
-        if (Heat >= 14)
-        {
-            return 4;
-        }
-
-        return 0;
+            >= 30 => 13,
+            >= 26 => 10,
+            >= 22 => 8,
+            >= 18 => 6,
+            >= 14 => 4,
+            _ => 0
+        };
     }
 
     /// <summary>
@@ -323,7 +268,7 @@ public class UnitEntry : Unit
     /// </summary>
     /// <param name="unit">The <see cref="Unit"/> to import data from.</param>
     /// <remarks>Name will not be overwritten.</remarks>
-    public void ImportFromUnit(Unit unit)
+    public void FromUnit(Unit unit)
     {
         Features = unit.Features.Copy();
         Gunnery = unit.Gunnery;
@@ -334,7 +279,7 @@ public class UnitEntry : Unit
         Tonnage = unit.Tonnage;
         Troopers = unit.Troopers;
         Type = unit.Type;
-        Weapons = unit.Weapons.Select(w => w.Copy()).ToList();
+        Weapons = unit.Weapons.Select(w => new WeaponEntry(w)).ToList();
     }
 
     /// <summary>
@@ -346,12 +291,20 @@ public class UnitEntry : Unit
     /// <returns>An <see cref="Unit"/> based on this unit.</returns>
     public Unit ToUnit()
     {
-        var copy = Copy();
-
-        // In this case we want to keep the name because Copy() generates a new one
-        copy.Name = Name;
-
-        return copy;
+        return new Unit
+        {
+            Features = Features.Copy(),
+            Gunnery = Gunnery,
+            JumpJets = JumpJets,
+            Name = Name,
+            Piloting = Piloting,
+            Sinks = Sinks,
+            Speed = Speed,
+            Tonnage = Tonnage,
+            Troopers = Troopers,
+            Type = Type,
+            Weapons = Weapons.Select(w => new WeaponReference(w)).ToList()
+        };
     }
 
     private static string GenerateName(string name)

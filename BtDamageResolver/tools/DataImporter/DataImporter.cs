@@ -78,8 +78,8 @@ public class DataImporter
                     case PaperDoll paperDoll:
                         await client.GetPaperDollRepository().AddOrUpdate(paperDoll);
                         break;
-                    case Unit unitEntry:
-                        await client.GetUnitRepository().AddOrUpdate(unitEntry);
+                    case Unit unit:
+                        await client.GetUnitRepository().AddOrUpdate(unit);
                         break;
                     case Weapon weapon:
                         weapon.FillMissingFields();

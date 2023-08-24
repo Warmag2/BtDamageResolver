@@ -3,6 +3,7 @@
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@using Newtonsoft.Json
 @inject CommonData _commonData
 @inject VisualStyleController _visualStyleController
 @inject UserStateController _userStateController
@@ -11,12 +12,12 @@
 
     <div class="resolver_div_componentrow">
         <div class="resolver_div_unitid">
-            @UnitEntry.Id
             <FormToggle Checked="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnStaticDataHiddenChanged">Editable</FormToggle>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveUp"><b>&uarr;</b></button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveDown"><b>&darr;</b></button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalLoad">Load</button>
             <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalSave">Save</button>
+            <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalExport">Export</button>
             <button class="resolver_button resolver_button_delete" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalDelete">X</button>
         </div>
     </div>
@@ -235,7 +236,7 @@
 
             <!-- Modal footer -->
             <div class="resolver_modal_footer">
-                <button type="button" class="resolver_button" @onclick=@(e => OnDeleted.InvokeAsync(UnitEntry))>Delete</button>
+                <button type="button" class="resolver_button" @onclick=@(_ => OnDeleted.InvokeAsync(UnitEntry))>Delete</button>
                 <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
             </div>
         </div>
@@ -245,7 +246,7 @@
 @if (_showModalSave)
 {
     <div class="resolver_modal_background">
-        <div class="resolver_modal" id="passwordModal" style="display:block" role="dialog">
+        <div class="resolver_modal" style="display:block" role="dialog">
             <!-- Modal Header -->
             <div class="resolver_modal_header resolver_header">
                 <h4 class="resolver_modal_title">Save Unit</h4>
@@ -269,7 +270,7 @@
 @if (_showModalLoad)
 {
     <div class="resolver_modal_background">
-        <div class="resolver_modal" id="passwordModal" style="display:block" role="dialog">
+        <div class="resolver_modal" style="display:block" role="dialog">
             <!-- Modal Header -->
             <div class="resolver_modal_header resolver_header">
                 <h4 class="resolver_modal_title">Load Unit</h4>
@@ -285,6 +286,24 @@
             <div class="resolver_modal_footer">
                 <button type="button" class="resolver_button" @onclick=@ModalLoad>Submit</button>
                 <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_showModalExport)
+{
+    <div class="resolver_modal_background">
+        <div class="resolver_modal" style="display:block" role="dialog">
+            <!-- Modal Header -->
+            <div class="resolver_modal_header resolver_header">
+                <h4 class="resolver_modal_title">Exported Unit Data</h4>
+                <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="resolver_modal_body">
+                <FormTextArea Text="@JsonConvert.SerializeObject(UnitEntry.ToUnit())" ComparisonTimeStamp="@DateTime.MinValue" Disabled="@false" OnChanged="_ => { }"></FormTextArea>
             </div>
         </div>
     </div>
@@ -621,6 +640,7 @@
     private bool _showModalDelete = false;
     private bool _showModalLoad = false;
     private bool _showModalSave = false;
+    private bool _showModalExport = false;
     private string _modalUnitName = string.Empty;
 
     private void ShowModalDelete()
@@ -638,11 +658,17 @@
         _showModalSave = true;
     }
 
+    private void ShowModalExport()
+    {
+        _showModalExport = true;
+    }
+
     private void ModalClose()
     {
         _showModalDelete = false;
         _showModalLoad = false;
         _showModalSave = false;
+        _showModalExport = false;
     }
 
     private async Task ModalSave()
@@ -654,7 +680,7 @@
     private async Task ModalLoad()
     {
         ModalClose();
-        UnitEntry.ImportFromUnit(await _commonData.GetUnit(_modalUnitName));
+        UnitEntry.FromUnit(await _commonData.GetUnit(_modalUnitName));
         await OnLoad.InvokeAsync(UnitEntry);
     }
 

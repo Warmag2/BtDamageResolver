@@ -17,7 +17,7 @@ public class Unit : NamedEntity
     /// </summary>
     public Unit()
     {
-        Weapons = new List<WeaponEntry>();
+        Weapons = new List<WeaponReference>();
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ public class Unit : NamedEntity
     /// <summary>
     /// The weapons this unit has equipped.
     /// </summary>
-    public List<WeaponEntry> Weapons { get; set; }
+    public List<WeaponReference> Weapons { get; set; }
 
     /// <summary>
     /// Check whether the unit has a specific feature or not.

@@ -7,7 +7,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 /// A weapon entry portraying a weapon and its current settings.
 /// </summary>
 [Serializable]
-public class WeaponEntry
+public class WeaponEntry : WeaponReference
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaponEntry"/> class.
@@ -21,6 +21,22 @@ public class WeaponEntry
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="WeaponEntry"/> class.
+    /// </summary>
+    /// <param name="weaponReference">The weapon reference to create this weapon entry from.</param>
+    /// <remarks>
+    /// Randomizes ID when created.
+    /// </remarks>
+    public WeaponEntry(WeaponReference weaponReference)
+    {
+        Ammo = weaponReference.Ammo;
+        Id = Guid.NewGuid();
+        State = WeaponState.Active;
+        TimeStamp = DateTime.UtcNow;
+        WeaponName = weaponReference.WeaponName;
+    }
+
+    /// <summary>
     /// The timestamp when this weapon entry was last updated.
     /// </summary>
     public DateTime TimeStamp { get; set; }
@@ -31,25 +47,15 @@ public class WeaponEntry
     public Guid Id { get; set; }
 
     /// <summary>
-    /// The name of the weapon this weapon entry refers to.
-    /// </summary>
-    public string WeaponName { get; set; }
-
-    /// <summary>
     /// The state of the weapon.
     /// </summary>
     public WeaponState State { get; set; }
 
     /// <summary>
-    /// The name of the ammo to use.
-    /// </summary>
-    public string Ammo { get; set; }
-
-    /// <summary>
     /// Makes a copy of this weapon entry.
     /// </summary>
     /// <returns>A copy of the weapon entry.</returns>
-    public WeaponEntry Copy()
+    public new WeaponEntry Copy()
     {
         return new WeaponEntry
         {
