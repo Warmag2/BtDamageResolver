@@ -51,6 +51,9 @@ dotnet_diagnostic.SA1128.severity = None
 # Using directive should appear within a namespace declaration
 dotnet_diagnostic.SA1200.severity = None
 
+# Static members should come before non-static members
+dotnet_diagnostic.SA1204.severity = None
+
 # Fields should begin with a lowercase letter
 dotnet_diagnostic.SA1306.severity = None
     

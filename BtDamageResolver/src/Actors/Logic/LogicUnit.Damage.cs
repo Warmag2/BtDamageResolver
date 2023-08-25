@@ -38,7 +38,7 @@ public partial class LogicUnit
 
         var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, new SpecialDamageEntry { Type = SpecialDamageType.None });
 
-        await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, TargetUnit = damageInstance.UnitId }, false, 0);
+        await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, TargetUnit = damageInstance.UnitId }, 0);
 
         return damageReport;
     }
@@ -127,7 +127,7 @@ public partial class LogicUnit
         damagePackets = TransformDamagePacketsBasedOnTargetType(damageReport, damagePackets, target);
 
         // Finally, apply damage packets
-        await target.ApplyDamagePackets(damageReport, damagePackets, Unit.FiringSolution, false, combatAction.MarginOfSuccess);
+        await target.ApplyDamagePackets(damageReport, damagePackets, Unit.FiringSolution, combatAction.MarginOfSuccess);
 
         return damageReport;
     }
@@ -238,14 +238,14 @@ public partial class LogicUnit
                         true));
             }
 
-            await CheckWeakLegs(damageReport);
+            damageReport.Merge(await CheckWeakLegs(combatAction));
 
             return damageReport;
         }
 
         if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeKick, out _))
         {
-            await CheckWeakLegs(damageReport);
+            damageReport.Merge(await CheckWeakLegs(combatAction));
 
             return damageReport;
         }
@@ -272,10 +272,41 @@ public partial class LogicUnit
         return damage;
     }
 
-    private async Task CheckWeakLegs(DamageReport damageReport)
+    /// <summary>
+    /// Resolve total outgoing damage.
+    /// </summary>
+    /// <param name="damageReport">The damagereport to append to.</param>
+    /// <param name="target">The target unit logic.</param>
+    /// <param name="combatAction">The combat action.</param>
+    /// <returns>The total outgoing damage.</returns>
+    protected virtual async Task<int> ResolveTotalOutgoingDamage(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
+    {
+        // Most units can charge, and mech units can make other melee attacks. Resolve their damage here.
+        if (combatAction.Weapon.Type == WeaponType.Melee)
+        {
+            return await RapidFireWrapper(damageReport, target, combatAction, ResolveTotalOutgoingDamageMelee(damageReport, combatAction));
+        }
+        else
+        {
+            return await RapidFireWrapper(damageReport, target, combatAction, ResolveTotalOutgoingDamageInternal(damageReport, target, combatAction));
+        }
+    }
+
+    private async Task<DamageReport> CheckWeakLegs(CombatAction combatAction)
     {
         if (Unit.HasFeature(UnitFeature.WeakLegs))
         {
+            var damageReport = new DamageReport
+            {
+                Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
+                DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Kick, Direction.Front, new List<WeaponFeature>()),
+                FiringUnitId = Unit.Id,
+                FiringUnitName = Unit.Name,
+                TargetUnitId = Unit.Id,
+                TargetUnitName = Unit.Name,
+                InitialTroopers = Unit.Troopers
+            };
+
             damageReport.Log(new AttackLogEntry
             {
                 Context = "Attacker has weak legs and its attack forces a critical threat check.",
@@ -300,31 +331,14 @@ public partial class LogicUnit
                 },
                 new FiringSolution
                 {
-                    Cover = Cover.Upper, Direction = Direction.Front, TargetUnit = Unit.Id
+                    Cover = Cover.None, Direction = Direction.Front, TargetUnit = Unit.Id
                 },
-                true,
                 0);
-        }
-    }
 
-    /// <summary>
-    /// Resolve total outgoing damage.
-    /// </summary>
-    /// <param name="damageReport">The damagereport to append to.</param>
-    /// <param name="target">The target unit logic.</param>
-    /// <param name="combatAction">The combat action.</param>
-    /// <returns>The total outgoing damage.</returns>
-    protected virtual async Task<int> ResolveTotalOutgoingDamage(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
-    {
-        // Most units can charge, and mech units can make other melee attacks. Resolve their damage here.
-        if (combatAction.Weapon.Type == WeaponType.Melee)
-        {
-            return await RapidFireWrapper(damageReport, target, combatAction, ResolveTotalOutgoingDamageMelee(damageReport, combatAction));
+            return damageReport;
         }
-        else
-        {
-            return await RapidFireWrapper(damageReport, target, combatAction, ResolveTotalOutgoingDamageInternal(damageReport, target, combatAction));
-        }
+
+        return null;
     }
 
     /// <summary>

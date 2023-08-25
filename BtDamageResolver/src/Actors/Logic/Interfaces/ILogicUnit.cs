@@ -182,10 +182,9 @@ public interface ILogicUnit
     /// <param name="damageReport">The damage report to apply the damage into.</param>
     /// <param name="damagePackets">The damage packets.</param>
     /// <param name="firingSolution">The firing solution.</param>
-    /// <param name="forceValidHit">Force a valid hit (even through cover).</param>
     /// <param name="marginOfSuccess">The margin of success of the action which generated the damage.</param>
     /// <returns>Nothing.</returns>
-    Task ApplyDamagePackets(DamageReport damageReport, List<DamagePacket> damagePackets, FiringSolution firingSolution, bool forceValidHit, int marginOfSuccess);
+    Task ApplyDamagePackets(DamageReport damageReport, List<DamagePacket> damagePackets, FiringSolution firingSolution, int marginOfSuccess);
 
     /// <summary>
     /// Resolves combat for this unit logic.

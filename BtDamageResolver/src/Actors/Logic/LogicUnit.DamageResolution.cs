@@ -14,11 +14,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc />
-    public async Task ApplyDamagePackets(DamageReport damageReport, List<DamagePacket> damagePackets, FiringSolution firingSolution, bool forceValidHit, int marginOfSuccess)
+    public async Task ApplyDamagePackets(DamageReport damageReport, List<DamagePacket> damagePackets, FiringSolution firingSolution, int marginOfSuccess)
     {
         foreach (var damagePacket in damagePackets)
         {
-            var (location, criticalDamageTableType) = GetLocation(damageReport, firingSolution.Cover, forceValidHit, damageReport.DamagePaperDoll.PaperDoll);
+            var (location, criticalDamageTableType) = GetLocation(damageReport, firingSolution.Cover, damageReport.DamagePaperDoll.PaperDoll);
 
             if (IsBlockedByCover(firingSolution.Cover, location))
             {
@@ -121,9 +121,9 @@ public partial class LogicUnit
         return damage;
     }
 
-    private (Location Location, CriticalDamageTableType CriticalDamageTableType) GetLocation(DamageReport damageReport, Cover cover, bool forceValidHit, PaperDoll paperDoll)
+    private (Location Location, CriticalDamageTableType CriticalDamageTableType) GetLocation(DamageReport damageReport, Cover cover, PaperDoll paperDoll)
     {
-        var (hitLocation, location) = RollHitLocation(damageReport, cover, paperDoll, forceValidHit);
+        var (hitLocation, location) = RollHitLocation(damageReport, cover, paperDoll, false);
 
         if (location == Location.Reroll)
         {
