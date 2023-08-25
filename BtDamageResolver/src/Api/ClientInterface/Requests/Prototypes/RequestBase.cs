@@ -1,16 +1,12 @@
-﻿using System;
+﻿namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 
-namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes
+/// <summary>
+/// Base class for requests.
+/// </summary>
+public abstract class RequestBase
 {
     /// <summary>
-    /// Base class for requests.
+    /// The name of the player producing this request.
     /// </summary>
-    [Serializable]
-    public abstract class RequestBase
-    {
-        /// <summary>
-        /// The name of the player producing this request.
-        /// </summary>
-        public string PlayerName { get; set; }
-    }
+    public string PlayerName { get; set; }
 }

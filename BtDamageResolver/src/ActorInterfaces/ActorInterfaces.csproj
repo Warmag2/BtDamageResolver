@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Faemiyah.BtDamageResolver.ActorInterfaces</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.ActorInterfaces</AssemblyName>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -9,11 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.5" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.2.1" />
   </ItemGroup>
 
   <ItemGroup>

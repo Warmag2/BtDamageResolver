@@ -1,8 +1,6 @@
 cd postgresql
 docker build --tag orleansdb .
 cd ../grafana
-chmod -R o+rx dashboards/
-chmod -R o+rx datasources/
 docker build --tag resolvergrafana .
 cd ../redis
 docker build --tag resolverredis .

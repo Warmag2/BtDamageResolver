@@ -1,0 +1,35 @@
+{
+    "Gunnery": 4,
+    "Piloting": 5,
+    "Features":
+    [
+        "WeakLegs"
+    ],
+    "JumpJets": 4,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 40,
+    "Troopers": 1,
+    "Sinks": 10,
+    "Weapons":
+    [
+        {
+            "WeaponName": "LRM-10",
+            "Ammo": "Normal"
+        },
+        {
+            "WeaponName": "LRM-10",
+            "Ammo": "Normal"
+        },
+        {
+            "WeaponName": "Medium Laser"
+        },
+        {
+            "WeaponName": "Medium Laser"
+        },
+        {
+            "WeaponName": "Medium Laser"
+        }
+    ],
+    "Name": "Whitworth WTH-1"
+}

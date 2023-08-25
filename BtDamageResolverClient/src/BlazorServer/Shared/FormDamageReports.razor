@@ -1,4 +1,5 @@
-﻿@using Faemiyah.BtDamageResolver.Api.Enums;
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Api.Enums;
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @inject VisualStyleController _visualStyleController
@@ -65,13 +66,13 @@ else
 
     protected override void OnInitialized()
     {
-        _userStateController.OnDamageReportsUpdated += StateHasChanged;
-        _userStateController.OnPlayerOptionsUpdated += StateHasChanged;
+        _userStateController.OnDamageReportsUpdated += InvokeStateChange;
+        _userStateController.OnPlayerOptionsUpdated += InvokeStateChange;
     }
 
     public void Dispose()
     {
-        _userStateController.OnDamageReportsUpdated -= StateHasChanged;
-        _userStateController.OnPlayerOptionsUpdated -= StateHasChanged;
+        _userStateController.OnDamageReportsUpdated -= InvokeStateChange;
+        _userStateController.OnPlayerOptionsUpdated -= InvokeStateChange;
     }
 }

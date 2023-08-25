@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes
+namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
+
+/// <summary>
+/// An authenticated request.
+/// </summary>
+public abstract class AuthenticatedRequest : RequestBase
 {
     /// <summary>
-    /// An authenticated request.
+    /// The authentication token.
     /// </summary>
-    public abstract class AuthenticatedRequest : RequestBase
-    {
-        /// <summary>
-        /// The authentication token.
-        /// </summary>
-        public Guid AuthenticationToken { get; set; }
-    }
+    public Guid AuthenticationToken { get; set; }
 }

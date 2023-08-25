@@ -1,10 +1,14 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@using Microsoft.Extensions.Options
+@using Newtonsoft.Json
 @inject CommonData _commonData
+@inject IOptions<JsonSerializerSettings> _jsonSerializerSettings
 
-@if (_unitEntry != null)
+@if (_unit != null)
 {
     <div class="resolver_div_componentrow">
+        <button class="resolver_button" @onclick="ShowModalExport">Export</button>
         <button class="resolver_button resolver_button_delete" @onclick="DeleteUnitEntry">X</button>
     </div>
 
@@ -16,40 +20,44 @@
             </tr>
             <tr>
                 <td>Name</td>
-                <td>@_unitEntry.Name</td>
+                <td>@_unit.Name</td>
             </tr>
             <tr>
                 <td>Type</td>
-                <td>@_unitEntry.Type</td>
+                <td>@_unit.Type</td>
             </tr>
             <tr>
                 <td>Gunnery</td>
-                <td>@_unitEntry.Gunnery</td>
+                <td>@_unit.Gunnery</td>
             </tr>
             <tr>
                 <td>Piloting</td>
-                <td>@_unitEntry.Piloting</td>
+                <td>@_unit.Piloting</td>
             </tr>
             <tr>
                 <td>Speed</td>
-                <td>@_unitEntry.Speed</td>
+                <td>@_unit.Speed</td>
             </tr>
             <tr>
                 <td>Jump Jets</td>
-                <td>@_unitEntry.JumpJets</td>
+                <td>@_unit.JumpJets</td>
             </tr>
             <tr>
                 <td>Tonnage</td>
-                <td>@_unitEntry.Tonnage</td>
+                <td>@_unit.Tonnage</td>
             </tr>
             <tr>
                 <td>Troopers</td>
-                <td>@_unitEntry.Troopers</td>
+                <td>@_unit.Troopers</td>
+            </tr>
+            <tr>
+                <td>Sinks</td>
+                <td>@_unit.Sinks</td>
             </tr>
             <tr>
                 <td>Features</td>
                 <td>
-                    @foreach (var feature in _unitEntry.Features)
+                    @foreach (var feature in _unit.Features)
                     {
                         @($"{feature}")
                         <br/>
@@ -59,7 +67,7 @@
         </table>
     </div>
 
-    @if (_unitEntry.Weapons.Any())
+    @if (_unit.Weapons.Any())
     {
         <div class="resolver_div_componentrow">
             <table class="resolver_table">
@@ -70,25 +78,44 @@
                     <th>Name</th>
                     <th>Ammo</th>
                 </tr>
-                @foreach (var weaponEntry in _unitEntry.Weapons)
+                @foreach (var weaponReference in _unit.Weapons)
                 {
                     <tr>
                         <td>
-                            @weaponEntry.WeaponName
+                            @weaponReference.WeaponName
                         </td>
                         <td>
-                            @(weaponEntry.Ammo != null ? weaponEntry.Ammo : "None")
+                            @(weaponReference.Ammo ?? "None")
                         </td>
                     </tr>
                 }
             </table>
         </div>
     }
+
+    @if (_showModalExport)
+    {
+        <div class="resolver_modal_background">
+            <div class="resolver_modal" style="display:block" role="dialog">
+                <!-- Modal Header -->
+                <div class="resolver_modal_header resolver_header">
+                    <h4 class="resolver_modal_title">Exported Unit Data</h4>
+                    <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="resolver_modal_body">
+                    <FormTextArea Text="@JsonConvert.SerializeObject(_unit, _jsonSerializerSettings.Value)" ComparisonTimeStamp="@DateTime.MinValue" Disabled="@false" OnChanged="_ => { }"></FormTextArea>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @code
 {
-    private Unit _unitEntry;
+    private Unit _unit;
+    private bool _showModalExport = false;
 
     [Parameter]
     public string UnitName { get; set; }
@@ -100,12 +127,22 @@
     {
         if (!string.IsNullOrEmpty(UnitName))
         {
-            _unitEntry = await _commonData.GetUnit(UnitName);
+            _unit = await _commonData.GetUnit(UnitName);
         }
     }
 
     private void DeleteUnitEntry()
     {
         OnDelete.InvokeAsync(UnitName);
+    }
+
+    private void ShowModalExport()
+    {
+        _showModalExport = true;
+    }
+
+    private void ModalClose()
+    {
+        _showModalExport = false;
     }
 }

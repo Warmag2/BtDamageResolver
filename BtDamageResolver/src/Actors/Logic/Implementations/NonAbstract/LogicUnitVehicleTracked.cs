@@ -6,36 +6,35 @@ using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract
+namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract;
+
+/// <summary>
+/// Logic class for tracked vehicles.
+/// </summary>
+public class LogicUnitVehicleTracked : LogicUnitVehicleGround
 {
     /// <summary>
-    /// Logic class for tracked vehicles.
+    /// Initializes a new instance of the <see cref="LogicUnitVehicleTracked"/> class.
     /// </summary>
-    public class LogicUnitVehicleTracked : LogicUnitVehicleGround
+    /// <param name="logger">The logging interface.</param>
+    /// <param name="gameOptions">The game options.</param>
+    /// <param name="grainFactory">The grain factory.</param>
+    /// <param name="mathExpression">The math expression parser.</param>
+    /// <param name="random">The random number generator.</param>
+    /// <param name="unit">The unit.</param>
+    public LogicUnitVehicleTracked(ILogger<LogicUnitVehicleTracked> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LogicUnitVehicleTracked"/> class.
-        /// </summary>
-        /// <param name="logger">The logging interface.</param>
-        /// <param name="gameOptions">The game options.</param>
-        /// <param name="grainFactory">The grain factory.</param>
-        /// <param name="mathExpression">The math expression parser.</param>
-        /// <param name="random">The random number generator.</param>
-        /// <param name="unit">The unit.</param>
-        public LogicUnitVehicleTracked(ILogger<LogicUnitVehicleTracked> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
-        {
-        }
+    }
 
-        /// <inheritdoc />
-        public override PaperDollType GetPaperDollType()
-        {
-            return PaperDollType.Vehicle;
-        }
+    /// <inheritdoc />
+    public override PaperDollType GetPaperDollType()
+    {
+        return PaperDollType.Vehicle;
+    }
 
-        /// <inheritdoc />
-        protected override int GetMotiveHitModifier()
-        {
-            return 0;
-        }
+    /// <inheritdoc />
+    protected override int GetMotiveHitModifier()
+    {
+        return 0;
     }
 }

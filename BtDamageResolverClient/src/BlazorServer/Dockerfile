@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 
 FROM resolversdk:latest AS build
@@ -15,6 +15,5 @@ RUN dotnet publish "BlazorServer.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8787
 ENTRYPOINT ["dotnet", "BlazorServer.dll"]

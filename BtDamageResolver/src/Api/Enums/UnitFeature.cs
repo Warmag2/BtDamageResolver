@@ -1,60 +1,95 @@
-﻿namespace Faemiyah.BtDamageResolver.Api.Enums
+﻿namespace Faemiyah.BtDamageResolver.Api.Enums;
+
+/// <summary>
+/// This enum contains any features for units, which change the way game rules are applied to them.
+/// This comprises both quirks and certain equipment.
+/// </summary>
+public enum UnitFeature
 {
-    /// <summary>
-    /// This enum contains any features for units, which change the way game rules are applied to them.
-    /// This comprises both quirks and certain equipment.
-    /// </summary>
-    public enum UnitFeature
-    {
-        // Unit has an AMS missile defense system
-        Ams,
+    // Unit has an AMS missile defense system
+    Ams,
 
-        // Heat resistant armor negates extra damage from heat weapons to heat-vulnerable units
-        ArmorHeatResistant,
+    // Heat resistant armor negates extra damage from heat weapons to heat-vulnerable units
+    ArmorHeatResistant,
 
-        // Stealth armor bestows -1 to hit from medium and -2 to hit from long range
-        ArmorStealth,
+    // Stealth armor bestows -1 to hit from medium and -2 to hit from long range
+    ArmorStealth,
 
-        // Unit has a beagle active probe
-        Bap,
+    // Unit has a beagle active probe (or the Improved Sensors quirk)
+    Bap,
 
-        // Bonus of 1 to hit in melee
-        BattleFists,
+    // Bonus of 1 to hit in melee
+    BattleFists,
 
-        // Always generates 4 points less heat
-        CombatComputer,
+    // Always generates 4 points less heat
+    CombatComputer,
 
-        // Unit has ECM
-        Ecm,
+    // Better initiative rolls (no effect yet)
+    CommandMech,
 
-        // Unit has MASC
-        Masc,
+    // Better initiative rolls (no effect yet)
+    Cowl,
 
-        // Half damage from glancing cluster shots (hit exactly at target value)
-        NarrowLowProfile,
+    // Unit is easy to pilot (no effect yet)
+    EasyToPilot,
 
-        // Jumping provides 1 more evasion bonus
-        NimbleJumper,
+    // Unit has ECM
+    Ecm,
 
-        // Half damage to legs from DFAs
-        ReinforcedLegs,
+    // Unit can torso twist one more hex side (no effect yet)
+    ExtendedTorsoTwist,
 
-        // Running only gives -1 to hit
-        StabilizedWeapons,
+    // Unit is hard to pilot (no effect yet) PS: This quirk is EXACTLY THE SAME as Cramped Cockpit, so the latter is not included!
+    HardToPilot,
 
-        // Bonus of 2 to hit air units
-        TargetingAntiAir,
+    // Unit has improved communications systems (no effect yet)
+    ImprovedCommunications,
 
-        // Bonus of 1 to hit at extreme range
-        TargetingExtremeRange,
+    // The main weapon of this unit is externally carried and can be picked up and put down during combat (no effect yet)
+    JettisonableWeapon,
 
-        // Bonus of 1 to hit at long range
-        TargetingLongRange,
+    // Unit has MASC
+    Masc,
 
-        // Bonus of 1 to hit at medium range
-        TargetingMediumRange,
+    // Half damage from glancing cluster shots (hit exactly at target value)
+    NarrowLowProfile,
 
-        // Bonus of 1 to hit at short range
-        TargetingShortRange
-    }
+    // Jumping provides 1 more evasion bonus
+    NimbleJumper,
+
+    // Unit has no arms or minimal arms (no effect yet)
+    NoMinimalArms,
+
+    // Unit cannot go from standstill to running speed in one turn (no effect yet)
+    PoorPerformance,
+
+    // Half damage to legs from DFAs
+    ReinforcedLegs,
+
+    // Running only gives -1 to hit
+    StabilizedWeapons,
+
+    // +1 to resist falling from impacts and attacks (no effect yet)
+    Stable,
+
+    // Bonus of 2 to hit air units
+    TargetingAntiAir,
+
+    // Bonus of 1 to hit at extreme range
+    TargetingExtremeRange,
+
+    // Bonus of 1 to hit at long range
+    TargetingLongRange,
+
+    // Bonus of 1 to hit at medium range
+    TargetingMediumRange,
+
+    // Bonus of 1 to hit at short range
+    TargetingShortRange,
+
+    // -1 to piloting when entering difficult terrain hexes (no effect yet)
+    Unbalanced,
+
+    // Unit is liable to damage its own legs if it tries to kick/dfa
+    WeakLegs
 }

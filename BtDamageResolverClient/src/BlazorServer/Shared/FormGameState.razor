@@ -1,4 +1,5 @@
-﻿@using Faemiyah.BtDamageResolver.Api.Entities
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
@@ -17,7 +18,7 @@
             <div class="resolver_div_componentlistcontainer">
                 @foreach (var unitEntry in _userStateController.PlayerState.UnitEntries)
                 {
-                    <FormUnitEntry @key=@($"{unitEntry.Id}_{unitEntry.TimeStamp}") UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
+                    <FormUnitEntry @key=@($"{unitEntry.Id}") UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" OnSwap="@OnUnitSwap"></FormUnitEntry>
                 }
             </div>
 
@@ -55,7 +56,7 @@
         _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
         _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
         _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
-        _userStateController.OnPlayerUnitListChanged += StateHasChanged;
+        _userStateController.OnPlayerUnitListChanged += InvokeStateChange;
     }
 
     private void AddUnit()
@@ -96,6 +97,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnPlayerUnitListChanged -= StateHasChanged;
+        _userStateController.OnPlayerUnitListChanged -= InvokeStateChange;
     }
 }

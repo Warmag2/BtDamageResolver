@@ -2,17 +2,16 @@
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Entities;
 
-namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Requests
+namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
+
+/// <summary>
+/// The request for generating a damage instance.
+/// </summary>
+[Serializable]
+public class SendDamageInstanceRequest : AuthenticatedRequest
 {
     /// <summary>
-    /// The request for generating a damage instance.
+    /// The damage instance.
     /// </summary>
-    [Serializable]
-    public class SendDamageInstanceRequest : AuthenticatedRequest
-    {
-        /// <summary>
-        /// The damage instance.
-        /// </summary>
-        public DamageInstance DamageInstance { get; set; }
-    }
+    public DamageInstance DamageInstance { get; set; }
 }

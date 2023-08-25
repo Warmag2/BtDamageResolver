@@ -23,16 +23,3 @@ CREATE TABLE ResolverLogPlayer
 
 CREATE INDEX ResolverLogPlayer_EventTime ON ResolverLogPlayer (EventTime);
 CREATE INDEX ResolverLogPlayer_ActionType_EventTime ON ResolverLogPlayer (ActionType, EventTime);
-
--- This table defines Resolver logging data for unit actor activations
-CREATE TABLE ResolverLogUnit
-(
-    Id SERIAL PRIMARY KEY,
-    EventTime TIMESTAMP(3) NOT NULL,
-    UnitId INT NOT NULL,
-    ActionType SMALLINT NOT NULL,
-    ActionData INT NOT NULL
-);
-
-CREATE INDEX ResolverLogUnit_EventTime ON ResolverLogUnit (EventTime);
-CREATE INDEX ResolverLogUnit_ActionType_EventTime ON ResolverLogUnit (ActionType, EventTime);

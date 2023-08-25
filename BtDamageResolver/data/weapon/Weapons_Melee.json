@@ -41,7 +41,7 @@
     "RangeAerospace": "Short",
     "Heat": 0,
     "HitModifier": -2,
-    "SpecialFeatures": [ { "Data": "$tonnage/5", "Type": "Melee" } ]
+    "SpecialFeatures": [ { "Data": "$tonnage/5", "Type": "Melee" }, { "Type": "MeleeKick" } ]
   },
   {
     "Name": "Melee Hatchet",

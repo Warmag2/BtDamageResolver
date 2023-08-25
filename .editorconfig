@@ -7,6 +7,12 @@ csharp_style_var_elsewhere=true:silent
 ## IDE
 ##
 
+# Ternary operator suggestions are not needed, I'll use it when I want to
+dotnet_diagnostic.IDE0045.severity = None
+
+# Ternary operator suggestions are not needed, I'll use it when I want to
+dotnet_diagnostic.IDE0046.severity = None
+
 # Range operator is not clear coding in my opinion
 dotnet_diagnostic.IDE0057.severity = None
 
@@ -44,6 +50,9 @@ dotnet_diagnostic.SA1128.severity = None
 
 # Using directive should appear within a namespace declaration
 dotnet_diagnostic.SA1200.severity = None
+
+# Static members should come before non-static members
+dotnet_diagnostic.SA1204.severity = None
 
 # Fields should begin with a lowercase letter
 dotnet_diagnostic.SA1306.severity = None

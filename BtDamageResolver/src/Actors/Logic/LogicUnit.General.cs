@@ -2,98 +2,98 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
 
-namespace Faemiyah.BtDamageResolver.Actors.Logic
+namespace Faemiyah.BtDamageResolver.Actors.Logic;
+
+/// <summary>
+/// General top-level methods for resolving combat.
+/// </summary>
+public partial class LogicUnit
 {
-    /// <summary>
-    /// General top-level methods for resolving combat.
-    /// </summary>
-    public partial class LogicUnit
+    /// <inheritdoc />
+    public async Task<List<DamageReport>> ResolveCombat(ILogicUnit target, bool processOnlyTags)
     {
-        /// <inheritdoc />
-        public async Task<List<DamageReport>> ResolveCombat(ILogicUnit target, bool processOnlyTags)
+        var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
+
+        foreach (var weaponEntry in Unit.Weapons.Where(w => w.State == WeaponState.Active))
         {
-            var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
+            var weapon = await FormWeapon(weaponEntry);
 
-            foreach (var weaponEntry in Unit.Weapons.Where(w => w.State == WeaponState.Active))
+            // If not processing tags, skip tag weapons
+            if (weapon.SpecialDamage.Type == SpecialDamageType.Tag && !processOnlyTags)
             {
-                var weapon = await FormWeapon(weaponEntry);
-
-                // If not processing tags, skip tag weapons
-                if (weapon.SpecialDamage.Type == SpecialDamageType.Tag && !processOnlyTags)
-                {
-                    continue;
-                }
-
-                // If processing tags, skip non-tag weapons
-                if (weapon.SpecialDamage.Type != SpecialDamageType.Tag && processOnlyTags)
-                {
-                    continue;
-                }
-
-                var hitCalclulationDamageReport = new DamageReport
-                {
-                    Phase = weapon.GetUsePhase(),
-                    DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, Unit.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
-                    FiringUnitId = Unit.Id,
-                    FiringUnitName = Unit.Name,
-                    TargetUnitId = target.Unit.Id,
-                    TargetUnitName = target.Unit.Name,
-                    InitialTroopers = target.Unit.Troopers
-                };
-
-                var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon);
-
-                damageReportCombatActionPairs.Add((hitCalclulationDamageReport, combatAction));
+                continue;
             }
 
-            // If we have no actions at all, return an empty list.
-            // No longer relevant
-            /*if (!damageReportCombatActionPairs.Any())
+            // If processing tags, skip non-tag weapons
+            if (weapon.SpecialDamage.Type != SpecialDamageType.Tag && processOnlyTags)
             {
-                return new List<DamageReport>();
-            }*/
+                continue;
+            }
 
-            var allDamageReports = new List<DamageReport>();
-
-            // Add damage resolution to damage reports based on combat actions
-            foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.CombatAction.Weapon.GetUsePhase()))
+            var hitCalclulationDamageReport = new DamageReport
             {
-                var targetDamageReportsForPhase = new List<DamageReport>();
-                var selfDamageReportsForPhase = new List<DamageReport>();
+                Phase = weapon.GetUsePhase(),
+                DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, Unit.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
+                FiringUnitId = Unit.Id,
+                FiringUnitName = Unit.Name,
+                TargetUnitId = target.Unit.Id,
+                TargetUnitName = target.Unit.Name,
+                InitialTroopers = target.Unit.Troopers
+            };
 
-                foreach (var (damageReport, combatAction) in damageReportCombatActionPairsByPhase)
+            var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon);
+
+            damageReportCombatActionPairs.Add((hitCalclulationDamageReport, combatAction));
+        }
+
+        // If we have no actions at all, return an empty list.
+        // No longer relevant
+        /*if (!damageReportCombatActionPairs.Any())
+        {
+            return new List<DamageReport>();
+        }*/
+
+        var allDamageReports = new List<DamageReport>();
+
+        // Add damage resolution to damage reports based on combat actions
+        foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.CombatAction.Weapon.GetUsePhase()))
+        {
+            var targetDamageReportsForPhase = new List<DamageReport>();
+            var selfDamageReportsForPhase = new List<DamageReport>();
+
+            foreach (var (damageReport, combatAction) in damageReportCombatActionPairsByPhase)
+            {
+                // Do damage resolution only for combat actions which actually happened
+                if (combatAction.ActionHappened)
                 {
-                    // Do damage resolution only for combat actions which actually happened
-                    if (combatAction.ActionHappened)
+                    // Target is unharmed if no hit happened
+                    if (combatAction.HitHappened)
                     {
-                        // Target is unharmed if no hit happened
-                        if (combatAction.HitHappened)
-                        {
-                            damageReport.Merge(await ResolveCombatAction(target, combatAction));
-                        }
-
-                        // Attacker may be harmed even if a hit did not occur
-                        selfDamageReportsForPhase.AddIfNotNull(await ResolveCombatActionSelf(target, combatAction));
+                        damageReport.Merge(await ResolveCombatAction(target, combatAction));
                     }
 
-                    // Hit calculation and combat action pre-calculations are always included
-                    targetDamageReportsForPhase.Add(damageReport);
+                    // Attacker may be harmed even if a hit did not occur
+                    selfDamageReportsForPhase.AddIfNotNull(await ResolveCombatActionSelf(target, combatAction));
                 }
 
-                allDamageReports.AddIfNotNull(targetDamageReportsForPhase.Merge());
-                allDamageReports.AddIfNotNull(selfDamageReportsForPhase.Merge());
+                // Hit calculation and combat action pre-calculations are always included
+                targetDamageReportsForPhase.Add(damageReport);
             }
 
-            if (!processOnlyTags)
-            {
-                allDamageReports.Add(await ResolveNonWeaponHeat());
-            }
-
-            return allDamageReports;
+            allDamageReports.AddIfNotNull(targetDamageReportsForPhase.Merge());
+            allDamageReports.AddIfNotNull(selfDamageReportsForPhase.Merge());
         }
+
+        if (!processOnlyTags)
+        {
+            allDamageReports.Add(await ResolveNonWeaponHeat());
+        }
+
+        return allDamageReports;
     }
 }

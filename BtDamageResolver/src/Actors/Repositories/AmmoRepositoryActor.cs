@@ -4,20 +4,19 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Microsoft.Extensions.Logging;
 
-namespace Faemiyah.BtDamageResolver.Actors.Repositories
+namespace Faemiyah.BtDamageResolver.Actors.Repositories;
+
+/// <summary>
+/// An Ammo repository actor, which stores the properties of different Ammo.
+/// </summary>
+public class AmmoRepositoryActor : ExternalRepositoryActorBase<Ammo, string>, IAmmoRepository
 {
     /// <summary>
-    /// An Ammo repository actor, which stores the properties of different Ammo.
+    /// Initializes a new instance of the <see cref="AmmoRepositoryActor"/> class.
     /// </summary>
-    public class AmmoRepositoryActor : ExternalRepositoryActorBase<Ammo, string>, IAmmoRepository
+    /// <param name="logger">The logging interface.</param>
+    /// <param name="repository">The ammo repository.</param>
+    public AmmoRepositoryActor(ILogger<AmmoRepositoryActor> logger, CachedEntityRepository<Ammo, string> repository) : base(logger, repository)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AmmoRepositoryActor"/> class.
-        /// </summary>
-        /// <param name="logger">The logging interface.</param>
-        /// <param name="repository">The ammo repository.</param>
-        public AmmoRepositoryActor(ILogger<AmmoRepositoryActor> logger, CachedEntityRepository<Ammo, string> repository) : base(logger, repository)
-        {
-        }
     }
 }

@@ -1,4 +1,5 @@
-﻿@typeparam TItem
+﻿@inherits BaseFaemiyahComponent
+@typeparam TItem
 
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject VisualStyleController _visualStyleController
@@ -57,7 +58,7 @@
                 _selectedOption = value;
                 _updateTimeStamp = DateTime.UtcNow;
                 OnChanged.InvokeAsync(Options[value]);
-                StateHasChanged();
+                InvokeStateChange();
             }
         }
     }
