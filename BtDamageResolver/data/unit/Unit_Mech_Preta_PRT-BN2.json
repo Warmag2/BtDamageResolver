@@ -1,0 +1,34 @@
+{
+    "Gunnery": 3,
+    "Piloting": 3,
+    "Features":
+    [
+        "Bap"
+    ],
+    "JumpJets": 6,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 45,
+    "Troopers": 1,
+    "Sinks": 22,
+    "Weapons":
+    [
+        {
+            "WeaponName": "Tag"
+        },
+        {
+            "WeaponName": "Large Pulse Laser"
+        },
+        {
+            "WeaponName": "ER Medium Laser"
+        },
+        {
+            "WeaponName": "ER Medium Laser"
+        },
+        {
+            "WeaponName": "Melee Retractable Blade",
+            "Ammo": "AP Strike"
+        }
+    ],
+    "Name": "Preta PRT-BN2"
+}
