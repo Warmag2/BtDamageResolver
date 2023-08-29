@@ -38,7 +38,7 @@ public abstract class RedisCommunicator
     protected ISubscriber RedisSubscriber;
 
     private readonly string _connectionString;
-    private readonly string _listenTarget;
+    private readonly RedisChannel _listenTarget;
     private ChannelMessageQueue _listenedMessageQueue;
     private ConnectionMultiplexer _redisConnectionMultiplexer;
 
@@ -54,7 +54,7 @@ public abstract class RedisCommunicator
         Logger = logger;
         JsonSerializerSettings = jsonSerializerSettings.Value;
         _connectionString = connectionString;
-        _listenTarget = listenTarget;
+        _listenTarget = new RedisChannel(listenTarget, RedisChannel.PatternMode.Literal);
 
         Start();
     }
@@ -91,8 +91,9 @@ public abstract class RedisCommunicator
     /// <param name="data">The data to send.</param>
     protected void SendEnvelope(string target, Envelope data)
     {
-        CheckChannelConnection(target);
-        RedisSubscriber.Publish(target, JsonConvert.SerializeObject(data, JsonSerializerSettings), CommandFlags.FireAndForget);
+        var channel = new RedisChannel(target, RedisChannel.PatternMode.Literal);
+        CheckChannelConnection(channel);
+        RedisSubscriber.Publish(channel, JsonConvert.SerializeObject(data, JsonSerializerSettings), CommandFlags.FireAndForget);
     }
 
     /// <summary>
@@ -109,7 +110,7 @@ public abstract class RedisCommunicator
     /// Checks connection to channel and resubscribes if the connection has been lost.
     /// </summary>
     /// <param name="channel">The channel to connect.</param>
-    private void CheckChannelConnection(string channel)
+    private void CheckChannelConnection(RedisChannel channel)
     {
         if (!RedisSubscriber.IsConnected(channel))
         {

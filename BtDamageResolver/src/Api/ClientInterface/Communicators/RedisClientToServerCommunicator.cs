@@ -4,6 +4,7 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 
@@ -91,7 +92,7 @@ public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClie
     /// <inheritdoc />
     protected override void SubscribeAdditional()
     {
-        var listenedClientQueue = RedisSubscriber.Subscribe(ClientStreamAddress);
+        var listenedClientQueue = RedisSubscriber.Subscribe(new RedisChannel(ClientStreamAddress, RedisChannel.PatternMode.Literal));
         listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message, JsonSerializerSettings)).ConfigureAwait(false));
 
         base.SubscribeAdditional();
