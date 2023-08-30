@@ -261,7 +261,14 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendPlayerStateRequest.PlayerName).SendPlayerState(unpackedSendPlayerStateRequest.AuthenticationToken, unpackedSendPlayerStateRequest.PlayerState))
         {
-            LogWarning(unpackedSendPlayerStateRequest);
+            // Do not use regular LogWarning here - SendPlayerState has internal error handling and sends its own sensible error messages to the player
+            _logger.LogWarning("Failed to handle a {type} for player {playerId}", unpackedSendPlayerStateRequest.GetType(), unpackedSendPlayerStateRequest.PlayerName);
+        }
+        else
+        {
+            // In this case, clear error message on success, so that the player knows he is in spec.
+            // This is the only error message the player should ever see if the game is working properly, so I won't bother to worry about this discrepancy too much.
+            Send(unpackedSendPlayerStateRequest.PlayerName, EventNames.ErrorMessage, string.Empty);
         }
 
         return true;

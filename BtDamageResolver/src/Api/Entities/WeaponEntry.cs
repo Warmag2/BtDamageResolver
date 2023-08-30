@@ -65,4 +65,22 @@ public class WeaponEntry : WeaponReference
             WeaponName = WeaponName
         };
     }
+
+    /// <summary>
+    /// Is this a battle armor weapon.
+    /// </summary>
+    /// <returns><b>True</b> if the weapon is a battle armor weapon, <b>false</b> otherwise.</returns>
+    public bool IsBattleArmorWeapon()
+    {
+        return WeaponName.StartsWith("BA ");
+    }
+
+    /// <summary>
+    /// Is this an infantry weapon.
+    /// </summary>
+    /// <returns><b>True</b> if the weapon is an infantry weapon, <b>false</b> otherwise.</returns>
+    public bool IsInfantryWeapon()
+    {
+        return WeaponName.StartsWith("Infantry ");
+    }
 }

@@ -65,6 +65,21 @@ public partial class PlayerActor
             return false;
         }
 
+        // Validate unit entries and do not proceed if they contain data that would compromise the rules engine.
+        // This player state is not updated with invalid state.
+        foreach (var unit in playerState.UnitEntries)
+        {
+            var validationResult = unit.Validate();
+
+            if (!validationResult.IsValid)
+            {
+                await SendErrorMessageToClient($"Unit {unit} has the following errors: {validationResult}");
+                _logger.LogWarning("Player {id} is sending invalid data for unit {unit}. Reason: {validationResult}", this.GetPrimaryKeyString(), unit.Id, validationResult);
+
+                return false;
+            }
+        }
+
         var success = false;
 
         try
