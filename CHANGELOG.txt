@@ -66,6 +66,8 @@
 
 	Fixed
 
+[BUG] Vehicle motive hit rolls modified by vechile type could get results over 12.
+
 [BUG] Forced critical hits (such as that from AC AP ammo) would inflict critical hits 
       against targets which could not take critical hits (such as infantry).
 
