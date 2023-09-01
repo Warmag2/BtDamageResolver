@@ -1,5 +1,6 @@
 	Implemented
 
+[FEATURE] Unit rules validation.
 [FEATURE] Ammo.
 [FEATURE] Stances for infantry/mechs.
 [FEATURE] Quirks.
@@ -40,6 +41,8 @@
 
 	Implemented (internal)
 
+[FEATURE] Get rid of UnitActor.
+[FEATURE] Refactor code for .NET 7 and Orleans 7.
 [FEATURE] Logic reflection for easier expansions.
 [FEATURE] Faster and stabler repositories.
 [FEATURE] Better parser
