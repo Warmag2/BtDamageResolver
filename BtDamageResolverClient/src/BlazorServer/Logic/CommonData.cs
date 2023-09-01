@@ -303,7 +303,7 @@ public class CommonData
             return MakeSimplePickBrackets(0, 1, unitEntry.JumpJets).ToDictionary(p => p.ToString(), p => p.Begin);
         }
 
-        var maxMovementAmount = unitEntry.GetCurrentSpeed(unitEntry.MovementClass);
+        var maxMovementAmount = unitEntry.GetCurrentSpeed();
 
         var possibleMovementAmounts = MapMovementAmount.Where(k => k.Value != 0 && k.Value <= maxMovementAmount).Select(k => k.Value).ToList();
 

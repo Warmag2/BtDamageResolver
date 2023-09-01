@@ -3,7 +3,7 @@
     "Piloting": 5,
     "Features":
     [
-        "CommandMech",
+        "CommandUnit",
         "ExtendedTorsoTwist",
         "HardToPilot",
         "ImprovedCommunications",
