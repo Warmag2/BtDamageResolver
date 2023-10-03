@@ -1,7 +1,9 @@
 TODO: Styling (looks like shit for the most part).
+TODO: Damage tracking.
 
-	Visual
+	Open UI Issues
 
+[FEATURE] Table-based UI layout is very slow and frowned upon these days - move to the current millennium and change everything to well-mannered <div>s.
 [FEATURE] Move adding deleting buttons around so that they are not outside the visual components they need to delete and/or not in strange places.
 
 	Open Bugs

@@ -25,7 +25,7 @@ public enum UnitFeature
     CombatComputer,
 
     // Better initiative rolls (no effect yet)
-    CommandMech,
+    CommandUnit,
 
     // Better initiative rolls (no effect yet)
     Cowl,
@@ -62,6 +62,9 @@ public enum UnitFeature
 
     // Unit cannot go from standstill to running speed in one turn (no effect yet)
     PoorPerformance,
+
+    // Infantry/BattleArmor swarm attacks are less effective against the actuators of this unit (no effect yet)
+    ProtectedActuators,
 
     // Half damage to legs from DFAs
     ReinforcedLegs,

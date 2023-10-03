@@ -79,6 +79,12 @@ public abstract class LogicUnitVehicle : LogicUnit
                     break;
             }
 
+            // Let's not overflow
+            if (criticalThreatRoll > 12)
+            {
+                criticalThreatRoll = 12;
+            }
+
             damageReport.Log(new AttackLogEntry
             {
                 Context = "Critical Threat roll modified by unit type",

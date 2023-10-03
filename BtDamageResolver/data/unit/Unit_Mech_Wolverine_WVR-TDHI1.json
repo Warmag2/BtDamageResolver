@@ -3,11 +3,12 @@
     "Piloting": 5,
     "Features":
     [
-        "CommandMech",
+        "CommandUnit",
         "ExtendedTorsoTwist",
         "HardToPilot",
         "ImprovedCommunications",
-        "JettisonableWeapon"
+        "JettisonableWeapon",
+        "ProtectedActuators"
     ],
     "JumpJets": 5,
     "Speed": 5,

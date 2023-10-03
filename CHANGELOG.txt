@@ -1,5 +1,6 @@
 	Implemented
 
+[FEATURE] Unit rules validation.
 [FEATURE] Ammo.
 [FEATURE] Stances for infantry/mechs.
 [FEATURE] Quirks.
@@ -40,6 +41,8 @@
 
 	Implemented (internal)
 
+[FEATURE] Get rid of UnitActor.
+[FEATURE] Refactor code for .NET 7 and Orleans 7.
 [FEATURE] Logic reflection for easier expansions.
 [FEATURE] Faster and stabler repositories.
 [FEATURE] Better parser
@@ -62,6 +65,8 @@
 [FEATURE] Proper single missile attack handling.
 
 	Fixed
+
+[BUG] Vehicle motive hit rolls modified by vechile type could get results over 12.
 
 [BUG] Forced critical hits (such as that from AC AP ammo) would inflict critical hits 
       against targets which could not take critical hits (such as infantry).

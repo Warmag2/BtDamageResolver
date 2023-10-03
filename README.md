@@ -49,7 +49,8 @@ The following services are now available and running in containers:
 * Grafana on port 63000
 * Redis on port 63790
 
-To access these services, use the password and username you set in the `.env` file.
+Only the BtDamageResolverClient needs to be accessed by players, and it does not need a password. To access the rest of these services, use the password and username you set in the `.env` file.
+For users who do not need to access these services from the outside world, I would recommend firewalling all of them except the aforementioned BtDamageResolverClient.
 
 To edit the external ports or adjust any service settings, edit the `docker-compose.yml` file in the `BtDamageResolverInfrastructure` folder.
 
