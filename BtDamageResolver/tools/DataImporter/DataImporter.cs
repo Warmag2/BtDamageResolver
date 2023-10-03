@@ -49,7 +49,9 @@ public class DataImporter
         var jsonSerializerSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
+            MissingMemberHandling = MissingMemberHandling.Error
         };
+
         jsonSerializerSettings.Converters.Add(new StringEnumConverter());
 
         var data = FetchData(options, jsonSerializerSettings);
