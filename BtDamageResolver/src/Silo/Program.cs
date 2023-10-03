@@ -148,6 +148,7 @@ public static class Program
                     .Configure<JsonSerializerSettings>(options =>
                     {
                         options.NullValueHandling = NullValueHandling.Ignore;
+                        options.MissingMemberHandling = MissingMemberHandling.Error;
                         options.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                     })
                     .UseAdoNetClustering(options =>
