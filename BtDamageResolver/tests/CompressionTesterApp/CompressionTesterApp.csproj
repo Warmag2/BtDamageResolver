@@ -3,12 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>SevenZip.Compression.LZMA</RootNamespace>
-    <AssemblyName>TesterApp</AssemblyName>
+    <RootNamespace>Faemiyah.BtDamageResolver.Tests</RootNamespace>
+    <AssemblyName>CompressionTesterApp</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CompressionLzma\CompressionLzma.csproj" />
+    <ProjectReference Include="..\..\src\Api\Api.csproj" />
   </ItemGroup>
 
 </Project>

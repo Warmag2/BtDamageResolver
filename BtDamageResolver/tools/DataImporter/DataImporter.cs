@@ -48,8 +48,8 @@ public class DataImporter
     {
         var jsonSerializerSettings = new JsonSerializerSettings
         {
-            NullValueHandling = NullValueHandling.Ignore,
-            MissingMemberHandling = MissingMemberHandling.Error
+            MissingMemberHandling = MissingMemberHandling.Error,
+            NullValueHandling = NullValueHandling.Ignore
         };
 
         jsonSerializerSettings.Converters.Add(new StringEnumConverter());

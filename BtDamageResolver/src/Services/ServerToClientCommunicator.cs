@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Orleans;
 
-using static SevenZip.Compression.LZMA.DataHelper;
+using static Faemiyah.BtDamageResolver.Api.ClientInterface.Compression.DataHelper;
 
 namespace Faemiyah.BtDamageResolver.Services;
 
