@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
@@ -46,14 +45,7 @@ public class DataImporter
     /// <returns>A task which finishes when data importing is completed.</returns>
     public async Task Work(DataImportOptions options)
     {
-        var jsonSerializerOptions = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true
-        };
-
-        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        var jsonSerializerOptions = GetJsonSerializerOptions();
 
         var data = FetchData(options, jsonSerializerOptions);
         _logger.LogInformation("{count} data objects matched the filter(s)", data.Count);
@@ -175,7 +167,8 @@ public class DataImporter
                     .Services.AddSerializer(serializerBuilder =>
                     {
                         serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
-                    });
+                    })
+                    .ConfigureJsonSerializerOptions();
             }).Build();
 
         _logger.LogInformation("Host successfully created.");

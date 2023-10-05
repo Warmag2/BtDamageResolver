@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.Json;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -7,7 +9,6 @@ using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 
@@ -17,7 +18,8 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 public class ResolverCommunicator
 {
     private readonly ILogger<ResolverCommunicator> _logger;
-    private readonly IOptions<JsonSerializerSettings> _jsonSerializerSettings;
+    private readonly DataHelper _dataHelper;
+    private readonly IOptions<JsonSerializerOptions> _jsonSerializerOptions;
     private readonly CommunicationOptions _communicationOptions;
     private HubConnection _hubConnection;
 
@@ -30,11 +32,13 @@ public class ResolverCommunicator
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="communicationOptions">The communication options.</param>
+    /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="jsonSerializerSettings">The JSON serializer settings.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, IOptions<JsonSerializerSettings> jsonSerializerSettings)
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, DataHelper dataHelper, IOptions<JsonSerializerOptions> jsonSerializerSettings)
     {
         _logger = logger;
-        _jsonSerializerSettings = jsonSerializerSettings;
+        _dataHelper = dataHelper;
+        _jsonSerializerOptions = jsonSerializerSettings;
         _communicationOptions = communicationOptions.Value;
     }
 
@@ -288,7 +292,8 @@ public class ResolverCommunicator
             });
     }
 
-    private void SendRequest(string requestType, RequestBase requestBase)
+    private void SendRequest<TRequest>(string requestType, TRequest requestBase)
+        where TRequest : class
     {
         if (!CheckAuthentication(requestType))
         {
@@ -318,7 +323,7 @@ public class ResolverCommunicator
 
     private void Reset()
     {
-        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerSettings, _communicationOptions.ConnectionString, _playerName, _hubConnection);
+        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _communicationOptions.ConnectionString, _dataHelper, _playerName, _hubConnection);
     }
 
     private void SendErrorMessage(string errorMessage)

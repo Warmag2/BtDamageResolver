@@ -66,8 +66,8 @@ acceleration and more efficient exhaust system designs.";
 
         var originalComplexTypeCompressed = dataHelper.Pack(originalComplexType);
         var originalComplexTypeUncompressed = dataHelper.Unpack<ComplexType>(originalComplexTypeCompressed);
-        var originalAsText = System.Text.Json.JsonSerializer.Serialize(originalComplexType);
-        var uncompressedAsText = System.Text.Json.JsonSerializer.Serialize(originalComplexTypeUncompressed);
+        var originalAsText = JsonSerializer.Serialize(originalComplexType);
+        var uncompressedAsText = JsonSerializer.Serialize(originalComplexTypeUncompressed);
         Console.WriteLine(originalAsText);
         Console.WriteLine(uncompressedAsText);
         Console.WriteLine(originalAsText.Equals(uncompressedAsText));
