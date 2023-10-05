@@ -288,7 +288,8 @@ public class ResolverCommunicator
             });
     }
 
-    private void SendRequest(string requestType, RequestBase requestBase)
+    private void SendRequest<TRequest>(string requestType, TRequest requestBase)
+        where TRequest : class
     {
         if (!CheckAuthentication(requestType))
         {
