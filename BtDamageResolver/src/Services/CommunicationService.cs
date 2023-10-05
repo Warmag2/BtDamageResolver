@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Orleans;
 using Orleans.Runtime;
 
@@ -24,7 +25,8 @@ public class CommunicationService : GrainService, ICommunicationService
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="communicationOptions">The communication options.</param>
-    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
+    /// <param name="jsonSerializerOptions">JSON serializer options.</param>
+    /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="grainFactory">The grain factory.</param>
     /// <param name="grainId">The grain ID.</param>
     /// <param name="silo">The silo.</param>
@@ -32,14 +34,15 @@ public class CommunicationService : GrainService, ICommunicationService
     public CommunicationService(
         ILogger<CommunicationService> logger,
         IOptions<CommunicationOptions> communicationOptions,
-        IOptions<JsonSerializerSettings> jsonSerializerSettings,
+        IOptions<JsonSerializerOptions> jsonSerializerOptions,
+        DataHelper dataHelper,
         IGrainFactory grainFactory,
         GrainId grainId,
         Silo silo,
         ILoggerFactory loggerFactory) : base(grainId, silo, loggerFactory)
     {
         _logger = logger;
-        _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), jsonSerializerSettings, communicationOptions.Value.ConnectionString, grainFactory);
+        _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), jsonSerializerOptions, communicationOptions.Value.ConnectionString, dataHelper, grainFactory);
     }
 
     /// <inheritdoc />

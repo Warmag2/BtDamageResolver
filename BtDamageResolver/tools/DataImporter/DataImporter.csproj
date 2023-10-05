@@ -12,7 +12,7 @@
     <PackageReference Include="Microsoft.Orleans.Client" Version="7.2.1" />
     <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="7.2.1" />
     <PackageReference Include="Microsoft.Orleans.Sdk" Version="7.2.1" />
-    <PackageReference Include="Microsoft.Orleans.Serialization.NewtonsoftJson" Version="7.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Serialization.SystemTextJson" Version="7.2.1" />
     <PackageReference Include="Npgsql" Version="7.0.6" />
   </ItemGroup>
 

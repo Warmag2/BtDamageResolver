@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.Json;
+using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
@@ -28,9 +29,14 @@ public abstract class RedisCommunicator
     protected readonly ILogger Logger;
 
     /// <summary>
-    /// The JSON serializer settings.
+    /// The JSON serializer options.
     /// </summary>
-    protected readonly JsonSerializerSettings JsonSerializerSettings;
+    protected readonly JsonSerializerOptions JsonSerializerOptions;
+
+    /// <summary>
+    /// The data helper.
+    /// </summary>
+    protected readonly DataHelper DataHelper;
 
     /// <summary>
     /// The Redis subscriber.
@@ -46,14 +52,16 @@ public abstract class RedisCommunicator
     /// Initializes a new instance of the <see cref="RedisCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
+    /// <param name="jsonSerializerOptions">JSON serializer options.</param>
     /// <param name="connectionString">The server connection string.</param>
+    /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="listenTarget">The target channel to listen to.</param>
-    protected RedisCommunicator(ILogger logger, IOptions<JsonSerializerSettings> jsonSerializerSettings, string connectionString, string listenTarget)
+    protected RedisCommunicator(ILogger logger, IOptions<JsonSerializerOptions> jsonSerializerOptions, string connectionString, DataHelper dataHelper, string listenTarget)
     {
         Logger = logger;
-        JsonSerializerSettings = jsonSerializerSettings.Value;
+        JsonSerializerOptions = jsonSerializerOptions.Value;
         _connectionString = connectionString;
+        DataHelper = dataHelper;
         _listenTarget = new RedisChannel(listenTarget, RedisChannel.PatternMode.Literal);
 
         Start();
@@ -93,7 +101,7 @@ public abstract class RedisCommunicator
     {
         var channel = new RedisChannel(target, RedisChannel.PatternMode.Literal);
         CheckChannelConnection(channel);
-        RedisSubscriber.Publish(channel, JsonConvert.SerializeObject(data, JsonSerializerSettings), CommandFlags.FireAndForget);
+        RedisSubscriber.Publish(channel, JsonSerializer.Serialize(data, JsonSerializerOptions), CommandFlags.FireAndForget);
     }
 
     /// <summary>
@@ -103,7 +111,7 @@ public abstract class RedisCommunicator
     /// <param name="errorMessage">The error message.</param>
     protected void SendErrorMessage(string target, string errorMessage)
     {
-        SendEnvelope(target, new Envelope(EventNames.ErrorMessage, errorMessage));
+        SendEnvelope(target, new Envelope(EventNames.ErrorMessage, DataHelper.Pack(errorMessage)));
     }
 
     /// <summary>
@@ -127,7 +135,7 @@ public abstract class RedisCommunicator
     {
         RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
         _listenedMessageQueue = RedisSubscriber.Subscribe(_listenTarget);
-        _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message, JsonSerializerSettings)).ConfigureAwait(false));
+        _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonSerializer.Deserialize<Envelope>(channelMessage.Message, JsonSerializerOptions)).ConfigureAwait(false));
         SubscribeAdditional();
     }
 

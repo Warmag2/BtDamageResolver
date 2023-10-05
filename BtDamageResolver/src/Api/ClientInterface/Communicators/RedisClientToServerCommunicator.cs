@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
@@ -17,17 +18,19 @@ public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClie
     /// Initializes a new instance of the <see cref="RedisClientToServerCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
+    /// <param name="jsonSerializerOptions">JSON serializer options.</param>
     /// <param name="connectionString">The Redis connection string.</param>
+    /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="playerId">The player ID to listen for events from.</param>
-    protected RedisClientToServerCommunicator(ILogger logger, IOptions<JsonSerializerSettings> jsonSerializerSettings, string connectionString, string playerId) : base(logger, jsonSerializerSettings, connectionString, playerId)
+    protected RedisClientToServerCommunicator(ILogger logger, IOptions<JsonSerializerOptions> jsonSerializerOptions, string connectionString, DataHelper dataHelper, string playerId) : base(logger, jsonSerializerOptions, connectionString, dataHelper, playerId)
     {
     }
 
     /// <inheritdoc />
     public void Send<TType>(string envelopeType, TType data)
+        where TType : class
     {
-        SendEnvelope(ServerStreamAddress, new Envelope(envelopeType, data));
+        SendEnvelope(ServerStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
     }
 
     /// <inheritdoc />
@@ -93,7 +96,7 @@ public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClie
     protected override void SubscribeAdditional()
     {
         var listenedClientQueue = RedisSubscriber.Subscribe(new RedisChannel(ClientStreamAddress, RedisChannel.PatternMode.Literal));
-        listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonConvert.DeserializeObject<Envelope>(channelMessage.Message, JsonSerializerSettings)).ConfigureAwait(false));
+        listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonSerializer.Deserialize<Envelope>(channelMessage.Message, JsonSerializerOptions)).ConfigureAwait(false));
 
         base.SubscribeAdditional();
     }

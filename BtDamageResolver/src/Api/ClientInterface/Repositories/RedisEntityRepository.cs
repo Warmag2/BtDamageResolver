@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
@@ -25,19 +25,19 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     private readonly string _connectionString;
     private readonly string _keyPrefix;
     private readonly ILogger<RedisEntityRepository<TEntity>> _logger;
-    private readonly JsonSerializerSettings _jsonSerializerSettings;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly IConnectionMultiplexer _redisConnectionMultiplexer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisEntityRepository{TEntity}"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
+    /// <param name="jsonSerializerSettings">JSON serializer options.</param>
     /// <param name="connectionString">The connection string.</param>
-    public RedisEntityRepository(ILogger<RedisEntityRepository<TEntity>> logger, IOptions<JsonSerializerSettings> jsonSerializerSettings, string connectionString)
+    public RedisEntityRepository(ILogger<RedisEntityRepository<TEntity>> logger, IOptions<JsonSerializerOptions> jsonSerializerSettings, string connectionString)
     {
         _logger = logger;
-        _jsonSerializerSettings = jsonSerializerSettings.Value;
+        _jsonSerializerOptions = jsonSerializerSettings.Value;
         _connectionString = connectionString;
         _keyPrefix = $"Resolver{typeof(TEntity).Name}";
         _redisConnectionMultiplexer = ConnectionMultiplexer.Connect(_connectionString);
@@ -49,7 +49,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         try
         {
             var connection = GetConnection();
-            await connection.StringSetAsync(GetKey(entity), JsonConvert.SerializeObject(entity, _jsonSerializerSettings)).ConfigureAwait(false);
+            await connection.StringSetAsync(GetKey(entity), JsonSerializer.Serialize(entity, _jsonSerializerOptions)).ConfigureAwait(false);
         }
         catch (DbException ex)
         {
@@ -100,7 +100,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
 
             if (value != RedisValue.Null)
             {
-                var entity = JsonConvert.DeserializeObject<TEntity>(value, _jsonSerializerSettings);
+                var entity = JsonSerializer.Deserialize<TEntity>(value, _jsonSerializerOptions);
                 return entity;
             }
 
@@ -128,7 +128,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
 
             if (value != RedisValue.Null)
             {
-                var entity = JsonConvert.DeserializeObject<TEntity>(value, _jsonSerializerSettings);
+                var entity = JsonSerializer.Deserialize<TEntity>(value, _jsonSerializerOptions);
                 return entity;
             }
 

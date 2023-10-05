@@ -20,7 +20,7 @@
     "Heat": 0,
     "UsesAmmo": true,
     "SpecialDamage": { "Data": "1", "Type": "Narc" },
-    "ClusterSize": 1,
+    "ClusterSize": 1
   },
   {
     "Name": "BA Tag",

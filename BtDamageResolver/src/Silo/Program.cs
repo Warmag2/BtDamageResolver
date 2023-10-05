@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Cryptography;
@@ -7,6 +9,7 @@ using Faemiyah.BtDamageResolver.Actors.Logic;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -20,7 +23,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -118,7 +120,7 @@ public static class Program
                 siloBuilder
                     .Services.AddSerializer(serializerBuilder =>
                     {
-                        serializerBuilder.AddNewtonsoftJsonSerializer(isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
+                        serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
                     });
                 siloBuilder
                     .Configure<ClusterOptions>(options =>
@@ -145,11 +147,18 @@ public static class Program
                         options.ResponseTimeout = TimeSpan.FromSeconds(15);
                         options.ResponseTimeoutWithDebugger = TimeSpan.FromMinutes(15);
                     })
-                    .Configure<JsonSerializerSettings>(options =>
+                    /*.Configure<JsonSerializerSettings>(options =>
                     {
                         options.NullValueHandling = NullValueHandling.Ignore;
                         options.MissingMemberHandling = MissingMemberHandling.Error;
                         options.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                    })*/
+                    .Configure<JsonSerializerOptions>(options =>
+                    {
+                        options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                        options.PropertyNameCaseInsensitive = true;
+                        options.Converters.Add(new JsonStringEnumConverter());
                     })
                     .UseAdoNetClustering(options =>
                     {
@@ -201,6 +210,7 @@ public static class Program
                         services.AddSingleton<CachedEntityRepository<PaperDoll, string>, CachedEntityRepository<PaperDoll, string>>();
                         services.AddSingleton<CachedEntityRepository<Unit, string>, CachedEntityRepository<Unit, string>>();
                         services.AddSingleton<CachedEntityRepository<Weapon, string>, CachedEntityRepository<Weapon, string>>();
+                        services.AddSingleton<DataHelper>();
                     });
                     /*.AddStartupTask((serviceProvider, _) =>
                     {
@@ -231,7 +241,7 @@ public static class Program
     {
         var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
         return options != null
-            ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerSettings>>(), options.Value.ConnectionString)
+            ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), options.Value.ConnectionString)
             : throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
     }
 

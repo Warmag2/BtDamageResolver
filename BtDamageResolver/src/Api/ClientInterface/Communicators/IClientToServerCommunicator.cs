@@ -20,7 +20,8 @@ public interface IClientToServerCommunicator
     /// <param name="envelopeType">The type of the envelope.</param>
     /// <param name="data">The data to send.</param>
     /// <typeparam name="TType">The type of the data in the envelope.</typeparam>
-    public void Send<TType>(string envelopeType, TType data);
+    public void Send<TType>(string envelopeType, TType data)
+        where TType : class;
 
     /// <summary>
     /// Handle an incoming <see cref="ConnectionResponse"/>.

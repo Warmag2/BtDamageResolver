@@ -3,16 +3,16 @@
     "LogLevel": "Debug",
     "LogLevelOrleans": "Information"
   },
-  "ClusterOptions": {
+  "ClusterOptionsAA": {
     "ConnectionString": "User ID=resolver;Password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd;Host=10.2.0.3;Port=65432;Database=BtDamageResolver;SSL Mode=Disable;"
   },
-  "ClusterOptionsBB": {
-    "ConnectionString": "User ID=resolver;Password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd;Host=localhost;Port=65432;Database=BtDamageResolver;SSL Mode=Disable;"
+  "ClusterOptions": {
+    "ConnectionString": "User ID=resolver;Password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd;Host=localhost;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
   },
-  "CommunicationOptions": {
+  "CommunicationOptionsAA": {
     "ConnectionString": "10.2.0.3:63790,password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd"
   },
-  "CommunicationOptionsBB": {
-    "ConnectionString": "localhost:63790,password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd"
+  "CommunicationOptions": {
+    "ConnectionString": "localhost:6379,password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd"
   }
 }
