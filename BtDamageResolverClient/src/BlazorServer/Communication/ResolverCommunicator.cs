@@ -33,12 +33,12 @@ public class ResolverCommunicator
     /// <param name="logger">The logging interface.</param>
     /// <param name="communicationOptions">The communication options.</param>
     /// <param name="dataHelper">The data compression helper.</param>
-    /// <param name="jsonSerializerSettings">The JSON serializer settings.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, DataHelper dataHelper, IOptions<JsonSerializerOptions> jsonSerializerSettings)
+    /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, DataHelper dataHelper, IOptions<JsonSerializerOptions> jsonSerializerOptions)
     {
         _logger = logger;
         _dataHelper = dataHelper;
-        _jsonSerializerOptions = jsonSerializerSettings;
+        _jsonSerializerOptions = jsonSerializerOptions;
         _communicationOptions = communicationOptions.Value;
     }
 
