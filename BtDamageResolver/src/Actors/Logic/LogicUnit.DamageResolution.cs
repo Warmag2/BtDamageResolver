@@ -81,12 +81,24 @@ public partial class LogicUnit
             {
                 var criticalThreatRoll = Random.D26();
 
-                damageReport.Log(new AttackLogEntry
+                if (criticalDamageTableType == CriticalDamageTableType.Motive)
                 {
-                    Context = "Critical threat",
-                    Number = criticalThreatRoll,
-                    Type = AttackLogEntryType.DiceRoll
-                });
+                    damageReport.Log(new AttackLogEntry
+                    {
+                        Context = "Motive Hit threat",
+                        Number = criticalThreatRoll,
+                        Type = AttackLogEntryType.DiceRoll
+                    });
+                }
+                else
+                {
+                    damageReport.Log(new AttackLogEntry
+                    {
+                        Context = "Critical Hit threat",
+                        Number = criticalThreatRoll,
+                        Type = AttackLogEntryType.DiceRoll
+                    });
+                }
 
                 await ResolveCriticalHit(damageReport, location, criticalThreatRoll, damagePacket.Damage, transformedDamage, criticalDamageTableType);
             }

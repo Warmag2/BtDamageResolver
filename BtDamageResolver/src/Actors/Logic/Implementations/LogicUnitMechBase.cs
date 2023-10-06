@@ -173,5 +173,13 @@ public abstract class LogicUnitMechBase : LogicUnit
                 Type = AttackLogEntryType.Critical
             });
         }
+        else
+        {
+            damageReport.Log(new AttackLogEntry
+            {
+                Context = "Threat roll does not result in a critical hit.",
+                Type = AttackLogEntryType.Information
+            });
+        }
     }
 }
