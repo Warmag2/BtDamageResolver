@@ -67,6 +67,14 @@ public partial class LogicUnit
                                 damageReport.DamagePaperDoll.RecordCriticalDamage(location, damagePacket.Damage, CriticalThreatType.Normal, criticalDamageType);
                                 damageReport.Log(new AttackLogEntry { Context = criticalDamageType.ToString(), Number = 0, Location = location, Type = AttackLogEntryType.Critical });
                             }
+                            else
+                            {
+                                damageReport.Log(new AttackLogEntry
+                                {
+                                    Context = "Threat roll does not result in a critical hit",
+                                    Type = AttackLogEntryType.Information
+                                });
+                            }
 
                             break;
                         default:

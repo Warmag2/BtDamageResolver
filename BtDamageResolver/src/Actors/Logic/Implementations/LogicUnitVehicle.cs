@@ -102,7 +102,7 @@ public abstract class LogicUnitVehicle : LogicUnit
             {
                 damageReport.Log(new AttackLogEntry
                 {
-                    Context = "Threat roll does not result in a motive hit.",
+                    Context = "Threat roll does not result in a motive hit",
                     Type = AttackLogEntryType.Information
                 });
             }
@@ -110,7 +110,7 @@ public abstract class LogicUnitVehicle : LogicUnit
             {
                 damageReport.Log(new AttackLogEntry
                 {
-                    Context = "Threat roll does not result in a critical hit.",
+                    Context = "Threat roll does not result in a critical hit",
                     Type = AttackLogEntryType.Information
                 });
             }
