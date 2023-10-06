@@ -4,96 +4,110 @@
 using System;
 using System.IO;
 
-namespace SevenZip.Compression.LZMA
+namespace SevenZip.Compression.LZMA;
+
+/// <summary>
+/// Static support class for help on compressing byte data.
+/// </summary>
+public static class CompressionHelper
 {
-    public static class CompressionHelper
+    private const bool Eos = false;
+    private static readonly int Dictionary = 1 << 23;
+
+    // static Int32 posStateBits = 2;
+    // static Int32 litContextBits = 3; // for normal files
+    // UInt32 litContextBits = 0; // for 32-bit data
+    // static Int32 litPosBits = 0;
+    // UInt32 litPosBits = 2; // for 32-bit data
+    // static Int32 algorithm = 2;
+    // static Int32 numFastBytes = 128;
+    private static CoderPropID[] propIDs =
     {
-        static int dictionary = 1 << 23;
+        CoderPropID.DictionarySize,
+        CoderPropID.PosStateBits,
+        CoderPropID.LitContextBits,
+        CoderPropID.LitPosBits,
+        CoderPropID.Algorithm,
+        CoderPropID.NumFastBytes,
+        CoderPropID.MatchFinder,
+        CoderPropID.EndMarker
+    };
 
-        // static Int32 posStateBits = 2;
-        // static Int32 litContextBits = 3; // for normal files
-        // UInt32 litContextBits = 0; // for 32-bit data
-        // static Int32 litPosBits = 0;
-        // UInt32 litPosBits = 2; // for 32-bit data
-        // static Int32 algorithm = 2;
-        // static Int32 numFastBytes = 128;
+    // these are the default properties, keeping it simple for now:
+    private static object[] properties =
+    {
+        (Int32)Dictionary,
+        (Int32)2,
+        (Int32)3,
+        (Int32)0,
+        (Int32)2,
+        (Int32)128,
+        "bt4",
+        Eos
+    };
 
-        private const bool eos = false;
+    /// <summary>
+    /// Compress data.
+    /// </summary>
+    /// <param name="inputBytes">Input bytes.</param>
+    /// <returns>Compressed bytes.</returns>
+    public static byte[] Compress(byte[] inputBytes)
+    {
+        var inStream = new MemoryStream(inputBytes);
+        var outStream = new MemoryStream();
+        var encoder = new Encoder();
+        encoder.SetCoderProperties(propIDs, properties);
+        encoder.WriteCoderProperties(outStream);
 
-        static CoderPropID[] propIDs =
+        var inputSize = inStream.Length;
+        for (var i = 0; i < 8; i++)
         {
-            CoderPropID.DictionarySize,
-            CoderPropID.PosStateBits,
-            CoderPropID.LitContextBits,
-            CoderPropID.LitPosBits,
-            CoderPropID.Algorithm,
-            CoderPropID.NumFastBytes,
-            CoderPropID.MatchFinder,
-            CoderPropID.EndMarker
-        };
-
-        // these are the default properties, keeping it simple for now:
-        static object[] properties =
-        {
-            (Int32) (dictionary),
-            (Int32) (2),
-            (Int32) (3),
-            (Int32) (0),
-            (Int32) (2),
-            (Int32) (128),
-            "bt4",
-            eos
-        };
-
-        public static byte[] Compress(byte[] inputBytes)
-        {
-            var inStream = new MemoryStream(inputBytes);
-            var outStream = new MemoryStream();
-            var encoder = new Encoder();
-            encoder.SetCoderProperties(propIDs, properties);
-            encoder.WriteCoderProperties(outStream);
-            
-            var inputSize = inStream.Length;
-            for (var i = 0; i < 8; i++)
-            {
-                outStream.WriteByte((byte) (inputSize >> (8 * i)));
-            }
-
-            encoder.Code(inStream, outStream, -1, -1, null);
-            return outStream.ToArray();
+            outStream.WriteByte((byte)(inputSize >> (8 * i)));
         }
-        public static byte[] Decompress(byte[] inputBytes)
+
+        encoder.Code(inStream, outStream, -1, -1, null);
+        return outStream.ToArray();
+    }
+
+    /// <summary>
+    /// Decompress data.
+    /// </summary>
+    /// <param name="inputBytes">Input bytes.</param>
+    /// <returns>Decompressed bytes.</returns>
+    public static byte[] Decompress(byte[] inputBytes)
+    {
+        var inStream = new MemoryStream(inputBytes);
+        var outStream = new MemoryStream();
+        var decoder = new Decoder();
+
+        inStream.Seek(0, 0);
+
+        var decoderProperties = new byte[5];
+        if (inStream.Read(decoderProperties, 0, 5) != 5)
         {
-            var inStream = new MemoryStream(inputBytes);
-            var outStream = new MemoryStream();
-            var decoder = new Decoder();
-
-            inStream.Seek(0, 0);
-
-            var decoderProperties = new byte[5];
-            if (inStream.Read(decoderProperties, 0, 5) != 5)
-            {
-                throw (new Exception("input .lzma is too short"));
-            }
-
-            long outSize = 0;
-
-            for (var i = 0; i < 8; i++)
-            {
-                var v = inStream.ReadByte();
-                if (v < 0)
-                    throw (new Exception("Can't Read 1"));
-                outSize |= ((long) (byte) v) << (8 * i);
-            }
-
-            decoder.SetDecoderProperties(decoderProperties);
-
-            var compressedSize = inStream.Length - inStream.Position;
-            decoder.Code(inStream, outStream, compressedSize, outSize, null);
-
-            var b = outStream.ToArray();
-
-            return b;
+            throw new InvalidDataException("input .lzma is too short");
         }
+
+        long outSize = 0;
+
+        for (var i = 0; i < 8; i++)
+        {
+            var v = inStream.ReadByte();
+            if (v < 0)
+            {
+                throw new EndOfStreamException("Can't Read 1");
+            }
+
+            outSize |= ((long)(byte)v) << (8 * i);
+        }
+
+        decoder.SetDecoderProperties(decoderProperties);
+
+        var compressedSize = inStream.Length - inStream.Position;
+        decoder.Code(inStream, outStream, compressedSize, outSize, null);
+
+        var b = outStream.ToArray();
+
+        return b;
     }
 }
