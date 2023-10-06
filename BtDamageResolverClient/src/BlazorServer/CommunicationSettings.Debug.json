@@ -6,6 +6,6 @@
     "ConnectionString": "10.2.0.3:63790,password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd"
   },
   "CommunicationOptions": {
-    "ConnectionString": "localhost:6379,password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd"
+    "ConnectionString": "localhost:63790,password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd"
   }
 }

@@ -91,7 +91,7 @@ services:
     environment:
       REDIS_PASSWORD: "${RESOLVER_PASSWORD:?err}"
     ports:
-      - 6379:6379
+      - 63790:6379
     volumes:
       - redis-data:/data
     networks:

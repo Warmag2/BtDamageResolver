@@ -32,13 +32,13 @@ public class ResolverCommunicator
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="communicationOptions">The communication options.</param>
-    /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
     /// <param name="dataHelper">The data compression helper.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper)
+    /// <param name="jsonSerializerSettings">The JSON serializer settings.</param>
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, DataHelper dataHelper, IOptions<JsonSerializerOptions> jsonSerializerSettings)
     {
         _logger = logger;
-        _jsonSerializerOptions = jsonSerializerOptions;
         _dataHelper = dataHelper;
+        _jsonSerializerOptions = jsonSerializerSettings;
         _communicationOptions = communicationOptions.Value;
     }
 
@@ -292,7 +292,8 @@ public class ResolverCommunicator
             });
     }
 
-    private void SendRequest(string requestType, object request)
+    private void SendRequest<TRequest>(string requestType, TRequest request)
+        where TRequest : class
     {
         if (!CheckAuthentication(requestType))
         {

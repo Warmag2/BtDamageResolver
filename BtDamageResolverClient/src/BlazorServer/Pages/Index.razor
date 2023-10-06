@@ -1,14 +1,13 @@
 ﻿@inherits BaseFaemiyahComponent
 @page "/"
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
-@using SevenZip.Compression.LZMA
-@using Microsoft.AspNetCore.SignalR.Client
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
 @using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Api.Options
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
+@using Microsoft.AspNetCore.SignalR.Client
 @inject CommonData _commonData
 @inject DataHelper _dataHelper
 @inject LocalStorage _localStorage

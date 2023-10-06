@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
@@ -58,18 +57,11 @@ public class Startup
         services.Configure<CircuitOptions>(options =>
         {
             options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromDays(1);
-        });
-        services.Configure<HttpConnectionDispatcherOptions>(options =>
+        })
+        .Configure<HttpConnectionDispatcherOptions>(options =>
         {
             options.ApplicationMaxBufferSize = 1048576;
             options.TransportMaxBufferSize = 1048576;
-        });
-        services.Configure<JsonSerializerOptions>(options =>
-        {
-            options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            options.PropertyNameCaseInsensitive = true;
-            options.Converters.Add(new JsonStringEnumConverter());
         });
 
         services.AddBlazoredLocalStorage();
@@ -85,6 +77,7 @@ public class Startup
             options.EnableDetailedErrors = true;
             options.MaximumReceiveMessageSize = 1048576;
         });
+        services.ConfigureJsonSerializerOptions();
         services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
         services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
         services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);

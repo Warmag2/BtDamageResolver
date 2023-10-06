@@ -21,7 +21,7 @@ public static class CompressionHelper
     // UInt32 litPosBits = 2; // for 32-bit data
     // static Int32 algorithm = 2;
     // static Int32 numFastBytes = 128;
-    private static CoderPropID[] propIDs =
+    private static readonly CoderPropID[] PropIDs =
     {
         CoderPropID.DictionarySize,
         CoderPropID.PosStateBits,
@@ -34,7 +34,7 @@ public static class CompressionHelper
     };
 
     // these are the default properties, keeping it simple for now:
-    private static object[] properties =
+    private static readonly object[] Properties =
     {
         (Int32)Dictionary,
         (Int32)2,
@@ -49,14 +49,14 @@ public static class CompressionHelper
     /// <summary>
     /// Compress data.
     /// </summary>
-    /// <param name="inputBytes">Input bytes.</param>
-    /// <returns>Compressed bytes.</returns>
+    /// <param name="inputBytes">Input data.</param>
+    /// <returns>The compressed byte array.</returns>
     public static byte[] Compress(byte[] inputBytes)
     {
         var inStream = new MemoryStream(inputBytes);
         var outStream = new MemoryStream();
         var encoder = new Encoder();
-        encoder.SetCoderProperties(propIDs, properties);
+        encoder.SetCoderProperties(PropIDs, Properties);
         encoder.WriteCoderProperties(outStream);
 
         var inputSize = inStream.Length;
@@ -70,10 +70,10 @@ public static class CompressionHelper
     }
 
     /// <summary>
-    /// Decompress data.
+    /// Deompress data.
     /// </summary>
-    /// <param name="inputBytes">Input bytes.</param>
-    /// <returns>Decompressed bytes.</returns>
+    /// <param name="inputBytes">Input data.</param>
+    /// <returns>The decompressed byte array.</returns>
     public static byte[] Decompress(byte[] inputBytes)
     {
         var inStream = new MemoryStream(inputBytes);

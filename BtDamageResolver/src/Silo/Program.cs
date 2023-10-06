@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Cryptography;
@@ -147,19 +146,6 @@ public static class Program
                         options.ResponseTimeout = TimeSpan.FromSeconds(15);
                         options.ResponseTimeoutWithDebugger = TimeSpan.FromMinutes(15);
                     })
-                    /*.Configure<JsonSerializerSettings>(options =>
-                    {
-                        options.NullValueHandling = NullValueHandling.Ignore;
-                        options.MissingMemberHandling = MissingMemberHandling.Error;
-                        options.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-                    })*/
-                    .Configure<JsonSerializerOptions>(options =>
-                    {
-                        options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                        options.PropertyNameCaseInsensitive = true;
-                        options.Converters.Add(new JsonStringEnumConverter());
-                    })
                     .UseAdoNetClustering(options =>
                     {
                         options.Invariant = clusterOptions?.Invariant;
@@ -181,6 +167,7 @@ public static class Program
                     .AddGrainService<LoggingService>()
                     .ConfigureServices(services =>
                     {
+                        services.ConfigureJsonSerializerOptions();
                         services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
                         services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
                         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
