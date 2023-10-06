@@ -8,7 +8,7 @@ using System.Text.Json;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Microsoft.Extensions.Options;
 
-namespace Faemiyah.BtDamageResolver.Tests.CompressionTesterApp;
+namespace Faemiyah.BtDamageResolver.Tests;
 
 /// <summary>
 /// Main program class.

@@ -46,7 +46,6 @@ public class DataImporter
     public async Task Work(DataImportOptions options)
     {
         var jsonSerializerOptions = GetJsonSerializerOptions();
-
         var data = FetchData(options, jsonSerializerOptions);
         _logger.LogInformation("{count} data objects matched the filter(s)", data.Count);
 

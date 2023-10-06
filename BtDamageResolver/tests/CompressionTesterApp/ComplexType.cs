@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Faemiyah.BtDamageResolver.Tests.CompressionTesterApp;
+namespace Faemiyah.BtDamageResolver.Tests;
 
 /// <summary>
-/// Complex type for testing.
+/// Complex type for testing compression.
 /// </summary>
 public class ComplexType
 {
