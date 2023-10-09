@@ -42,8 +42,7 @@ public class DataHelper
     public TType Unpack<TType>(byte[] input)
         where TType : class
     {
-        var decompressedData = CompressionHelper.Decompress(input);
-        return Deserialize<TType>(decompressedData);
+        return Deserialize<TType>(CompressionHelper.Decompress(input));
     }
 
     /// <summary>

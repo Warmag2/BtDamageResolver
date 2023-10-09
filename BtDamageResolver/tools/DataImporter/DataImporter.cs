@@ -28,6 +28,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
 public class DataImporter
 {
     private readonly ILogger _logger;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DataImporter"/> class.
@@ -36,6 +37,7 @@ public class DataImporter
     public DataImporter(ILogger logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _jsonSerializerOptions = GetJsonSerializerOptions();
     }
 
     /// <summary>
@@ -45,13 +47,12 @@ public class DataImporter
     /// <returns>A task which finishes when data importing is completed.</returns>
     public async Task Work(DataImportOptions options)
     {
-        var jsonSerializerOptions = GetJsonSerializerOptions();
-        var data = FetchData(options, jsonSerializerOptions);
+        var data = FetchData(options);
         _logger.LogInformation("{count} data objects matched the filter(s)", data.Count);
 
         foreach (var dataObject in data)
         {
-            _logger.LogInformation("{object}", JsonSerializer.Serialize(dataObject, jsonSerializerOptions));
+            _logger.LogInformation("{object}", JsonSerializer.Serialize(dataObject, _jsonSerializerOptions));
         }
 
         using var host = await ConnectClient();
@@ -100,9 +101,8 @@ public class DataImporter
     /// </summary>
     /// <param name="targetDirectory">The target directory.</param>
     /// <param name="searchTerm">The search term for files in the directory.</param>
-    /// <param name="jsonSerializerOptions">The JSON serializer options to use.</param>
     /// <returns>The data objects in the given directory for the search term.</returns>
-    private List<object> ProcessDirectory(string targetDirectory, string searchTerm, JsonSerializerOptions jsonSerializerOptions)
+    private List<object> ProcessDirectory(string targetDirectory, string searchTerm)
     {
         var fileEntries = searchTerm == null
             ? Directory.GetFiles(targetDirectory)
@@ -111,26 +111,26 @@ public class DataImporter
 
         foreach (var fileEntry in fileEntries)
         {
-            deserializedEntries.AddRange(ProcessFile(fileEntry, jsonSerializerOptions));
+            deserializedEntries.AddRange(ProcessFile(fileEntry));
         }
 
         var subDirectories = Directory.GetDirectories(targetDirectory);
         foreach (var directory in subDirectories)
         {
-            deserializedEntries.AddRange(ProcessDirectory(directory, searchTerm, jsonSerializerOptions));
+            deserializedEntries.AddRange(ProcessDirectory(directory, searchTerm));
         }
 
         return deserializedEntries;
     }
 
-    private List<object> FetchData(DataImportOptions options, JsonSerializerOptions jsonSerializerSettings)
+    private List<object> FetchData(DataImportOptions options)
     {
         var importedDataObjects = new List<object>();
 
         if (Directory.Exists(options.Folder))
         {
             // This path is a directory
-            importedDataObjects.AddRange(ProcessDirectory(options.Folder, options.SubString, jsonSerializerSettings));
+            importedDataObjects.AddRange(ProcessDirectory(options.Folder, options.SubString));
         }
         else
         {
@@ -181,11 +181,10 @@ public class DataImporter
     /// Finds and processes files.
     /// </summary>
     /// <param name="path">The path to process.</param>
-    /// <param name="jsonSerializerOptions">The JSON serializer options to use.</param>
     /// <returns>A collection of objects found.</returns>
     /// <exception cref="InvalidDataException">If data could not be deserialized to correct type.</exception>
     /// <exception cref="InvalidOperationException">If data type could not be inferred from file name.</exception>
-    private IEnumerable<object> ProcessFile(string path, JsonSerializerOptions jsonSerializerOptions)
+    private IEnumerable<object> ProcessFile(string path)
     {
         var fileNamePrefix = Path.GetFileName(path).Split("_")[0];
 
@@ -196,17 +195,17 @@ public class DataImporter
         switch (fileNamePrefix)
         {
             case "Ammo":
-                return (JsonSerializer.Deserialize<List<Ammo>>(fileData, jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object);
+                return (JsonSerializer.Deserialize<List<Ammo>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of ammo.")).Select(r => r as object);
             case "ClusterTable":
-                return new object[] { JsonSerializer.Deserialize<ClusterTable>(fileData, jsonSerializerOptions) };
+                return new object[] { JsonSerializer.Deserialize<ClusterTable>(fileData, _jsonSerializerOptions) };
             case "CriticalDamageTable":
-                return new object[] { JsonSerializer.Deserialize<CriticalDamageTable>(fileData, jsonSerializerOptions) };
+                return new object[] { JsonSerializer.Deserialize<CriticalDamageTable>(fileData, _jsonSerializerOptions) };
             case "PaperDoll":
-                return new object[] { JsonSerializer.Deserialize<PaperDoll>(fileData, jsonSerializerOptions) };
+                return new object[] { JsonSerializer.Deserialize<PaperDoll>(fileData, _jsonSerializerOptions) };
             case "Unit":
-                return new object[] { JsonSerializer.Deserialize<Unit>(fileData, jsonSerializerOptions) };
+                return new object[] { JsonSerializer.Deserialize<Unit>(fileData, _jsonSerializerOptions) };
             case "Weapons":
-                return (JsonSerializer.Deserialize<List<Weapon>>(fileData, jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object);
+                return (JsonSerializer.Deserialize<List<Weapon>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object);
             default:
                 throw new InvalidOperationException($"Cannot infer file type from file name for file: {path}");
         }
