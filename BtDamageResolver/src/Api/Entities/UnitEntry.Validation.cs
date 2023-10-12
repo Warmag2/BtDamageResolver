@@ -98,35 +98,35 @@ public partial class UnitEntry
             case MovementClass.Normal:
                 if (Movement > GetCurrentSpeed())
                 {
-                    validationResult.Fail("Normal movement only allows movement up to speed.");
+                    validationResult.Fail($"With penalty {GetHeatSpeedPenalty()}, Normal movement only allows movement up to speed {GetCurrentSpeed()}.");
                 }
 
                 break;
             case MovementClass.Fast:
                 if (Movement > GetCurrentSpeed())
                 {
-                    validationResult.Fail("Fast movement only allows movement up to 1.5*speed.");
+                    validationResult.Fail($"With penalty {GetHeatSpeedPenalty()}, Fast movement only allows movement up to {GetCurrentSpeed()}.");
                 }
 
                 break;
             case MovementClass.Masc:
                 if (Movement > GetCurrentSpeed())
                 {
-                    validationResult.Fail("Masc movement only allows movement up to 2*speed.");
+                    validationResult.Fail($"With penalty {GetHeatSpeedPenalty()}, Masc movement only allows movement up to {GetCurrentSpeed()}.");
                 }
 
                 break;
             case MovementClass.Jump:
                 if (Movement > GetCurrentSpeed())
                 {
-                    validationResult.Fail("Jump movement only allows movement up to the amount of jump jets.");
+                    validationResult.Fail($"Jump movement only allows movement up to the amount of jump jets ({GetCurrentSpeed()}).");
                 }
 
                 break;
             case MovementClass.OutOfControl:
                 if (Movement > GetCurrentSpeed())
                 {
-                    validationResult.Fail("Out of control movement only allows movement up to 1.5*speed.");
+                    validationResult.Fail($"With penalty {GetHeatSpeedPenalty()}, Out of control movement only allows movement up to {GetCurrentSpeed()}.");
                 }
 
                 break;
@@ -204,9 +204,9 @@ public partial class UnitEntry
 
                 break;
             case UnitType.VehicleHover:
-                if (Tonnage > 50)
+                if (Tonnage > 100)
                 {
-                    validationResult.Fail("Hover vehicle maximum tonnage is 50 tons.");
+                    validationResult.Fail("(Superheavy) Hover vehicle maximum tonnage is 100 tons.");
                 }
 
                 break;
@@ -218,9 +218,9 @@ public partial class UnitEntry
 
                 break;
             case UnitType.VehicleVtol:
-                if (Tonnage > 30)
+                if (Tonnage > 60)
                 {
-                    validationResult.Fail("VTOL vehicle maximum tonnage is 30 tons.");
+                    validationResult.Fail("(Superheavy) VTOL vehicle maximum tonnage is 60 tons.");
                 }
 
                 break;
