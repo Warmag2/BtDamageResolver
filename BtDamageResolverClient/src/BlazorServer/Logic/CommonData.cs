@@ -68,12 +68,12 @@ public class CommonData
         {
             { "Front", Direction.Front }, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top }
         };
-        DictionaryAmmo = ammoRepository.GetAllAsync().Result.OrderBy(a => a.Name).ToDictionary(a => a.Name);
-        DictionaryClusterTable = clusterTableRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
-        DictionaryCriticalDamageTable = criticalDamageTableRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
-        DictionaryPaperDoll = paperDollRepository.GetAllAsync().Result.OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
+        DictionaryAmmo = ammoRepository.GetAll().OrderBy(a => a.Name).ToDictionary(a => a.Name);
+        DictionaryClusterTable = clusterTableRepository.GetAll().OrderBy(w => w.Name).ToDictionary(w => w.Name);
+        DictionaryCriticalDamageTable = criticalDamageTableRepository.GetAll().OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
+        DictionaryPaperDoll = paperDollRepository.GetAll().OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
         DictionaryFeature = new SortedDictionary<string, UnitFeature>(Enum.GetValues<UnitFeature>().ToDictionary(q => q.ToString()));
-        DictionaryWeapon = weaponRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
+        DictionaryWeapon = weaponRepository.GetAll().OrderBy(w => w.Name).ToDictionary(w => w.Name);
         _mapWeaponNamesNormal = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix) && !w.StartsWith(MeleeWeaponPrefix)).ToDictionary(w => w));
         _mapWeaponNamesBattleArmor = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(BattleArmorWeaponPrefix)).ToDictionary(w => w.Substring(BattleArmorWeaponPrefix.Length), w => w));
         _mapWeaponNamesInfantry = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w.Substring(InfantryWeaponPrefix.Length), w => w));

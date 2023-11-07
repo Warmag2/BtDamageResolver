@@ -40,7 +40,7 @@ dotnet_style_prefer_conditional_expression_over_return = true:suggestion
 dotnet_diagnostic.SA0001.severity = None
 
 # Closing parenthesis should not be preceded by a space
-dotnet_diagnostic.SA1009.severity = None
+dotnet_diagnostic.SA1009.severity = Warning
 
 # Prefix local calls with this
 dotnet_diagnostic.SA1101.severity = None
@@ -59,8 +59,8 @@ dotnet_diagnostic.SA1306.severity = None
     
 # Field '_blah' should not begin with an underscore
 dotnet_diagnostic.SA1309.severity = None
-    
-# Fields can indeed be private
+
+# Fields can be protected
 dotnet_diagnostic.SA1401.severity = None
 
 # Arithmetic operation precedence is self-explanatory
@@ -73,7 +73,7 @@ dotnet_diagnostic.SA1413.severity = None
 dotnet_diagnostic.SA1516.severity = None
 
 # Enumeration items should be documented
-dotnet_diagnostic.SA1602.severity = None
+dotnet_diagnostic.SA1602.severity = Suggestion
 
 # Allow properties to contain any kind of documentation line.
 dotnet_diagnostic.SA1623.severity = None
@@ -89,19 +89,19 @@ dotnet_diagnostic.SA1633.severity = None
 dotnet_diagnostic.S125.severity = Suggestion
 
 # There should be no need to always merge nested ifs
-dotnet_diagnostic.S1066.severity = Suggestion
+dotnet_diagnostic.S1066.severity = Warning
 
 # This one is just bugged
-dotnet_diagnostic.S1172.severity = None
+dotnet_diagnostic.S1172.severity = Warning
 
 # LINQ suggester is too aggressive
-dotnet_diagnostic.S3267.severity = Suggestion
+dotnet_diagnostic.S3267.severity = Warning
 
 # LINQ suggester is too aggressive
-dotnet_diagnostic.S3358.severity = Suggestion
+dotnet_diagnostic.S3358.severity = Warning
 
 # Don't want to provide assembly versions.
-dotnet_diagnostic.S3904.severity = None
+dotnet_diagnostic.S3904.severity = Warning
 
 ##
 ## MSVS

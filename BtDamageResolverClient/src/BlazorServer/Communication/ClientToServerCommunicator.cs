@@ -23,10 +23,10 @@ public class ClientToServerCommunicator : RedisClientToServerCommunicator
     /// <param name="logger">The logging interface.</param>
     /// <param name="jsonSerializerOptions">The JSON serializer settings.</param>
     /// <param name="connectionString">The Redis connection string.</param>
-    /// <param name="dataHelper">The compression helper.</param>
-    /// <param name="playerId">The player ID.</param>
+    /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="hubConnection">The SignalR hub connection.</param>
-    public ClientToServerCommunicator(ILogger logger, IOptions<JsonSerializerOptions> jsonSerializerOptions, string connectionString, DataHelper dataHelper, string playerId, HubConnection hubConnection) : base(logger, jsonSerializerOptions, connectionString, dataHelper, playerId)
+    /// <param name="playerId">The player ID.</param>
+    public ClientToServerCommunicator(ILogger logger, IOptions<JsonSerializerOptions> jsonSerializerOptions, string connectionString, DataHelper dataHelper, HubConnection hubConnection, string playerId) : base(logger, jsonSerializerOptions, connectionString, dataHelper, playerId)
     {
         _hubConnection = hubConnection;
     }

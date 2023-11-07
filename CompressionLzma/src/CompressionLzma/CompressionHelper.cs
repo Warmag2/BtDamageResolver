@@ -1,13 +1,12 @@
 // 7Zip helper code, original by Peter Bromberg
 // http://www.eggheadcafe.com/tutorials/aspnet/064b41e4-60bc-4d35-9136-368603bcc27a/7zip-lzma-inmemory-com.aspx
-
 using System;
 using System.IO;
 
 namespace SevenZip.Compression.LZMA;
 
 /// <summary>
-/// Helper methods for data compression.
+/// Static support class for help on compressing byte data.
 /// </summary>
 public static class CompressionHelper
 {
@@ -70,10 +69,10 @@ public static class CompressionHelper
     }
 
     /// <summary>
-    /// Deompress data.
+    /// Decompress data.
     /// </summary>
-    /// <param name="inputBytes">Input data.</param>
-    /// <returns>The decompressed byte array.</returns>
+    /// <param name="inputBytes">Input byte array.</param>
+    /// <returns>Uncompressed byte array.</returns>
     public static byte[] Decompress(byte[] inputBytes)
     {
         var inStream = new MemoryStream(inputBytes);

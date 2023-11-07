@@ -22,6 +22,18 @@ public class DataHelper
     }
 
     /// <summary>
+    /// Serialize an entity and compress the byte array.
+    /// </summary>
+    /// <typeparam name="TType">The type to compress.</typeparam>
+    /// <param name="input">The byte array to compress.</param>
+    /// <returns>The compressed byte array.</returns>
+    public byte[] Pack<TType>(TType input)
+        where TType : class
+    {
+        return CompressionHelper.Compress(Serialize(input));
+    }
+
+    /// <summary>
     /// Decompress a byte array and deserialize entity.
     /// </summary>
     /// <param name="input">The byte array to decompress.</param>
@@ -30,21 +42,7 @@ public class DataHelper
     public TType Unpack<TType>(byte[] input)
         where TType : class
     {
-        var decompressedData = CompressionHelper.Decompress(input);
-        return Deserialize<TType>(decompressedData);
-    }
-
-    /// <summary>
-    /// Serialize an entity and compress the byte array.
-    /// </summary>
-    /// <param name="input">The byte array to compress.</param>
-    /// <typeparam name="TType">The type to compress.</typeparam>
-    /// <returns>The compressed byte array.</returns>
-    public byte[] Pack<TType>(TType input)
-        where TType : class
-    {
-        var serializedData = Serialize(input);
-        return CompressionHelper.Compress(serializedData);
+        return Deserialize<TType>(CompressionHelper.Decompress(input));
     }
 
     /// <summary>
@@ -56,8 +54,7 @@ public class DataHelper
     private TType Deserialize<TType>(byte[] input)
         where TType : class
     {
-        var stringData = Encoding.UTF8.GetString(input);
-        return JsonSerializer.Deserialize<TType>(stringData, _jsonSerializerOptions);
+        return JsonSerializer.Deserialize<TType>(Encoding.UTF8.GetString(input), _jsonSerializerOptions);
     }
 
     /// <summary>

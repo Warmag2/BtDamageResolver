@@ -63,7 +63,6 @@ public class Startup
             options.ApplicationMaxBufferSize = 1048576;
             options.TransportMaxBufferSize = 1048576;
         });
-
         services.AddBlazoredLocalStorage();
         services.AddLogging(conf =>
         {

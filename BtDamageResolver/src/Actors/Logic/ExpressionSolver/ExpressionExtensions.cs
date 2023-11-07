@@ -15,12 +15,9 @@ public static class ExpressionExtensions
     /// <returns><b>True</b> if the character is a token, <b>false</b> otherwise.</returns>
     public static bool IsToken(this char input)
     {
-        foreach (var token in Enum.GetValues(typeof(Token)).Cast<Token>())
+        if (Enum.GetValues(typeof(Token)).Cast<Token>().Any(t => input.Equals((char)t)))
         {
-            if (input.Equals((char)token))
-            {
-                return true;
-            }
+            return true;
         }
 
         return false;

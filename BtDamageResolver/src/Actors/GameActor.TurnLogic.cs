@@ -42,37 +42,46 @@ public partial class GameActor
 
     private async Task CheckGameStateUpdateEvents(List<Guid> updatedUnits = null)
     {
-        // Don't check against the player timestamp. If we received new data, then this actor state has updated by definition
-        _gameActorState.State.TimeStamp = DateTime.UtcNow;
+        try
+        {
+            // Don't check against the player timestamp. If we received new data, then this actor state has updated by definition
+            _gameActorState.State.TimeStamp = DateTime.UtcNow;
 
-        CheckForPlayerCountEvents();
+            CheckForPlayerCountEvents();
 
-        var fireEventHappened = await CheckForFireEvent();
+            var fireEventHappened = await CheckForFireEvent();
 
-        // If fire event happened or when given an empty unit set, process updated target numbers for everything.
-        // Otherwise, only for affected units.
-        var targetNumberUpdates = fireEventHappened || updatedUnits == null
-            ? await ProcessTargetNumberUpdatesForUnits()
-            : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
+            // If fire event happened or when given an empty unit set, process updated target numbers for everything.
+            // Otherwise, only for affected units.
+            var targetNumberUpdates = fireEventHappened || updatedUnits == null
+                ? await ProcessTargetNumberUpdatesForUnits()
+                : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
 
-        await DistributeGameStateToPlayers(fireEventHappened);
-        await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
+            await DistributeGameStateToPlayers(fireEventHappened);
+            await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
 
-        // Save game actor state
-        await _gameActorState.WriteStateAsync();
+            // Save game actor state
+            await _gameActorState.WriteStateAsync();
 
-        // Log update to permanent store
-        await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
+            // Log update to permanent store
+            await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
 
-        // Remark game existence
-        await GrainFactory.GetGameEntryRepository().AddOrUpdate(
-            new GameEntry
-            {
-                Name = this.GetPrimaryKeyString(),
-                PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
-                Players = _gameActorState.State.PlayerStates.Count,
-                TimeStamp = DateTime.UtcNow
-            });
+            // Remark game existence
+            await GrainFactory.GetGameEntryRepository().AddOrUpdate(
+                new GameEntry
+                {
+                    Name = this.GetPrimaryKeyString(),
+                    PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
+                    Players = _gameActorState.State.PlayerStates.Count,
+                    TimeStamp = DateTime.UtcNow
+                });
+        }
+        catch (Exception ex)
+        {
+            // I really want to clearly log any error in turn logic so I can fix it.
+            _logger.LogError(ex, "Game {gameId} experienced a critical failure while running game state update events.", this.GetPrimaryKeyString());
+            throw;
+        }
     }
 
     /// <summary>
