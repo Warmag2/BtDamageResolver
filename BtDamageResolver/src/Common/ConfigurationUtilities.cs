@@ -177,8 +177,7 @@ public static class ConfigurationUtilities
         var jsonSerializerOptions = new JsonSerializerOptions()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = false
         };
 
         jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -196,8 +195,7 @@ public static class ConfigurationUtilities
         return collection.Configure<JsonSerializerOptions>(options =>
         {
             options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            options.PropertyNameCaseInsensitive = true;
+            options.PropertyNameCaseInsensitive = false;
 
             options.Converters.Add(new JsonStringEnumConverter());
         });

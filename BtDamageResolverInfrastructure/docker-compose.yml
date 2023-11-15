@@ -77,7 +77,7 @@ services:
       POSTGRES_USER: "${RESOLVER_USER:?err}"
       POSTGRES_PASSWORD: "${RESOLVER_PASSWORD:?err}"
     ports:
-      - 5432:5432
+      - 65432:5432
     volumes:
       - orleansdb-data:/var/lib/postgresql/data
     restart: on-failure
