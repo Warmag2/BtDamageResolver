@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>SevenZip.Compression.LZMA</RootNamespace>
     <AssemblyName>SevenZip.Compression.LZMA</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.9</Version>
+    <Version>0.0.10</Version>
     <Description>A small nuget package containing the LZMA compression and decompression files from 7-Zip libraries and accompanied with a simple in-memory compression helper class for simplified usage.</Description>
     <Copyright>Igor Pavlov</Copyright>
     <Authors>Igor Pavlov</Authors>
