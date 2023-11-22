@@ -1,5 +1,7 @@
 using System;
+using System.Text.Json;
 using Blazored.LocalStorage;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -18,7 +20,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer;
@@ -56,19 +57,12 @@ public class Startup
         services.Configure<CircuitOptions>(options =>
         {
             options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromDays(1);
-        });
-        services.Configure<HttpConnectionDispatcherOptions>(options =>
+        })
+        .Configure<HttpConnectionDispatcherOptions>(options =>
         {
             options.ApplicationMaxBufferSize = 1048576;
             options.TransportMaxBufferSize = 1048576;
         });
-        services.Configure<JsonSerializerSettings>(options =>
-        {
-            options.MissingMemberHandling = MissingMemberHandling.Error;
-            options.NullValueHandling = NullValueHandling.Ignore;
-            options.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-        });
-
         services.AddBlazoredLocalStorage();
         services.AddLogging(conf =>
         {
@@ -82,6 +76,7 @@ public class Startup
             options.EnableDetailedErrors = true;
             options.MaximumReceiveMessageSize = 1048576;
         });
+        services.ConfigureJsonSerializerOptions();
         services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
         services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
         services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
@@ -90,6 +85,7 @@ public class Startup
         services.AddSingleton<IEntityRepository<Unit, string>>(GetRedisEntityRepository<Unit>);
         services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
         services.AddSingleton<CommonData>();
+        services.AddSingleton<DataHelper>();
         services.AddSingleton<VisualStyleController>();
         services.AddScoped<ClientHub>();
         services.AddScoped<LocalStorage>();
@@ -131,7 +127,7 @@ public class Startup
         var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
         if (options != null)
         {
-            return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerSettings>>(), options.Value.ConnectionString);
+            return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), options.Value.ConnectionString);
         }
 
         throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");

@@ -72,7 +72,7 @@ public partial class GameActor
             return false;
         }
 
-        if (!_gameActorState.State.PlayerStates.ContainsKey(playerId))
+        if (!_gameActorState.State.PlayerStates.TryGetValue(playerId, out var value))
         {
             _logger.LogWarning("Game {gameId} refusing to move unit {unitId} to Player {sendingPlayerId}. Receiving player is not in the game.", this.GetPrimaryKeyString(), unitId, unitOwner);
 
@@ -85,7 +85,7 @@ public partial class GameActor
 
             if (_gameActorState.State.PlayerStates[unitOwner].UnitEntries.Remove(unit))
             {
-                _gameActorState.State.PlayerStates[playerId].UnitEntries.Add(unit);
+                value.UnitEntries.Add(unit);
                 await CheckGameStateUpdateEvents();
 
                 return true;

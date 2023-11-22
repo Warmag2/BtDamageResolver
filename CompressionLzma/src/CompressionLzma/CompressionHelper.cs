@@ -6,7 +6,7 @@ using System.IO;
 namespace SevenZip.Compression.LZMA;
 
 /// <summary>
-/// Static methods to aid in string compression.
+/// Static support class for help on compressing byte data.
 /// </summary>
 public static class CompressionHelper
 {
@@ -48,8 +48,8 @@ public static class CompressionHelper
     /// <summary>
     /// Compress data.
     /// </summary>
-    /// <param name="inputBytes">Input byte array.</param>
-    /// <returns>Compressed data.</returns>
+    /// <param name="inputBytes">Input data.</param>
+    /// <returns>The compressed byte array.</returns>
     public static byte[] Compress(byte[] inputBytes)
     {
         var inStream = new MemoryStream(inputBytes);

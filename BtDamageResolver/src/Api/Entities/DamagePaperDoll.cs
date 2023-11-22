@@ -180,9 +180,9 @@ public class DamagePaperDoll
     /// <param name="entries">The critical damage entries to insert.</param>
     private void InsertCriticalDamage(Location location, List<CriticalDamageEntry> entries)
     {
-        if (DamageCollectionCritical.ContainsKey(location))
+        if (DamageCollectionCritical.TryGetValue(location, out var value))
         {
-            DamageCollectionCritical[location].AddRange(entries);
+            value.AddRange(entries);
         }
         else
         {
@@ -207,9 +207,9 @@ public class DamagePaperDoll
     /// <param name="amounts">A list of damage amounts to insert.</param>
     private void InsertDamage(Location location, List<int> amounts)
     {
-        if (DamageCollection.ContainsKey(location))
+        if (DamageCollection.TryGetValue(location, out var value))
         {
-            DamageCollection[location].AddRange(amounts);
+            value.AddRange(amounts);
         }
         else
         {
@@ -234,9 +234,9 @@ public class DamagePaperDoll
     /// <param name="entries">The special damage entries to insert.</param>
     private void InsertSpecialDamage(Location location, List<SpecialDamageEntry> entries)
     {
-        if (DamageCollectionSpecial.ContainsKey(location))
+        if (DamageCollectionSpecial.TryGetValue(location, out var value))
         {
-            DamageCollectionSpecial[location].AddRange(entries);
+            value.AddRange(entries);
         }
         else
         {

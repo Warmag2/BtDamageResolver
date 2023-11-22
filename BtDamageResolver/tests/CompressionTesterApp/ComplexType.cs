@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Faemiyah.BtDamageResolver.Tests;
+namespace Faemiyah.BtDamageResolver.CompressionTesterApp;
 
 /// <summary>
 /// Complex type for testing compression.
@@ -14,7 +14,7 @@ public class ComplexType
     public Guid Uuid { get; set; }
 
     /// <summary>
-    /// Complex property.
+    /// Complex dictionary property.
     /// </summary>
     public Dictionary<string, int> Dict { get; set; }
 }

@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Orleans;
-
-using static Faemiyah.BtDamageResolver.Api.ClientInterface.Compression.DataHelper;
 
 namespace Faemiyah.BtDamageResolver.Services;
 
@@ -23,25 +22,28 @@ namespace Faemiyah.BtDamageResolver.Services;
 public class ServerToClientCommunicator : RedisServerToClientCommunicator
 {
     private readonly ILogger<ServerToClientCommunicator> _logger;
+    private readonly DataHelper _dataHelper;
     private readonly IGrainFactory _grainFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerToClientCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
+    /// <param name="jsonSerializerOptions">JSON serializer options.</param>
     /// <param name="connectionString">The Redis connection string.</param>
+    /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="grainFactory">The grain factory.</param>
-    public ServerToClientCommunicator(ILogger<ServerToClientCommunicator> logger, IOptions<JsonSerializerSettings> jsonSerializerSettings, string connectionString, IGrainFactory grainFactory) : base(logger, jsonSerializerSettings, connectionString)
+    public ServerToClientCommunicator(ILogger<ServerToClientCommunicator> logger, IOptions<JsonSerializerOptions> jsonSerializerOptions, string connectionString, DataHelper dataHelper, IGrainFactory grainFactory) : base(logger, jsonSerializerOptions, connectionString, dataHelper)
     {
         _logger = logger;
+        _dataHelper = dataHelper;
         _grainFactory = grainFactory;
     }
 
     /// <inheritdoc />
     public override async Task<bool> HandleConnectRequest(byte[] connectRequest, Guid correlationId)
     {
-        var unpackedConnectRequest = Unpack<ConnectRequest>(connectRequest);
+        var unpackedConnectRequest = _dataHelper.Unpack<ConnectRequest>(connectRequest);
         var (connectResult, connectValidationResult) = ValidateObject(unpackedConnectRequest);
 
         if (!connectResult)
@@ -72,7 +74,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleDisconnectRequest(byte[] disconnectRequest, Guid correlationId)
     {
-        var unpackedDisconnectRequest = Unpack<DisconnectRequest>(disconnectRequest);
+        var unpackedDisconnectRequest = _dataHelper.Unpack<DisconnectRequest>(disconnectRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedDisconnectRequest.PlayerName).Disconnect(unpackedDisconnectRequest.AuthenticationToken))
         {
@@ -85,7 +87,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleGetDamageReportsRequest(byte[] getDamageReportsRequest, Guid correlationId)
     {
-        var unpackedGetDamageReportsRequest = Unpack<GetDamageReportsRequest>(getDamageReportsRequest);
+        var unpackedGetDamageReportsRequest = _dataHelper.Unpack<GetDamageReportsRequest>(getDamageReportsRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetDamageReportsRequest.PlayerName).RequestDamageReports(unpackedGetDamageReportsRequest.AuthenticationToken))
         {
@@ -98,7 +100,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleGetGameOptionsRequest(byte[] getGameOptionsRequest, Guid correlationId)
     {
-        var unpackedGetGameOptionsRequest = Unpack<GetGameOptionsRequest>(getGameOptionsRequest);
+        var unpackedGetGameOptionsRequest = _dataHelper.Unpack<GetGameOptionsRequest>(getGameOptionsRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetGameOptionsRequest.PlayerName).RequestGameOptions(unpackedGetGameOptionsRequest.AuthenticationToken))
         {
@@ -111,7 +113,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleGetGameStateRequest(byte[] getGameStateRequest, Guid correlationId)
     {
-        var unpackedGetGameStateRequest = Unpack<GetGameStateRequest>(getGameStateRequest);
+        var unpackedGetGameStateRequest = _dataHelper.Unpack<GetGameStateRequest>(getGameStateRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetGameStateRequest.PlayerName).RequestGameState(unpackedGetGameStateRequest.AuthenticationToken))
         {
@@ -124,7 +126,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleGetPlayerOptionsRequest(byte[] getPlayerOptionsRequest, Guid correlationId)
     {
-        var unpackedGetPlayerOptionsRequest = Unpack<GetPlayerOptionsRequest>(getPlayerOptionsRequest);
+        var unpackedGetPlayerOptionsRequest = _dataHelper.Unpack<GetPlayerOptionsRequest>(getPlayerOptionsRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetPlayerOptionsRequest.PlayerName).RequestPlayerOptions(unpackedGetPlayerOptionsRequest.AuthenticationToken))
         {
@@ -137,7 +139,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleForceReadyRequest(byte[] forceReadyRequest, Guid correlationId)
     {
-        var unpackedForceReadyRequest = Unpack<ForceReadyRequest>(forceReadyRequest);
+        var unpackedForceReadyRequest = _dataHelper.Unpack<ForceReadyRequest>(forceReadyRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedForceReadyRequest.PlayerName).ForceReady(unpackedForceReadyRequest.AuthenticationToken))
         {
@@ -150,7 +152,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleJoinGameRequest(byte[] joinGameRequest, Guid correlationId)
     {
-        var unpackedJoinGameRequest = Unpack<JoinGameRequest>(joinGameRequest);
+        var unpackedJoinGameRequest = _dataHelper.Unpack<JoinGameRequest>(joinGameRequest);
         var (joinGameRequestResult, joinGameRequestValidationResult) = ValidateObject(unpackedJoinGameRequest);
 
         if (!joinGameRequestResult)
@@ -171,7 +173,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleKickPlayerRequest(byte[] kickPlayerRequest, Guid correlationId)
     {
-        var unpackedKickPlayerRequest = Unpack<KickPlayerRequest>(kickPlayerRequest);
+        var unpackedKickPlayerRequest = _dataHelper.Unpack<KickPlayerRequest>(kickPlayerRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedKickPlayerRequest.PlayerName).KickPlayer(unpackedKickPlayerRequest.AuthenticationToken, unpackedKickPlayerRequest.PlayerToKickName))
         {
@@ -184,7 +186,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleLeaveGameRequest(byte[] leaveGameRequest, Guid correlationId)
     {
-        var unpackedLeaveGameRequest = Unpack<LeaveGameRequest>(leaveGameRequest);
+        var unpackedLeaveGameRequest = _dataHelper.Unpack<LeaveGameRequest>(leaveGameRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedLeaveGameRequest.PlayerName).LeaveGame(unpackedLeaveGameRequest.AuthenticationToken))
         {
@@ -197,7 +199,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleMoveUnitRequest(byte[] moveUnitRequest, Guid correlationId)
     {
-        var unpackedMoveUnitRequest = Unpack<MoveUnitRequest>(moveUnitRequest);
+        var unpackedMoveUnitRequest = _dataHelper.Unpack<MoveUnitRequest>(moveUnitRequest);
 
         var gameName = await _grainFactory.GetGrain<IPlayerActor>(unpackedMoveUnitRequest.PlayerName).GetGameId(unpackedMoveUnitRequest.AuthenticationToken);
 
@@ -218,7 +220,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleSendDamageRequest(byte[] sendDamageInstanceRequest, Guid correlationId)
     {
-        var unpackedSendDamageInstanceRequest = Unpack<SendDamageInstanceRequest>(sendDamageInstanceRequest);
+        var unpackedSendDamageInstanceRequest = _dataHelper.Unpack<SendDamageInstanceRequest>(sendDamageInstanceRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendDamageInstanceRequest.PlayerName).SendDamageInstance(unpackedSendDamageInstanceRequest.AuthenticationToken, unpackedSendDamageInstanceRequest.DamageInstance))
         {
@@ -231,7 +233,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleSendGameOptionsRequest(byte[] sendGameOptionsRequest, Guid correlationId)
     {
-        var unpackedSendGameOptionsRequest = Unpack<SendGameOptionsRequest>(sendGameOptionsRequest);
+        var unpackedSendGameOptionsRequest = _dataHelper.Unpack<SendGameOptionsRequest>(sendGameOptionsRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendGameOptionsRequest.PlayerName).SendGameOptions(unpackedSendGameOptionsRequest.AuthenticationToken, unpackedSendGameOptionsRequest.GameOptions))
         {
@@ -244,7 +246,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleSendPlayerOptionsRequest(byte[] sendPlayerOptionsRequest, Guid correlationId)
     {
-        var unpackedSendPlayerOptionsRequest = Unpack<SendPlayerOptionsRequest>(sendPlayerOptionsRequest);
+        var unpackedSendPlayerOptionsRequest = _dataHelper.Unpack<SendPlayerOptionsRequest>(sendPlayerOptionsRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendPlayerOptionsRequest.PlayerName).SendPlayerOptions(unpackedSendPlayerOptionsRequest.AuthenticationToken, unpackedSendPlayerOptionsRequest.PlayerOptions))
         {
@@ -257,7 +259,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     /// <inheritdoc />
     public override async Task<bool> HandleSendPlayerStateRequest(byte[] sendPlayerStateRequest, Guid correlationId)
     {
-        var unpackedSendPlayerStateRequest = Unpack<SendPlayerStateRequest>(sendPlayerStateRequest);
+        var unpackedSendPlayerStateRequest = _dataHelper.Unpack<SendPlayerStateRequest>(sendPlayerStateRequest);
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendPlayerStateRequest.PlayerName).SendPlayerState(unpackedSendPlayerStateRequest.AuthenticationToken, unpackedSendPlayerStateRequest.PlayerState))
         {

@@ -22,5 +22,30 @@
     "SpecialDamage": { "Data": "2", "Type": "Heat" },
     "ClusterDamage": 1,
     "ClusterSize": 5
+  },
+  {
+    "Name": "Heavy Flamer",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Damage": {
+      "Short": 4
+    },
+    "DamageAerospace": {
+      "Short": 4
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 2,
+      "Medium": 3,
+      "Long": 4,
+      "Extreme": 4
+    },
+    "RangeAerospace": "Short",
+    "Heat": 5,
+    "UsesAmmo": true,
+    "SpecialFeatures": [ { "Data": "6d6", "Type": "Burst" }, { "Data": "4", "Type": "Heat" } ],
+    "SpecialDamage": { "Data": "4", "Type": "Heat" },
+    "ClusterDamage": 1,
+    "ClusterSize": 5
   }
 ]

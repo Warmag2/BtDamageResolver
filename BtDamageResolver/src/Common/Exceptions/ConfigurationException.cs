@@ -38,6 +38,7 @@ public class ConfigurationException : Exception
     /// </summary>
     /// <param name="serializationInfo">The serialization info.</param>
     /// <param name="streamingContext">The streaming context.</param>
+    [Obsolete("This overload of ISerializable constructor is no longer in use.")]
     protected ConfigurationException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
     {
     }

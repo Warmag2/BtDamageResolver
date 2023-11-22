@@ -67,6 +67,14 @@ public partial class LogicUnit
                                 damageReport.DamagePaperDoll.RecordCriticalDamage(location, damagePacket.Damage, CriticalThreatType.Normal, criticalDamageType);
                                 damageReport.Log(new AttackLogEntry { Context = criticalDamageType.ToString(), Number = 0, Location = location, Type = AttackLogEntryType.Critical });
                             }
+                            else
+                            {
+                                damageReport.Log(new AttackLogEntry
+                                {
+                                    Context = "Threat roll does not result in a critical hit",
+                                    Type = AttackLogEntryType.Information
+                                });
+                            }
 
                             break;
                         default:
@@ -81,12 +89,24 @@ public partial class LogicUnit
             {
                 var criticalThreatRoll = Random.D26();
 
-                damageReport.Log(new AttackLogEntry
+                if (criticalDamageTableType == CriticalDamageTableType.Motive)
                 {
-                    Context = "Critical threat",
-                    Number = criticalThreatRoll,
-                    Type = AttackLogEntryType.DiceRoll
-                });
+                    damageReport.Log(new AttackLogEntry
+                    {
+                        Context = "Motive Hit threat",
+                        Number = criticalThreatRoll,
+                        Type = AttackLogEntryType.DiceRoll
+                    });
+                }
+                else
+                {
+                    damageReport.Log(new AttackLogEntry
+                    {
+                        Context = "Critical Hit threat",
+                        Number = criticalThreatRoll,
+                        Type = AttackLogEntryType.DiceRoll
+                    });
+                }
 
                 await ResolveCriticalHit(damageReport, location, criticalThreatRoll, damagePacket.Damage, transformedDamage, criticalDamageTableType);
             }

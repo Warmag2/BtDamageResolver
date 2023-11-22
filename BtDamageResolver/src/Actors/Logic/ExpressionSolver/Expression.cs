@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Faemiyah.BtDamageResolver.Api;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
@@ -57,48 +58,14 @@ public class Expression
         {
             var restart = false;
 
-            foreach (var token in new[] { Token.Dice, Token.Exponent, Token.Divide, Token.Multiply, Token.Plus, Token.Minus })
+            foreach (var token in new[] { Token.Dice, Token.Exponent, Token.Divide, Token.Multiply })
             {
                 for (int ii = 0; ii < _tokens.Count; ii++)
                 {
                     if (_tokens[ii] == token)
                     {
-                        var value = 0m;
-
-                        switch (token)
-                        {
-                            case Token.Dice:
-                                var numDice = decimal.ToInt32(_expressions[ii].Parse());
-                                var diceSize = decimal.ToInt32(_expressions[ii + 1].Parse());
-
-                                for (var diceIndex = 0; diceIndex < numDice; diceIndex++)
-                                {
-                                    value += _random.NextPlusOne(diceSize);
-                                }
-
-                                break;
-                            case Token.Exponent:
-                                value = (decimal)Math.Pow(decimal.ToDouble(_expressions[ii].Parse()), decimal.ToDouble(_expressions[ii + 1].Parse()));
-                                break;
-                            case Token.Divide:
-                                value = _expressions[ii].Parse() / _expressions[ii + 1].Parse();
-                                break;
-                            case Token.Multiply:
-                                value = _expressions[ii].Parse() * _expressions[ii + 1].Parse();
-                                break;
-                            case Token.Plus:
-                                value = _expressions[ii].Parse() + _expressions[ii + 1].Parse();
-                                break;
-                            case Token.Minus:
-                                value = _expressions[ii].Parse() - _expressions[ii + 1].Parse();
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(token.ToString());
-                        }
-
-                        _expressions[ii] = new Expression(value);
-                        _expressions.RemoveAt(ii + 1);
-                        _tokens.RemoveAt(ii);
+                        // All tokens which have a specific order.
+                        CollapseOneStage(ii);
                         restart = true;
                         break;
                     }
@@ -109,9 +76,57 @@ public class Expression
                     break;
                 }
             }
+
+            if (restart)
+            {
+                continue;
+            }
+
+            // Rest of tokens, which are the same value in ordering.
+            CollapseOneStage(0);
         }
 
         return ExecuteFunction(_expressions[0].Parse(), _outerFunction);
+    }
+
+    private void CollapseOneStage(int position)
+    {
+        var value = 0m;
+
+        switch (_tokens[position])
+        {
+            case Token.Dice:
+                var numDice = decimal.ToInt32(_expressions[position].Parse());
+                var diceSize = decimal.ToInt32(_expressions[position + 1].Parse());
+
+                for (var diceIndex = 0; diceIndex < numDice; diceIndex++)
+                {
+                    value += _random.NextPlusOne(diceSize);
+                }
+
+                break;
+            case Token.Exponent:
+                value = (decimal)Math.Pow(decimal.ToDouble(_expressions[position].Parse()), decimal.ToDouble(_expressions[position + 1].Parse()));
+                break;
+            case Token.Divide:
+                value = _expressions[position].Parse() / _expressions[position + 1].Parse();
+                break;
+            case Token.Multiply:
+                value = _expressions[position].Parse() * _expressions[position + 1].Parse();
+                break;
+            case Token.Plus:
+                value = _expressions[position].Parse() + _expressions[position + 1].Parse();
+                break;
+            case Token.Minus:
+                value = _expressions[position].Parse() - _expressions[position + 1].Parse();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(_tokens[position].ToString());
+        }
+
+        _expressions[position] = new Expression(value);
+        _expressions.RemoveAt(position + 1);
+        _tokens.RemoveAt(position);
     }
 
     private static (string Expression, string Remaining) ExtractSubExpression(string input)
@@ -141,6 +156,7 @@ public class Expression
             {
                 subExpression = input.Substring(1, ii - 1);
                 remaining = input.Substring(ii + 1);
+                break;
             }
         }
 
@@ -157,15 +173,13 @@ public class Expression
         ExpressionFunction foundFunction = ExpressionFunction.None;
         string functionScope = null;
 
-        foreach (var functionName in Enum.GetNames(typeof(ExpressionFunction)))
+        var functionName = Enum.GetNames(typeof(ExpressionFunction)).SingleOrDefault(input.StartsWith);
+
+        if (functionName != null)
         {
-            if (input.StartsWith(functionName))
-            {
-                foundFunction = Enum.Parse<ExpressionFunction>(functionName);
-                var index = input.IndexOf('(');
-                functionScope = input.Substring(index);
-                break;
-            }
+            foundFunction = Enum.Parse<ExpressionFunction>(functionName);
+            var index = input.IndexOf('(');
+            functionScope = input.Substring(index);
         }
 
         if (string.IsNullOrWhiteSpace(functionScope))
@@ -180,19 +194,14 @@ public class Expression
 
     private static decimal ExecuteFunction(decimal input, ExpressionFunction functionType)
     {
-        switch (functionType)
+        return functionType switch
         {
-            case ExpressionFunction.None:
-                return input;
-            case ExpressionFunction.Round:
-                return Math.Round(input, MidpointRounding.AwayFromZero);
-            case ExpressionFunction.Ceil:
-                return Math.Ceiling(input);
-            case ExpressionFunction.Floor:
-                return Math.Floor(input);
-            default:
-                throw new ArgumentOutOfRangeException(nameof(functionType), functionType, null);
-        }
+            ExpressionFunction.None => input,
+            ExpressionFunction.Round => Math.Round(input, MidpointRounding.AwayFromZero),
+            ExpressionFunction.Ceil => Math.Ceiling(input),
+            ExpressionFunction.Floor => Math.Floor(input),
+            _ => throw new ArgumentOutOfRangeException(nameof(functionType), functionType, null),
+        };
     }
 
     private void Construct(string input)
@@ -214,7 +223,12 @@ public class Expression
                 if (input[ii].IsToken())
                 {
                     _tokens.Add((Token)input[ii]);
-                    _expressions.Add(new Expression(decimal.Parse(input.Substring(0, ii))));
+
+                    if (ii != 0)
+                    {
+                        _expressions.Add(new Expression(decimal.Parse(input.Substring(0, ii))));
+                    }
+
                     input = input.Substring(ii + 1);
                     nothingFound = false;
                     break;

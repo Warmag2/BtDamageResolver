@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
@@ -13,8 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -29,6 +28,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
 public class DataImporter
 {
     private readonly ILogger _logger;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DataImporter"/> class.
@@ -37,6 +37,7 @@ public class DataImporter
     public DataImporter(ILogger logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _jsonSerializerOptions = GetJsonSerializerOptions();
     }
 
     /// <summary>
@@ -46,20 +47,12 @@ public class DataImporter
     /// <returns>A task which finishes when data importing is completed.</returns>
     public async Task Work(DataImportOptions options)
     {
-        var jsonSerializerSettings = new JsonSerializerSettings
-        {
-            MissingMemberHandling = MissingMemberHandling.Error,
-            NullValueHandling = NullValueHandling.Ignore
-        };
-
-        jsonSerializerSettings.Converters.Add(new StringEnumConverter());
-
-        var data = FetchData(options, jsonSerializerSettings);
+        var data = FetchData(options);
         _logger.LogInformation("{count} data objects matched the filter(s)", data.Count);
 
         foreach (var dataObject in data)
         {
-            _logger.LogInformation("{object}", JsonConvert.SerializeObject(dataObject, jsonSerializerSettings));
+            _logger.LogInformation("{object}", JsonSerializer.Serialize(dataObject, _jsonSerializerOptions));
         }
 
         using var host = await ConnectClient();
@@ -108,9 +101,8 @@ public class DataImporter
     /// </summary>
     /// <param name="targetDirectory">The target directory.</param>
     /// <param name="searchTerm">The search term for files in the directory.</param>
-    /// <param name="jsonSerializerSettings">The JSON serializer settings to use.</param>
     /// <returns>The data objects in the given directory for the search term.</returns>
-    private List<object> ProcessDirectory(string targetDirectory, string searchTerm, JsonSerializerSettings jsonSerializerSettings)
+    private List<object> ProcessDirectory(string targetDirectory, string searchTerm)
     {
         var fileEntries = searchTerm == null
             ? Directory.GetFiles(targetDirectory)
@@ -119,26 +111,26 @@ public class DataImporter
 
         foreach (var fileEntry in fileEntries)
         {
-            deserializedEntries.AddRange(ProcessFile(fileEntry, jsonSerializerSettings));
+            deserializedEntries.AddRange(ProcessFile(fileEntry));
         }
 
         var subDirectories = Directory.GetDirectories(targetDirectory);
         foreach (var directory in subDirectories)
         {
-            deserializedEntries.AddRange(ProcessDirectory(directory, searchTerm, jsonSerializerSettings));
+            deserializedEntries.AddRange(ProcessDirectory(directory, searchTerm));
         }
 
         return deserializedEntries;
     }
 
-    private List<object> FetchData(DataImportOptions options, JsonSerializerSettings jsonSerializerSettings)
+    private List<object> FetchData(DataImportOptions options)
     {
         var importedDataObjects = new List<object>();
 
         if (Directory.Exists(options.Folder))
         {
             // This path is a directory
-            importedDataObjects.AddRange(ProcessDirectory(options.Folder, options.SubString, jsonSerializerSettings));
+            importedDataObjects.AddRange(ProcessDirectory(options.Folder, options.SubString));
         }
         else
         {
@@ -173,8 +165,9 @@ public class DataImporter
                     })
                     .Services.AddSerializer(serializerBuilder =>
                     {
-                        serializerBuilder.AddNewtonsoftJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
-                    });
+                        serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
+                    })
+                    .ConfigureJsonSerializerOptions();
             }).Build();
 
         _logger.LogInformation("Host successfully created.");
@@ -188,11 +181,10 @@ public class DataImporter
     /// Finds and processes files.
     /// </summary>
     /// <param name="path">The path to process.</param>
-    /// <param name="jsonSerializerSettings">The JSON serializer settings to use.</param>
     /// <returns>A collection of objects found.</returns>
     /// <exception cref="InvalidDataException">If data could not be deserialized to correct type.</exception>
     /// <exception cref="InvalidOperationException">If data type could not be inferred from file name.</exception>
-    private IEnumerable<object> ProcessFile(string path, JsonSerializerSettings jsonSerializerSettings)
+    private IEnumerable<object> ProcessFile(string path)
     {
         var fileNamePrefix = Path.GetFileName(path).Split("_")[0];
 
@@ -200,22 +192,15 @@ public class DataImporter
 
         var fileData = File.ReadAllText(path, Encoding.UTF8);
 
-        switch (fileNamePrefix)
+        return fileNamePrefix switch
         {
-            case "Ammo":
-                return (JsonConvert.DeserializeObject<List<Ammo>>(fileData, jsonSerializerSettings) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object);
-            case "ClusterTable":
-                return new object[] { JsonConvert.DeserializeObject<ClusterTable>(fileData, jsonSerializerSettings) };
-            case "CriticalDamageTable":
-                return new object[] { JsonConvert.DeserializeObject<CriticalDamageTable>(fileData, jsonSerializerSettings) };
-            case "PaperDoll":
-                return new object[] { JsonConvert.DeserializeObject<PaperDoll>(fileData, jsonSerializerSettings) };
-            case "Unit":
-                return new object[] { JsonConvert.DeserializeObject<Unit>(fileData, jsonSerializerSettings) };
-            case "Weapons":
-                return (JsonConvert.DeserializeObject<List<Weapon>>(fileData, jsonSerializerSettings) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object);
-            default:
-                throw new InvalidOperationException($"Cannot infer file type from file name for file: {path}");
-        }
+            "Ammo" => (JsonSerializer.Deserialize<List<Ammo>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of ammo.")).Select(r => r as object),
+            "ClusterTable" => new object[] { JsonSerializer.Deserialize<ClusterTable>(fileData, _jsonSerializerOptions) },
+            "CriticalDamageTable" => new object[] { JsonSerializer.Deserialize<CriticalDamageTable>(fileData, _jsonSerializerOptions) },
+            "PaperDoll" => new object[] { JsonSerializer.Deserialize<PaperDoll>(fileData, _jsonSerializerOptions) },
+            "Unit" => new object[] { JsonSerializer.Deserialize<Unit>(fileData, _jsonSerializerOptions) },
+            "Weapons" => (JsonSerializer.Deserialize<List<Weapon>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object),
+            _ => throw new InvalidOperationException($"Cannot infer file type from file name for file: {path}"),
+        };
     }
 }

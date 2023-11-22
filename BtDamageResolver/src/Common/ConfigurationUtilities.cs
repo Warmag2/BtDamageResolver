@@ -3,9 +3,12 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Faemiyah.BtDamageResolver.Common.Exceptions;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core.Enrichers;
 using Serilog.Filters;
@@ -163,5 +166,38 @@ public static class ConfigurationUtilities
         }
 
         return logger.CreateLogger();
+    }
+
+    /// <summary>
+    /// Gets the default JSON Serializer options.
+    /// </summary>
+    /// <returns>The default JSON serializer options.</returns>
+    public static JsonSerializerOptions GetJsonSerializerOptions()
+    {
+        var jsonSerializerOptions = new JsonSerializerOptions()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNameCaseInsensitive = false
+        };
+
+        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+        return jsonSerializerOptions;
+    }
+
+    /// <summary>
+    /// Add the default JSON serializer options to the service collection.
+    /// </summary>
+    /// <param name="collection">The service collection.</param>
+    /// <returns>The service collection for further processing.</returns>
+    public static IServiceCollection ConfigureJsonSerializerOptions(this IServiceCollection collection)
+    {
+        return collection.Configure<JsonSerializerOptions>(options =>
+        {
+            options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            options.PropertyNameCaseInsensitive = false;
+
+            options.Converters.Add(new JsonStringEnumConverter());
+        });
     }
 }

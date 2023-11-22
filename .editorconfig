@@ -7,17 +7,29 @@ csharp_style_var_elsewhere=true:silent
 ## IDE
 ##
 
+# Unnecessary imports/usings are error-worthy.
+dotnet_diagnostic.IDE0005.severity = Error
+
+# Collection initialization simplification needs not be suggested.
+dotnet_diagnostic.IDE0028.severity = None
+
 # Ternary operator suggestions are not needed, I'll use it when I want to
 dotnet_diagnostic.IDE0045.severity = None
 
 # Ternary operator suggestions are not needed, I'll use it when I want to
 dotnet_diagnostic.IDE0046.severity = None
 
-# Range operator is not clear coding in my opinion
+# Range operator is not clear coding in my opinion.
 dotnet_diagnostic.IDE0057.severity = None
 
-# Switch expression does not need to be suggested
-dotnet_diagnostic.IDE0066.severity = None
+# Switch expression suggestions are fine.
+dotnet_diagnostic.IDE0066.severity = Suggestion
+
+# Disagree about clarity of primary constructor
+dotnet_diagnostic.IDE0290.severity = None
+
+# Collection initialization simplification needs not be suggested.
+dotnet_diagnostic.IDE0305.severity = None
 
 # Disallow multiple empty lines in a row
 dotnet_style_allow_multiple_blank_lines_experimental = false:warning
@@ -40,7 +52,7 @@ dotnet_style_prefer_conditional_expression_over_return = true:suggestion
 dotnet_diagnostic.SA0001.severity = None
 
 # Closing parenthesis should not be preceded by a space
-dotnet_diagnostic.SA1009.severity = None
+dotnet_diagnostic.SA1009.severity = Warning
 
 # Prefix local calls with this
 dotnet_diagnostic.SA1101.severity = None
@@ -59,8 +71,8 @@ dotnet_diagnostic.SA1306.severity = None
     
 # Field '_blah' should not begin with an underscore
 dotnet_diagnostic.SA1309.severity = None
-    
-# Fields can indeed be private
+
+# Fields can be protected
 dotnet_diagnostic.SA1401.severity = None
 
 # Arithmetic operation precedence is self-explanatory
@@ -73,7 +85,7 @@ dotnet_diagnostic.SA1413.severity = None
 dotnet_diagnostic.SA1516.severity = None
 
 # Enumeration items should be documented
-dotnet_diagnostic.SA1602.severity = None
+dotnet_diagnostic.SA1602.severity = Suggestion
 
 # Allow properties to contain any kind of documentation line.
 dotnet_diagnostic.SA1623.severity = None
@@ -91,20 +103,18 @@ dotnet_diagnostic.S125.severity = Suggestion
 # There should be no need to always merge nested ifs
 dotnet_diagnostic.S1066.severity = Suggestion
 
-# This one is just bugged
-dotnet_diagnostic.S1172.severity = None
+# LINQ suggester is quite aggressive, but for a reason
+dotnet_diagnostic.S3267.severity = Warning
 
-# LINQ suggester is too aggressive
-dotnet_diagnostic.S3267.severity = Suggestion
+# LINQ suggester is too aggressive, but for a reason
+dotnet_diagnostic.S3358.severity = Warning
 
-# LINQ suggester is too aggressive
-dotnet_diagnostic.S3358.severity = Suggestion
-
-# Don't want to provide assembly versions.
-dotnet_diagnostic.S3904.severity = None
+# Please provide assembly versions
+dotnet_diagnostic.S3904.severity = Warning
 
 ##
-## MSVS
+## SonarAnalyzers.CSharp
 ##
 
-dotnet_diagnostic.IDE0005.severity = Error
+# I do not want to use Orleans binary serialization. Clarity over speed here.
+dotnet_diagnostic.ORLEANS0005.severity = None

@@ -4,9 +4,11 @@
 // 7Zip LZMA compression by Igor Pavlov http://www.7-zip.org/sdk.html
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
+using Microsoft.Extensions.Options;
 
-namespace Faemiyah.BtDamageResolver.Tests;
+namespace Faemiyah.BtDamageResolver.CompressionTesterApp;
 
 /// <summary>
 /// Main program class.
@@ -34,12 +36,16 @@ smoother than a V6, while being considerably less expensive than a V12 engine.
 Racing V8s continue to use the single plane crankshaft because it allows faster
 acceleration and more efficient exhaust system designs.";
 
+        var jsonSerializerOptions = Options.Create(new JsonSerializerOptions());
+
+        var dataHelper = new DataHelper(jsonSerializerOptions);
+
         // Compress it
-        var compressed = DataHelper.Pack(originalText);
+        var compressed = dataHelper.Pack(originalText);
         Console.WriteLine("Compressed data is {0} bytes", compressed.Length);
 
         // Decompress it
-        var decompressed = DataHelper.Unpack<string>(compressed);
+        var decompressed = dataHelper.Unpack<string>(compressed);
         Console.WriteLine("Decompressed data is {0} bytes", decompressed.Length);
 
         Console.WriteLine("Is the decompressed text the same as the original? {0}", decompressed == originalText);
@@ -58,10 +64,10 @@ acceleration and more efficient exhaust system designs.";
             }
         };
 
-        var originalComplexTypeCompressed = DataHelper.Pack(originalComplexType);
-        var originalComplexTypeUncompressed = DataHelper.Unpack<ComplexType>(originalComplexTypeCompressed);
-        var originalAsText = System.Text.Json.JsonSerializer.Serialize(originalComplexType);
-        var uncompressedAsText = System.Text.Json.JsonSerializer.Serialize(originalComplexTypeUncompressed);
+        var originalComplexTypeCompressed = dataHelper.Pack(originalComplexType);
+        var originalComplexTypeUncompressed = dataHelper.Unpack<ComplexType>(originalComplexTypeCompressed);
+        var originalAsText = JsonSerializer.Serialize(originalComplexType);
+        var uncompressedAsText = JsonSerializer.Serialize(originalComplexTypeUncompressed);
         Console.WriteLine(originalAsText);
         Console.WriteLine(uncompressedAsText);
         Console.WriteLine(originalAsText.Equals(uncompressedAsText));

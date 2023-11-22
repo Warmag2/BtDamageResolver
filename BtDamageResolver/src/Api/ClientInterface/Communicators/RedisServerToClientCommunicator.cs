@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 
@@ -17,28 +18,32 @@ public abstract class RedisServerToClientCommunicator : RedisCommunicator, IServ
     /// Initializes a new instance of the <see cref="RedisServerToClientCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="jsonSerializerSettings">JSON serializer settings.</param>
+    /// <param name="jsonSerializerOptions">JSON serializer options.</param>
     /// <param name="connectionString">The connection string for Redis.</param>
-    protected RedisServerToClientCommunicator(ILogger logger, IOptions<JsonSerializerSettings> jsonSerializerSettings, string connectionString) : base(logger, jsonSerializerSettings, connectionString, ServerStreamAddress)
+    /// <param name="dataHelper">The data compression helper.</param>
+    protected RedisServerToClientCommunicator(ILogger logger, IOptions<JsonSerializerOptions> jsonSerializerOptions, string connectionString, DataHelper dataHelper) : base(logger, jsonSerializerOptions, connectionString, dataHelper, ServerStreamAddress)
     {
     }
 
     /// <inheritdoc />
     public void Send<TType>(string clientName, string envelopeType, TType data)
+        where TType : class
     {
-        SendEnvelope(clientName, new Envelope(envelopeType, data));
+        SendEnvelope(clientName, new Envelope(envelopeType, DataHelper.Pack(data)));
     }
 
     /// <inheritdoc />
     public void SendToAll<TType>(string envelopeType, TType data)
+        where TType : class
     {
-        SendEnvelope(ClientStreamAddress, new Envelope(envelopeType, data));
+        SendEnvelope(ClientStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
     }
 
     /// <inheritdoc />
     public void SendToMany<TType>(List<string> clientNames, string envelopeType, TType data)
+        where TType : class
     {
-        var envelope = new Envelope(envelopeType, data);
+        var envelope = new Envelope(envelopeType, DataHelper.Pack(data));
         foreach (var clientName in clientNames)
         {
             SendEnvelope(clientName, envelope);

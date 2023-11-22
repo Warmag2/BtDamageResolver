@@ -69,15 +69,7 @@ public abstract class LogicUnitVehicle : LogicUnit
 
         if (criticalDamageTableType == CriticalDamageTableType.Motive)
         {
-            switch (Unit.Type)
-            {
-                case UnitType.VehicleHover:
-                    criticalThreatRoll += 2;
-                    break;
-                case UnitType.VehicleWheeled:
-                    criticalThreatRoll += 1;
-                    break;
-            }
+            criticalThreatRoll += GetMotiveHitModifier();
 
             // Let's not overflow
             if (criticalThreatRoll > 12)
@@ -87,7 +79,7 @@ public abstract class LogicUnitVehicle : LogicUnit
 
             damageReport.Log(new AttackLogEntry
             {
-                Context = "Critical Threat roll modified by unit type",
+                Context = "Motive Hit threat roll modified by unit type",
                 Number = criticalThreatRoll,
                 Type = AttackLogEntryType.Calculation
             });
@@ -103,6 +95,25 @@ public abstract class LogicUnitVehicle : LogicUnit
                 Location = location,
                 Type = AttackLogEntryType.Critical
             });
+        }
+        else
+        {
+            if (criticalDamageTableType == CriticalDamageTableType.Motive)
+            {
+                damageReport.Log(new AttackLogEntry
+                {
+                    Context = "Threat roll does not result in a motive hit",
+                    Type = AttackLogEntryType.Information
+                });
+            }
+            else
+            {
+                damageReport.Log(new AttackLogEntry
+                {
+                    Context = "Threat roll does not result in a critical hit",
+                    Type = AttackLogEntryType.Information
+                });
+            }
         }
     }
 }

@@ -76,7 +76,7 @@
     "Type": "Ballistic",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 40,
+      "Short": 40
     },
     "DamageAerospace": {
       "PointBlank": 32,

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 
@@ -20,11 +21,12 @@ public class ClientToServerCommunicator : RedisClientToServerCommunicator
     /// Initializes a new instance of the <see cref="ClientToServerCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="jsonSerializerSettings">The JSON serializer settings.</param>
+    /// <param name="jsonSerializerOptions">The JSON serializer settings.</param>
     /// <param name="connectionString">The Redis connection string.</param>
-    /// <param name="playerId">The player ID.</param>
+    /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="hubConnection">The SignalR hub connection.</param>
-    public ClientToServerCommunicator(ILogger logger, IOptions<JsonSerializerSettings> jsonSerializerSettings, string connectionString, string playerId, HubConnection hubConnection) : base(logger, jsonSerializerSettings, connectionString, playerId)
+    /// <param name="playerId">The player ID.</param>
+    public ClientToServerCommunicator(ILogger logger, IOptions<JsonSerializerOptions> jsonSerializerOptions, string connectionString, DataHelper dataHelper, HubConnection hubConnection, string playerId) : base(logger, jsonSerializerOptions, connectionString, dataHelper, playerId)
     {
         _hubConnection = hubConnection;
     }

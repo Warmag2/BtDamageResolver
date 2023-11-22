@@ -1,14 +1,15 @@
 ﻿@inherits BaseFaemiyahComponent
 @page "/"
-@using Microsoft.AspNetCore.SignalR.Client
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
 @using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Api.Options
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
+@using Microsoft.AspNetCore.SignalR.Client
 @inject CommonData _commonData
+@inject DataHelper _dataHelper
 @inject LocalStorage _localStorage
 @inject NavigationManager _navigationManager
 @inject ResolverCommunicator _resolverCommunicator
@@ -69,7 +70,7 @@
 
         _hubConnection.On<byte[]>(EventNames.ConnectionResponse, async (connectionResponseData) =>
         {
-            var connectionResponse = DataHelper.Unpack<ConnectionResponse>(connectionResponseData);
+            var connectionResponse = _dataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
             // If we have disconnected from a game, clear the game state, damage reports
             // and game options to make sure user state agrees with server and visuals.
@@ -103,44 +104,44 @@
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
         {
-            var data = DataHelper.Unpack<List<DamageReport>>(damageReportData);
+            var data = _dataHelper.Unpack<List<DamageReport>>(damageReportData);
             _userStateController.DamageReportCollection.AddRange(data);
             _userStateController.NotifyDamageReportsChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
         {
-            _errorMessage = DataHelper.Unpack<string>(errorMessage);
+            _errorMessage = _dataHelper.Unpack<string>(errorMessage);
             InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.GameEntries, gameEntries =>
         {
-            _userStateController.GameEntries = DataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetId(), g => g);
+            _userStateController.GameEntries = _dataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetId(), g => g);
             InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.GameOptions, gameOptionsData =>
         {
-            _userStateController.GameOptions = DataHelper.Unpack<GameOptions>(gameOptionsData);
+            _userStateController.GameOptions = _dataHelper.Unpack<GameOptions>(gameOptionsData);
             InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.GameState, gameStateData =>
         {
-            _userStateController.GameState = DataHelper.Unpack<GameState>(gameStateData);
+            _userStateController.GameState = _dataHelper.Unpack<GameState>(gameStateData);
             InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.PlayerOptions, playerOptionsData =>
         {
-            _userStateController.PlayerOptions = DataHelper.Unpack<PlayerOptions>(playerOptionsData);
+            _userStateController.PlayerOptions = _dataHelper.Unpack<PlayerOptions>(playerOptionsData);
             InvokeStateChange();
         });
 
         _hubConnection.On<byte[]>(EventNames.TargetNumbers, targetNumberUpdateData =>
         {
-            _userStateController.RecordTargetNumberUpdates(DataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
+            _userStateController.RecordTargetNumberUpdates(_dataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
             InvokeStateChange();
         });
 
