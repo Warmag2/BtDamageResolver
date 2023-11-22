@@ -26,7 +26,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     private readonly string _keyPrefix;
     private readonly ILogger<RedisEntityRepository<TEntity>> _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    private readonly IConnectionMultiplexer _redisConnectionMultiplexer;
+    private readonly ConnectionMultiplexer _redisConnectionMultiplexer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisEntityRepository{TEntity}"/> class.

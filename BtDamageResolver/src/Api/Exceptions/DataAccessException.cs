@@ -45,6 +45,7 @@ public class DataAccessException : Exception
     /// </summary>
     /// <param name="serializationInfo">The serialization info.</param>
     /// <param name="streamingContext">The streaming context.</param>
+    [Obsolete("This overload of ISerializable constructor is no longer in use.")]
     protected DataAccessException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
     {
         ErrorCode = Enum.Parse<DataAccessErrorCode>(serializationInfo.GetString(nameof(ErrorCode)));
@@ -56,6 +57,7 @@ public class DataAccessException : Exception
     public DataAccessErrorCode ErrorCode { get; set; }
 
     /// <inheritdoc/>
+    [Obsolete("This implementation of ISerializable is no longer in use.")]
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);

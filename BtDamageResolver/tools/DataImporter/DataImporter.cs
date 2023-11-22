@@ -192,22 +192,15 @@ public class DataImporter
 
         var fileData = File.ReadAllText(path, Encoding.UTF8);
 
-        switch (fileNamePrefix)
+        return fileNamePrefix switch
         {
-            case "Ammo":
-                return (JsonSerializer.Deserialize<List<Ammo>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of ammo.")).Select(r => r as object);
-            case "ClusterTable":
-                return new object[] { JsonSerializer.Deserialize<ClusterTable>(fileData, _jsonSerializerOptions) };
-            case "CriticalDamageTable":
-                return new object[] { JsonSerializer.Deserialize<CriticalDamageTable>(fileData, _jsonSerializerOptions) };
-            case "PaperDoll":
-                return new object[] { JsonSerializer.Deserialize<PaperDoll>(fileData, _jsonSerializerOptions) };
-            case "Unit":
-                return new object[] { JsonSerializer.Deserialize<Unit>(fileData, _jsonSerializerOptions) };
-            case "Weapons":
-                return (JsonSerializer.Deserialize<List<Weapon>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object);
-            default:
-                throw new InvalidOperationException($"Cannot infer file type from file name for file: {path}");
-        }
+            "Ammo" => (JsonSerializer.Deserialize<List<Ammo>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of ammo.")).Select(r => r as object),
+            "ClusterTable" => new object[] { JsonSerializer.Deserialize<ClusterTable>(fileData, _jsonSerializerOptions) },
+            "CriticalDamageTable" => new object[] { JsonSerializer.Deserialize<CriticalDamageTable>(fileData, _jsonSerializerOptions) },
+            "PaperDoll" => new object[] { JsonSerializer.Deserialize<PaperDoll>(fileData, _jsonSerializerOptions) },
+            "Unit" => new object[] { JsonSerializer.Deserialize<Unit>(fileData, _jsonSerializerOptions) },
+            "Weapons" => (JsonSerializer.Deserialize<List<Weapon>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object),
+            _ => throw new InvalidOperationException($"Cannot infer file type from file name for file: {path}"),
+        };
     }
 }

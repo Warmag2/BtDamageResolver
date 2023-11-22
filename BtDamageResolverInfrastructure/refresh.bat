@@ -1,17 +1,10 @@
-cd postgresql
-docker build --tag orleansdb .
-cd ../grafana
-docker build --tag resolvergrafana .
-cd ../redis
-docker build --tag resolverredis .
-cd ../../CustomNugets
-docker build --tag resolversdk .
-cd ../BtDamageResolver
-docker build --tag resolver -f src/Silo/Dockerfile .
-docker build --tag resolverdataimporter -f tools/DataImporter/Dockerfile .
-cd ../BtDamageResolverClient
-docker build --tag resolverclient -f src/BlazorServer/Dockerfile .
-cd ../BtDamageResolverInfrastructure
+docker build --tag orleansdb -f ./postgresql/Dockerfile ./postgresql/
+docker build --tag resolvergrafana -f ./grafana/Dockerfile ./grafana/
+docker build --tag resolverredis -f ./redis/Dockerfile ./redis/
+docker build --tag resolversdk -f ../CustomNugets/Dockerfile ../CustomNugets/
+docker build --tag resolver -f ../BtDamageResolver/src/Silo/Dockerfile ../BtDamageResolver/
+docker build --tag resolverdataimporter -f ./BtDamageResolver/tools/DataImporter/Dockerfile ../BtDamageResolver/
+docker build --tag resolverclient -f ../BtDamageResolverClient/src/BlazorServer/Dockerfile ../BtDamageResolverClient/
 
 docker-compose down
 docker-compose up -d

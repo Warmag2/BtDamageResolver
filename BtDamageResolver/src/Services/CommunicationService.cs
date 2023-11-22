@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
@@ -18,7 +17,7 @@ namespace Faemiyah.BtDamageResolver.Services;
 public class CommunicationService : GrainService, ICommunicationService
 {
     private readonly ILogger<CommunicationService> _logger;
-    private readonly IServerToClientCommunicator _serverToClientCommunicator;
+    private readonly ServerToClientCommunicator _serverToClientCommunicator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommunicationService"/> class.

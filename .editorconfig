@@ -7,8 +7,11 @@ csharp_style_var_elsewhere=true:silent
 ## IDE
 ##
 
-# Unnecessary imports/usings are error-worthy
+# Unnecessary imports/usings are error-worthy.
 dotnet_diagnostic.IDE0005.severity = Error
+
+# Collection initialization simplification needs not be suggested.
+dotnet_diagnostic.IDE0028.severity = None
 
 # Ternary operator suggestions are not needed, I'll use it when I want to
 dotnet_diagnostic.IDE0045.severity = None
@@ -16,11 +19,17 @@ dotnet_diagnostic.IDE0045.severity = None
 # Ternary operator suggestions are not needed, I'll use it when I want to
 dotnet_diagnostic.IDE0046.severity = None
 
-# Range operator is not clear coding in my opinion
+# Range operator is not clear coding in my opinion.
 dotnet_diagnostic.IDE0057.severity = None
 
-# Switch expression does not need to be suggested
-dotnet_diagnostic.IDE0066.severity = None
+# Switch expression suggestions are fine.
+dotnet_diagnostic.IDE0066.severity = Suggestion
+
+# Disagree about clarity of primary constructor
+dotnet_diagnostic.IDE0290.severity = None
+
+# Collection initialization simplification needs not be suggested.
+dotnet_diagnostic.IDE0305.severity = None
 
 # Disallow multiple empty lines in a row
 dotnet_style_allow_multiple_blank_lines_experimental = false:warning
@@ -102,3 +111,10 @@ dotnet_diagnostic.S3358.severity = Warning
 
 # Please provide assembly versions
 dotnet_diagnostic.S3904.severity = Warning
+
+##
+## SonarAnalyzers.CSharp
+##
+
+# I do not want to use Orleans binary serialization. Clarity over speed here.
+dotnet_diagnostic.ORLEANS0005.severity = None

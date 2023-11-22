@@ -36,32 +36,20 @@ public class AttackLogEntry
     /// <exception cref="NotImplementedException">Thrown when unknown attack log type is encountered.</exception>
     public override string ToString()
     {
-        switch (Type)
+        return Type switch
         {
-            case AttackLogEntryType.Calculation:
-                return $"{Context} is {Number}.";
-            case AttackLogEntryType.Critical:
-                return Context == null ? $"Critical hit ({Number}) to {Location}." : $"Critical hit ({Number}) to {Location}, damage to {Context}.";
-            case AttackLogEntryType.Damage:
-                return $"{Number} damage to {Location}";
-            case AttackLogEntryType.DiceRoll:
-                return $"{Context} roll is {Number}.";
-            case AttackLogEntryType.Fire:
-                return $"{Context} fires.";
-            case AttackLogEntryType.FiringSolution:
-                return $"{Context} prepares to fire.";
-            case AttackLogEntryType.Heat:
-                return Number == 0 ? $"{Context} causes no heat." : $"{Context} causes {Number} heat.";
-            case AttackLogEntryType.Hit:
-                return $"{Context} hits.";
-            case AttackLogEntryType.Information:
-                return $"{Context}.";
-            case AttackLogEntryType.Miss:
-                return $"{Context} misses.";
-            case AttackLogEntryType.SpecialDamage:
-                return $"{Number} {Context} damage to {Location}";
-            default:
-                throw new NotImplementedException($"Explanation for event type {Type} has not yet been implemented.");
-        }
+            AttackLogEntryType.Calculation => $"{Context} is {Number}.",
+            AttackLogEntryType.Critical => Context == null ? $"Critical hit ({Number}) to {Location}." : $"Critical hit ({Number}) to {Location}, damage to {Context}.",
+            AttackLogEntryType.Damage => $"{Number} damage to {Location}",
+            AttackLogEntryType.DiceRoll => $"{Context} roll is {Number}.",
+            AttackLogEntryType.Fire => $"{Context} fires.",
+            AttackLogEntryType.FiringSolution => $"{Context} prepares to fire.",
+            AttackLogEntryType.Heat => Number == 0 ? $"{Context} causes no heat." : $"{Context} causes {Number} heat.",
+            AttackLogEntryType.Hit => $"{Context} hits.",
+            AttackLogEntryType.Information => $"{Context}.",
+            AttackLogEntryType.Miss => $"{Context} misses.",
+            AttackLogEntryType.SpecialDamage => $"{Number} {Context} damage to {Location}",
+            _ => throw new NotImplementedException($"Explanation for event type {Type} has not yet been implemented."),
+        };
     }
 }

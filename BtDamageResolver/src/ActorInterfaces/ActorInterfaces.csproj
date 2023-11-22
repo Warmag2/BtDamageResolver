@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Faemiyah.BtDamageResolver.ActorInterfaces</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.ActorInterfaces</AssemblyName>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

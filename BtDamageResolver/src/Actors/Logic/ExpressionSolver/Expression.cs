@@ -194,19 +194,14 @@ public class Expression
 
     private static decimal ExecuteFunction(decimal input, ExpressionFunction functionType)
     {
-        switch (functionType)
+        return functionType switch
         {
-            case ExpressionFunction.None:
-                return input;
-            case ExpressionFunction.Round:
-                return Math.Round(input, MidpointRounding.AwayFromZero);
-            case ExpressionFunction.Ceil:
-                return Math.Ceiling(input);
-            case ExpressionFunction.Floor:
-                return Math.Floor(input);
-            default:
-                throw new ArgumentOutOfRangeException(nameof(functionType), functionType, null);
-        }
+            ExpressionFunction.None => input,
+            ExpressionFunction.Round => Math.Round(input, MidpointRounding.AwayFromZero),
+            ExpressionFunction.Ceil => Math.Ceiling(input),
+            ExpressionFunction.Floor => Math.Floor(input),
+            _ => throw new ArgumentOutOfRangeException(nameof(functionType), functionType, null),
+        };
     }
 
     private void Construct(string input)

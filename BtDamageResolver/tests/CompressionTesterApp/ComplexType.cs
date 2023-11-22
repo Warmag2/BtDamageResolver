@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Faemiyah.BtDamageResolver.Tests;
+namespace Faemiyah.BtDamageResolver.CompressionTesterApp;
 
 /// <summary>
 /// Complex type for testing compression.

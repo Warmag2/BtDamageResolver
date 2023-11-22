@@ -38,10 +38,7 @@ public static class FaemiyahLoggingExtensions
     /// <returns>A logging builder.</returns>
     public static ILoggingBuilder AddFaemiyahLogging(this ILoggingBuilder builder, Action<FaemiyahLoggingOptions> configure)
     {
-        if (configure == null)
-        {
-            throw new ArgumentNullException(nameof(configure));
-        }
+        ArgumentNullException.ThrowIfNull(configure);
 
         builder.AddFaemiyahLogging();
         builder.Services.Configure(configure);

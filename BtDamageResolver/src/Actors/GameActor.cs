@@ -65,15 +65,9 @@ public partial class GameActor : Grain, IGameActor
 
         var updated = false;
 
-        if (!_gameActorState.State.PlayerStates.ContainsKey(playerState.PlayerId))
+        if (_gameActorState.State.PlayerStates.TryGetValue(playerState.PlayerId, out var value))
         {
-            _logger.LogInformation("Receiving data from player {player} with no previous data.", playerState.PlayerId);
-            _gameActorState.State.PlayerStates.Add(playerState.PlayerId, playerState);
-            updated = true;
-        }
-        else
-        {
-            if (playerState.TimeStamp > _gameActorState.State.PlayerStates[playerState.PlayerId].TimeStamp)
+            if (playerState.TimeStamp > value.TimeStamp)
             {
                 _logger.LogInformation("Updating player {playerId} state with new data from {timestamp}", playerState.PlayerId, playerState.TimeStamp);
                 _gameActorState.State.PlayerStates[playerState.PlayerId] = playerState;
@@ -86,6 +80,12 @@ public partial class GameActor : Grain, IGameActor
                     playerState.TimeStamp,
                     _gameActorState.State.PlayerStates[playerState.PlayerId].TimeStamp);
             }
+        }
+        else
+        {
+            _logger.LogInformation("Receiving data from player {player} with no previous data.", playerState.PlayerId);
+            _gameActorState.State.PlayerStates.Add(playerState.PlayerId, playerState);
+            updated = true;
         }
 
         if (updated)

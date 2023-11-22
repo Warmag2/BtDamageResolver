@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Faemiyah.BtDamageResolver.Services.Interfaces</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.Services.Interfaces</AssemblyName>
   </PropertyGroup>
