@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic;
 
@@ -24,18 +24,18 @@ public partial class LogicUnit
     protected virtual List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
     {
         // Heat weapons are cluster weapons for vulnerable unit types
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Heat, out _) && !target.IsHeatTracking())
+        if (combatAction.Weapon.HasSpecialDamage(SpecialDamageType.HeatConverted, out _) && !target.IsHeatTracking())
         {
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Heat weapon acts as a cluster weapon against targeted unit" });
             return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage);
         }
 
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))
         {
             return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage);
         }
 
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out _))
         {
             // Rapid-fire weapons may already have dealt more damage than the individual instance, clusterize to units of the actual damage value
             return Clusterize(combatAction.Weapon.Damage[combatAction.RangeBracket], damage, combatAction.Weapon.SpecialDamage);
@@ -51,28 +51,20 @@ public partial class LogicUnit
     /// <param name="clusterSize">The cluster size.</param>
     /// <param name="totalDamage">The total damage.</param>
     /// <param name="specialDamage">Special damage entry, if any.</param>
-    /// <param name="onlyApplySpecialDamageOnce">Apply special damage entry to each cluster hit or only the first.</param>
     /// <returns>A list of damage packets representing the clusterization.</returns>
-    protected List<DamagePacket> Clusterize(int clusterSize, int totalDamage, SpecialDamageEntry specialDamage, bool onlyApplySpecialDamageOnce = true)
+    protected List<DamagePacket> Clusterize(int clusterSize, int totalDamage, List<SpecialDamageEntry> specialDamage)
     {
         var damagePackets = new List<DamagePacket>();
         var first = true;
 
         // Some weapons deal no damage but have an effect. In these cases we still have to produce the effect, if nothing else.
-        if (totalDamage == 0 && specialDamage.Type != SpecialDamageType.None)
+        if (totalDamage == 0 && specialDamage.Exists(s => s.Type != SpecialDamageType.None))
         {
             damagePackets.Add(
                 new DamagePacket
                 {
                     Damage = 0,
-                    SpecialDamageEntries = new List<SpecialDamageEntry>
-                    {
-                        new SpecialDamageEntry
-                        {
-                            Data = MathExpression.Parse(specialDamage.Data).ToString(),
-                            Type = specialDamage.Type
-                        }
-                    }
+                    SpecialDamageEntries = specialDamage.Select(s => new SpecialDamageEntry { Data = MathExpression.Parse(s.Data).ToString(), Type = s.Type }).ToList(),
                 });
 
             return damagePackets;
@@ -82,19 +74,12 @@ public partial class LogicUnit
         {
             var currentClusterSize = Math.Clamp(totalDamage, 1, clusterSize);
 
-            // Typically we only the first cluster hit applies the special damage entry, if any, so clustering does not multiply any special damage
-            var clusterSpecialDamageEntry = first && onlyApplySpecialDamageOnce
-                ? new List<SpecialDamageEntry>
-                {
-                    new SpecialDamageEntry
-                    {
-                        Data = MathExpression.Parse(specialDamage.Data).ToString(),
-                        Type = specialDamage.Type
-                    }
-                }
+            // Only the first cluster hit applies the special damage entry, if any, so clustering does not multiply special damage
+            var clusterSpecialDamageEntry = first
+                ? specialDamage.Select(s => new SpecialDamageEntry { Data = MathExpression.Parse(s.Data).ToString(), Type = s.Type }).ToList()
                 : new List<SpecialDamageEntry>
                 {
-                    new SpecialDamageEntry()
+                    new()
                 };
 
             damagePackets.Add(new DamagePacket(currentClusterSize, clusterSpecialDamageEntry));

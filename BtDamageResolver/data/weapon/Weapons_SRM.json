@@ -22,7 +22,9 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 2,
+    "Heat": {
+      "Short": 2
+    },
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2
@@ -50,7 +52,9 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2
@@ -78,7 +82,9 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2
@@ -101,7 +107,9 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 2,
+    "Heat": {
+      "Short": 2
+    },
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
@@ -125,7 +133,9 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
@@ -149,7 +159,9 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
@@ -173,7 +185,9 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": 2,
+    "Heat": {
+      "Short": 2
+    },
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
@@ -197,7 +211,9 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,
@@ -221,7 +237,9 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "UsesAmmo": true,
     "ClusterSize": 2,
     "ClusterDamage": 2,

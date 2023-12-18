@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
@@ -29,6 +32,12 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
     }
 
     /// <inheritdoc />
+    public override int GetEvasionModifier()
+    {
+        return 2;
+    }
+
+    /// <inheritdoc />
     public override PaperDollType GetPaperDollType()
     {
         return PaperDollType.AerospaceCapital;
@@ -38,5 +47,22 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
     public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
     {
         return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
+    }
+
+    /// <inheritdoc />
+    protected override async Task<List<Weapon>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
+    {
+        var weapons = await base.GetActiveWeaponsFromBay(weaponBay);
+
+        var (successful, weapon) = Weapon.CreateWeaponBayWeapon(weapons);
+
+        if (!successful)
+        {
+            throw new InvalidOperationException("Malformed weapon bay. Cannot resolve combat.");
+        }
+        else
+        {
+            return new List<Weapon> { weapon };
+        }
     }
 }

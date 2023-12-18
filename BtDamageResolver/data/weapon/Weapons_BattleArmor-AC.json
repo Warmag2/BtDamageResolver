@@ -17,7 +17,9 @@
       "Extreme": 2
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
+    "Heat": {
+      "Short": 0
+    },
     "HitModifier": 1,
     "SpecialFeatures": [ { "Data": "3d6", "Type": "Burst" } ]
   }

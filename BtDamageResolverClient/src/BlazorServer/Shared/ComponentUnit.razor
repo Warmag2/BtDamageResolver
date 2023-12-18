@@ -28,15 +28,14 @@
             }
         </div>
             
-        <div class="resolver_div_unit resolver_div_componentcell">
-            <table>
-                <tr class="resolver_tr_unitinformation">
-                    <td class="resolver_td_unitinformation_label">Gunnery/Piloting</td>
-                    <td class="resolver_td_unitinformation_data">@UnitEntry.Gunnery / @UnitEntry.Piloting</td>
-                </tr>
-                <tr class="resolver_tr_unitinformation">
-                    <td class="resolver_td_unitinformation_label">Type</td>
-                    <td class="resolver_td_unitinformation_data">@UnitEntry.Type</td>
+        <table class="resolver_div_unit resolver_div_componentcell">
+            <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label">Gunnery/Piloting</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.Gunnery / @UnitEntry.Piloting</td>
+            </tr>
+            <tr class="resolver_tr_unitinformation">
+                <td class="resolver_td_unitinformation_label">Type</td>
+                <td class="resolver_td_unitinformation_data">@UnitEntry.Type</td>
             </tr>
             <tr class="resolver_tr_unitinformation" style="@(VisualStyleController.HideElement(_visualStyleController.GetTonnageHidden(UnitEntry.Type)))">
                 <td class="resolver_td_unitinformation_label">Tonnage</td>
@@ -94,38 +93,50 @@
                     </td>
                 </tr>
             }
-            <tr class="resolver_tr_unitinformation">
-                <td class="resolver_td_unitinformation_label">Target</td>
-                <td class="resolver_td_unitinformation_data">@_userStateController.GetUnitName(UnitEntry.FiringSolution.TargetUnit)</td>
-            </tr>
-            <tr class="resolver_tr_unitinformation">
-                <td class="resolver_td_unitinformation_label">Modifier</td>
-                <td class="resolver_td_unitinformation_data">@UnitEntry.FiringSolution.AttackModifier</td>
-            </tr>
-            <tr class="resolver_tr_unitinformation">
-                <td class="resolver_td_unitinformation_label">Distance</td>
-                <td class="resolver_td_unitinformation_data">@UnitEntry.FiringSolution.Distance</td>
-            </tr>
-            <tr class="resolver_tr_unitinformation">
-                <td class="resolver_td_unitinformation_label">Facing</td>
-                <td class="resolver_td_unitinformation_data">@UnitEntry.FiringSolution.Direction</td>
-            </tr>
-            <tr class="resolver_tr_unitinformation">
-                <td class="resolver_td_unitinformation_label">Cover</td>
-                <td class="resolver_td_unitinformation_data">@UnitEntry.FiringSolution.Cover</td>
-            </tr>
-            <tr>
-                <td class="resolver_td_unitinformation_label" colspan="2">
-                    <table>
-                        @foreach (var weaponEntry in UnitEntry.Weapons)
-                        {
-                            <ComponentWeaponEntry Unit=@UnitEntry WeaponEntry=@weaponEntry></ComponentWeaponEntry>
-                        }
-                    </table>
-                </td>
-            </tr>
+        </table>
+
+        @foreach(var weaponBay in UnitEntry.WeaponBays)
+        {
+            <div class="resolver_div_unit resolver_div_componentcell">
+                @weaponBay.Name
+            </div>
+
+            <table class="resolver_div_unit resolver_div_componentcell">
+                <tr class="resolver_tr_unitinformation">
+                    <td class="resolver_td_unitinformation_label">Target</td>
+                    <td class="resolver_td_unitinformation_data">@_userStateController.GetUnitName(weaponBay.FiringSolution.Target)</td>
+                </tr>
+                <tr class="resolver_tr_unitinformation">
+                    <td class="resolver_td_unitinformation_label">Modifier</td>
+                    <td class="resolver_td_unitinformation_data">@weaponBay.FiringSolution.AttackModifier</td>
+                </tr>
+                <tr class="resolver_tr_unitinformation">
+                    <td class="resolver_td_unitinformation_label">Distance</td>
+                    <td class="resolver_td_unitinformation_data">@weaponBay.FiringSolution.Distance</td>
+                </tr>
+                <tr class="resolver_tr_unitinformation">
+                    <td class="resolver_td_unitinformation_label">Facing</td>
+                    <td class="resolver_td_unitinformation_data">@weaponBay.FiringSolution.Direction</td>
+                </tr>
+                <tr class="resolver_tr_unitinformation">
+                    <td class="resolver_td_unitinformation_label">Cover</td>
+                    <td class="resolver_td_unitinformation_data">@weaponBay.FiringSolution.Cover</td>
+                </tr>
             </table>
-        </div>
+
+            <table class="resolver_div_unit resolver_div_componentcell">
+                <tr>
+                    <td class="resolver_td_unitinformation_label" colspan="2">
+                        <table>
+                            @foreach (var weaponEntry in weaponBay.Weapons)
+                            {
+                                <ComponentWeaponEntry Unit=@UnitEntry WeaponEntry=@weaponEntry></ComponentWeaponEntry>
+                            }
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        }
     </div>
 </div>
 

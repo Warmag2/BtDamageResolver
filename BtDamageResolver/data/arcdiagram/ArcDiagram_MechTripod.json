@@ -1,0 +1,10 @@
+{
+    "UnitType": "MechTripod",
+    "Arcs":
+    [
+        "Front",
+        "Left",
+        "Right",
+        "Rear"
+    ]
+}

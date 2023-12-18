@@ -22,7 +22,9 @@
     },
     "RangeAerospace": "Long",
     "RangeMinimum": 2,
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "UsesAmmo": true,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
     "ClusterBonus": {
@@ -58,7 +60,9 @@
     },
     "RangeAerospace": "Long",
     "RangeMinimum": 2,
-    "Heat": 6,
+    "Heat": {
+      "Short": 6
+    },
     "UsesAmmo": true,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
     "ClusterBonus": {
@@ -94,7 +98,9 @@
     },
     "RangeAerospace": "Long",
     "RangeMinimum": 2,
-    "Heat": 8,
+    "Heat": {
+      "Short": 8
+    },
     "UsesAmmo": true,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
     "ClusterBonus": {

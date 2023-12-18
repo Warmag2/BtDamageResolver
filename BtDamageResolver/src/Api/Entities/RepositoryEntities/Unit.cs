@@ -17,7 +17,7 @@ public class Unit : NamedEntity
     /// </summary>
     public Unit()
     {
-        Weapons = new List<WeaponReference>();
+        WeaponBays = new List<WeaponBayReference>() { new() };
     }
 
     /// <summary>
@@ -66,9 +66,40 @@ public class Unit : NamedEntity
     public int Sinks { get; set; }
 
     /// <summary>
-    /// The weapons this unit has equipped.
+    /// The weapons this unit has equipped, listed in bays/arcs.
     /// </summary>
-    public List<WeaponReference> Weapons { get; set; }
+    /// <remarks>
+    /// Typically only a single bay with all weapons.
+    /// </remarks>
+    public List<WeaponBayReference> WeaponBays { get; set; }
+
+    /// <summary>
+    /// Can this unit mount a specific weapon.
+    /// </summary>
+    /// <param name="weaponEntry">The weapon entry.</param>
+    /// <returns><b>True</b> if the unit can mount it. <b>False</b> otherwise.</returns>
+    public bool CanMountWeapon(WeaponEntry weaponEntry)
+    {
+        return Type switch
+        {
+            UnitType.BattleArmor => weaponEntry.WeaponName.StartsWith(Constants.Names.BattleArmorWeaponPrefix),
+            UnitType.Infantry => weaponEntry.WeaponName.StartsWith(Constants.Names.InfantryWeaponPrefix),
+            _ => !weaponEntry.WeaponName.StartsWith(Constants.Names.BattleArmorWeaponPrefix) && !weaponEntry.WeaponName.StartsWith(Constants.Names.InfantryWeaponPrefix),
+        };
+    }
+
+    /// <summary>
+    /// Does this unit track heat.
+    /// </summary>
+    /// <returns>Is the unit a heat-tracking unit.</returns>
+    public bool IsHeatTracking()
+    {
+        return Type switch
+        {
+            UnitType.AerospaceFighter or UnitType.Mech or UnitType.MechTripod or UnitType.MechQuad => true,
+            _ => false,
+        };
+    }
 
     /// <summary>
     /// Check whether the unit has a specific feature or not.

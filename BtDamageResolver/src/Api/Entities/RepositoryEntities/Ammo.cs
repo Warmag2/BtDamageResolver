@@ -38,9 +38,12 @@ public class Ammo : NamedEntity
     public Dictionary<RangeBracket, int> DamageAerospace { get; set; }
 
     /// <summary>
-    /// The amount of heat produced by firing.
+    /// The amount of heat that this weapon produces when fired, per rangebracket.
     /// </summary>
-    public int? Heat { get; set; }
+    /// <remarks>
+    /// Different values for brackets only for capital weapon bays.
+    /// </remarks>
+    public Dictionary<RangeBracket, int> Heat { get; set; }
 
     /// <summary>
     /// Hit modifier for this weapon, per weapon use mode.
@@ -63,12 +66,12 @@ public class Ammo : NamedEntity
     public int? RangeMinimum { get; set; }
 
     /// <summary>
-    /// Special damage type of weapon, per-mode.
+    /// Special damage types of ammo.
     /// </summary>
-    public SpecialDamageEntry SpecialDamage { get; set; }
+    public List<SpecialDamageEntry> SpecialDamage { get; set; }
 
     /// <summary>
-    /// Special features of the weapon in each fire mode.
+    /// Special features of the ammo.
     /// </summary>
     public List<WeaponFeatureEntry> SpecialFeatures { get; set; }
 
@@ -81,5 +84,6 @@ public class Ammo : NamedEntity
         ClusterBonus = ClusterBonus.Fill(true);
         Damage = Damage.Fill(true);
         DamageAerospace = DamageAerospace.Fill(true);
+        Heat = Heat.Fill(true);
     }
 }

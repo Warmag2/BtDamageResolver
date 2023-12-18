@@ -21,23 +21,18 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     {
         TimeStamp = DateTime.UtcNow;
         Id = Guid.NewGuid();
-
         Features = new HashSet<UnitFeature>();
-        FiringSolution = new FiringSolution();
-        Weapons = new List<WeaponEntry>();
-
+        WeaponBays = new List<WeaponBay>();
         Troopers = 1; // In practice, 0 is illegal in many situations and this is never bad.
     }
 
     /// <summary>
-    /// The last update time of this unit.
+    /// Is the unit currently evading.
     /// </summary>
-    public DateTime TimeStamp { get; set; }
-
-    /// <summary>
-    /// Current amount of targeting difficulty -inducing effects for this unit (for now, only EMP).
-    /// </summary>
-    public int Penalty { get; set; }
+    /// <remarks>
+    /// Only valid for aerospace units.
+    /// </remarks>
+    public bool Evading { get; set; }
 
     /// <summary>
     /// The amount of heat this unit currently has.
@@ -55,6 +50,11 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public bool Narced { get; set; }
 
     /// <summary>
+    /// Current amount of targeting difficulty -inducing effects for this unit (for now, only EMP).
+    /// </summary>
+    public int Penalty { get; set; }
+
+    /// <summary>
     /// Is this unit currently tagged.
     /// </summary>
     public bool Tagged { get; set; }
@@ -70,19 +70,9 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public int Movement { get; set; }
 
     /// <summary>
-    /// The firing solution of this unit this.
-    /// </summary>
-    public FiringSolution FiringSolution { get; set; }
-
-    /// <summary>
     /// The stance the unit is in.
     /// </summary>
     public Stance Stance { get; set; }
-
-    /// <summary>
-    /// The weapons this unit has equipped.
-    /// </summary>
-    public new List<WeaponEntry> Weapons { get; set; }
 
     /// <summary>
     /// Is the unit "finished", i.e. should its editing settings be shown by default.
@@ -94,22 +84,17 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public bool StaticDataHidden { get; set; }
 
     /// <summary>
-    /// Does this unit track heat.
+    /// The last update time of this unit.
     /// </summary>
-    /// <returns>Is the unit a heat-tracking unit.</returns>
-    public bool IsHeatTracking()
-    {
-        switch (Type)
-        {
-            case UnitType.AerospaceFighter:
-            case UnitType.Mech:
-            case UnitType.MechTripod:
-            case UnitType.MechQuad:
-                return true;
-            default:
-                return false;
-        }
-    }
+    public DateTime TimeStamp { get; set; }
+
+    /// <summary>
+    /// The weapons this unit has equipped, listed in bays/arcs.
+    /// </summary>
+    /// <remarks>
+    /// Typically only a single bay with all weapons.
+    /// </remarks>
+    public new List<WeaponBay> WeaponBays { get; set; }
 
     /// <summary>
     /// Gets the penalty to attacks from heat.
@@ -248,8 +233,6 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             Tonnage = Tonnage,
             Troopers = Troopers,
             Type = Type,
-            Weapons = Weapons.Select(w => w.Copy()).ToList(),
-            FiringSolution = FiringSolution.Copy(),
             Heat = Heat,
             Id = id,
             Movement = Movement,
@@ -259,7 +242,8 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             Penalty = Penalty,
             StaticDataHidden = StaticDataHidden,
             Tagged = Tagged,
-            TimeStamp = DateTime.UtcNow
+            TimeStamp = DateTime.UtcNow,
+            WeaponBays = WeaponBays.Select(w => w.Copy()).ToList(),
         };
     }
 
@@ -279,7 +263,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
         Tonnage = unit.Tonnage;
         Troopers = unit.Troopers;
         Type = unit.Type;
-        Weapons = unit.Weapons.Select(w => new WeaponEntry(w)).ToList();
+        WeaponBays = unit.WeaponBays.Select(w => new WeaponBay(w)).ToList();
     }
 
     /// <summary>
@@ -303,7 +287,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             Tonnage = Tonnage,
             Troopers = Troopers,
             Type = Type,
-            Weapons = Weapons.Select(w => new WeaponReference(w)).ToList()
+            WeaponBays = WeaponBays.Select(w => new WeaponBayReference(w)).ToList()
         };
     }
 
@@ -311,7 +295,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     {
         var numbersAtEndOfString = name.AsEnumerable().Reverse().TakeWhile(char.IsNumber).Reverse().ToArray();
 
-        return numbersAtEndOfString.Any() ? $"{name.TrimEnd(numbersAtEndOfString)}{int.Parse(string.Concat(numbersAtEndOfString)) + 1}" : $"{name} 2";
+        return numbersAtEndOfString.Length != 0 ? $"{name.TrimEnd(numbersAtEndOfString)}{int.Parse(string.Concat(numbersAtEndOfString)) + 1}" : $"{name} 2";
     }
 
     private int GetCurrentSpeedInternal(bool accountForHeat = true)

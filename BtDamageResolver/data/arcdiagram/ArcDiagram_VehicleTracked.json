@@ -1,0 +1,10 @@
+{
+    "UnitType": "VehicleTracked",
+    "Arcs":
+    [
+        "Front",
+        "LeftWing",
+        "RightWing",
+        "Rear"
+    ]
+}

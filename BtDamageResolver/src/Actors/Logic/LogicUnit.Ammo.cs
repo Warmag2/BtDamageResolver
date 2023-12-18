@@ -2,7 +2,6 @@
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic;
 
@@ -25,7 +24,7 @@ public partial class LogicUnit
             return (0d, 0);
         }
 
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+        if (weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
             ammoUsed = MathExpression.Parse(rapidFeatureEntry.Data);
         }
@@ -34,7 +33,7 @@ public partial class LogicUnit
             ammoUsed = 1;
         }
 
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out var _))
+        if (weapon.HasFeature(WeaponFeature.Streak, out var _))
         {
             return (hitChance * ammoUsed, ammoUsed);
         }
@@ -48,7 +47,7 @@ public partial class LogicUnit
     /// Resolves the ammo usage of a combat action.
     /// </summary>
     /// <param name="hitCalculationDamageReport">The damage report for hit calculation.</param>
-    /// <param name="combatAction">The combat action to process the heat for.</param>
+    /// <param name="combatAction">The combat action to process the ammo for.</param>
     protected void ResolveAmmo(DamageReport hitCalculationDamageReport, CombatAction combatAction)
     {
         if (!combatAction.ActionHappened)
@@ -66,7 +65,7 @@ public partial class LogicUnit
 
         int ammoUsed;
 
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
             ammoUsed = MathExpression.Parse(rapidFeatureEntry.Data);
             hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} rate of fire multiplier for ammo usage", Number = ammoUsed, Type = AttackLogEntryType.Calculation });

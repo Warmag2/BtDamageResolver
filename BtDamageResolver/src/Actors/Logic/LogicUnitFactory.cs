@@ -4,6 +4,7 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -40,31 +41,33 @@ public class LogicUnitFactory : ILogicUnitFactory
     {
         switch (unit.Type)
         {
-            case Api.Enums.UnitType.Building:
+            case UnitType.Building:
                 return new LogicUnitBuilding(_loggerFactory.CreateLogger<LogicUnitBuilding>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.AerospaceCapital:
+            case UnitType.AerospaceCapital:
                 return new LogicUnitAerospaceCapital(_loggerFactory.CreateLogger<LogicUnitAerospaceCapital>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.AerospaceDropship:
-                return new LogicUnitAerospaceDropship(_loggerFactory.CreateLogger<LogicUnitAerospaceDropship>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.AerospaceFighter:
+            case UnitType.AerospaceDropshipAerodyne:
+                return new LogicUnitAerospaceDropshipAerodyne(_loggerFactory.CreateLogger<LogicUnitAerospaceDropshipAerodyne>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
+            case UnitType.AerospaceDropshipSpheroid:
+                return new LogicUnitAerospaceDropshipSpheroid(_loggerFactory.CreateLogger<LogicUnitAerospaceDropshipSpheroid>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
+            case UnitType.AerospaceFighter:
                 return new LogicUnitAerospaceFighter(_loggerFactory.CreateLogger<LogicUnitAerospaceFighter>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.BattleArmor:
+            case UnitType.BattleArmor:
                 return new LogicUnitBattleArmor(_loggerFactory.CreateLogger<LogicUnitBattleArmor>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.Infantry:
+            case UnitType.Infantry:
                 return new LogicUnitInfantry(_loggerFactory.CreateLogger<LogicUnitInfantry>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.Mech:
+            case UnitType.Mech:
                 return new LogicUnitMech(_loggerFactory.CreateLogger<LogicUnitMech>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.MechTripod:
+            case UnitType.MechTripod:
                 return new LogicUnitMechTripod(_loggerFactory.CreateLogger<LogicUnitMechTripod>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.MechQuad:
+            case UnitType.MechQuad:
                 return new LogicUnitMechQuad(_loggerFactory.CreateLogger<LogicUnitMechQuad>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.VehicleHover:
+            case UnitType.VehicleHover:
                 return new LogicUnitVehicleHover(_loggerFactory.CreateLogger<LogicUnitVehicleHover>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.VehicleTracked:
+            case UnitType.VehicleTracked:
                 return new LogicUnitVehicleTracked(_loggerFactory.CreateLogger<LogicUnitVehicleTracked>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.VehicleVtol:
+            case UnitType.VehicleVtol:
                 return new LogicUnitVehicleVtol(_loggerFactory.CreateLogger<LogicUnitVehicleVtol>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
-            case Api.Enums.UnitType.VehicleWheeled:
+            case UnitType.VehicleWheeled:
                 return new LogicUnitVehicleWheeled(_loggerFactory.CreateLogger<LogicUnitVehicleWheeled>(), gameOptions, _grainFactory, _mathExpression, _random, unit);
             default:
                 throw new NotImplementedException($"Factory for type {unit.Type} is not implemented.");

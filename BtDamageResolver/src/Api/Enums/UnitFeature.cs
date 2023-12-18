@@ -6,93 +6,158 @@
 /// </summary>
 public enum UnitFeature
 {
-    // Unit has an AMS missile defense system
+    /// <summary>
+    /// Unit has an AMS missile defense system.
+    /// </summary>
     Ams,
 
-    // Heat resistant armor negates extra damage from heat weapons to heat-vulnerable units
+    /// <summary>
+    /// Heat resistant armor negates extra damage from heat weapons to heat-vulnerable units.
+    /// </summary>
     ArmorHeatResistant,
 
-    // Stealth armor bestows -1 to hit from medium and -2 to hit from long range
+    /// <summary>
+    /// Stealth armor bestows -1 to hit from medium and -2 to hit from long range.
+    /// </summary>
     ArmorStealth,
 
-    // Unit has a beagle active probe (or the Improved Sensors quirk)
+    /// <summary>
+    /// Unit has a beagle active probe (or the Improved Sensors quirk).
+    /// </summary>
     Bap,
 
-    // Bonus of 1 to hit in melee
+    /// <summary>
+    /// Bonus of 1 to hit in melee.
+    /// </summary>
     BattleFists,
 
-    // Always generates 4 points less heat
+    /// <summary>
+    /// Always generates 4 points less heat.
+    /// </summary>
     CombatComputer,
 
-    // Better initiative rolls (no effect yet)
+    /// <summary>
+    /// Better initiative rolls (no effect yet).
+    /// </summary>
     CommandUnit,
 
-    // Better initiative rolls (no effect yet)
+    /// <summary>
+    /// Better initiative rolls (no effect yet).
+    /// </summary>
     Cowl,
 
-    // Unit is easy to pilot (no effect yet)
+    /// <summary>
+    /// Unit is easy to pilot (no effect yet).
+    /// </summary>
     EasyToPilot,
 
-    // Unit has ECM
+    /// <summary>
+    /// Unit has ECM.
+    /// </summary>
     Ecm,
 
-    // Unit can torso twist one more hex side (no effect yet)
+    /// <summary>
+    /// Unit can torso twist one more hex side (no effect yet).
+    /// </summary>
     ExtendedTorsoTwist,
 
-    // Unit is hard to pilot (no effect yet) PS: This quirk is EXACTLY THE SAME as Cramped Cockpit, so the latter is not included!
+    /// <summary>
+    /// Unit is hard to pilot (no effect yet) PS: This quirk is EXACTLY THE SAME as Cramped Cockpit, so the latter is not included.
+    /// </summary>
     HardToPilot,
 
-    // Unit has improved communications systems (no effect yet)
+    /// <summary>
+    /// Unit has improved communications systems (no effect yet).
+    /// </summary>
     ImprovedCommunications,
 
-    // The main weapon of this unit is externally carried and can be picked up and put down during combat (no effect yet)
+    /// <summary>
+    /// The main weapon of this unit is externally carried and can be picked up and put down during combat (no effect yet).
+    /// </summary>
     JettisonableWeapon,
 
-    // Unit has MASC
+    /// <summary>
+    /// Unit has MASC.
+    /// </summary>
     Masc,
 
-    // Half damage from glancing cluster shots (hit exactly at target value)
+    /// <summary>
+    /// Unit suffers no penalty from attacking multiple targets.
+    /// </summary>
+    MultiTarget,
+
+    /// <summary>
+    /// Half damage from glancing cluster shots (hit exactly at target value).
+    /// </summary>
     NarrowLowProfile,
 
-    // Jumping provides 1 more evasion bonus
+    /// <summary>
+    /// Jumping provides 1 more evasion bonus.
+    /// </summary>
     NimbleJumper,
 
-    // Unit has no arms or minimal arms (no effect yet)
+    /// <summary>
+    /// Unit has no arms or minimal arms (no effect yet).
+    /// </summary>
     NoMinimalArms,
 
-    // Unit cannot go from standstill to running speed in one turn (no effect yet)
+    /// <summary>
+    /// Unit cannot go from standstill to running speed in one turn (no effect yet).
+    /// </summary>
     PoorPerformance,
 
-    // Infantry/BattleArmor swarm attacks are less effective against the actuators of this unit (no effect yet)
+    /// <summary>
+    /// Infantry/BattleArmor swarm attacks are less effective against the actuators of this unit (no effect yet).
+    /// </summary>
     ProtectedActuators,
 
-    // Half damage to legs from DFAs
+    /// <summary>
+    /// Half damage to legs from DFAs.
+    /// </summary>
     ReinforcedLegs,
 
-    // Running only gives -1 to hit
+    /// <summary>
+    /// Running only gives -1 to hit.
+    /// </summary>
     StabilizedWeapons,
 
-    // +1 to resist falling from impacts and attacks (no effect yet)
+    /// <summary>
+    /// +1 to resist falling from impacts and attacks (no effect yet).
+    /// </summary>
     Stable,
 
-    // Bonus of 2 to hit air units
+    /// <summary>
+    /// Bonus of 2 to hit air units.
+    /// </summary>
     TargetingAntiAir,
 
-    // Bonus of 1 to hit at extreme range
+    /// <summary>
+    /// Bonus of 1 to hit at extreme range.
+    /// </summary>
     TargetingExtremeRange,
 
-    // Bonus of 1 to hit at long range
+    /// <summary>
+    /// Bonus of 1 to hit at long range.
+    /// </summary>
     TargetingLongRange,
 
-    // Bonus of 1 to hit at medium range
+    /// <summary>
+    /// Bonus of 1 to hit at medium range.
+    /// </summary>
     TargetingMediumRange,
 
-    // Bonus of 1 to hit at short range
+    /// <summary>
+    /// Bonus of 1 to hit at short range.
+    /// </summary>
     TargetingShortRange,
 
-    // -1 to piloting when entering difficult terrain hexes (no effect yet)
+    /// <summary>
+    /// -1 to piloting when entering difficult terrain hexes (no effect yet).
+    /// </summary>
     Unbalanced,
 
-    // Unit is liable to damage its own legs if it tries to kick/dfa
+    /// <summary>
+    /// Unit is liable to damage its own legs if it tries to kick/dfa.
+    /// </summary>
     WeakLegs
 }

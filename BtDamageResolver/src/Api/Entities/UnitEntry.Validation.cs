@@ -1,4 +1,5 @@
-﻿using Faemiyah.BtDamageResolver.Api.Enums;
+﻿using System.Linq;
+using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Validation;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities;
@@ -25,7 +26,8 @@ public partial class UnitEntry
 
                 break;
             case UnitType.AerospaceCapital:
-            case UnitType.AerospaceDropship:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
             case UnitType.AerospaceFighter:
                 switch (MovementClass)
                 {
@@ -33,6 +35,18 @@ public partial class UnitEntry
                     case MovementClass.Jump:
                         validationResult.Fail("Masc/Jump are invalid movement modes for aerospace units.");
                         break;
+                }
+
+                if (Evading)
+                {
+                    switch (MovementClass)
+                    {
+                        case MovementClass.Immobile:
+                        case MovementClass.Stationary:
+                        case MovementClass.OutOfControl:
+                            validationResult.Fail("Immobile, Stationary or OutOfControl units cannot evade.");
+                            break;
+                    }
                 }
 
                 break;
@@ -85,6 +99,7 @@ public partial class UnitEntry
             validationResult.Fail("Negative movement amount is not allowed.");
         }
 
+        // Speed
         switch (MovementClass)
         {
             case MovementClass.Immobile:
@@ -146,29 +161,55 @@ public partial class UnitEntry
         }
 
         // Weapon load
-        switch (Type)
+        foreach (var weaponEntry in WeaponBays.SelectMany(w => w.Weapons))
         {
-            case UnitType.BattleArmor:
-                if (Weapons.Exists(w => !w.IsBattleArmorWeapon()))
-                {
-                    validationResult.Fail("Battle armor unit has weapons which are not battle armor weapons.");
-                }
+            if (!CanMountWeapon(weaponEntry))
+            {
+                validationResult.Fail($"Unit of type {Type} can not mount weapon {weaponEntry.WeaponName}.");
+            }
 
-                break;
-            case UnitType.Infantry:
-                if (Weapons.Exists(w => !w.IsInfantryWeapon()))
-                {
-                    validationResult.Fail("Infantry unit has weapons which are not infantry weapons.");
-                }
+            if (weaponEntry.Amount < 1 || weaponEntry.Amount > 12)
+            {
+                validationResult.Fail($"Bay can contain from 1 to 12 weapons of the same type. Offending weapon: {weaponEntry.WeaponName}.");
+            }
 
-                break;
-            default:
-                if (Weapons.Exists(w => w.IsBattleArmorWeapon() || w.IsInfantryWeapon()))
-                {
-                    validationResult.Fail("Non-infantry non-battlearmor unit has weapons which are either infantry or battle armor weapons.");
-                }
+            // Weapon multiplication per unit type
+            switch (Type)
+            {
+                case UnitType.AerospaceCapital:
+                case UnitType.AerospaceDropshipAerodyne:
+                case UnitType.AerospaceDropshipSpheroid:
+                case UnitType.AerospaceFighter:
+                    break;
+                default:
+                    if (weaponEntry.Amount > 1)
+                    {
+                        validationResult.Fail($"Non-aerospace units cannot have multiplied weapons. Offending weapon: {weaponEntry.WeaponName}.");
+                    }
 
-                break;
+                    break;
+            }
+        }
+
+        // Weapon bay mergers for capital aerospace when a bay has more than 1 weapon
+        foreach (var weaponBay in WeaponBays.Where(w => w.Weapons.Count > 1))
+        {
+            var nameToMatch = weaponBay.Weapons[0].WeaponName;
+
+            switch (Type)
+            {
+                case UnitType.AerospaceCapital:
+                case UnitType.AerospaceDropshipAerodyne:
+                case UnitType.AerospaceDropshipSpheroid:
+                    if (weaponBay.Weapons.Exists(w => w.WeaponName != nameToMatch))
+                    {
+                        validationResult.Fail($"Unit of type {Type} can not form a bay from nonidentical weapons. Offending bay: {weaponBay.Name}.");
+                    }
+
+                    break;
+                default:
+                    break;
+            }
         }
 
         // Tonnage
@@ -180,7 +221,8 @@ public partial class UnitEntry
         switch (Type)
         {
             // Aerospace capital ships do not have a relevant maximum tonnage
-            case UnitType.AerospaceDropship:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
                 if (Tonnage is < 100 or > 100000)
                 {
                     validationResult.Fail("Dropship/Small Craft minimum tonnage is 100 tons and maximum tonnage is 100000 tons.");
@@ -283,6 +325,21 @@ public partial class UnitEntry
                             break;
                         default:
                             validationResult.Fail($"{feature} is only valid for units which track heat.");
+                            break;
+                    }
+
+                    break;
+                case UnitFeature.MultiTarget:
+                    switch (Type)
+                    {
+                        case UnitType.AerospaceCapital:
+                        case UnitType.AerospaceDropshipAerodyne:
+                        case UnitType.AerospaceDropshipSpheroid:
+                        case UnitType.BattleArmor:
+                        case UnitType.Infantry:
+                            validationResult.Fail($"{feature} is only valid for units which only have a single targeting entity.");
+                            break;
+                        default:
                             break;
                     }
 

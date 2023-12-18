@@ -7,7 +7,6 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic;
 
@@ -36,9 +35,9 @@ public partial class LogicUnit
 
         var transformedDamage = TransformDamageBasedOnStance(damageReport, damageInstance.Damage);
 
-        var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, new SpecialDamageEntry { Type = SpecialDamageType.None });
+        var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, new List<SpecialDamageEntry> { new() { Type = SpecialDamageType.None } });
 
-        await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, TargetUnit = damageInstance.UnitId }, 0);
+        await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, Target = damageInstance.UnitId }, 0);
 
         return damageReport;
     }
@@ -65,7 +64,7 @@ public partial class LogicUnit
     /// <returns>The total damage by rapid fire action.</returns>
     protected async Task<int> RapidFireWrapper(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, Task<int> singleFireDamageCalculation)
     {
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
             var maxHits = MathExpression.Parse(rapidFeatureEntry.Data);
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Rapid fire weapon potential maximum number of hits", Number = maxHits });
@@ -97,7 +96,7 @@ public partial class LogicUnit
         var damageReport = new DamageReport
         {
             Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-            DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, Unit.FiringSolution.Direction, combatAction.Weapon.SpecialFeatures.Select(w => w.Type).ToList()),
+            DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, combatAction.Weapon.SpecialFeatures.Select(w => w.Type).ToList()),
             FiringUnitId = Unit.Id,
             FiringUnitName = Unit.Name,
             TargetUnitId = target.Unit.Id,
@@ -127,7 +126,7 @@ public partial class LogicUnit
         damagePackets = TransformDamagePacketsBasedOnTargetType(damageReport, damagePackets, target);
 
         // Finally, apply damage packets
-        await target.ApplyDamagePackets(damageReport, damagePackets, Unit.FiringSolution, combatAction.MarginOfSuccess);
+        await target.ApplyDamagePackets(damageReport, damagePackets, combatAction.WeaponBay.FiringSolution, combatAction.MarginOfSuccess);
 
         return damageReport;
     }
@@ -143,7 +142,7 @@ public partial class LogicUnit
         var damageReport = new DamageReport
         {
             Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-            DamagePaperDoll = await GetDamagePaperDoll(this, combatAction.Weapon.AttackType, Unit.FiringSolution.Direction, new List<WeaponFeature>()),
+            DamagePaperDoll = await GetDamagePaperDoll(this, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, new List<WeaponFeature>()),
             FiringUnitId = Unit.Id,
             FiringUnitName = Unit.Name,
             TargetUnitId = Unit.Id,
@@ -152,7 +151,7 @@ public partial class LogicUnit
         };
 
         // Only certain melee weapons have this for now, go through them one by one
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeCharge, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.MeleeCharge, out _))
         {
             if (!combatAction.HitHappened)
             {
@@ -160,21 +159,17 @@ public partial class LogicUnit
             }
 
             damageReport.Log(new AttackLogEntry { Context = "Attacker is damaged by its charge attack", Type = AttackLogEntryType.Information });
-            string attackerDamageStringCharge;
-            switch (target.Unit.Type)
+            var attackerDamageStringCharge = target.Unit.Type switch
             {
-                case UnitType.Building:
-                case UnitType.BattleArmor:
-                case UnitType.AerospaceCapital:
-                case UnitType.AerospaceDropship:
-                case UnitType.Infantry:
-                    attackerDamageStringCharge = $"{Unit.Tonnage}/10";
-                    break;
-                default:
-                    attackerDamageStringCharge = $"{target.Unit.Tonnage}/10";
-                    break;
-            }
-
+                UnitType.Building or
+                UnitType.BattleArmor or
+                UnitType.AerospaceCapital or
+                UnitType.AerospaceDropshipAerodyne or
+                UnitType.AerospaceDropshipSpheroid or
+                UnitType.Infantry
+                => $"{Unit.Tonnage}/10",
+                _ => $"{target.Unit.Tonnage}/10",
+            };
             var attackerDamageCharge = MathExpression.Parse(attackerDamageStringCharge);
 
             damageReport.Merge(
@@ -195,7 +190,7 @@ public partial class LogicUnit
             return damageReport;
         }
 
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeDfa, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.MeleeDfa, out _))
         {
             if (combatAction.HitHappened)
             {
@@ -243,7 +238,7 @@ public partial class LogicUnit
             return damageReport;
         }
 
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeKick, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.MeleeKick, out _))
         {
             damageReport.Merge(await CheckWeakLegs(combatAction));
 
@@ -262,11 +257,12 @@ public partial class LogicUnit
     /// <returns>Total damage with heat effects applied.</returns>
     protected int ResolveHeatExtraDamage(DamageReport damageReport, CombatAction combatAction, int damage)
     {
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Heat, out var heatFeatureEntry))
+        foreach (var heatDamageEntry in combatAction.Weapon.SpecialDamage.Where(s => s.Type == SpecialDamageType.HeatConverted))
         {
-            var addDamage = MathExpression.Parse(heatFeatureEntry.Data);
+            var addDamage = MathExpression.Parse(heatDamageEntry.Data);
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Bonus damage from heat-inflicting weapon", Number = addDamage });
-            return damage + addDamage;
+
+            damage += addDamage;
         }
 
         return damage;
@@ -290,6 +286,69 @@ public partial class LogicUnit
         {
             return await RapidFireWrapper(damageReport, target, combatAction, ResolveTotalOutgoingDamageInternal(damageReport, target, combatAction));
         }
+    }
+
+    /// <summary>
+    /// Handles damage transformation based on the features of the target unit.
+    /// </summary>
+    /// <param name="damageReport">The damage report to write into.</param>
+    /// <param name="target">The target unit logic.</param>
+    /// <param name="combatAction">The combat action.</param>
+    /// <param name="damageAmount">The damage before transformation.</param>
+    /// <returns>The transformed damage amount.</returns>
+    private static int TransformDamageAmountBasedOnTargetFeatures(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageAmount)
+    {
+        // Cluster weapons have been affected in their damage calculation, so they will not be affected again
+        if (!combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
+        {
+            // Round down, but minimum is still 1
+            var transformedDamage = Math.Max(damageAmount / 2, 1);
+            damageReport.Log(new AttackLogEntry { Context = $"Unit feature {UnitFeature.NarrowLowProfile} modifies received damage. New damage", Number = transformedDamage, Type = AttackLogEntryType.Calculation });
+
+            return transformedDamage;
+        }
+
+        return damageAmount;
+    }
+
+    private static List<DamagePacket> TransformDamagePacketsBasedOnTargetType(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target)
+    {
+        foreach (var damagePacket in damagePackets)
+        {
+            foreach (var entry in damagePacket.SpecialDamageEntries)
+            {
+                if (entry.Type == SpecialDamageType.Emp && !target.CanTakeEmpHits())
+                {
+                    damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive EMP damage, removing special damage entry", Type = AttackLogEntryType.Information });
+                    entry.Clear();
+                }
+
+                if (entry.Type == SpecialDamageType.Heat && !target.IsHeatTracking())
+                {
+                    damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive Heat damage, removing special damage entry", Type = AttackLogEntryType.Information });
+                    entry.Clear();
+                }
+            }
+        }
+
+        return damagePackets;
+    }
+
+    private static List<DamagePacket> TransformDamagePacketsBasedOnWeaponFeatures(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target, CombatAction combatAction)
+    {
+        if (combatAction.Weapon.HasFeature(WeaponFeature.ArmorPiercing, out var armorPiercingEntry) && target.CanTakeCriticalHits())
+        {
+            damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = armorPiercingEntry.Data, Type = SpecialDamageType.Critical });
+            damageReport.Log(new AttackLogEntry { Context = "Armor Piercing weapon feature adds a potential critical hit", Type = AttackLogEntryType.Information });
+        }
+
+        if (combatAction.Weapon.HasFeature(WeaponFeature.MeleeCharge, out var chargeEntry) && target.CanTakeMotiveHits())
+        {
+            damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = chargeEntry.Data, Type = SpecialDamageType.Motive });
+            damageReport.Log(new AttackLogEntry { Context = "Melee charge adds a potential motive hit", Type = AttackLogEntryType.Information });
+        }
+
+        return damagePackets;
     }
 
     private async Task<DamageReport> CheckWeakLegs(CombatAction combatAction)
@@ -331,7 +390,7 @@ public partial class LogicUnit
                 },
                 new FiringSolution
                 {
-                    Cover = Cover.None, Direction = Direction.Front, TargetUnit = Unit.Id
+                    Cover = Cover.None, Direction = Direction.Front, Target = Unit.Id
                 },
                 0);
 
@@ -341,72 +400,9 @@ public partial class LogicUnit
         return null;
     }
 
-    /// <summary>
-    /// Handles damage transformation based on the features of the target unit.
-    /// </summary>
-    /// <param name="damageReport">The damage report to write into.</param>
-    /// <param name="target">The target unit logic.</param>
-    /// <param name="combatAction">The combat action.</param>
-    /// <param name="damageAmount">The damage before transformation.</param>
-    /// <returns>The transformed damage amount.</returns>
-    private static int TransformDamageAmountBasedOnTargetFeatures(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageAmount)
-    {
-        // Cluster weapons have been affected in their damage calculation, so they will not be affected again
-        if (!combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
-        {
-            // Round down, but minimum is still 1
-            var transformedDamage = Math.Max(damageAmount / 2, 1);
-            damageReport.Log(new AttackLogEntry { Context = $"Unit feature {UnitFeature.NarrowLowProfile} modifies received damage. New damage", Number = transformedDamage, Type = AttackLogEntryType.Calculation });
-
-            return transformedDamage;
-        }
-
-        return damageAmount;
-    }
-
-    private static List<DamagePacket> TransformDamagePacketsBasedOnTargetType(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target)
-    {
-        foreach (var damagePacket in damagePackets)
-        {
-            foreach (var entry in damagePacket.SpecialDamageEntries)
-            {
-                if (entry.Type == SpecialDamageType.Emp && !target.CanTakeEmpHits())
-                {
-                    damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive EMP damage, removing special damage entry", Type = AttackLogEntryType.Information });
-                    entry.Clear();
-                }
-
-                if (entry.Type == SpecialDamageType.Heat && !target.IsHeatTracking())
-                {
-                    damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive Heat damage, removing special damage entry", Type = AttackLogEntryType.Information });
-                    entry.Clear();
-                }
-            }
-        }
-
-        return damagePackets;
-    }
-
-    private static List<DamagePacket> TransformDamagePacketsBasedOnWeaponFeatures(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target, CombatAction combatAction)
-    {
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.ArmorPiercing, out var armorPiercingEntry) && target.CanTakeCriticalHits())
-        {
-            damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = armorPiercingEntry.Data, Type = SpecialDamageType.Critical });
-            damageReport.Log(new AttackLogEntry { Context = "Armor Piercing weapon feature adds a potential critical hit", Type = AttackLogEntryType.Information });
-        }
-
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.MeleeCharge, out var chargeEntry) && target.CanTakeMotiveHits())
-        {
-            damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = chargeEntry.Data, Type = SpecialDamageType.Motive });
-            damageReport.Log(new AttackLogEntry { Context = "Melee charge adds a potential motive hit", Type = AttackLogEntryType.Information });
-        }
-
-        return damagePackets;
-    }
-
     private async Task<int> ResolveTotalOutgoingDamageInternal(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
     {
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))
         {
             var clusterBonus = ResolveClusterBonus(damageReport, target, combatAction);
 
@@ -422,9 +418,9 @@ public partial class LogicUnit
 
     private Task<int> ResolveTotalOutgoingDamageMelee(DamageReport damageReport, CombatAction combatAction)
     {
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Melee, out var meleeFeatureEntry))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Melee, out var meleeFeatureEntry))
         {
-            var meleeDamage = MathExpression.Parse(meleeFeatureEntry.Data.InsertVariables(Unit));
+            var meleeDamage = MathExpression.Parse(meleeFeatureEntry.Data.InsertVariables(Unit, combatAction.WeaponBay));
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Melee damage", Number = meleeDamage });
 
             return Task.FromResult(meleeDamage);

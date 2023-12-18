@@ -12,5 +12,6 @@ namespace Faemiyah.BtDamageResolver.Api.Enums;
 public enum WeaponState
 {
     Active,
-    Inactive
+    Inactive,
+    Destroyed
 }

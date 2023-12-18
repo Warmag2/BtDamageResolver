@@ -18,7 +18,9 @@
     },
     "RangeAerospace": "Medium",
     "RangeMinimum": 5,
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "UsesAmmo": true
   },
   {
@@ -40,7 +42,9 @@
     },
     "RangeAerospace": "Medium",
     "RangeMinimum": 5,
-    "Heat": 5,
+    "Heat": {
+      "Short": 5
+    },
     "UsesAmmo": true
   },
   {
@@ -62,7 +66,9 @@
     },
     "RangeAerospace": "Medium",
     "RangeMinimum": 5,
-    "Heat": 7,
+    "Heat": {
+      "Short": 7
+    },
     "UsesAmmo": true
   },
   {
@@ -84,7 +90,9 @@
     },
     "RangeAerospace": "Medium",
     "RangeMinimum": 5,
-    "Heat": 8,
+    "Heat": {
+      "Short": 8
+    },
     "UsesAmmo": true
   }
 ]

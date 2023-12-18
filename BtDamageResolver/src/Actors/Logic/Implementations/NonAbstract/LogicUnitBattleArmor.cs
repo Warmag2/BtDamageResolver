@@ -6,7 +6,6 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -72,7 +71,7 @@ public class LogicUnitBattleArmor : LogicUnitTrooper
     /// <inheritdoc />
     protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
     {
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))
         {
             // The total missile or clusterized damage accounting for trooper amount has been calculated earlier
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total damage value modified by BA trooper amount", Number = damage });
@@ -92,7 +91,7 @@ public class LogicUnitBattleArmor : LogicUnitTrooper
 
     private async Task<int> ResolveTotalOutgoingDamageInternalBattleArmor(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
     {
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))
         {
             var clusterBonus = ResolveClusterBonus(damageReport, target, combatAction);
 

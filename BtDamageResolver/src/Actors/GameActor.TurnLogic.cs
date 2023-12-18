@@ -145,17 +145,21 @@ public partial class GameActor
     {
         var damageReports = new List<DamageReport>();
 
+        // Reset firing solutions with invalid targets
+        foreach (var bay in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries).SelectMany(u => u.WeaponBays))
+        {
+            if (bay.FiringSolution.Target != Guid.Empty && !await IsUnitInGame(bay.FiringSolution.Target))
+            {
+                bay.FiringSolution.Target = Guid.Empty;
+                bay.TimeStamp = DateTime.UtcNow;
+                _logger.LogWarning("Player {playerId} unit {unitId} tried to fire at an unit {targetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, bay.FiringSolution.Target);
+            }
+        }
+
+        // Fire
         foreach (var unit in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries))
         {
-            // Do not fire at an unit which is not in the game
-            if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
-            {
-                damageReports.AddRange(await ProcessUnitFireEvent(unit, processOnlyTags));
-            }
-            else
-            {
-                _logger.LogWarning("Player {playerId} unit {unitId} tried to fire at an unit {targetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), unit.Id, unit.FiringSolution.TargetUnit);
-            }
+            damageReports.AddRange(await ProcessUnitFireEvent(unit, processOnlyTags));
         }
 
         // Mark that the damage reports happened during this turn
@@ -166,21 +170,28 @@ public partial class GameActor
         return damageReports;
     }
 
-    private async Task<List<DamageReport>> ProcessUnitFireEvent(UnitEntry unit, bool processOnlyTags)
+    private async Task<List<DamageReport>> ProcessUnitFireEvent(UnitEntry unitEntry, bool processOnlyTags)
     {
-        var logicUnitAttacker = GetUnitLogic(unit);
-        var logicUnitDefender = GetUnitLogic(unit.FiringSolution.TargetUnit);
+        var damageReports = new List<DamageReport>();
 
-        return await logicUnitAttacker.ResolveCombat(logicUnitDefender, processOnlyTags);
+        var logicUnitAttacker = GetUnitLogic(unitEntry);
+
+        foreach (var weaponBay in unitEntry.WeaponBays)
+        {
+            var logicUnitDefender = GetUnitLogic(weaponBay.FiringSolution.Target);
+            var isPrimaryTarget = unitEntry.WeaponBays[0].FiringSolution.Target == weaponBay.FiringSolution.Target;
+            damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, weaponBay, processOnlyTags, isPrimaryTarget));
+        }
+
+        return damageReports;
     }
 
     /// <summary>
     /// Processes the target numbers for a given unit.
     /// </summary>
     /// <param name="unitEntry">The unit to calculate target numbers for.</param>
-    /// <param name="setBlankNumbers">Should blank numbers be set.</param>
     /// <returns>A list of target number updates.</returns>
-    private async Task<TargetNumberUpdate> ProcessUnitTargetNumbers(UnitEntry unitEntry, bool setBlankNumbers = false)
+    private async Task<TargetNumberUpdate> ProcessUnitTargetNumbers(UnitEntry unitEntry)
     {
         var targetNumberUpdate = new TargetNumberUpdate
         {
@@ -191,52 +202,81 @@ public partial class GameActor
             UnitId = unitEntry.Id
         };
 
+        bool setBlankNumbers;
         var logicUnitAttacker = GetUnitLogic(unitEntry);
         ILogicUnit logicUnitDefender = null;
 
-        if (!setBlankNumbers)
+        foreach (var weaponBay in unitEntry.WeaponBays)
         {
-            logicUnitDefender = GetUnitLogic(unitEntry.FiringSolution.TargetUnit);
-        }
-
-        foreach (var weaponEntry in unitEntry.Weapons.Where(w => w.State == WeaponState.Active))
-        {
-            if (!setBlankNumbers)
+            // Only calculate for units which are in the game
+            if (weaponBay.FiringSolution.Target != Guid.Empty && await IsUnitInGame(weaponBay.FiringSolution.Target))
             {
-                var attackLog = new AttackLog();
-
-                var (targetNumber, _) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry);
-
-                var (ammoEstimate, ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, weaponEntry);
-                var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, weaponEntry);
-
-                var weaponAmmoCombinedString = string.IsNullOrEmpty(weaponEntry.Ammo) ? $"{weaponEntry.WeaponName}" : $"{weaponEntry.WeaponName} {weaponEntry.Ammo}";
-                targetNumberUpdate.AmmoEstimate.AddIfNotZero(weaponAmmoCombinedString, ammoEstimate);
-                targetNumberUpdate.AmmoWorstCase.AddIfNotZero(weaponAmmoCombinedString, ammoMax);
-
-                if (logicUnitAttacker.IsHeatTracking())
-                {
-                    targetNumberUpdate.HeatEstimate += heatEstimate;
-                    targetNumberUpdate.HeatWorstCase += heatMax;
-                }
-
-                targetNumberUpdate.TargetNumbers.Add(
-                    weaponEntry.Id,
-                    new TargetNumberUpdateSingleWeapon
-                    {
-                        CalculationLog = attackLog,
-                        TargetNumber = targetNumber,
-                    });
+                logicUnitDefender = GetUnitLogic(weaponBay.FiringSolution.Target);
+                setBlankNumbers = false;
             }
             else
             {
-                targetNumberUpdate.TargetNumbers.Add(
-                    weaponEntry.Id,
-                    new TargetNumberUpdateSingleWeapon
+                setBlankNumbers = true;
+
+                if (weaponBay.FiringSolution.Target != Guid.Empty)
+                {
+                    _logger.LogWarning(
+                        "In Game {gameId}, unit {unitId} tried to calculate target numbers for target {targetUnitId} which does not exist or is not in the same game.",
+                        this.GetPrimaryKeyString(),
+                        unitEntry.Id,
+                        weaponBay.FiringSolution.Target);
+                }
+            }
+
+            foreach (var weaponEntry in weaponBay.Weapons.Where(w => w.State == WeaponState.Active))
+            {
+                if (!setBlankNumbers)
+                {
+                    var attackLog = new AttackLog();
+                    var isPrimaryTarget = unitEntry.WeaponBays[0].FiringSolution.Target == weaponBay.FiringSolution.Target;
+
+                    var (targetNumber, _) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry, weaponBay, isPrimaryTarget);
+
+                    var (ammoEstimate, ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, weaponEntry);
+                    var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, weaponEntry);
+
+                    var weaponAmmoCombinedString = string.IsNullOrEmpty(weaponEntry.Ammo) ? $"{weaponEntry.WeaponName}" : $"{weaponEntry.WeaponName} {weaponEntry.Ammo}";
+                    targetNumberUpdate.AmmoEstimate.AddIfNotZero(weaponAmmoCombinedString, ammoEstimate);
+                    targetNumberUpdate.AmmoWorstCase.AddIfNotZero(weaponAmmoCombinedString, ammoMax);
+
+                    if (logicUnitAttacker.IsHeatTracking())
                     {
-                        CalculationLog = new AttackLog(),
-                        TargetNumber = LogicConstants.InvalidTargetNumber,
-                    });
+                        targetNumberUpdate.HeatEstimate += heatEstimate;
+                        targetNumberUpdate.HeatWorstCase += heatMax;
+                    }
+
+                    targetNumberUpdate.TargetNumbers.Add(
+                        weaponEntry.Id,
+                        new TargetNumberUpdateSingleWeapon
+                        {
+                            CalculationLog = attackLog,
+                            TargetNumber = targetNumber,
+                        });
+                }
+                else
+                {
+                    targetNumberUpdate.TargetNumbers.Add(
+                        weaponEntry.Id,
+                        new TargetNumberUpdateSingleWeapon
+                        {
+                            CalculationLog = new AttackLog(),
+                            TargetNumber = LogicConstants.InvalidTargetNumber,
+                        });
+                }
+            }
+
+            if (!setBlankNumbers)
+            {
+                _logger.LogInformation("GameActor {gameId} succeeded in calculating target numbers for unit {unitId}.", this.GetPrimaryKeyString(), unitEntry.Id);
+            }
+            else
+            {
+                _logger.LogInformation("GameActor {gameId} succeeded in setting blank target numbers for unit {unitId}.", this.GetPrimaryKeyString(), unitEntry.Id);
             }
         }
 
@@ -248,7 +288,7 @@ public partial class GameActor
             targetNumberUpdate.HeatWorstCase += nonWeaponHeatDamageReport.AttackerHeat;
         }
 
-        _logger.LogInformation("Unit {unitId} finished calculating new target number values.", unitEntry.Id);
+        _logger.LogInformation("GameActor {gameId} finished calculating new target number values for unit {unitId}.", this.GetPrimaryKeyString(), unitEntry.Id);
 
         return targetNumberUpdate;
     }

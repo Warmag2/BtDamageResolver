@@ -11,7 +11,9 @@
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Heat": 2,
+    "Heat": {
+      "Short": 2
+    },
     "UsesAmmo": true
   },
   {
@@ -26,7 +28,9 @@
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "UsesAmmo": true
   },
   {
@@ -41,7 +45,9 @@
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Heat": 2,
+    "Heat": {
+      "Short": 2
+    },
     "UsesAmmo": true
   },
   {
@@ -56,7 +62,9 @@
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "UsesAmmo": true
   }
 ]

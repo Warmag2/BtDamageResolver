@@ -19,6 +19,16 @@ public class CommonData
     private const string InfantryWeaponPrefix = "Infantry ";
     private const string MeleeWeaponPrefix = "Melee ";
 
+    private static readonly int RangeShort = 6;
+    private static readonly int[] RangesMedium = [6, 12];
+    private static readonly int[] RangesLong = [6, 12, 20];
+    private static readonly int[] RangesExtreme = [6, 12, 20, 25];
+
+    private static readonly int RangeShortCapital = 12;
+    private static readonly int[] RangesMediumCapital = [12, 24];
+    private static readonly int[] RangesLongCapital = [12, 24, 40];
+    private static readonly int[] RangesExtremeCapital = [12, 24, 40, 50];
+
     private readonly IEntityRepository<GameEntry, string> _gameEntryRepository;
     private readonly IEntityRepository<Unit, string> _unitRepository;
     private readonly SortedDictionary<string, string> _mapWeaponNamesNormal;
@@ -52,7 +62,7 @@ public class CommonData
         // Pre-bake lists used to generate options
         DictionaryUnitType = new List<UnitType>
         {
-            UnitType.Building, UnitType.AerospaceDropship, UnitType.AerospaceFighter, UnitType.BattleArmor,
+            UnitType.Building, UnitType.AerospaceDropshipAerodyne, UnitType.AerospaceDropshipSpheroid, UnitType.AerospaceFighter, UnitType.BattleArmor,
             UnitType.Infantry, UnitType.Mech, UnitType.VehicleTracked, UnitType.VehicleWheeled,
             UnitType.VehicleHover, UnitType.VehicleVtol
         }.ToDictionary(u => u.ToString());
@@ -146,7 +156,8 @@ public class CommonData
         {
             case UnitType.Building:
             case UnitType.AerospaceCapital:
-            case UnitType.AerospaceDropship:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
             case UnitType.AerospaceFighter:
             case UnitType.Mech:
             case UnitType.MechTripod:
@@ -330,7 +341,8 @@ public class CommonData
             case UnitType.Building:
                 return GenerateOptions(new List<MovementClass> { MovementClass.Immobile });
             case UnitType.AerospaceCapital:
-            case UnitType.AerospaceDropship:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
             case UnitType.AerospaceFighter:
                 return GenerateOptions(new List<MovementClass> { MovementClass.Immobile, MovementClass.Normal, MovementClass.Fast, MovementClass.OutOfControl });
             case UnitType.BattleArmor:
@@ -435,46 +447,53 @@ public class CommonData
     /// <summary>
     /// Form pick brackets for distance options when firing weapons.
     /// </summary>
-    /// <param name="unit">The unit to form the pick brackets for.</param>
+    /// <param name="weaponBay">The unit to form the pick brackets for.</param>
+    /// <param name="type">The firing unit type.</param>
     /// <returns>Pick brackets for selecting valid engagement distances.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the range bracket to form for is unknown.</exception>
-    public List<PickBracket> FormPickBracketsDistance(UnitEntry unit)
+    public List<PickBracket> FormPickBracketsDistance(WeaponBay weaponBay, UnitType type)
     {
         var allRangeChanges = new List<int>();
 
-        foreach (var weaponEntry in unit.Weapons)
+        foreach (var weaponEntry in weaponBay.Weapons)
         {
             var weapon = FormWeapon(weaponEntry);
-            if (unit.Type == UnitType.AerospaceDropship || unit.Type == UnitType.AerospaceFighter)
+            switch (type)
             {
-                switch (weapon.RangeAerospace)
-                {
-                    case RangeBracket.Short:
-                        allRangeChanges.Add(6);
-                        break;
-                    case RangeBracket.Medium:
-                        allRangeChanges.AddRange(new[] { 6, 12 });
-                        break;
-                    case RangeBracket.Long:
-                        allRangeChanges.AddRange(new[] { 6, 12, 20 });
-                        break;
-                    case RangeBracket.Extreme:
-                        allRangeChanges.AddRange(new[] { 6, 12, 20, 25 });
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(unit), "Invalid range bracket.");
-                }
-            }
-            else
-            {
-                allRangeChanges.AddRange(weapon.Range.Values);
-                if (weapon.RangeMinimum != -1)
-                {
-                    for (int ii = 0; ii <= weapon.RangeMinimum; ii++)
+                case UnitType.AerospaceCapital:
+                case UnitType.AerospaceDropshipAerodyne:
+                case UnitType.AerospaceDropshipSpheroid:
+                case UnitType.AerospaceFighter:
+                    switch (weapon.RangeAerospace)
                     {
-                        allRangeChanges.Add(ii);
+                        case RangeBracket.Short:
+                            allRangeChanges.Add(weapon.CapitalScale ? RangeShortCapital : RangeShort);
+                            break;
+                        case RangeBracket.Medium:
+                            allRangeChanges.AddRange(weapon.CapitalScale ? RangesMediumCapital : RangesMedium);
+                            break;
+                        case RangeBracket.Long:
+                            allRangeChanges.AddRange(weapon.CapitalScale ? RangesLongCapital : RangesLong);
+                            break;
+                        case RangeBracket.Extreme:
+                            allRangeChanges.AddRange(weapon.CapitalScale ? RangesExtremeCapital : RangesExtreme);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(weaponBay), "Invalid range bracket.");
                     }
-                }
+
+                    break;
+                default:
+                    allRangeChanges.AddRange(weapon.Range.Values);
+                    if (weapon.RangeMinimum != -1)
+                    {
+                        for (int ii = 0; ii <= weapon.RangeMinimum; ii++)
+                        {
+                            allRangeChanges.Add(ii);
+                        }
+                    }
+
+                    break;
             }
         }
 
@@ -542,6 +561,15 @@ public class CommonData
     public List<PickBracket> FormPickBracketsSinks()
     {
         return MakeSimplePickBrackets(0, 1, 60);
+    }
+
+    /// <summary>
+    /// Form pick brackets for valid numbers of weapons.
+    /// </summary>
+    /// <returns>Pick brackets for selecting valid numbers of weapons.</returns>
+    public List<PickBracket> FormPickBracketsWeaponAmount()
+    {
+        return MakeSimplePickBrackets(1, 1, 12);
     }
 
     /// <summary>

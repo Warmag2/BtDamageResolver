@@ -27,6 +27,16 @@
     <td>
         <FormToggle Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(_userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormToggle>
     </td>
+    <td>
+        @if (Unit.StaticDataHidden)
+        {
+            <b>@WeaponEntry.Amount</b>
+        }
+        else
+        {
+            <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsWeaponAmount" SelectedOption="@WeaponEntry.Amount" Min =1 Max=12 Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+        }
+    </td>
     <td class="resolver_td_weaponname">
         @if (Unit.StaticDataHidden)
         {
@@ -55,8 +65,12 @@
 @code
 {
     private string _weaponAmmo;
+    private int _weaponAmount;
     private WeaponState _weaponState;
     private string _weaponName;
+
+    [Parameter]
+    public WeaponBay WeaponBay { get; set; }
 
     [Parameter]
     public WeaponEntry WeaponEntry { get; set; }
@@ -80,6 +94,7 @@
     {
         // Necessary to set this way, because otherwise disabling the controls may emit null or incorrect values upwards.
         _weaponAmmo = WeaponEntry.Ammo;
+        _weaponAmount = WeaponEntry.Amount;
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
         _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
@@ -104,6 +119,11 @@
             WeaponEntry.Ammo = _weaponAmmo;
             anythingChanged = true;
         }
+        if (WeaponEntry.Amount != _weaponAmount)
+        {
+            WeaponEntry.Amount = _weaponAmount;
+            anythingChanged = true;
+        }
         if (WeaponEntry.State != _weaponState)
         {
             WeaponEntry.State = _weaponState;
@@ -123,6 +143,12 @@
         UpdateWeaponEntry();
     }
 
+    private void OnWeaponAmountChanged(int amount)
+    {
+        _weaponAmount = amount;
+        UpdateWeaponEntry();
+    }
+
     private void OnWeaponNameChanged(string name)
     {
         _weaponName = name;
@@ -137,7 +163,7 @@
 
     public void MoveUp()
     {
-        var index = Unit.Weapons.IndexOf(WeaponEntry);
+        var index = WeaponBay.Weapons.IndexOf(WeaponEntry);
 
         if (index >= 1)
         {
@@ -147,9 +173,9 @@
 
     public void MoveDown()
     {
-        var index = Unit.Weapons.IndexOf(WeaponEntry);
+        var index = WeaponBay.Weapons.IndexOf(WeaponEntry);
 
-        if (index < Unit.Weapons.Count - 1)
+        if (index < WeaponBay.Weapons.Count - 1)
         {
             OnSwap.InvokeAsync(new SwapTuple(index, index + 1));
         }

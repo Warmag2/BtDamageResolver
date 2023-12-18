@@ -13,11 +13,12 @@ public static class VariableExtensions
     /// </summary>
     /// <param name="input">The expression string to insert to.</param>
     /// <param name="unit">The unit to insert from.</param>
+    /// <param name="weaponBay">The bay to insert from.</param>
     /// <returns>A string with the variables replaced.</returns>
-    public static string InsertVariables(this string input, UnitEntry unit)
+    public static string InsertVariables(this string input, UnitEntry unit, WeaponBay weaponBay)
     {
         return input
-            .Replace(Names.ExpressionVariableNameDistance, unit.FiringSolution.Distance.ToString())
+            .Replace(Names.ExpressionVariableNameDistance, weaponBay.FiringSolution.Distance.ToString())
             .Replace(Names.ExpressionVariableNameTonnage, unit.Tonnage.ToString());
     }
 }

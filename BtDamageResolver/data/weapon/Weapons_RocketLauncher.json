@@ -17,7 +17,9 @@
       "Extreme": 18
     },
     "RangeAerospace": "Medium",
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "UsesAmmo": true,
     "HitModifier": 1,
     "ClusterSize": 5,
@@ -42,7 +44,9 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "UsesAmmo": true,
     "HitModifier": 1,
     "ClusterSize": 5,
@@ -67,7 +71,9 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": 5,
+    "Heat": {
+      "Short": 5
+    },
     "UsesAmmo": true,
     "HitModifier": 1,
     "ClusterSize": 5,

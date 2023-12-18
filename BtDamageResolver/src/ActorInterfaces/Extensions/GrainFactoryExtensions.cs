@@ -21,6 +21,16 @@ public static class GrainFactoryExtensions
     }
 
     /// <summary>
+    /// Gets the arc diagram repository.
+    /// </summary>
+    /// <param name="grainFactory">The grain factory.</param>
+    /// <returns>The arc diagram repository.</returns>
+    public static IArcDiagramRepository GetArcDiagramRepository(this IGrainFactory grainFactory)
+    {
+        return grainFactory.GetGrain<IArcDiagramRepository>(RepositoryActorCommonId);
+    }
+
+    /// <summary>
     /// Gets the cluster table repository.
     /// </summary>
     /// <param name="grainFactory">The grain factory.</param>

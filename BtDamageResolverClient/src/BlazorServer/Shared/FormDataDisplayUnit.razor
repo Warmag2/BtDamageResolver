@@ -67,30 +67,47 @@
         </table>
     </div>
 
-    @if (_unit.Weapons.Any())
+    @if (_unit.WeaponBays.Any())
     {
-        <div class="resolver_div_componentrow">
-            <table class="resolver_table">
-                <tr>
-                    <th colspan="2">Weapons</th>
-                </tr>
-                <tr>
-                    <th>Name</th>
-                    <th>Ammo</th>
-                </tr>
-                @foreach (var weaponReference in _unit.Weapons)
-                {
-                    <tr>
-                        <td>
-                            @weaponReference.WeaponName
-                        </td>
-                        <td>
-                            @(weaponReference.Ammo ?? "None")
-                        </td>
-                    </tr>
-                }
-            </table>
-        </div>
+        @foreach(var weaponBay in _unit.WeaponBays)
+        {
+            @if (weaponBay.Weapons.Any())
+            {
+                <div class="resolver_div_componentrow">
+                    <table class="resolver_table">
+                        <tr>
+                            @if (_unit.WeaponBays.Count > 1)
+                            {
+                                <th colspan="3">Weapon bay @weaponBay.Name</th>
+                            }
+                            else
+                            {
+                                <th colspan="3">Weapons</th>
+                            }
+                        </tr>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Name</th>
+                            <th>Ammo</th>
+                        </tr>
+                        @foreach (var weaponReference in weaponBay.Weapons)
+                        {
+                            <tr>
+                                <td>
+                                    @($"{weaponReference.Amount}x")
+                                </td>
+                                <td>
+                                    @weaponReference.WeaponName
+                                </td>
+                                <td>
+                                    @(weaponReference.Ammo ?? "None")
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            }
+        }
     }
 
     @if (_showModalExport)

@@ -26,7 +26,7 @@ public partial class GameActor
         foreach (var player in _gameActorState.State.PlayerStates.Select(p => p.Value))
         {
             // Select all units from this player which have the chosen unit as their target
-            targetingUnits.AddRange(player.UnitEntries.Where(u => u.FiringSolution.TargetUnit == unitId).Select(u => u.Id).ToList());
+            targetingUnits.AddRange(player.UnitEntries.Where(u => u.WeaponBays.Exists(w => w.FiringSolution.Target == unitId)).Select(u => u.Id).ToList());
         }
 
         return targetingUnits;
@@ -47,26 +47,7 @@ public partial class GameActor
 
             var unit = GetUnit(unitId);
 
-            // Only fire at units which are in the game
-            if (unit.FiringSolution.TargetUnit != Guid.Empty && await IsUnitInGame(unit.FiringSolution.TargetUnit))
-            {
-                targetNumberUpdates.Add(await ProcessUnitTargetNumbers(unit));
-                _logger.LogInformation("GameActor succeeded in calculating target numbers for unit {unitId}.", unitId);
-            }
-            else
-            {
-                targetNumberUpdates.Add(await ProcessUnitTargetNumbers(unit, true));
-                _logger.LogInformation("GameActor succeeded in setting blank target numbers for unit {unitId}.", unitId);
-
-                if (unit.FiringSolution.TargetUnit != Guid.Empty)
-                {
-                    _logger.LogWarning(
-                        "In Game {gameId}, unit {unitId} tried to calculate target numbers for target {targetUnitId} which does not exist or is not in the same game.",
-                        this.GetPrimaryKeyString(),
-                        unit.Id,
-                        unit.FiringSolution.TargetUnit);
-                }
-            }
+            targetNumberUpdates.Add(await ProcessUnitTargetNumbers(unit));
         }
 
         return targetNumberUpdates;

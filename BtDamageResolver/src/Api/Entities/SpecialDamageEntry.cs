@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities;
@@ -7,7 +8,8 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 /// A special damage entry.
 /// </summary>
 [Serializable]
-public class SpecialDamageEntry
+[SuppressMessage("Design", "CA1067:Override Object.Equals(object) when implementing IEquatable<T>", Justification = "Never used for object comparison.")]
+public sealed class SpecialDamageEntry : IEquatable<SpecialDamageEntry>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="SpecialDamageEntry"/> class.
@@ -28,12 +30,6 @@ public class SpecialDamageEntry
     /// </summary>
     public SpecialDamageType Type { get; set; }
 
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $"{Type} ({Data})";
-    }
-
     /// <summary>
     /// Null this special damage entry.
     /// </summary>
@@ -41,5 +37,35 @@ public class SpecialDamageEntry
     {
         Type = SpecialDamageType.None;
         Data = "0";
+    }
+
+    /// <summary>
+    /// Produce a deep copy of this <see cref="SpecialDamageEntry"/>.
+    /// </summary>
+    /// <returns>A deep copy of this <see cref="SpecialDamageEntry"/>.</returns>
+    public SpecialDamageEntry Copy()
+    {
+        return new SpecialDamageEntry
+        {
+            Data = Data,
+            Type = Type
+        };
+    }
+
+    /// <inheritdoc />
+    public bool Equals(SpecialDamageEntry other)
+    {
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return Data == other.Data && Type == other.Type;
+    }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{Type} ({Data})";
     }
 }

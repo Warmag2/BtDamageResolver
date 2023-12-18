@@ -17,7 +17,9 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
+    "Heat": {
+      "Short": 0
+    },
     "UsesAmmo": true,
     "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" } ]
   },
@@ -39,7 +41,9 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
+    "Heat": {
+      "Short": 0
+    },
     "UsesAmmo": true,
     "SpecialFeatures": [ { "Data": "1d6", "Type": "Burst" } ]
   },
@@ -61,7 +65,9 @@
       "Extreme": 2
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
+    "Heat": {
+      "Short": 0
+    },
     "UsesAmmo": true,
     "SpecialFeatures": [ { "Data": "3d6", "Type": "Burst" } ]
   }
