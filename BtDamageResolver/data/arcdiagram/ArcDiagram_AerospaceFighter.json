@@ -1,0 +1,10 @@
+{
+    "UnitType": "AerospaceFighter",
+    "Arcs":
+    [
+        "Front",
+        "LeftWing",
+        "RightWing",
+        "Rear"
+    ]
+}

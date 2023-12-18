@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Extensions;
 
@@ -25,6 +26,87 @@ public static class CollectionExtensions
         }
 
         return returnValue;
+    }
+
+    /// <summary>
+    /// Make a deep copy of a dictionary object.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key in the <see cref="Dictionary{TKey, TValue}"/>.</typeparam>
+    /// <typeparam name="TValue">The type of the item in the <see cref="Dictionary{TKey, TValue}"/>.</typeparam>
+    /// <param name="input">The <see cref="Dictionary{TKey, TValue}"/> to make a copy of.</param>
+    /// <returns>A deep copy of the input <see cref="Dictionary{TKey, TValue}"/>.</returns>
+    public static Dictionary<TKey, TValue> Copy<TKey, TValue>(this Dictionary<TKey, TValue> input)
+    {
+        var returnValue = new Dictionary<TKey, TValue>();
+
+        foreach (var item in input)
+        {
+            returnValue.Add(item.Key, item.Value);
+        }
+
+        return returnValue;
+    }
+
+    /// <summary>
+    /// Compare dictionary contents.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key in the <see cref="Dictionary{TKey, TValue}"/>.</typeparam>
+    /// <typeparam name="TValue">The type of the item in the <see cref="Dictionary{TKey, TValue}"/>.</typeparam>
+    /// <param name="input">The base <see cref="Dictionary{TKey, TValue}"/>.</param>
+    /// <param name="other">The <see cref="Dictionary{TKey, TValue}"/> to compare to.</param>
+    /// <returns><b>True</b> if dictionary contents are identical, <b>false</b> otherwise.</returns>
+    public static bool DeepEquals<TKey, TValue>(this Dictionary<TKey, TValue> input, Dictionary<TKey, TValue> other)
+        where TValue : IComparable<TValue>
+    {
+        if (input.Count != other.Count)
+        {
+            return false;
+        }
+
+        foreach (var key in input.Keys)
+        {
+            if (input[key].CompareTo(other[key]) != 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Add the values of a dictionary onto the values of another dictionary.
+    /// </summary>
+    /// <typeparam name="TKey">The key type.</typeparam>
+    /// <param name="target">The target dictionary which to add to.</param>
+    /// <param name="source">The source dictionary to add from.</param>
+    /// <exception cref="InvalidOperationException">If the dictionaries have a different number of elements.</exception>
+    public static void MergeAdditionally<TKey>(this Dictionary<TKey, int> target, Dictionary<TKey, int> source)
+    {
+        if (target.Count != source.Count)
+        {
+            throw new InvalidOperationException("Dictionaries cannot be merged.");
+        }
+
+        foreach (var key in target.Keys)
+        {
+            target[key] += source[key];
+        }
+    }
+
+    /// <summary>
+    /// Multiply the values of a dictionary.
+    /// </summary>
+    /// <typeparam name="TKey">The key type.</typeparam>
+    /// <param name="target">The target dictionary which to add to.</param>
+    /// <param name="multiple">The multiplication factor.</param>
+    /// <exception cref="InvalidOperationException">If the dictionaries have a different number of elements.</exception>
+    public static void Multiply<TKey>(this Dictionary<TKey, int> target, int multiple)
+    {
+        foreach (var key in target.Keys)
+        {
+            target[key] *= multiple;
+        }
     }
 
     /// <summary>
@@ -75,13 +157,9 @@ public static class CollectionExtensions
             return;
         }
 
-        if (dict.ContainsKey(key))
+        if (!dict.TryAdd(key, countable))
         {
             dict[key] += countable;
-        }
-        else
-        {
-            dict.Add(key, countable);
         }
     }
 
@@ -99,14 +177,46 @@ public static class CollectionExtensions
             return;
         }
 
-        if (dict.ContainsKey(key))
+        if (!dict.TryAdd(key, countable))
         {
             dict[key] += countable;
         }
-        else
+    }
+
+    /// <summary>
+    /// If and only if the specified dictionary only contains one value with an enum key type,
+    /// fill the dictionary with key from the specified enum and the given value until the given bracket.
+    /// Fill rest of range brackets with zeroes.
+    /// </summary>
+    /// <typeparam name="TKey">The key type of the dictionary.</typeparam>
+    /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
+    /// <param name="dictionary">The dictionary.</param>
+    /// <param name="fillUntil">The range bracket to fill until.</param>
+    /// <returns>
+    /// The filled dictionary.
+    /// </returns>
+    public static Dictionary<RangeBracket, int> Fill(this Dictionary<RangeBracket, int> dictionary, RangeBracket fillUntil)
+    {
+        if (dictionary.Count == 1)
         {
-            dict.Add(key, countable);
+            var valueToFillWith = dictionary.Single().Value;
+
+            var returnValue = new Dictionary<RangeBracket, int>();
+
+            for (int ii = 0; ii <= (int)fillUntil; ii++)
+            {
+                returnValue[(RangeBracket)ii] = valueToFillWith;
+            }
+
+            for (int ii = (int)fillUntil + 1; ii <= (int)RangeBracket.OutOfRange; ii++)
+            {
+                returnValue[(RangeBracket)ii] = 0;
+            }
+
+            return returnValue;
         }
+
+        return dictionary;
     }
 
     /// <summary>

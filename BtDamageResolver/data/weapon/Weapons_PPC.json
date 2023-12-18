@@ -23,7 +23,9 @@
     },
     "RangeMinimum": 3,
     "RangeAerospace": "Medium",
-    "Heat": 10
+    "Heat": {
+      "Short": 10
+    }
   },
   {
     "Name": "ER PPC",
@@ -48,7 +50,9 @@
       "Extreme": 23
     },
     "RangeAerospace": "Long",
-    "Heat": 15
+    "Heat": {
+      "Short": 15
+    }
   },
   {
     "Name": "Light PPC",
@@ -73,7 +77,9 @@
       "Extreme": 18
     },
     "RangeMinimum": 3,
-    "Heat": 5,
+    "Heat": {
+      "Short": 5
+    },
     "RangeAerospace": "Medium"
   },
   {
@@ -98,7 +104,9 @@
       "Long": 18,
       "Extreme": 18
     },
-    "Heat": 15,
+    "Heat": {
+      "Short": 15
+    },
     "RangeMinimum": 3,
     "RangeAerospace": "Medium"
   },
@@ -128,7 +136,9 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": 10
+    "Heat": {
+      "Short": 10
+    }
   },
   {
     "Name": "Clan ER PPC",
@@ -153,6 +163,8 @@
       "Extreme": 23
     },
     "RangeAerospace": "Long",
-    "Heat": 15
+    "Heat": {
+      "Short": 15
+    }
   }
 ]

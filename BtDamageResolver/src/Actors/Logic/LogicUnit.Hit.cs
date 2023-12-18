@@ -3,7 +3,6 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic;
 
@@ -16,7 +15,7 @@ public partial class LogicUnit
     public void TransformCombatAction(DamageReport targetDamageReport, CombatAction combatAction)
     {
         // Streak hits do not actually fire if they would not hit.
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out _) && !combatAction.HitHappened)
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Streak, out _) && !combatAction.HitHappened)
         {
             combatAction.ActionHappened = false;
             targetDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} does not obtain lock and does not fire", Type = AttackLogEntryType.Information });
@@ -28,9 +27,9 @@ public partial class LogicUnit
 
         // Single missile handling. If AMS destroys the only missile, this causes a total miss.
         // In this type of a case, streak missiles such as a hypothetical SRM-1 would still have fired.
-        if (combatAction.Weapon.Type == WeaponType.Missile && Unit.HasFeature(UnitFeature.Ams) && combatAction.HitHappened && (combatAction.Weapon.Damage[combatAction.RangeBracket] == 1 || !combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _)))
+        if (combatAction.Weapon.Type == WeaponType.Missile && Unit.HasFeature(UnitFeature.Ams) && combatAction.HitHappened && (combatAction.Weapon.Damage[combatAction.RangeBracket] == 1 || !combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _)))
         {
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.AmsImmune, out _))
+            if (combatAction.Weapon.HasFeature(WeaponFeature.AmsImmune, out _))
             {
                 targetDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is immune to AMS defenses" });
             }
@@ -81,11 +80,11 @@ public partial class LogicUnit
         }
     }
 
-    private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Weapon weapon)
+    private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, bool isPrimaryTarget)
     {
         hitCalculationDamageReport.Log(new AttackLogEntry { Context = weapon.Name, Type = AttackLogEntryType.FiringSolution });
 
-        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weapon);
+        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weapon, weaponBay, isPrimaryTarget);
 
         // Weapons with target numbers above 12 cannot hit
         if (targetNumber > 12)
@@ -100,7 +99,8 @@ public partial class LogicUnit
                 RangeBracket = rangeBracket,
                 UnitType = Unit.Type,
                 Troopers = Unit.Troopers,
-                Weapon = weapon
+                Weapon = weapon,
+                WeaponBay = weaponBay
             };
         }
 
@@ -117,7 +117,8 @@ public partial class LogicUnit
             RangeBracket = rangeBracket,
             UnitType = Unit.Type,
             Troopers = Unit.Troopers,
-            Weapon = weapon
+            Weapon = weapon,
+            WeaponBay = weaponBay
         };
 
         // Transform combat action if necessary

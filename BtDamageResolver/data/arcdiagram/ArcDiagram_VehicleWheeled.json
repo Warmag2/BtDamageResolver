@@ -1,0 +1,10 @@
+{
+    "UnitType": "VehicleWheeled",
+    "Arcs":
+    [
+        "Front",
+        "LeftWing",
+        "RightWing",
+        "Rear"
+    ]
+}

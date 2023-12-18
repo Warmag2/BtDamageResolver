@@ -1,0 +1,10 @@
+{
+    "UnitType": "VehicleVtol",
+    "Arcs":
+    [
+        "Front",
+        "LeftWing",
+        "RightWing",
+        "Rear"
+    ]
+}

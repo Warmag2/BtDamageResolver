@@ -89,46 +89,6 @@ public class Expression
         return ExecuteFunction(_expressions[0].Parse(), _outerFunction);
     }
 
-    private void CollapseOneStage(int position)
-    {
-        var value = 0m;
-
-        switch (_tokens[position])
-        {
-            case Token.Dice:
-                var numDice = decimal.ToInt32(_expressions[position].Parse());
-                var diceSize = decimal.ToInt32(_expressions[position + 1].Parse());
-
-                for (var diceIndex = 0; diceIndex < numDice; diceIndex++)
-                {
-                    value += _random.NextPlusOne(diceSize);
-                }
-
-                break;
-            case Token.Exponent:
-                value = (decimal)Math.Pow(decimal.ToDouble(_expressions[position].Parse()), decimal.ToDouble(_expressions[position + 1].Parse()));
-                break;
-            case Token.Divide:
-                value = _expressions[position].Parse() / _expressions[position + 1].Parse();
-                break;
-            case Token.Multiply:
-                value = _expressions[position].Parse() * _expressions[position + 1].Parse();
-                break;
-            case Token.Plus:
-                value = _expressions[position].Parse() + _expressions[position + 1].Parse();
-                break;
-            case Token.Minus:
-                value = _expressions[position].Parse() - _expressions[position + 1].Parse();
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(_tokens[position].ToString());
-        }
-
-        _expressions[position] = new Expression(value);
-        _expressions.RemoveAt(position + 1);
-        _tokens.RemoveAt(position);
-    }
-
     private static (string Expression, string Remaining) ExtractSubExpression(string input)
     {
         if (input[0] != '(')
@@ -202,6 +162,46 @@ public class Expression
             ExpressionFunction.Floor => Math.Floor(input),
             _ => throw new ArgumentOutOfRangeException(nameof(functionType), functionType, null),
         };
+    }
+
+    private void CollapseOneStage(int position)
+    {
+        var value = 0m;
+
+        switch (_tokens[position])
+        {
+            case Token.Dice:
+                var numDice = decimal.ToInt32(_expressions[position].Parse());
+                var diceSize = decimal.ToInt32(_expressions[position + 1].Parse());
+
+                for (var diceIndex = 0; diceIndex < numDice; diceIndex++)
+                {
+                    value += _random.NextPlusOne(diceSize);
+                }
+
+                break;
+            case Token.Exponent:
+                value = (decimal)Math.Pow(decimal.ToDouble(_expressions[position].Parse()), decimal.ToDouble(_expressions[position + 1].Parse()));
+                break;
+            case Token.Divide:
+                value = _expressions[position].Parse() / _expressions[position + 1].Parse();
+                break;
+            case Token.Multiply:
+                value = _expressions[position].Parse() * _expressions[position + 1].Parse();
+                break;
+            case Token.Plus:
+                value = _expressions[position].Parse() + _expressions[position + 1].Parse();
+                break;
+            case Token.Minus:
+                value = _expressions[position].Parse() - _expressions[position + 1].Parse();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(_tokens[position].ToString());
+        }
+
+        _expressions[position] = new Expression(value);
+        _expressions.RemoveAt(position + 1);
+        _tokens.RemoveAt(position);
     }
 
     private void Construct(string input)

@@ -9,7 +9,9 @@
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Heat": 2,
+    "Heat": {
+      "Short": 2
+    },
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -27,7 +29,9 @@
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -45,7 +49,9 @@
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Heat": 6,
+    "Heat": {
+      "Short": 6
+    },
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,
@@ -63,7 +69,9 @@
     },
     "AmmoDefault": "SRM",
     "AttackType": "Normal",
-    "Heat": 8,
+    "Heat": {
+      "Short": 8
+    },
     "UsesAmmo": true,
     "ClusterSize": 5,
     "ClusterDamage": 1,

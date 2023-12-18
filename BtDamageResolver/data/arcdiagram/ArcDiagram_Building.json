@@ -1,0 +1,10 @@
+{
+    "UnitType": "Building",
+    "Arcs":
+    [
+        "Front",
+        "LeftWing",
+        "RightWing",
+        "Rear"
+    ]
+}

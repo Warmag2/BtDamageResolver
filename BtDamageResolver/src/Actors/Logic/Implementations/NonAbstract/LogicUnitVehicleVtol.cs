@@ -32,7 +32,7 @@ public class LogicUnitVehicleVtol : LogicUnitVehicle
     /// <inheritdoc />
     public override int GetFeatureModifier(Weapon weapon)
     {
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
+        if (weapon.HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
         {
             return MathExpression.Parse(flakFeatureEntry.Data);
         }

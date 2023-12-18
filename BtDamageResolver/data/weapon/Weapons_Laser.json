@@ -17,7 +17,9 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 1
+    "Heat": {
+      "Short": 1
+    }
   },
   {
     "Name": "Medium Laser",
@@ -37,7 +39,9 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 3
+    "Heat": {
+      "Short": 3
+    }
   },
   {
     "Name": "Large Laser",
@@ -57,7 +61,9 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": 8
+    "Heat": {
+      "Short": 8
+    }
   },
   {
     "Name": "ER Small Laser",
@@ -77,7 +83,9 @@
       "Extreme": 5
     },
     "RangeAerospace": "Short",
-    "Heat": 2
+    "Heat": {
+      "Short": 2
+    }
   },
   {
     "Name": "ER Medium Laser",
@@ -97,7 +105,9 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": 5
+    "Heat": {
+      "Short": 5
+    }
   },
   {
     "Name": "ER Large Laser",
@@ -117,7 +127,9 @@
       "Extreme": 19
     },
     "RangeAerospace": "Long",
-    "Heat": 12
+    "Heat": {
+      "Short": 12
+    }
   },
   {
     "Name": "Small Pulse Laser",
@@ -137,7 +149,9 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 2,
+    "Heat": {
+      "Short": 2
+    },
     "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
     "HitModifier": -2
   },
@@ -159,7 +173,9 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
@@ -181,7 +197,9 @@
       "Extreme": 10
     },
     "RangeAerospace": "Medium",
-    "Heat": 10,
+    "Heat": {
+      "Short": 10
+    },
     "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
@@ -203,7 +221,9 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 2
+    "Heat": {
+      "Short": 2
+    }
   },
   {
     "Name": "Clan ER Medium Laser",
@@ -223,7 +243,9 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": 5
+    "Heat": {
+      "Short": 5
+    }
   },
   {
     "Name": "Clan ER Large Laser",
@@ -243,7 +265,34 @@
       "Extreme": 25
     },
     "RangeAerospace": "Extreme",
-    "Heat": 12
+    "Heat": {
+      "Short": 12
+    }
+  },
+  {
+    "Name": "Clan Micro Pulse Laser",
+    "Type": "Energy",
+    "AttackType": "Normal",
+    "Class": "PointDefense",
+    "Damage": {
+      "Short": 3
+    },
+    "DamageAerospace": {
+      "Short": 3
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 2,
+      "Long": 3,
+      "Extreme": 3
+    },
+    "RangeAerospace": "Short",
+    "Heat": {
+      "Short": 1
+    },
+    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "HitModifier": -2
   },
   {
     "Name": "Clan Small Pulse Laser",
@@ -263,7 +312,9 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 2,
+    "Heat": {
+      "Short": 2
+    },
     "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
     "HitModifier": -2
   },
@@ -285,7 +336,9 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
@@ -307,7 +360,9 @@
       "Extreme": 20
     },
     "RangeAerospace": "Long",
-    "Heat": 10,
+    "Heat": {
+      "Short": 10
+    },
     "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
@@ -329,7 +384,9 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "HitModifier": 1
   },
   {
@@ -350,7 +407,9 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 7,
+    "Heat": {
+      "Short": 7
+    },
     "HitModifier": 1
   },
   {
@@ -371,7 +430,9 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": 18,
+    "Heat": {
+      "Short": 18
+    },
     "HitModifier": 1
   }
 ]

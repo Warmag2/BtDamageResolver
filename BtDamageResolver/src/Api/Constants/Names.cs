@@ -1,7 +1,7 @@
 ﻿namespace Faemiyah.BtDamageResolver.Api.Constants;
 
 /// <summary>
-/// Contains common constants for Orleans usage.
+/// Contains common constants for resolver usage.
 /// </summary>
 public static class Names
 {
@@ -19,4 +19,14 @@ public static class Names
     /// Tonnage variable replacement.
     /// </summary>
     public const string ExpressionVariableNameTonnage = "$tonnage";
+
+    /// <summary>
+    /// Battle armor weapon names start with this string.
+    /// </summary>
+    public const string BattleArmorWeaponPrefix = "BA ";
+
+    /// <summary>
+    /// Infantry weapon names start with this string.
+    /// </summary>
+    public const string InfantryWeaponPrefix = "Infantry ";
 }

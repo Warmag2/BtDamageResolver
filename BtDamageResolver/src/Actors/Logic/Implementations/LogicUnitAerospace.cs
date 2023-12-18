@@ -37,7 +37,7 @@ public abstract class LogicUnitAerospace : LogicUnit
     /// <inheritdoc />
     public override int GetFeatureModifier(Weapon weapon)
     {
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
+        if (weapon.HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
         {
             return MathExpression.Parse(flakFeatureEntry.Data);
         }
@@ -71,7 +71,7 @@ public abstract class LogicUnitAerospace : LogicUnit
     }
 
     /// <inheritdoc />
-    protected override int GetMinimumRangeModifier(Weapon weapon)
+    protected override int GetMinimumRangeModifier(Weapon weapon, WeaponBay weaponBay)
     {
         return 0;
     }
@@ -83,9 +83,9 @@ public abstract class LogicUnitAerospace : LogicUnit
     }
 
     /// <inheritdoc />
-    protected override RangeBracket GetRangeBracket(Weapon weapon)
+    protected override RangeBracket GetRangeBracket(Weapon weapon, WeaponBay weaponBay)
     {
-        return GetRangeBracketAerospace(weapon, Unit.FiringSolution.Distance);
+        return GetRangeBracketAerospace(weapon, weaponBay.FiringSolution.Distance);
     }
 
     /// <inheritdoc />
@@ -132,12 +132,12 @@ public abstract class LogicUnitAerospace : LogicUnit
             return new List<DamagePacket>();
         }
 
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))
         {
             return Clusterize(5, damage, combatAction.Weapon.SpecialDamage);
         }
 
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
             return Clusterize((int)Math.Ceiling((decimal)damage / MathExpression.Parse(rapidFeatureEntry.Data)), damage, combatAction.Weapon.SpecialDamage);
         }
@@ -155,7 +155,7 @@ public abstract class LogicUnitAerospace : LogicUnit
             case WeaponType.Missile:
                 if (target.Unit.HasFeature(UnitFeature.Ams))
                 {
-                    if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.AmsImmune, out _))
+                    if (combatAction.Weapon.HasFeature(WeaponFeature.AmsImmune, out _))
                     {
                         damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is immune to AMS defenses" });
                     }
@@ -180,7 +180,7 @@ public abstract class LogicUnitAerospace : LogicUnit
         }
 
         // Glancing blow for cluster aerospace weapons (improvised rule, since aerospace units do not normally use clustering)
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
         {
             var glancingBlowPenalty = Random.Next(6);
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender roll for cluster damage reduction from glancing blow", Number = glancingBlowPenalty });

@@ -1,0 +1,12 @@
+{
+    "UnitType": "AerospaceDropshipAerodyne",
+    "Arcs":
+    [
+        "Front",
+        "FrontLeft",
+        "FrontRight",
+        "RearLeft",
+        "RearRight",
+        "Rear"
+    ]
+}

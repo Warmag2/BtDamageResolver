@@ -139,44 +139,12 @@
                         </div>
                     </td>
                 </tr>
-                <tr>
-                    <th colspan="2">
-                        Targeting parameters
-                    </th>
-                </tr>
-
-                <tr>
-                    <td>Target</td>
-                    <td>
-                        <FormComboBox @key="@_userStateController.UnitList" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@UnitEntry.FiringSolution.TargetUnit" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Distance</td>
-                    <td>
-                        <FormNumberPicker BracketCreatorDelegate="@(() => _commonData.FormPickBracketsDistance(UnitEntry))" SelectedOption="@UnitEntry.FiringSolution.Distance" Min="0" Max="50" Disabled="@(_userStateController.PlayerState.IsReady || !UnitEntry.Weapons.Any())" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnDistanceChanged"></FormNumberPicker>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Modifier</td>
-                    <td>
-                        <FormRadio Options="@_commonData.MapAttackModifier" SelectedOption="@UnitEntry.FiringSolution.AttackModifier" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int attackModifier) => OnAttackModifierChanged(attackModifier)"></FormRadio>
-                    </td>
-                </tr>
-                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetDirectionHidden(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))))">
-                    <td>Direction</td>
-                    <td>
-                        <FormRadio Options="@_commonData.MapFacing" SelectedOption="@UnitEntry.FiringSolution.Direction" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
-                    </td>
-                </tr>
-                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))))">
-                    <td>Cover</td>
-                    <td>
-                        <FormRadio Options="@_commonData.FormMapCover(_userStateController.GetUnitType(UnitEntry.FiringSolution.TargetUnit))" SelectedOption="@UnitEntry.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
-                    </td>
-                </tr>
-
             </table>
+
+            @foreach(var weaponBay in UnitEntry.WeaponBays)
+            {
+                <FormFiringSolution @key="@weaponBay.Id" UnitEntry="@UnitEntry" WeaponBay="@weaponBay" OnChanged="@OnFiringSolutionChanged" />
+            }
         </div>
 
         <div class="resolver_div_unit resolver_div_componentcell">
@@ -201,9 +169,9 @@
                 </tr>
             </table>
             <table>
-                @foreach (var weaponEntry in UnitEntry.Weapons)
+                @foreach (var weaponBay in UnitEntry.WeaponBays)
                 {
-                    <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnWeaponChanged" OnDeleted="@OnWeaponDeleted" OnSwap="@OnWeaponSwap" />
+                    <FormWeaponBay @key="@weaponBay.Id" WeaponBay="@weaponBay" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnWeaponBayChanged" OnDeleted="@OnWeaponBayDeleted" OnSwap="@OnWeaponBaySwap" />
                 }
                 <tr>
                     <td colspan="5">
@@ -305,17 +273,17 @@
     [Parameter]
     public EventCallback<SwapTuple> OnSwap { get; set; }
 
-    public void AddWeapon()
+    public void AddWeaponBay()
     {
-        var weaponToAdd = UnitEntry.Weapons.LastOrDefault();
+        var weaponToAdd = UnitEntry.WeaponBays.LastOrDefault();
 
         if (weaponToAdd != null)
         {
-            UnitEntry.Weapons.Add(weaponToAdd.Copy());
+            UnitEntry.WeaponBays.Add(weaponToAdd.Copy());
         }
         else
         {
-            UnitEntry.Weapons.Add(CommonData.GetDefaultWeapon(UnitEntry.Type));
+            UnitEntry.WeaponBays.Add(CommonData.GetDefaultWeaponBay(UnitEntry.Type));
         }
 
         SendUpdate();
@@ -506,73 +474,33 @@
         }
     }
 
-    private void OnTargetChanged(Guid target)
-    {
-        if (UnitEntry.FiringSolution.TargetUnit != target)
-        {
-            UnitEntry.FiringSolution.TargetUnit = target;
-            SendUpdate();
-        }
-    }
-
-    private void OnDistanceChanged(int distance)
-    {
-        if (UnitEntry.FiringSolution.Distance != distance)
-        {
-            UnitEntry.FiringSolution.Distance = distance;
-            SendUpdate();
-        }
-    }
-
-    private void OnAttackModifierChanged(int penalty)
-    {
-        if (UnitEntry.FiringSolution.AttackModifier != penalty)
-        {
-            UnitEntry.FiringSolution.AttackModifier = penalty;
-            SendUpdate();
-        }
-    }
-
-    private void OnDirectionChanged(Direction direction)
-    {
-        if (UnitEntry.FiringSolution.Direction != direction)
-        {
-            UnitEntry.FiringSolution.Direction = direction;
-            SendUpdate();
-        }
-    }
-
-    private void OnCoverChanged(Cover cover)
-    {
-        if (UnitEntry.FiringSolution.Cover != cover)
-        {
-            UnitEntry.FiringSolution.Cover = cover;
-            SendUpdate();
-        }
-    }
-
-    private void OnWeaponChanged(WeaponEntry weaponEntry)
+    private void OnFiringSolutionChanged(FiringSolution firingSolution)
     {
         SendUpdate();
     }
 
-    private void OnWeaponDeleted(WeaponEntry weaponEntry)
+    private void OnWeaponBayChanged(WeaponBay weaponBay)
     {
-        UnitEntry.Weapons.Remove(weaponEntry);
         SendUpdate();
     }
 
-    public void OnWeaponSwap(SwapTuple swapTuple)
+    private void OnWeaponBayDeleted(WeaponBay weaponBay)
+    {
+        UnitEntry.WeaponBays.Remove(weaponBay);
+        SendUpdate();
+    }
+
+    public void OnWeaponBaySwap(SwapTuple swapTuple)
     {
         if (swapTuple.From != swapTuple.To)
         {
-            SwapWeapons(swapTuple.From, swapTuple.To);
+            SwapWeaponBays(swapTuple.From, swapTuple.To);
         }
     }
 
-    private void SwapWeapons(int ix1, int ix2)
+    private void SwapWeaponBays(int ix1, int ix2)
     {
-        (UnitEntry.Weapons[ix1], UnitEntry.Weapons[ix2]) = (UnitEntry.Weapons[ix2], UnitEntry.Weapons[ix1]);
+        (UnitEntry.WeaponBays[ix1], UnitEntry.WeaponBays[ix2]) = (UnitEntry.WeaponBays[ix2], UnitEntry.WeaponBays[ix1]);
         SendUpdate();
     }
 

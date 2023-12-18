@@ -27,16 +27,16 @@ public partial class LogicUnit
 
         var weapon = await FormWeapon(weaponEntry);
 
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+        if (weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
-            heatGenerated = MathExpression.Parse(rapidFeatureEntry.Data) * weapon.Heat;
+            heatGenerated = MathExpression.Parse(rapidFeatureEntry.Data) * weapon.Heat[RangeBracket.Short];
         }
         else
         {
-            heatGenerated = weapon.Heat;
+            heatGenerated = weapon.Heat[RangeBracket.Short];
         }
 
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out var _))
+        if (weapon.HasFeature(WeaponFeature.Streak, out var _))
         {
             return (hitChance * heatGenerated, heatGenerated);
         }
@@ -117,10 +117,10 @@ public partial class LogicUnit
             return;
         }
 
-        int calculatedSingleHitheat = combatAction.Weapon.Heat;
+        int calculatedSingleHitheat = combatAction.Weapon.Heat[combatAction.RangeBracket];
         int heat;
 
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
             var multiplier = MathExpression.Parse(rapidFeatureEntry.Data);
             heat = calculatedSingleHitheat * multiplier;

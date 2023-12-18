@@ -1,0 +1,10 @@
+{
+    "UnitType": "BattleArmor",
+    "Arcs":
+    [
+        "Front",
+        "LeftWing",
+        "RightWing",
+        "Rear"
+    ]
+}

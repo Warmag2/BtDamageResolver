@@ -1,0 +1,354 @@
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
+@using Faemiyah.BtDamageResolver.Api.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@using Newtonsoft.Json
+@inject CommonData _commonData
+@inject VisualStyleController _visualStyleController
+@inject UserStateController _userStateController
+
+    <table>
+        @foreach (var weaponEntry in UnitEntry.Weapons)
+        {
+            <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnWeaponChanged" OnDeleted="@OnWeaponDeleted" OnSwap="@OnWeaponSwap" />
+        }
+        <tr>
+            <td colspan="5">
+                <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
+                    <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
+                </span>
+            </td>
+        </tr>
+    </table>
+
+@code {
+    private FormPickSet<UnitFeature> _formPickSetFeatures;
+
+    [Parameter]
+    public UnitEntry Unit { get; set; }
+
+    [Parameter]
+    public WeaponBay WeaponBay { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public EventCallback<WeaponBay> OnChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<WeaponBay> OnDeleted { get; set; }
+
+    [Parameter]
+    public EventCallback<SwapTuple> OnSwap { get; set; }
+
+    public void AddWeapon()
+    {
+        var weaponToAdd = WeaponBay.Weapons.LastOrDefault();
+
+        if (weaponToAdd != null)
+        {
+            WeaponBay.Weapons.Add(weaponToAdd.Copy());
+        }
+        else
+        {
+            WeaponBay.Weapons.Add(CommonData.GetDefaultWeapon(UnitEntry.Type));
+        }
+
+        OnChanged.InvokeAsync();
+    }
+
+    public DateTime GetComparisonTime()
+    {
+        return _userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue;
+    }
+
+    #region Property changing delegates
+
+    private void OnNameChanged(string name)
+    {
+        if (UnitEntry.Name != name)
+        {
+            UnitEntry.Name = name;
+            SendUpdate();
+        }
+    }
+
+    private void OnGunneryChanged(int gunnery)
+    {
+        if (UnitEntry.Gunnery != gunnery)
+        {
+            UnitEntry.Gunnery = gunnery;
+            SendUpdate();
+        }
+    }
+
+    private void OnHeatChanged(int heat)
+    {
+        if (UnitEntry.Heat != heat)
+        {
+            UnitEntry.Heat = heat;
+            SendUpdate();
+        }
+    }
+
+    private void OnJumpJetsChanged(int jumpJets)
+    {
+        if (UnitEntry.JumpJets != jumpJets)
+        {
+            UnitEntry.JumpJets = jumpJets;
+            SendUpdate();
+        }
+    }
+
+    private void OnPenaltyChanged(int penalty)
+    {
+        if (UnitEntry.Penalty != penalty)
+        {
+            UnitEntry.Penalty = penalty;
+            SendUpdate();
+        }
+    }
+
+    private void OnPilotingChanged(int piloting)
+    {
+        if (UnitEntry.Piloting != piloting)
+        {
+            UnitEntry.Piloting = piloting;
+            SendUpdate();
+        }
+    }
+
+    private void OnFeaturesChanged(HashSet<UnitFeature> features)
+    {
+        UnitEntry.Features = features;
+        SendUpdate();
+    }
+
+    private void OnSpeedChanged(int speed)
+    {
+        if (UnitEntry.Speed != speed)
+        {
+            UnitEntry.Speed = speed;
+            SendUpdate();
+        }
+    }
+
+    private void OnStaticDataHiddenChanged(bool staticDataHidden)
+    {
+        if (UnitEntry.StaticDataHidden != !staticDataHidden)
+        {
+            UnitEntry.StaticDataHidden = !staticDataHidden;
+            SendUpdate();
+        }
+    }
+
+    private void OnTonnageChanged(int tonnage)
+    {
+        if (UnitEntry.Tonnage != tonnage)
+        {
+            UnitEntry.Tonnage = tonnage;
+            SendUpdate();
+        }
+    }
+
+    private void OnTroopersChanged(int troopers)
+    {
+        if (UnitEntry.Troopers != troopers)
+        {
+            UnitEntry.Troopers = troopers;
+            SendUpdate();
+        }
+    }
+
+    private void OnSinksChanged(int sinks)
+    {
+        if (UnitEntry.Sinks != sinks)
+        {
+            // Automatically alter heat by a corresponding amount if number of sinks is changed.
+            // The rationalization is that if the unit took damage last turn before sinking and the player adjusts
+            // the number of sinks after turn resolution, the calculated value was made with too many sinks.
+            UnitEntry.Heat += UnitEntry.Sinks - sinks;
+            UnitEntry.Sinks = sinks;
+            if (UnitEntry.Heat < 0)
+            {
+                UnitEntry.Heat = 0;
+            }
+            SendUpdate();
+        }
+    }
+
+    private void OnUnitTypeChanged(UnitType unitType)
+    {
+        if (UnitEntry.Type != unitType)
+        {
+            UnitEntry.Type = unitType;
+            SendUpdate();
+        }
+    }
+
+    private void OnMovementClassChanged(MovementClass movementClass)
+    {
+        if (UnitEntry.MovementClass != movementClass)
+        {
+            UnitEntry.MovementClass = movementClass;
+            SendUpdate();
+        }
+    }
+
+    private void OnMovementChanged(int movement)
+    {
+        if (UnitEntry.Movement != movement)
+        {
+            UnitEntry.Movement = movement;
+            SendUpdate();
+        }
+    }
+
+    private void OnStanceChanged(Stance stance)
+    {
+        if (UnitEntry.Stance != stance)
+        {
+            UnitEntry.Stance = stance;
+            SendUpdate();
+        }
+    }
+
+    private void OnNarcedChanged(bool narced)
+    {
+        if (UnitEntry.Narced != narced)
+        {
+            UnitEntry.Narced = narced;
+            SendUpdate();
+        }
+    }
+
+    private void OnTaggedChanged(bool tagged)
+    {
+        if (UnitEntry.Tagged != tagged)
+        {
+            UnitEntry.Tagged = tagged;
+            SendUpdate();
+        }
+    }
+
+    private void OnFiringSolutionChanged(FiringSolution firingSolution)
+    {
+        SendUpdate();
+    }
+
+    private void OnWeaponChanged(WeaponEntry weaponEntry)
+    {
+        SendUpdate();
+    }
+
+    private void OnWeaponDeleted(WeaponEntry weaponEntry)
+    {
+        UnitEntry.Weapons.Remove(weaponEntry);
+        SendUpdate();
+    }
+
+    public void OnWeaponSwap(SwapTuple swapTuple)
+    {
+        if (swapTuple.From != swapTuple.To)
+        {
+            SwapWeapons(swapTuple.From, swapTuple.To);
+        }
+    }
+
+    private void SwapWeapons(int ix1, int ix2)
+    {
+        (UnitEntry.Weapons[ix1], UnitEntry.Weapons[ix2]) = (UnitEntry.Weapons[ix2], UnitEntry.Weapons[ix1]);
+        SendUpdate();
+    }
+
+    public void MoveUp()
+    {
+        var index = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+
+        if (index >= 1)
+        {
+            OnSwap.InvokeAsync(new SwapTuple(index - 1, index));
+        }
+    }
+
+    public void MoveDown()
+    {
+        var index = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+
+        if (index < _userStateController.PlayerState.UnitEntries.Count - 1)
+        {
+            OnSwap.InvokeAsync(new SwapTuple(index, index + 1));
+        }
+    }
+
+    #endregion
+
+    #region dragdrop
+
+    void StartDrag(UnitEntry unit)
+    {
+        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(unit);
+    }
+
+    void Drop(Unit unit)
+    {
+        if (unit != null)
+        {
+            var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+            OnSwap.InvokeAsync(new SwapTuple(_userStateController.DraggedUnitIndex, targetUnitIndex));
+        }
+    }
+
+    #endregion
+
+    #region modals
+
+    private bool _showModalDelete = false;
+    private bool _showModalLoad = false;
+    private bool _showModalSave = false;
+    private string _modalUnitName = string.Empty;
+
+    private void ShowModalDelete()
+    {
+        _showModalDelete = true;
+    }
+
+    private void ShowModalLoad()
+    {
+        _showModalLoad = true;
+    }
+
+    private void ShowModalSave()
+    {
+        _showModalSave = true;
+    }
+
+    private void ModalClose()
+    {
+        _showModalDelete = false;
+        _showModalLoad = false;
+        _showModalSave = false;
+    }
+
+    private async Task ModalSave()
+    {
+        ModalClose();
+        await _commonData.SaveUnit(UnitEntry);
+    }
+
+    private async Task ModalLoad()
+    {
+        ModalClose();
+        UnitEntry.FromUnit(await _commonData.GetUnit(_modalUnitName));
+        await OnLoad.InvokeAsync(UnitEntry);
+    }
+
+    private void OnLoadedUnitNameChanged(string unitName)
+    {
+        _modalUnitName = unitName;
+    }
+
+    #endregion
+}

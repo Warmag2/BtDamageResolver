@@ -7,7 +7,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 /// A weapon entry portraying a weapon and its current settings.
 /// </summary>
 [Serializable]
-public class WeaponEntry : WeaponReference
+public class WeaponEntry : WeaponEntryReference
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaponEntry"/> class.
@@ -27,7 +27,7 @@ public class WeaponEntry : WeaponReference
     /// <remarks>
     /// Randomizes ID when created.
     /// </remarks>
-    public WeaponEntry(WeaponReference weaponReference)
+    public WeaponEntry(WeaponEntryReference weaponReference)
     {
         Ammo = weaponReference.Ammo;
         Id = Guid.NewGuid();
@@ -35,11 +35,6 @@ public class WeaponEntry : WeaponReference
         TimeStamp = DateTime.UtcNow;
         WeaponName = weaponReference.WeaponName;
     }
-
-    /// <summary>
-    /// The timestamp when this weapon entry was last updated.
-    /// </summary>
-    public DateTime TimeStamp { get; set; }
 
     /// <summary>
     /// The ID of this weapon entry.
@@ -50,6 +45,11 @@ public class WeaponEntry : WeaponReference
     /// The state of the weapon.
     /// </summary>
     public WeaponState State { get; set; }
+
+    /// <summary>
+    /// The timestamp when this weapon entry was last updated.
+    /// </summary>
+    public DateTime TimeStamp { get; set; }
 
     /// <summary>
     /// Makes a copy of this weapon entry.
@@ -64,23 +64,5 @@ public class WeaponEntry : WeaponReference
             State = State,
             WeaponName = WeaponName
         };
-    }
-
-    /// <summary>
-    /// Is this a battle armor weapon.
-    /// </summary>
-    /// <returns><b>True</b> if the weapon is a battle armor weapon, <b>false</b> otherwise.</returns>
-    public bool IsBattleArmorWeapon()
-    {
-        return WeaponName.StartsWith("BA ");
-    }
-
-    /// <summary>
-    /// Is this an infantry weapon.
-    /// </summary>
-    /// <returns><b>True</b> if the weapon is an infantry weapon, <b>false</b> otherwise.</returns>
-    public bool IsInfantryWeapon()
-    {
-        return WeaponName.StartsWith("Infantry ");
     }
 }

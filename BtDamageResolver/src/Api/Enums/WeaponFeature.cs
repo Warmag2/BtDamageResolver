@@ -8,20 +8,73 @@ namespace Faemiyah.BtDamageResolver.Api.Enums;
 [Serializable]
 public enum WeaponFeature
 {
-    None,
+    /// <summary>
+    /// Missile weapon unaffected by AMS.
+    /// </summary>
     AmsImmune,
+
+    /// <summary>
+    /// Weapon may cause crits through armor.
+    /// </summary>
     ArmorPiercing,
-    Burst,
+
+    /// <summary>
+    /// Weapon damage is clusterized.
+    /// </summary>
     Cluster,
+
+    /// <summary>
+    /// Weapon has an easier time hitting aerial targets.
+    /// </summary>
     Flak,
-    Heat,
-    Homing,         // Can home to TAG and NARC
+
+    /// <summary>
+    /// Weapon can home to TAG.
+    /// </summary>
+    Homing,
+
+    /// <summary>
+    /// Weapon can be used in indirect fire.
+    /// </summary>
     IndirectFire,
+
+    /// <summary>
+    /// Weapon does not suffer anattack penalty when fired from an evading unit.
+    /// </summary>
+    IgnoreOwnEvasion,
+
+    /// <summary>
+    /// Melee weapon.
+    /// </summary>
     Melee,
+
+    /// <summary>
+    /// Melee charge attack.
+    /// </summary>
     MeleeCharge,
+
+    /// <summary>
+    /// Melee DFA attack.
+    /// </summary>
     MeleeDfa,
+
+    /// <summary>
+    /// Melee kick.
+    /// </summary>
     MeleeKick,
+
+    /// <summary>
+    /// Pulse weapon.
+    /// </summary>
     Pulse,
+
+    /// <summary>
+    /// Rapid-fire weapon.
+    /// </summary>
     Rapid,
+
+    /// <summary>
+    /// Streak weapon.
+    /// </summary>
     Streak
 }

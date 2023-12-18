@@ -22,7 +22,9 @@
       "Extreme": 25
     },
     "RangeAerospace": "Extreme",
-    "Heat": 1,
+    "Heat": {
+      "Short": 1
+    },
     "UsesAmmo": true,
     "HitModifier": 0,
     "SpecialFeatures": [ { "Type": "None" } ]
@@ -50,7 +52,9 @@
       "Extreme": 20
     },
     "RangeAerospace": "Long",
-    "Heat": 1,
+    "Heat": {
+      "Short": 1
+    },
     "UsesAmmo": true,
     "HitModifier": 0,
     "SpecialFeatures": [ { "Type": "None" } ]
@@ -78,7 +82,9 @@
       "Extreme": 18
     },
     "RangeAerospace": "Medium",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "UsesAmmo": true,
     "HitModifier": 0,
     "SpecialFeatures": [ { "Type": "None" } ]
@@ -106,7 +112,9 @@
       "Extreme": 10
     },
     "RangeAerospace": "Medium",
-    "Heat": 8,
+    "Heat": {
+      "Short": 8
+    },
     "UsesAmmo": true,
     "HitModifier": 0,
     "SpecialFeatures": [ { "Type": "None" } ]
@@ -134,7 +142,9 @@
       "Extreme": 27
     },
     "RangeAerospace": "Extreme",
-    "Heat": 1,
+    "Heat": {
+      "Short": 1
+    },
     "UsesAmmo": true,
     "HitModifier": 0,
     "SpecialFeatures": [ { "Type": "None" } ]
@@ -162,7 +172,9 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "Heat": 1,
+    "Heat": {
+      "Short": 1
+    },
     "UsesAmmo": true,
     "HitModifier": 0,
     "SpecialFeatures": [ { "Type": "None" } ]
@@ -190,7 +202,9 @@
       "Extreme": 18
     },
     "RangeAerospace": "Medium",
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "UsesAmmo": true,
     "HitModifier": 0,
     "SpecialFeatures": [ { "Type": "None" } ]
@@ -218,7 +232,9 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": 7,
+    "Heat": {
+      "Short": 7
+    },
     "UsesAmmo": true,
     "HitModifier": 0,
     "SpecialFeatures": [ { "Type": "None" } ]
