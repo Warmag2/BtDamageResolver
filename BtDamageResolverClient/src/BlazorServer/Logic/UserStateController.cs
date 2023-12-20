@@ -82,6 +82,11 @@ public class UserStateController
     public int DraggedWeaponIndex { get; set; }
 
     /// <summary>
+    /// Index of the dragged weapon bay.
+    /// </summary>
+    public int DraggedWeaponBayIndex { get; set; }
+
+    /// <summary>
     /// The damage instance.
     /// </summary>
     public DamageInstance DamageInstance { get; private set; }
@@ -184,7 +189,7 @@ public class UserStateController
     {
         if (unit == null)
         {
-            var newUnit = PlayerState.UnitEntries.Any() ? PlayerState.UnitEntries[^1].Copy() : CommonData.GetBlankUnit();
+            var newUnit = PlayerState.UnitEntries.Count == 0 ? CommonData.GetBlankUnit() : PlayerState.UnitEntries[^1].Copy();
             PlayerState.UnitEntries.Add(newUnit);
         }
         else

@@ -21,8 +21,11 @@
       "Short": 10
     },
     "UsesAmmo": true,
-    "SpecialDamage": { "Data": "1d6", "Type": "Heat" },
-    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Data": "2d6", "Type": "Heat" } ],
+    "SpecialDamage": [
+      { "Data": "2d6", "Type": "Burst" },
+      { "Data": "1d6", "Type": "Heat" },
+      { "Data": "2d6", "Type": "HeatConverted" }
+    ],
     "ClusterDamage": 1,
     "ClusterSize": 5
   },
@@ -48,8 +51,11 @@
       "Short": 7
     },
     "UsesAmmo": true,
-    "SpecialDamage": { "Data": "2d6", "Type": "Heat" },
-    "SpecialFeatures": [ { "Data": "3d6", "Type": "Burst" }, { "Data": "3d6", "Type": "Heat" } ],
+    "SpecialDamage": [
+      { "Data": "3d6", "Type": "Burst" },
+      { "Data": "2d6", "Type": "Heat" },
+      { "Data": "3d6", "Type": "Heat" }
+    ],
     "ClusterDamage": 1,
     "ClusterSize": 5
   }

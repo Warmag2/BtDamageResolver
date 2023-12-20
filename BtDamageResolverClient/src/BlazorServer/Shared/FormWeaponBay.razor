@@ -8,25 +8,37 @@
 @inject VisualStyleController _visualStyleController
 @inject UserStateController _userStateController
 
-    <table>
-        @foreach (var weaponEntry in UnitEntry.Weapons)
-        {
-            <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnWeaponChanged" OnDeleted="@OnWeaponDeleted" OnSwap="@OnWeaponSwap" />
-        }
-        <tr>
-            <td colspan="5">
-                <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-                    <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
-                </span>
-            </td>
-        </tr>
-    </table>
+<table>
+    <tr style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
+        <td colspan="5">
+            @if (UnitEntry.StaticDataHidden)
+            {
+                <b>@WeaponBay.Name</b>
+            }
+            else
+            {
+                <FormText SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
+            }
+        </td>
+    </tr>
+    @foreach (var weaponEntry in WeaponBay.Weapons)
+    {
+        <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnWeaponChanged" OnDeleted="@OnWeaponDeleted" OnSwap="@OnWeaponSwap" />
+    }
+    <tr>
+        <td colspan="5">
+            <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
+                <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
+            </span>
+        </td>
+    </tr>
+</table>
 
 @code {
     private FormPickSet<UnitFeature> _formPickSetFeatures;
 
     [Parameter]
-    public UnitEntry Unit { get; set; }
+    public UnitEntry UnitEntry { get; set; }
 
     [Parameter]
     public WeaponBay WeaponBay { get; set; }
@@ -68,174 +80,11 @@
 
     private void OnNameChanged(string name)
     {
-        if (UnitEntry.Name != name)
+        if (WeaponBay.Name != name)
         {
-            UnitEntry.Name = name;
+            WeaponBay.Name = name;
             SendUpdate();
         }
-    }
-
-    private void OnGunneryChanged(int gunnery)
-    {
-        if (UnitEntry.Gunnery != gunnery)
-        {
-            UnitEntry.Gunnery = gunnery;
-            SendUpdate();
-        }
-    }
-
-    private void OnHeatChanged(int heat)
-    {
-        if (UnitEntry.Heat != heat)
-        {
-            UnitEntry.Heat = heat;
-            SendUpdate();
-        }
-    }
-
-    private void OnJumpJetsChanged(int jumpJets)
-    {
-        if (UnitEntry.JumpJets != jumpJets)
-        {
-            UnitEntry.JumpJets = jumpJets;
-            SendUpdate();
-        }
-    }
-
-    private void OnPenaltyChanged(int penalty)
-    {
-        if (UnitEntry.Penalty != penalty)
-        {
-            UnitEntry.Penalty = penalty;
-            SendUpdate();
-        }
-    }
-
-    private void OnPilotingChanged(int piloting)
-    {
-        if (UnitEntry.Piloting != piloting)
-        {
-            UnitEntry.Piloting = piloting;
-            SendUpdate();
-        }
-    }
-
-    private void OnFeaturesChanged(HashSet<UnitFeature> features)
-    {
-        UnitEntry.Features = features;
-        SendUpdate();
-    }
-
-    private void OnSpeedChanged(int speed)
-    {
-        if (UnitEntry.Speed != speed)
-        {
-            UnitEntry.Speed = speed;
-            SendUpdate();
-        }
-    }
-
-    private void OnStaticDataHiddenChanged(bool staticDataHidden)
-    {
-        if (UnitEntry.StaticDataHidden != !staticDataHidden)
-        {
-            UnitEntry.StaticDataHidden = !staticDataHidden;
-            SendUpdate();
-        }
-    }
-
-    private void OnTonnageChanged(int tonnage)
-    {
-        if (UnitEntry.Tonnage != tonnage)
-        {
-            UnitEntry.Tonnage = tonnage;
-            SendUpdate();
-        }
-    }
-
-    private void OnTroopersChanged(int troopers)
-    {
-        if (UnitEntry.Troopers != troopers)
-        {
-            UnitEntry.Troopers = troopers;
-            SendUpdate();
-        }
-    }
-
-    private void OnSinksChanged(int sinks)
-    {
-        if (UnitEntry.Sinks != sinks)
-        {
-            // Automatically alter heat by a corresponding amount if number of sinks is changed.
-            // The rationalization is that if the unit took damage last turn before sinking and the player adjusts
-            // the number of sinks after turn resolution, the calculated value was made with too many sinks.
-            UnitEntry.Heat += UnitEntry.Sinks - sinks;
-            UnitEntry.Sinks = sinks;
-            if (UnitEntry.Heat < 0)
-            {
-                UnitEntry.Heat = 0;
-            }
-            SendUpdate();
-        }
-    }
-
-    private void OnUnitTypeChanged(UnitType unitType)
-    {
-        if (UnitEntry.Type != unitType)
-        {
-            UnitEntry.Type = unitType;
-            SendUpdate();
-        }
-    }
-
-    private void OnMovementClassChanged(MovementClass movementClass)
-    {
-        if (UnitEntry.MovementClass != movementClass)
-        {
-            UnitEntry.MovementClass = movementClass;
-            SendUpdate();
-        }
-    }
-
-    private void OnMovementChanged(int movement)
-    {
-        if (UnitEntry.Movement != movement)
-        {
-            UnitEntry.Movement = movement;
-            SendUpdate();
-        }
-    }
-
-    private void OnStanceChanged(Stance stance)
-    {
-        if (UnitEntry.Stance != stance)
-        {
-            UnitEntry.Stance = stance;
-            SendUpdate();
-        }
-    }
-
-    private void OnNarcedChanged(bool narced)
-    {
-        if (UnitEntry.Narced != narced)
-        {
-            UnitEntry.Narced = narced;
-            SendUpdate();
-        }
-    }
-
-    private void OnTaggedChanged(bool tagged)
-    {
-        if (UnitEntry.Tagged != tagged)
-        {
-            UnitEntry.Tagged = tagged;
-            SendUpdate();
-        }
-    }
-
-    private void OnFiringSolutionChanged(FiringSolution firingSolution)
-    {
-        SendUpdate();
     }
 
     private void OnWeaponChanged(WeaponEntry weaponEntry)
@@ -245,7 +94,7 @@
 
     private void OnWeaponDeleted(WeaponEntry weaponEntry)
     {
-        UnitEntry.Weapons.Remove(weaponEntry);
+        WeaponBay.Weapons.Remove(weaponEntry);
         SendUpdate();
     }
 
@@ -259,96 +108,33 @@
 
     private void SwapWeapons(int ix1, int ix2)
     {
-        (UnitEntry.Weapons[ix1], UnitEntry.Weapons[ix2]) = (UnitEntry.Weapons[ix2], UnitEntry.Weapons[ix1]);
+        (WeaponBay.Weapons[ix1], WeaponBay.Weapons[ix2]) = (WeaponBay.Weapons[ix2], WeaponBay.Weapons[ix1]);
         SendUpdate();
-    }
-
-    public void MoveUp()
-    {
-        var index = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-
-        if (index >= 1)
-        {
-            OnSwap.InvokeAsync(new SwapTuple(index - 1, index));
-        }
-    }
-
-    public void MoveDown()
-    {
-        var index = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-
-        if (index < _userStateController.PlayerState.UnitEntries.Count - 1)
-        {
-            OnSwap.InvokeAsync(new SwapTuple(index, index + 1));
-        }
     }
 
     #endregion
 
     #region dragdrop
 
-    void StartDrag(UnitEntry unit)
+    private void StartDrag(WeaponBay weaponBay)
     {
-        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(unit);
+        _userStateController.DraggedWeaponBayIndex = UnitEntry.WeaponBays.IndexOf(weaponBay);
     }
 
-    void Drop(Unit unit)
+    private void Drop(WeaponBay weaponBay)
     {
-        if (unit != null)
+        if (weaponBay != null)
         {
-            var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-            OnSwap.InvokeAsync(new SwapTuple(_userStateController.DraggedUnitIndex, targetUnitIndex));
+            var targetUnitIndex = UnitEntry.WeaponBays.IndexOf(weaponBay);
+            OnSwap.InvokeAsync(new SwapTuple(_userStateController.DraggedWeaponBayIndex, targetUnitIndex));
         }
     }
 
     #endregion
 
-    #region modals
-
-    private bool _showModalDelete = false;
-    private bool _showModalLoad = false;
-    private bool _showModalSave = false;
-    private string _modalUnitName = string.Empty;
-
-    private void ShowModalDelete()
+    private void SendUpdate()
     {
-        _showModalDelete = true;
+        UnitEntry.TimeStamp = DateTime.UtcNow;
+        _userStateController.NotifyPlayerDataUpdated();
     }
-
-    private void ShowModalLoad()
-    {
-        _showModalLoad = true;
-    }
-
-    private void ShowModalSave()
-    {
-        _showModalSave = true;
-    }
-
-    private void ModalClose()
-    {
-        _showModalDelete = false;
-        _showModalLoad = false;
-        _showModalSave = false;
-    }
-
-    private async Task ModalSave()
-    {
-        ModalClose();
-        await _commonData.SaveUnit(UnitEntry);
-    }
-
-    private async Task ModalLoad()
-    {
-        ModalClose();
-        UnitEntry.FromUnit(await _commonData.GetUnit(_modalUnitName));
-        await OnLoad.InvokeAsync(UnitEntry);
-    }
-
-    private void OnLoadedUnitNameChanged(string unitName)
-    {
-        _modalUnitName = unitName;
-    }
-
-    #endregion
 }

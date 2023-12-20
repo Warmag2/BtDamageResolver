@@ -152,7 +152,10 @@
     "Heat": {
       "Short": 2
     },
-    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "SpecialDamage": [
+      { "Data": "2d6", "Type": "Burst" }
+    ],
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
   {
@@ -291,7 +294,10 @@
     "Heat": {
       "Short": 1
     },
-    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "SpecialDamage": [
+      { "Data": "2d6", "Type": "Burst" }
+    ],
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
   {
@@ -315,7 +321,10 @@
     "Heat": {
       "Short": 2
     },
-    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "SpecialDamage": [
+      { "Data": "2d6", "Type": "Burst" }
+    ],
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
   {

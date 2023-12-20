@@ -21,7 +21,9 @@
       "Short": 0
     },
     "UsesAmmo": true,
-    "SpecialDamage": { "Data": "1", "Type": "Narc" },
+    "SpecialDamage": [
+      { "Data": "1", "Type": "Narc" }
+    ],
     "ClusterDamage": 0,
     "ClusterSize": 1
   },
@@ -46,6 +48,8 @@
     "Heat": {
       "Short": 0
     },
-    "SpecialDamage": { "Data": "1", "Type": "Tag" }
+    "SpecialDamage": [
+      { "Data": "1", "Type": "Tag" }
+    ]
   }
 ]

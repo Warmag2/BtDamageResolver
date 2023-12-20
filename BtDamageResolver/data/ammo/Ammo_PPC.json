@@ -5,14 +5,18 @@
       "Short": 12
     },
     "RangeMinimum": 0,
-    "SpecialDamage": { "Data": "1", "Type": "Emp" }
+    "SpecialDamage": [
+      { "Data": "1", "Type": "Emp" }
+    ]
   },
   {
     "Name": "ERPPC+Inhibitor",
     "Heat": {
       "Short": 17
     },
-    "SpecialDamage": { "Data": "1", "Type": "Emp" }
+    "SpecialDamage": [
+      { "Data": "1", "Type": "Emp" }
+    ]
   },
   {
     "Name": "LightPPC+Inhibitor",
@@ -20,7 +24,9 @@
       "Short": 7
     },
     "RangeMinimum": 0,
-    "SpecialDamage": { "Data": "1", "Type": "Emp" }
+    "SpecialDamage": [
+      { "Data": "1", "Type": "Emp" }
+    ]
   },
   {
     "Name": "HeavyPPC+Inhibitor",
@@ -28,6 +34,8 @@
       "Short": 17
     },
     "RangeMinimum": 0,
-    "SpecialDamage": { "Data": "1", "Type": "Emp" }
+    "SpecialDamage": [
+      { "Data": "1", "Type": "Emp" }
+    ]
   }
 ]

@@ -145,6 +145,22 @@ public class CommonData
     private Dictionary<string, Ammo> DictionaryAmmo { get; }
 
     /// <summary>
+    /// Gets a default weapon bay for an unit type.
+    /// </summary>
+    /// <param name="unitType">The type of the unit to ask for.</param>
+    /// <returns>The default weapon bay for the given unit type.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the unit type is unknown.</exception>
+    public static WeaponBay GetDefaultWeaponBay(UnitType unitType)
+    {
+        return new WeaponBay
+        {
+            FiringSolution = new FiringSolution(),
+            Name = "Default",
+            Weapons = new List<WeaponEntry> { GetDefaultWeapon(unitType) }
+        };
+    }
+
+    /// <summary>
     /// Gets a default weapon for an unit type.
     /// </summary>
     /// <param name="unitType">The type of the unit to ask for.</param>

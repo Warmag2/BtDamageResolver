@@ -21,6 +21,6 @@
       "Short": 0
     },
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Data": "3d6", "Type": "Burst" } ]
+    "SpecialDamage": [ { "Data": "3d6", "Type": "Burst" } ]
   }
 ]

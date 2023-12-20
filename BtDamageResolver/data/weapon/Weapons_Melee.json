@@ -170,7 +170,10 @@
       "Short": 0
     },
     "HitModifier": 3,
-    "SpecialFeatures": [ { "Data": "$tonnage/3", "Type": "Burst" }, { "Data": "0", "Type": "Melee" } ]
+    "SpecialDamage": [
+      { "Data": "$tonnage/3", "Type": "Burst" }
+    ],
+    "SpecialFeatures": [ { "Data": "0", "Type": "Melee" } ]
   },
   {
     "Name": "Melee DFA",

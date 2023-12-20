@@ -72,7 +72,10 @@
     "Heat": {
       "Short": 0
     },
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Burst", "Data": "1d6" } ],
+    "SpecialDamage": [
+      { "Type": "Burst", "Data": "1d6" }
+    ],
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterTable": "InfantryMachineGun",
     "ClusterSize": 2,
     "ClusterDamage": 1
@@ -159,7 +162,10 @@
     "Heat": {
       "Short": 0
     },
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Burst", "Data": "1d6" } ],
+    "SpecialDamage": [
+      { "Data": "1d6", "Type": "Burst" }
+    ],
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterTable": "InfantryFlamer",
     "ClusterSize": 2,
     "ClusterDamage": 1
