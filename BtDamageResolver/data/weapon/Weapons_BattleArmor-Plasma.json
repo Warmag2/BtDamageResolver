@@ -20,6 +20,6 @@
     "Heat": {
       "Short": 0
     },
-    "SpecialDamage": [ { "Data": "1d6", "Type": "Burst" } ] // Not canon but makes no sense that this was not present
+    "SpecialDamage": [ { "Data": "1d6", "Type": "Burst" } ]
   }
 ]
