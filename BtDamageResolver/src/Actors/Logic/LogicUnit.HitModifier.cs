@@ -312,26 +312,6 @@ public abstract partial class LogicUnit
         return 0;
     }
 
-    private int GetOwnEvasionModifier(Weapon weapon)
-    {
-        switch (Unit.Type)
-        {
-            case UnitType.AerospaceCapital:
-            case UnitType.AerospaceDropshipAerodyne:
-            case UnitType.AerospaceDropshipSpheroid:
-                if (weapon.HasFeature(WeaponFeature.IgnoreOwnEvasion, out _))
-                {
-                    return 0;
-                }
-
-                return 2;
-            case UnitType.AerospaceFighter:
-                return LogicConstants.InvalidTargetNumber;
-            default:
-                return 0;
-        }
-    }
-
     private static int GetMovementClassModifier(ILogicUnit target, Weapon weapon)
     {
         // Missile weapons ignore attacker movement modifier if the target is tagged and they have homing munitions
@@ -424,6 +404,26 @@ public abstract partial class LogicUnit
                     default:
                         return 2;
                 }
+        }
+    }
+
+    private int GetOwnEvasionModifier(Weapon weapon)
+    {
+        switch (Unit.Type)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+                if (weapon.HasFeature(WeaponFeature.IgnoreOwnEvasion, out _))
+                {
+                    return 0;
+                }
+
+                return 2;
+            case UnitType.AerospaceFighter:
+                return LogicConstants.InvalidTargetNumber;
+            default:
+                return 0;
         }
     }
 

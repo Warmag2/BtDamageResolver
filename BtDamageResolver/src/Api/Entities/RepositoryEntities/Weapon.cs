@@ -216,11 +216,15 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     /// </summary>
     public void FillMissingFields()
     {
-        Ammo ??= new Dictionary<string, string>();
+        Ammo ??= new();
 
         ClusterBonus = ClusterBonus.Fill();
 
         ClusterTable ??= Constants.Names.DefaultClusterTableName;
+
+        Damage ??= new();
+        DamageAerospace ??= new();
+        Heat ??= new();
 
         Damage = Damage.Fill();
         DamageAerospace = DamageAerospace.Fill(RangeAerospace);
