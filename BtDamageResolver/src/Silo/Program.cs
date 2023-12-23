@@ -61,6 +61,8 @@ public static class Program
 
         // Wait for the silo to completely shutdown before exiting.
         SiloStopped.WaitOne();
+
+        CancellationTokenSource.Dispose();
     }
 
     private static void SetupApplicationShutdown()

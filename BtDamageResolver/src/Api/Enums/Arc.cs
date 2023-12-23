@@ -56,12 +56,12 @@ public enum Arc
     /// <summary>
     /// Capital ship forward left.
     /// </summary>
-    ForeLeft,
+    FrontLeft,
 
     /// <summary>
     /// Capital ship forward right.
     /// </summary>
-    ForeRight,
+    FrontRight,
 
     /// <summary>
     /// Capital ship rear left.
