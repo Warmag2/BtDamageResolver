@@ -26,8 +26,7 @@
       "Short": 1
     },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": []
+    "HitModifier": 0
   },
   {
     "Name": "AC/5",
@@ -56,8 +55,7 @@
       "Short": 1
     },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": []
+    "HitModifier": 0
   },
   {
     "Name": "AC/10",
@@ -86,8 +84,7 @@
       "Short": 3
     },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": []
+    "HitModifier": 0
   },
   {
     "Name": "AC/20",
@@ -116,7 +113,6 @@
       "Short": 7
     },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": []
+    "HitModifier": 0
   }
 ]
