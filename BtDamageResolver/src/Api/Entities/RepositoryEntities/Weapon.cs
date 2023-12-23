@@ -423,12 +423,6 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
             validationResult.Fail("Weapon has no type.");
         }
 
-        // Annoying magic value, but it's the enum count.
-        if (DamageAerospace.Count != 6)
-        {
-            validationResult.Fail("Aerospace range brackets must contain all available ranges.");
-        }
-
         return validationResult;
     }
 
