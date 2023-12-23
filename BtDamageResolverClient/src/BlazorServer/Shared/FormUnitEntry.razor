@@ -21,13 +21,13 @@
         </div>
     </div>
     
-    <div class="resolver_div_unitname resolver_div_componentrow draggable mobile" draggable="true" @ondrag="@(()=> StartDrag(UnitEntry))" @ondrop="@(()=> Drop(UnitEntry))">
+    <div class="resolver_div_unitname resolver_div_componentrow draggable mobile" draggable="true" @ondrag="@StartDrag" @ondrop="@Drop">
         @UnitEntry.Name
     </div>
 
     <div class="resolver_div_componentrow">
 
-        <div class="resolver_div_unitname resolver_div_componentcell draggable desktop" draggable="true" @ondrag="@(()=> StartDrag(UnitEntry))" @ondrop="@(()=> Drop(UnitEntry))">
+        <div class="resolver_div_unitname resolver_div_componentcell draggable desktop" draggable="true" @ondrag="@StartDrag" @ondrop="@Drop">
             @for (int ii = 0; ii < UnitEntry.Name.Length; ii++)
             {
                 @UnitEntry.Name[ii]
@@ -116,6 +116,12 @@
                         <FormRadio Options="@_commonData.FormMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
                     </td>
                 </tr>
+                <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetEvasionHidden(UnitEntry.Type)))">
+                    <td>Evasion</td>
+                    <td>
+                        <FormToggle @key=@($"evasion_{UnitEntry.Id}_{UnitEntry.Evading}") Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnEvasionChanged">Evading</FormToggle>
+                    </td>
+                </tr>
                 <tr>
                     <td>Hexes moved</td>
                     <td>
@@ -143,7 +149,7 @@
 
             @foreach(var weaponBay in UnitEntry.WeaponBays)
             {
-                <FormFiringSolution @key="@weaponBay.Id" UnitEntry="@UnitEntry" WeaponBay="@weaponBay" OnChanged="@OnFiringSolutionChanged" />
+                <FormFiringSolution @key="@weaponBay.Id" UnitEntry="@UnitEntry" WeaponBay="@weaponBay" OnChanged="@SendUpdate" />
             }
         </div>
 
@@ -171,7 +177,7 @@
             <table>
                 @foreach (var weaponBay in UnitEntry.WeaponBays)
                 {
-                    <FormWeaponBay @key="@weaponBay.Id" WeaponBay="@weaponBay" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnWeaponBayChanged" OnDeleted="@OnWeaponBayDeleted" OnSwap="@OnWeaponBaySwap" />
+                    <FormWeaponBay @key="@weaponBay.Id" WeaponBay="@weaponBay" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@SendUpdate" OnDeleted="@OnWeaponBayDeleted" OnMove="@SendUpdate" />
                 }
                 <tr>
                     <td colspan="5">
@@ -438,6 +444,15 @@
         }
     }
 
+    private void OnEvasionChanged(bool evading)
+    {
+        if (UnitEntry.Evading != evading)
+        {
+            UnitEntry.Evading = evading;
+            SendUpdate();
+        }
+    }
+
     private void OnMovementChanged(int movement)
     {
         if (UnitEntry.Movement != movement)
@@ -472,16 +487,6 @@
             UnitEntry.Tagged = tagged;
             SendUpdate();
         }
-    }
-
-    private void OnFiringSolutionChanged(FiringSolution firingSolution)
-    {
-        SendUpdate();
-    }
-
-    private void OnWeaponBayChanged(WeaponBay weaponBay)
-    {
-        SendUpdate();
     }
 
     private void OnWeaponBayDeleted(WeaponBay weaponBay)
@@ -528,18 +533,42 @@
 
     #region dragdrop
 
-    void StartDrag(UnitEntry unit)
+    void StartDrag()
     {
-        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(unit);
+        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
     }
 
-    void Drop(Unit unit)
+    void Drop()
     {
-        if (unit != null)
+        // Check that we are dragging an unit
+        if (_userStateController.DraggedUnitIndex.HasValue && !_userStateController.DraggedWeaponBayIndex.HasValue && !_userStateController.DraggedWeaponIndex.HasValue)
         {
+            // Get target unit
             var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-            OnSwap.InvokeAsync(new SwapTuple(_userStateController.DraggedUnitIndex, targetUnitIndex));
+
+            // Don't do anything if we drag onto the same place
+            if (targetUnitIndex != _userStateController.DraggedUnitIndex.Value)
+            {
+                // Insert this unit into the new place
+                _userStateController.PlayerState.UnitEntries.Insert(targetUnitIndex, UnitEntry);
+
+                if (targetUnitIndex > _userStateController.DraggedUnitIndex.Value)
+                {
+                    _userStateController.PlayerState.UnitEntries.RemoveAt(_userStateController.DraggedUnitIndex.Value);
+                }
+                else
+                {
+                    _userStateController.PlayerState.UnitEntries.RemoveAt(_userStateController.DraggedUnitIndex.Value + 1);
+                }
+
+                SendUpdate();
+            }
         }
+
+        // Clear drag information
+        _userStateController.DraggedUnitIndex = null;
+        _userStateController.DraggedWeaponBayIndex = null;
+        _userStateController.DraggedWeaponIndex = null;
     }
 
     #endregion

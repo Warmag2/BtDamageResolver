@@ -74,17 +74,17 @@ public class UserStateController
     /// <summary>
     /// Index of the dragged unit.
     /// </summary>
-    public int DraggedUnitIndex { get; set; }
+    public int? DraggedUnitIndex { get; set; }
 
     /// <summary>
     /// Index of the dragged weapon.
     /// </summary>
-    public int DraggedWeaponIndex { get; set; }
+    public int? DraggedWeaponIndex { get; set; }
 
     /// <summary>
     /// Index of the dragged weapon bay.
     /// </summary>
-    public int DraggedWeaponBayIndex { get; set; }
+    public int? DraggedWeaponBayIndex { get; set; }
 
     /// <summary>
     /// The damage instance.

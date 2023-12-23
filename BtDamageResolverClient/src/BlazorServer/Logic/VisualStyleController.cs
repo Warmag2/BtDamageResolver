@@ -54,6 +54,25 @@ public class VisualStyleController
     }
 
     /// <summary>
+    /// Indicates whether evasion should be hidden for this unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type.</param>
+    /// <returns><b>True</b> if evasion should be hidden, <b>false</b> otherwise.</returns>
+    public bool GetEvasionHidden(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    /// <summary>
     /// Indicates whether the number of jump jets should be hidden for this unit type.
     /// </summary>
     /// <param name="unitType">The unit type.</param>
