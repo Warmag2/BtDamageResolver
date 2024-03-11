@@ -25,8 +25,8 @@ services:
     environment:
       ASPNETCORE_URLS: "http://+:8786;https://+:8787"
       ASPNETCORE_ENVIRONMENT: Release
-      Certificates__Default__Path: "./certs/fullchain.pem"
-      Certificates__Default__KeyPath: "./certs/privkey.pem"
+      Kestrel__Certificates__Default__Path: "./certs/fullchain.pem"
+      Kestrel__Certificates__Default__KeyPath: "./certs/privkey.pem"
       RESOLVER_ENVIRONMENT: Release
       CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     volumes:
