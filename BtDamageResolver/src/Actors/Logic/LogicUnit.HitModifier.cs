@@ -409,22 +409,27 @@ public abstract partial class LogicUnit
 
     private int GetOwnEvasionModifier(Weapon weapon)
     {
-        switch (Unit.Type)
+        if (Unit.Evading)
         {
-            case UnitType.AerospaceCapital:
-            case UnitType.AerospaceDropshipAerodyne:
-            case UnitType.AerospaceDropshipSpheroid:
-                if (weapon.HasFeature(WeaponFeature.IgnoreOwnEvasion, out _))
-                {
-                    return 0;
-                }
+            switch (Unit.Type)
+            {
+                case UnitType.AerospaceCapital:
+                case UnitType.AerospaceDropshipAerodyne:
+                case UnitType.AerospaceDropshipSpheroid:
+                    if (weapon.HasFeature(WeaponFeature.IgnoreOwnEvasion, out _))
+                    {
+                        return 0;
+                    }
 
-                return 2;
-            case UnitType.AerospaceFighter:
-                return LogicConstants.InvalidTargetNumber;
-            default:
-                return 0;
+                    return 2;
+                case UnitType.AerospaceFighter:
+                    return LogicConstants.InvalidTargetNumber;
+                default:
+                    return 0;
+            }
         }
+
+        return 0;
     }
 
     private int GetQuirkModifier(ILogicUnit target, Weapon weapon)

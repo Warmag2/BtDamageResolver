@@ -25,6 +25,12 @@
                 <FormComboBox @key="@_userStateController.UnitList" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
             </td>
         </tr>
+        <tr style="@(VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1))">
+            <td>Arc</td>
+            <td>
+                <FormRadio Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.FiringSolution.Arc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Arc arc) => OnArcChanged(arc)"></FormRadio>
+            </td>
+        </tr>
         <tr>
             <td>Distance</td>
             <td>
@@ -81,6 +87,15 @@
         if (WeaponBay.FiringSolution.Distance != distance)
         {
             WeaponBay.FiringSolution.Distance = distance;
+            OnChanged.InvokeAsync();
+        }
+    }
+
+    private void OnArcChanged(Arc arc)
+    {
+        if (WeaponBay.FiringSolution.Arc != arc)
+        {
+            WeaponBay.FiringSolution.Arc = arc;
             OnChanged.InvokeAsync();
         }
     }

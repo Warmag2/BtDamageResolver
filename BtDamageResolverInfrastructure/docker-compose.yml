@@ -23,7 +23,9 @@ services:
     hostname: resolverclient
     image: resolverclient:latest
     environment:
-      ASPNETCORE_URLS: "http://+:8787"
+      ASPNETCORE_URLS: "http://+:8786;https://+:8787"
+      Certificates__Default__Path: "./certs/fullchain.pem"
+      Certificates__Default__KeyPath: "./certs/privkey.pem"
       RESOLVER_ENVIRONMENT: Release
       CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     ports:

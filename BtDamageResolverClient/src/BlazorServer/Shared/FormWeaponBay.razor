@@ -3,14 +3,11 @@
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@using Newtonsoft.Json
-@inject CommonData _commonData
-@inject VisualStyleController _visualStyleController
 @inject UserStateController _userStateController
 
 <table>
     <tr style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
-        <td colspan="5" class="draggable" draggable="true" @ondrag="@StartDrag" @ondrop="@Drop">
+        <td colspan="4" class="draggable" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
             @if (UnitEntry.StaticDataHidden)
             {
                 <b>@WeaponBay.Name</b>
@@ -20,11 +17,16 @@
                 <FormText SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
             }
         </td>
+        <td style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
+            <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
+        </td>
     </tr>
     @foreach (var weaponEntry in WeaponBay.Weapons)
     {
-        <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@SendUpdate" OnDeleted="@OnWeaponDeleted" OnMove="@SendUpdate" />
+        <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnUpdate" OnDeleted="@OnWeaponDeleted" OnDragWeapon="@DragWeapon" OnDropWeapon="@DropWeapon" />
     }
+    <tr style="resolver_tr_weaponentry draggable emptyrow" draggable="true" @ondrop="@(() => DropWeapon(-1))">
+    </tr>
     <tr>
         <td colspan="5">
             <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
@@ -51,7 +53,7 @@
     public EventCallback<WeaponBay> OnDeleted { get; set; }
 
     [Parameter]
-    public EventCallback OnMove { get; set; }
+    public EventCallback OnUpdate { get; set; }
 
     public void AddWeapon()
     {
@@ -74,6 +76,11 @@
         return _userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue;
     }
 
+    public void DeleteWeaponBay()
+    {
+        OnDeleted.InvokeAsync(WeaponBay);
+    }
+
     #region Property changing delegates
 
     private void OnNameChanged(string name)
@@ -81,14 +88,14 @@
         if (WeaponBay.Name != name)
         {
             WeaponBay.Name = name;
-            SendUpdate();
+            OnUpdate.InvokeAsync();
         }
     }
 
     private void OnWeaponDeleted(WeaponEntry weaponEntry)
     {
         WeaponBay.Weapons.Remove(weaponEntry);
-        SendUpdate();
+        OnUpdate.InvokeAsync();
     }
 
     public void OnWeaponSwap(SwapTuple swapTuple)
@@ -102,14 +109,14 @@
     private void SwapWeapons(int ix1, int ix2)
     {
         (WeaponBay.Weapons[ix1], WeaponBay.Weapons[ix2]) = (WeaponBay.Weapons[ix2], WeaponBay.Weapons[ix1]);
-        SendUpdate();
+        OnUpdate.InvokeAsync();
     }
 
     #endregion
 
     #region dragdrop
 
-    private void StartDrag()
+    private void Drag()
     {
         _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
         _userStateController.DraggedWeaponBayIndex = UnitEntry.WeaponBays.IndexOf(WeaponBay);
@@ -137,7 +144,7 @@
                 // Remove moved weapon bay from original place
                 UnitEntry.WeaponBays.Remove(weaponBayToMove);
 
-                OnMove.InvokeAsync();
+                OnUpdate.InvokeAsync();
             }
         }
 
@@ -155,7 +162,50 @@
                 // Remove moved weapon from original place
                 UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons.Remove(weaponToMove);
 
-                OnMove.InvokeAsync();
+                OnUpdate.InvokeAsync();
+            }
+        }
+
+        // Clear drag information
+        _userStateController.DraggedUnitIndex = null;
+        _userStateController.DraggedWeaponBayIndex = null;
+        _userStateController.DraggedWeaponIndex = null;
+    }
+
+    void DragWeapon(int sourceWeaponIndex)
+    {
+        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+        _userStateController.DraggedWeaponBayIndex = UnitEntry.WeaponBays.IndexOf(WeaponBay);
+        _userStateController.DraggedWeaponIndex = sourceWeaponIndex;
+    }
+
+    void DropWeapon(int targetWeaponIndex)
+    {
+        // Dragging weapon and hitting weapon, only valid situation
+        if (_userStateController.DraggedUnitIndex.HasValue && _userStateController.DraggedWeaponBayIndex.HasValue && _userStateController.DraggedWeaponIndex.HasValue)
+        {
+            var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+
+            if (targetUnitIndex == _userStateController.DraggedUnitIndex)
+            {
+                // Get moved weapon
+                var weaponToMove = UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons[_userStateController.DraggedWeaponIndex.Value];
+
+                // if target weapon index is at end of list, add to the end
+                if (targetWeaponIndex == -1)
+                {
+                    WeaponBay.Weapons.Add(weaponToMove.Copy());
+                }
+                else
+                {
+                    // Insert copy of moved weapon to new place
+                    WeaponBay.Weapons.Insert(targetWeaponIndex, weaponToMove.Copy());
+                }
+
+                // Remove original moved weapon
+                UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons.Remove(weaponToMove);
+
+                OnUpdate.InvokeAsync();
             }
         }
 
@@ -166,10 +216,4 @@
     }
 
     #endregion
-
-    private void SendUpdate()
-    {
-        UnitEntry.TimeStamp = DateTime.UtcNow;
-        _userStateController.NotifyPlayerDataUpdated();
-    }
 }

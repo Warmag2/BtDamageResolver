@@ -671,7 +671,17 @@
     padding-right: 0.5rem;
 }
 
-.resolver_td_targetnumber.draggable:hover { background-color: var(--color_bg_dragdrop); }
+.resolver_tr_weaponentry.draggable:hover {
+    background-color: var(--color_bg_dragdrop);
+}
+
+.resolver_tr_weaponentry.emptyrow {
+    height: 0.1rem;
+}
+
+.resolver_tr_weaponentry.emptyrow:hover {
+    height: 1rem;
+}
 
 .resolver_tr_unitinformation { }
 

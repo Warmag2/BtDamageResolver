@@ -27,6 +27,6 @@ public class ArcDiagram : EntityBase<string>
     /// <inheritdoc />
     public override void SetId(string id)
     {
-        throw new InvalidOperationException("You should never have to set a PaperDoll Id manually.");
+        throw new InvalidOperationException("You should never have to set a Arc Diagram ID manually.");
     }
 }

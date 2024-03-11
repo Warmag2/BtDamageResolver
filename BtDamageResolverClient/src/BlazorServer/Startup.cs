@@ -78,6 +78,7 @@ public class Startup
         });
         services.ConfigureJsonSerializerOptions();
         services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
+        services.AddSingleton<IEntityRepository<ArcDiagram, string>>(GetRedisEntityRepository<ArcDiagram>);
         services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
         services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
         services.AddSingleton<IEntityRepository<GameEntry, string>>(GetRedisEntityRepository<GameEntry>);
@@ -110,8 +111,11 @@ public class Startup
         }
 
         app.UseStaticFiles();
-
         app.UseRouting();
+        app.UseAntiforgery();
+
+        app.UseHsts();
+        app.UseHttpsRedirection();
 
         app.UseEndpoints(endpoints =>
         {

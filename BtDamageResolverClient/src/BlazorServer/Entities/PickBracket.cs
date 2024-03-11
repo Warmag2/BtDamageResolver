@@ -1,14 +1,23 @@
-﻿namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
+﻿namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Entities;
+
+/// <summary>
+/// Number option picking bracket.
+/// </summary>
+public class PickBracket
 {
-    public class PickBracket
+    /// <summary>
+    /// Beginning of bracket.
+    /// </summary>
+    public int Begin { get; set; }
+
+    /// <summary>
+    /// End of bracket.
+    /// </summary>
+    public int End { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
     {
-        public int Begin { get; set; }
-
-        public int End { get; set; }
-
-        public override string ToString()
-        {
-            return Begin != End ? $"{Begin}-{End}" : $"{Begin}";
-        }
+        return Begin != End ? $"{Begin}-{End}" : $"{Begin}";
     }
 }

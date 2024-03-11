@@ -40,6 +40,7 @@ public class CommonData
     /// <summary>
     /// Initializes a new instance of the <see cref="CommonData"/> class.
     /// </summary>
+    /// <param name="arcRepository">The arc repository.</param>
     /// <param name="ammoRepository">The ammo repository.</param>
     /// <param name="clusterTableRepository">The cluster table repository.</param>
     /// <param name="criticalDamageTableRepository">The critical damage table repository.</param>
@@ -48,6 +49,7 @@ public class CommonData
     /// <param name="unitRepository">The unit repository.</param>
     /// <param name="weaponRepository">The weapon repository.</param>
     public CommonData(
+        IEntityRepository<ArcDiagram, string> arcRepository,
         IEntityRepository<Ammo, string> ammoRepository,
         IEntityRepository<ClusterTable, string> clusterTableRepository,
         IEntityRepository<CriticalDamageTable, string> criticalDamageTableRepository,
@@ -78,6 +80,7 @@ public class CommonData
         {
             { "Front", Direction.Front }, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top }
         };
+        DictionaryArc = arcRepository.GetAll().OrderBy(a => a.UnitType).ToDictionary(a => a.UnitType);
         DictionaryAmmo = ammoRepository.GetAll().OrderBy(a => a.Name).ToDictionary(a => a.Name);
         DictionaryClusterTable = clusterTableRepository.GetAll().OrderBy(w => w.Name).ToDictionary(w => w.Name);
         DictionaryCriticalDamageTable = criticalDamageTableRepository.GetAll().OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
@@ -143,6 +146,11 @@ public class CommonData
     /// Dictionary for ammo types.
     /// </summary>
     private Dictionary<string, Ammo> DictionaryAmmo { get; }
+
+    /// <summary>
+    /// Dictionary for arcs.
+    /// </summary>
+    private Dictionary<UnitType, ArcDiagram> DictionaryArc { get; }
 
     /// <summary>
     /// Gets a default weapon bay for an unit type.
@@ -284,7 +292,7 @@ public class CommonData
     {
         if (DictionaryWeapon.TryGetValue(weaponName, out var weapon))
         {
-            return weapon.Ammo.Any();
+            return weapon.Ammo.Count != 0;
         }
 
         return false;
@@ -298,6 +306,16 @@ public class CommonData
     public async Task<bool> DeleteUnit(string unitName)
     {
         return await _unitRepository.DeleteAsync(unitName);
+    }
+
+    /// <summary>
+    /// Creates a map of arc valid for a given unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type to create for.</param>
+    /// <returns>A display map for arc options for the given unit type.</returns>
+    public Dictionary<string, Arc> FormMapArc(UnitType unitType)
+    {
+        return DictionaryArc[unitType].Arcs.ToDictionary(a => a.ToString(), a => a);
     }
 
     /// <summary>
@@ -608,9 +626,9 @@ public class CommonData
     {
         var weapon = DictionaryWeapon[weaponName];
 
-        if (!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.ContainsKey(ammoName))
+        if (!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.TryGetValue(ammoName, out var value))
         {
-            return weapon.ApplyAmmo(DictionaryAmmo[weapon.Ammo[ammoName]]);
+            return weapon.ApplyAmmo(DictionaryAmmo[value]);
         }
 
         return weapon;

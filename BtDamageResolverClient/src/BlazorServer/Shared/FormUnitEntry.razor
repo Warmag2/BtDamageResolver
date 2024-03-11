@@ -177,12 +177,12 @@
             <table>
                 @foreach (var weaponBay in UnitEntry.WeaponBays)
                 {
-                    <FormWeaponBay @key="@weaponBay.Id" WeaponBay="@weaponBay" Unit="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@SendUpdate" OnDeleted="@OnWeaponBayDeleted" OnMove="@SendUpdate" />
+                    <FormWeaponBay @key="@weaponBay.Id" WeaponBay="@weaponBay" UnitEntry="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@SendUpdate" OnDeleted="@OnWeaponBayDeleted" OnUpdate="@SendUpdate" />
                 }
                 <tr>
                     <td colspan="5">
                         <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-                            <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeaponBay">+</button>
+                            <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeaponBay">Add Bay/Group</button>
                         </span>
                     </td>
                 </tr>
@@ -536,6 +536,8 @@
     void StartDrag()
     {
         _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+        _userStateController.DraggedWeaponBayIndex = null;
+        _userStateController.DraggedWeaponIndex = null;
     }
 
     void Drop()
@@ -549,8 +551,11 @@
             // Don't do anything if we drag onto the same place
             if (targetUnitIndex != _userStateController.DraggedUnitIndex.Value)
             {
+                // Get dragged unit
+                var draggedUnit = _userStateController.PlayerState.UnitEntries[_userStateController.DraggedUnitIndex.Value];
+
                 // Insert this unit into the new place
-                _userStateController.PlayerState.UnitEntries.Insert(targetUnitIndex, UnitEntry);
+                _userStateController.PlayerState.UnitEntries.Insert(targetUnitIndex, draggedUnit);
 
                 if (targetUnitIndex > _userStateController.DraggedUnitIndex.Value)
                 {

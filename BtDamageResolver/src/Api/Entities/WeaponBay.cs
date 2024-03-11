@@ -32,6 +32,7 @@ public class WeaponBay : WeaponBayReference
     public WeaponBay(WeaponBayReference weaponBayReference)
     {
         Id = Guid.NewGuid();
+        FiringSolution = new FiringSolution();
         Name = weaponBayReference.Name;
         TimeStamp = DateTime.UtcNow;
         Weapons = weaponBayReference.Weapons.Select(w => new WeaponEntry(w)).ToList();
