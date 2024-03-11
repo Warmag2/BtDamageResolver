@@ -161,3 +161,7 @@ __pycache__/
 # Docker-Compose environment
 BtDamageResolverInfrastructure/.env
 BtDamageResolverInfrastructure/refresh.sh
+
+# Possible resource files
+infra/certs/
+infra/dpkeys/
