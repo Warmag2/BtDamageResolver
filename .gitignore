@@ -163,5 +163,5 @@ BtDamageResolverInfrastructure/.env
 BtDamageResolverInfrastructure/refresh.sh
 
 # Possible resource files
-infra/certs/
-infra/dpkeys/
+BtDamageResolverInfrastructure/certs/
+BtDamageResolverInfrastructure/dpkeys/
