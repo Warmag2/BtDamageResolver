@@ -23,7 +23,7 @@ services:
     hostname: resolverclient
     image: resolverclient:latest
     environment:
-      ASPNETCORE_URLS: "http://+:8786;https://+:8787"
+      ASPNETCORE_URLS: "https://+:8787"
       ASPNETCORE_ENVIRONMENT: Release
       Kestrel__Certificates__Default__Path: "./certs/fullchain.pem"
       Kestrel__Certificates__Default__KeyPath: "./certs/privkey.pem"
@@ -33,7 +33,6 @@ services:
       - ./certs:/app/certs:ro
       - ./dpkeys:/app/dpkeys
     ports:
-      - 8786:8786
       - 8787:8787
     networks:
       - resolvernet
