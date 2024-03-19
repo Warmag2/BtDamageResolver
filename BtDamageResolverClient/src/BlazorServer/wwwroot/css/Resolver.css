@@ -661,7 +661,7 @@
 .resolver_tr_weaponentry.active { background-color: var(--color_bg_weaponentry_active); }
 
 .resolver_td_targetnumber {
-    width: 2.5rem;
+    width: 3.5rem;
     font-weight: bold;
     text-align: center;
 }

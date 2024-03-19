@@ -17,7 +17,7 @@ public class TargetNumberUpdate
     /// <summary>
     /// Projected ammo, estimate.
     /// </summary>
-    public Dictionary<string, double> AmmoEstimate { get; set; }
+    public Dictionary<string, decimal> AmmoEstimate { get; set; }
 
     /// <summary>
     /// Projected ammo, worst-case.
@@ -27,7 +27,7 @@ public class TargetNumberUpdate
     /// <summary>
     /// Projected heat, estimate.
     /// </summary>
-    public double HeatEstimate { get; set; }
+    public decimal HeatEstimate { get; set; }
 
     /// <summary>
     /// Projected heat, worst-case.

@@ -8,7 +8,18 @@ namespace Faemiyah.BtDamageResolver.Api.Enums;
 [Serializable]
 public enum CriticalDamageTableType
 {
+    /// <summary>
+    /// No critical damage.
+    /// </summary>
     None,
+
+    /// <summary>
+    /// Standard critical damage table.
+    /// </summary>
     Critical,
+
+    /// <summary>
+    /// Motive hit table.
+    /// </summary>
     Motive
 }

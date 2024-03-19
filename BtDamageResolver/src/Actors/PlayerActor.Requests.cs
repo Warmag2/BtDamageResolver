@@ -20,7 +20,7 @@ public partial class PlayerActor
             return false;
         }
 
-        _logger.LogInformation("Player {playerId} requested damage reports.", this.GetPrimaryKeyString());
+        _logger.LogInformation("Player {PlayerId} requested damage reports.", this.GetPrimaryKeyString());
 
         if (IsConnectedToGame())
         {
@@ -39,7 +39,7 @@ public partial class PlayerActor
             return false;
         }
 
-        _logger.LogInformation("Player {playerId} requested game options.", this.GetPrimaryKeyString());
+        _logger.LogInformation("Player {PlayerId} requested game options.", this.GetPrimaryKeyString());
         if (_playerActorState.State.GameId != null)
         {
             var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
@@ -77,7 +77,7 @@ public partial class PlayerActor
             return false;
         }
 
-        _logger.LogInformation("Player {playerId} requested player options.", this.GetPrimaryKeyString());
+        _logger.LogInformation("Player {PlayerId} requested player options.", this.GetPrimaryKeyString());
         await SendDataToClient(EventNames.PlayerOptions, _playerActorState.State.Options);
 
         return true;
@@ -91,13 +91,13 @@ public partial class PlayerActor
     {
         if (_playerActorState.State.GameId != null)
         {
-            _logger.LogInformation("Player {playerId} requesting target numbers from game {gameId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
+            _logger.LogInformation("Player {PlayerId} requesting target numbers from game {GameId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
             var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
             await gameActor.RequestTargetNumbers(this.GetPrimaryKeyString());
         }
         else
         {
-            _logger.LogInformation("Player {playerId} is not in a game and won't ask for target numbers.", this.GetPrimaryKeyString());
+            _logger.LogInformation("Player {PlayerId} is not in a game and won't ask for target numbers.", this.GetPrimaryKeyString());
         }
     }
 }

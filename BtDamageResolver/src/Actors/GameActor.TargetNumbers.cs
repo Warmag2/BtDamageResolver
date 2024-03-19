@@ -43,7 +43,7 @@ public partial class GameActor
 
         foreach (var unitId in unitIds)
         {
-            _logger.LogInformation("GameActor {gameId} is calculating updated target numbers for unit {unitId}.", this.GetPrimaryKeyString(), unitId);
+            _logger.LogInformation("GameActor {GameId} is calculating updated target numbers for unit {UnitId}.", this.GetPrimaryKeyString(), unitId);
 
             var unit = GetUnit(unitId);
 

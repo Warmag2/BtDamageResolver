@@ -34,11 +34,11 @@
 </ContainerTabSelector>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Data" TabSelection="@_selectedTab">
-    <FormData></FormData>
+    <FormData />
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
-    <FormGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}")></FormGameState>
+    <FormGameState @key=@($"{_userStateController.PlayerState != null}") />
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
@@ -46,7 +46,7 @@
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
-    <FormDamageReports OnlyNewest="false"></FormDamageReports>
+    <FormDamageReports OnlyNewest="false" />
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
@@ -55,6 +55,7 @@
 
 @code
 {
+    //@key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}")
     private FormServer _formServer;
     private readonly List<string> _tabs = new() { "Data", "Dashboard", "AllUnits", "DamageReports", "Options" };
     private string _selectedTab = "Dashboard";

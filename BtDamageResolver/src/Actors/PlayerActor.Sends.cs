@@ -32,12 +32,12 @@ public partial class PlayerActor
                 return await gameActor.SendDamageInstance(this.GetPrimaryKeyString(), damageInstance);
             }
 
-            _logger.LogWarning("Player {playerId} asked for a damage request against unit {unitId}, but the said unit is not in the game.", this.GetPrimaryKeyString(), damageInstance.UnitId);
+            _logger.LogWarning("Player {PlayerId} asked for a damage request against unit {UnitId}, but the said unit is not in the game.", this.GetPrimaryKeyString(), damageInstance.UnitId);
 
             return false;
         }
 
-        _logger.LogWarning("Player {playerId} asked for a damage request, but is not connected to a game.", this.GetPrimaryKeyString());
+        _logger.LogWarning("Player {PlayerId} asked for a damage request, but is not connected to a game.", this.GetPrimaryKeyString());
 
         return false;
     }
@@ -50,7 +50,7 @@ public partial class PlayerActor
             return false;
         }
 
-        _logger.LogInformation("Player {playerId} is trying to set game options.", this.GetPrimaryKeyString());
+        _logger.LogInformation("Player {PlayerId} is trying to set game options.", this.GetPrimaryKeyString());
 
         return
             _playerActorState.State.GameId != null &&
@@ -74,7 +74,7 @@ public partial class PlayerActor
             if (!validationResult.IsValid)
             {
                 await SendErrorMessageToClient($"Unit {unit} has the following errors: {validationResult}");
-                _logger.LogWarning("Player {id} is sending invalid data for unit {unit}. Reason: {validationResult}", this.GetPrimaryKeyString(), unit.Id, validationResult);
+                _logger.LogWarning("Player {PlayerId} is sending invalid data for unit {UnitId}. Reason: {ValidationResult}", this.GetPrimaryKeyString(), unit.Id, validationResult);
 
                 return false;
             }
@@ -88,7 +88,7 @@ public partial class PlayerActor
             {
                 var updatedUnits = _playerActorState.State.UnitEntries.AreNewOrNewer(playerState.UnitEntries);
 
-                _logger.LogInformation("Updating player {playerId} state with new data from {timestamp}", this.GetPrimaryKeyString(), playerState.TimeStamp);
+                _logger.LogInformation("Updating player {PlayerId} state with new data from {Timestamp}", this.GetPrimaryKeyString(), playerState.TimeStamp);
                 _playerActorState.State.IsReady = playerState.IsReady;
                 _playerActorState.State.UpdateTimeStamp = playerState.TimeStamp;
                 _playerActorState.State.UnitEntries = new UnitList(playerState.UnitEntries);
@@ -109,7 +109,7 @@ public partial class PlayerActor
             else
             {
                 _logger.LogInformation(
-                    "Discarding update event for player {id}. Timestamp {stampEvent}, is older than existing timestamp {stampState}.",
+                    "Discarding update event for player {PlayerId}. Timestamp {StampEvent}, is older than existing timestamp {StampState}.",
                     this.GetPrimaryKeyString(),
                     playerState.TimeStamp,
                     _playerActorState.State.UpdateTimeStamp);
@@ -134,7 +134,7 @@ public partial class PlayerActor
         _playerActorState.State.Options = playerOptions;
         await _playerActorState.WriteStateAsync();
 
-        _logger.LogInformation("Player {playerId} updated player options.", this.GetPrimaryKeyString());
+        _logger.LogInformation("Player {PlayerId} updated player options.", this.GetPrimaryKeyString());
 
         return true;
     }

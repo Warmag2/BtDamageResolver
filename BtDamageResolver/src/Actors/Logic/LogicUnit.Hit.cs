@@ -57,26 +57,26 @@ public partial class LogicUnit
     /// </summary>
     /// <param name="targetNumber">The target number.</param>
     /// <returns>The hit chance.</returns>
-    protected static double GetHitChanceForTargetNumber(int targetNumber)
+    protected static decimal GetHitChanceForTargetNumber(int targetNumber)
     {
         if (targetNumber > 12)
         {
-            return 0d;
+            return 0m;
         }
 
         switch (targetNumber)
         {
-            case 3: return 35d / 36d;
-            case 4: return 33d / 36d;
-            case 5: return 30d / 36d;
-            case 6: return 26d / 36d;
-            case 7: return 21d / 36d;
-            case 8: return 15d / 36d;
-            case 9: return 10d / 36d;
-            case 10: return 6d / 36d;
-            case 11: return 3d / 36d;
-            case 12: return 1d / 36d;
-            default: return 1d;
+            case 3: return 35m / 36m;
+            case 4: return 33m / 36m;
+            case 5: return 30m / 36m;
+            case 6: return 26m / 36m;
+            case 7: return 21m / 36m;
+            case 8: return 15m / 36m;
+            case 9: return 10m / 36m;
+            case 10: return 6m / 36m;
+            case 11: return 3m / 36m;
+            case 12: return 1m / 36m;
+            default: return 1m;
         }
     }
 

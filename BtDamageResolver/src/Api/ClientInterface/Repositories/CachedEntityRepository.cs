@@ -32,7 +32,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         _logger = logger;
         _repository = repository;
         _cache = new Dictionary<TKey, TEntity>();
-        _logger.LogInformation("Filled entity cache for type {type} with {n} items.", typeof(TEntity).Name, FillCache().Result);
+        _logger.LogInformation("Filled entity cache for type {Type} with {Number} items.", typeof(TEntity).Name, FillCache().Result);
     }
 
     /// <inheritdoc />
@@ -45,7 +45,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add entity {entityName} into the repository. Unknown failure.", entity.GetId());
+            _logger.LogError(ex, "Could not add entity {EntityName} into the repository. Unknown failure.", entity.GetId());
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -67,7 +67,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add or update entity {entityName} in the repository. Unknown failure.", entity.GetId());
+            _logger.LogError(ex, "Could not add or update entity {EntityName} in the repository. Unknown failure.", entity.GetId());
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -89,7 +89,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not delete entity {entityName} from the repository. Unknown failure.", key);
+            _logger.LogError(ex, "Could not delete entity {EntityName} from the repository. Unknown failure.", key);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -143,7 +143,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not update entity {entityName} in repository. Unknown failure.", entity.GetId());
+            _logger.LogError(ex, "Could not update entity {EntityName} in repository. Unknown failure.", entity.GetId());
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }

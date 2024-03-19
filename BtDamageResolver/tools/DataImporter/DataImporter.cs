@@ -48,11 +48,11 @@ public class DataImporter
     public async Task Work(DataImportOptions options)
     {
         var data = FetchData(options);
-        _logger.LogInformation("{count} data objects matched the filter(s)", data.Count);
+        _logger.LogInformation("{Count} data objects matched the filter(s)", data.Count);
 
         foreach (var dataObject in data)
         {
-            _logger.LogInformation("{object}", JsonSerializer.Serialize(dataObject, _jsonSerializerOptions));
+            _logger.LogInformation("{Object}", JsonSerializer.Serialize(dataObject, _jsonSerializerOptions));
         }
 
         using var host = await ConnectClient();
@@ -63,7 +63,7 @@ public class DataImporter
         {
             foreach (var dataObject in data)
             {
-                _logger.LogInformation("Importing Entity {type} {name}", dataObject.GetType(), (dataObject as IEntity<string>)?.GetId());
+                _logger.LogInformation("Importing Entity {Type} {Name}", dataObject.GetType(), (dataObject as IEntity<string>)?.GetId());
 
                 switch (dataObject)
                 {
@@ -92,7 +92,7 @@ public class DataImporter
                         var validationResult = weapon.Validate();
                         if (!validationResult.IsValid)
                         {
-                            _logger.LogError("Validation failed for weapon {weapon}. Reason: {reason}", weapon.GetId(), string.Join(' ', validationResult.Reasons));
+                            _logger.LogError("Validation failed for weapon {Weapon}. Reason: {Reason}", weapon.GetId(), string.Join(' ', validationResult.Reasons));
                             throw new InvalidOperationException($"Invalid data in weapon: {weapon.GetId()}");
                         }
 
@@ -199,7 +199,7 @@ public class DataImporter
     {
         var fileNamePrefix = Path.GetFileName(path).Split("_")[0];
 
-        _logger.LogInformation("Loading file: {file}", path);
+        _logger.LogInformation("Loading file: {FilePath}", path);
 
         var fileData = File.ReadAllText(path, Encoding.UTF8);
 

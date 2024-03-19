@@ -12,51 +12,54 @@
     var targetingText = UnitEntry.WeaponBays.Count > 1 ? $"({WeaponBay.Name})" : string.Empty;
 }
 
-<div class="resolver_div_unit resolver_div_componentcell">
-    <table>
-        <tr>
-            <th colspan="2">
-                Targeting Parameters @targetingText
-            </th>
-        </tr>
-        <tr>
-            <td>Target</td>
-            <td>
-                <FormComboBox @key="@_userStateController.UnitList" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
-            </td>
-        </tr>
-        <tr style="@(VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1))">
-            <td>Arc</td>
-            <td>
-                <FormRadio Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.FiringSolution.Arc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Arc arc) => OnArcChanged(arc)"></FormRadio>
-            </td>
-        </tr>
-        <tr>
-            <td>Distance</td>
-            <td>
-                <FormNumberPicker BracketCreatorDelegate="@(() => _commonData.FormPickBracketsDistance(WeaponBay, UnitEntry.Type))" SelectedOption="@WeaponBay.FiringSolution.Distance" Min="0" Max="50" Disabled="@(_userStateController.PlayerState.IsReady || !WeaponBay.Weapons.Any())" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnDistanceChanged"></FormNumberPicker>
-            </td>
-        </tr>
-        <tr>
-            <td>Modifier</td>
-            <td>
-                <FormRadio Options="@_commonData.MapAttackModifier" SelectedOption="@WeaponBay.FiringSolution.AttackModifier" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int attackModifier) => OnAttackModifierChanged(attackModifier)"></FormRadio>
-            </td>
-        </tr>
-        <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetDirectionHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
-            <td>Direction</td>
-            <td>
-                <FormRadio Options="@_commonData.MapFacing" SelectedOption="@WeaponBay.FiringSolution.Direction" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
-            </td>
-        </tr>
-        <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
-            <td>Cover</td>
-            <td>
-                <FormRadio Options="@_commonData.FormMapCover(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))" SelectedOption="@WeaponBay.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
-            </td>
-        </tr>
-    </table>
-</div>
+@if (_userStateController.PlayerState != null)
+{
+    <div class="resolver_div_unit resolver_div_componentcell">
+        <table>
+            <tr>
+                <th colspan="2">
+                    Targeting Parameters @targetingText
+                </th>
+            </tr>
+            <tr>
+                <td>Target</td>
+                <td>
+                    <FormComboBox @key="@_userStateController.UnitList" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
+                </td>
+            </tr>
+            <tr style="@(VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1))">
+                <td>Arc</td>
+                <td>
+                    <FormRadio Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.FiringSolution.Arc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Arc arc) => OnArcChanged(arc)"></FormRadio>
+                </td>
+            </tr>
+            <tr>
+                <td>Distance</td>
+                <td>
+                    <FormNumberPicker BracketCreatorDelegate="@(() => _commonData.FormPickBracketsDistance(WeaponBay, UnitEntry.Type))" SelectedOption="@WeaponBay.FiringSolution.Distance" Min="0" Max="50" Disabled="@(_userStateController.PlayerState.IsReady || !WeaponBay.Weapons.Any())" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnDistanceChanged"></FormNumberPicker>
+                </td>
+            </tr>
+            <tr>
+                <td>Modifier</td>
+                <td>
+                    <FormRadio Options="@_commonData.MapAttackModifier" SelectedOption="@WeaponBay.FiringSolution.AttackModifier" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int attackModifier) => OnAttackModifierChanged(attackModifier)"></FormRadio>
+                </td>
+            </tr>
+            <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetDirectionHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
+                <td>Direction</td>
+                <td>
+                    <FormRadio Options="@_commonData.MapFacing" SelectedOption="@WeaponBay.FiringSolution.Direction" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
+                </td>
+            </tr>
+            <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
+                <td>Cover</td>
+                <td>
+                    <FormRadio Options="@_commonData.FormMapCover(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))" SelectedOption="@WeaponBay.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
+                </td>
+            </tr>
+        </table>
+    </div>
+}
 
 @code {
     [Parameter]

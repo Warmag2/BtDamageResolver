@@ -19,7 +19,7 @@ public partial class PlayerActor
             return false;
         }
 
-        _logger.LogInformation("Player {playerId} asking Game {gameId} to force ready state for all players.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
+        _logger.LogInformation("Player {PlayerId} asking Game {GameId} to force ready state for all players.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
         return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).ForceReady(this.GetPrimaryKeyString());
     }
 
@@ -31,7 +31,7 @@ public partial class PlayerActor
             return false;
         }
 
-        _logger.LogInformation("Player {playerId} asking Game {gameId} to kick Player {kickedPlayerId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, playerId);
+        _logger.LogInformation("Player {PlayerId} asking Game {GameId} to kick Player {KickedPlayerId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, playerId);
         return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).KickPlayer(this.GetPrimaryKeyString(), playerId);
     }
 }

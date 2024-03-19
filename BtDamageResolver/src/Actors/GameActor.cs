@@ -69,21 +69,21 @@ public partial class GameActor : Grain, IGameActor
         {
             if (playerState.TimeStamp > value.TimeStamp)
             {
-                _logger.LogInformation("Updating player {playerId} state with new data from {timestamp}", playerState.PlayerId, playerState.TimeStamp);
+                _logger.LogInformation("Updating player {PlayerId} state with new data from {Timestamp}", playerState.PlayerId, playerState.TimeStamp);
                 _gameActorState.State.PlayerStates[playerState.PlayerId] = playerState;
                 updated = true;
             }
             else
             {
                 _logger.LogInformation(
-                    "Discarding update event. Timestamp {stampEvent}, is older than existing timestamp {stampState}.",
+                    "Discarding update event. Timestamp {StampEvent}, is older than existing timestamp {StampState}.",
                     playerState.TimeStamp,
                     _gameActorState.State.PlayerStates[playerState.PlayerId].TimeStamp);
             }
         }
         else
         {
-            _logger.LogInformation("Receiving data from player {player} with no previous data.", playerState.PlayerId);
+            _logger.LogInformation("Receiving data from player {Player} with no previous data.", playerState.PlayerId);
             _gameActorState.State.PlayerStates.Add(playerState.PlayerId, playerState);
             updated = true;
         }
@@ -119,7 +119,7 @@ public partial class GameActor : Grain, IGameActor
     {
         if (string.IsNullOrWhiteSpace(playerId) || password == null)
         {
-            _logger.LogInformation("In Game {gameId}, player {playerId} game connection request is malformed.", this.GetPrimaryKeyString(), playerId);
+            _logger.LogInformation("In Game {GameId}, player {PlayerId} game connection request is malformed.", this.GetPrimaryKeyString(), playerId);
             return false;
         }
 
@@ -131,7 +131,7 @@ public partial class GameActor : Grain, IGameActor
             _gameActorState.State.TimeStamp = DateTime.UtcNow;
             await _gameActorState.WriteStateAsync();
 
-            _logger.LogInformation("In Game {gameId}, Player {playerId} successfully connected to the game.", this.GetPrimaryKeyString(), playerId);
+            _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully connected to the game.", this.GetPrimaryKeyString(), playerId);
 
             await CheckGameStateUpdateEvents();
 
@@ -141,7 +141,7 @@ public partial class GameActor : Grain, IGameActor
             return true;
         }
 
-        _logger.LogInformation("In Game {gameId}, Player {playerId} failed to connect to the game.", playerId, this.GetPrimaryKeyString());
+        _logger.LogInformation("In Game {GameId}, Player {PlayerId} failed to connect to the game.", playerId, this.GetPrimaryKeyString());
 
         return false;
     }
@@ -151,7 +151,7 @@ public partial class GameActor : Grain, IGameActor
     {
         if (string.IsNullOrWhiteSpace(playerId))
         {
-            _logger.LogInformation("In Game {gameId}, player {playerId} game disconnection request is malformed.", this.GetPrimaryKeyString(), playerId);
+            _logger.LogInformation("In Game {GameId}, player {PlayerId} game disconnection request is malformed.", this.GetPrimaryKeyString(), playerId);
             return false;
         }
 
@@ -162,11 +162,11 @@ public partial class GameActor : Grain, IGameActor
             _gameActorState.State.TimeStamp = DateTime.UtcNow;
             await CheckGameStateUpdateEvents();
 
-            _logger.LogInformation("In Game {gameId}, Player {playerId} successfully disconnected.", this.GetPrimaryKeyString(), playerId);
+            _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully disconnected.", this.GetPrimaryKeyString(), playerId);
         }
         else
         {
-            _logger.LogInformation("In Game {gameId} Player {playerId}, cannot be disconnected, since the player is not in the game.", this.GetPrimaryKeyString(), playerId);
+            _logger.LogInformation("In Game {GameId} Player {PlayerId}, cannot be disconnected, since the player is not in the game.", this.GetPrimaryKeyString(), playerId);
         }
 
         // Log logins to permanent store
@@ -181,7 +181,7 @@ public partial class GameActor : Grain, IGameActor
         if (_gameActorState.State.PlayerStates.Count == 0)
         {
             _gameActorState.State.Reset();
-            _logger.LogInformation("Game {gameId} has lost all of its players. Resetting to turn 0 and clearing damage reports.", this.GetPrimaryKeyString());
+            _logger.LogInformation("Game {GameId} has lost all of its players. Resetting to turn 0 and clearing damage reports.", this.GetPrimaryKeyString());
         }
 
         // If there is exactly 1 player, make him/her the admin
@@ -191,7 +191,7 @@ public partial class GameActor : Grain, IGameActor
             if (_gameActorState.State.AdminId != onlyPlayerId)
             {
                 _gameActorState.State.AdminId = onlyPlayerId;
-                _logger.LogInformation("Game {gameId} has exactly 1 player. Setting admin id to that player.", this.GetPrimaryKeyString());
+                _logger.LogInformation("Game {GameId} has exactly 1 player. Setting admin id to that player.", this.GetPrimaryKeyString());
             }
         }
     }

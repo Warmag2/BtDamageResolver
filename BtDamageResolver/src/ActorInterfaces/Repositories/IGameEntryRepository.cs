@@ -7,6 +7,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Repositories;
 /// <summary>
 /// Interface for a Game Entry Repository Actor.
 /// </summary>
+[Alias("IGameEntryRepository")]
 public interface IGameEntryRepository : IGrainWithIntegerKey, IExternalRepositoryActorBase<GameEntry, string>
 {
 }

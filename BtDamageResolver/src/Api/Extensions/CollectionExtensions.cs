@@ -170,9 +170,9 @@ public static class CollectionExtensions
     /// <param name="dict">The dictionary.</param>
     /// <param name="key">The key.</param>
     /// <param name="countable">The countable element.</param>
-    public static void AddIfNotZero<TKey>(this Dictionary<TKey, double> dict, TKey key, double countable)
+    public static void AddIfNotZero<TKey>(this Dictionary<TKey, decimal> dict, TKey key, decimal countable)
     {
-        if (countable == 0d)
+        if (countable == 0m)
         {
             return;
         }

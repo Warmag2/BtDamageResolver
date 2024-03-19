@@ -13,7 +13,7 @@ public partial class GameActor
     /// <inheritdoc />
     public async Task RequestDamageReports(string askingPlayerId)
     {
-        _logger.LogInformation("Game {gameId} is delivering a list of all damage reports to player actor {playerId}", this.GetPrimaryKeyString(), askingPlayerId);
+        _logger.LogInformation("Game {GameId} is delivering a list of all damage reports to player actor {PlayerId}", this.GetPrimaryKeyString(), askingPlayerId);
 
         await DistributeAllDamageReportsToPlayer(askingPlayerId);
     }
@@ -27,7 +27,7 @@ public partial class GameActor
     /// <inheritdoc />
     public async Task RequestGameState(string askingPlayerId)
     {
-        _logger.LogInformation("Game {gameId} is delivering the game state to player {playerId}", this.GetPrimaryKeyString(), askingPlayerId);
+        _logger.LogInformation("Game {GameId} is delivering the game state to player {PlayerId}", this.GetPrimaryKeyString(), askingPlayerId);
 
         await DistributeGameStateToPlayer(askingPlayerId);
     }
@@ -46,7 +46,7 @@ public partial class GameActor
         }
         else
         {
-            _logger.LogWarning("Game {gameId} refusing to deliver target numbers to player {playerId} - player state is empty.", this.GetPrimaryKeyString(), askingPlayerId);
+            _logger.LogWarning("Game {GameId} refusing to deliver target numbers to player {PlayerId} - player state is empty.", this.GetPrimaryKeyString(), askingPlayerId);
         }
     }
 }

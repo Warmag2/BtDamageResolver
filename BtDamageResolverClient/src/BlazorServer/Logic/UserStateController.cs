@@ -144,6 +144,8 @@ public class UserStateController
             // The below method checks whether it is actually necessary to invoke UI refresh.
             // Most of the time, this is not the case
             UpdateUnitList();
+
+            NotifyPlayerListOrderUpdated();
         }
     }
 

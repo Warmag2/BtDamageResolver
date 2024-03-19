@@ -17,13 +17,13 @@ public partial class GameActor
     {
         if (askingPlayerId != _gameActorState.State.AdminId)
         {
-            _logger.LogWarning("In Game {gameId}, Player {playerId} failed to kick player {playerToKickId}. No admin authority.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
+            _logger.LogWarning("In Game {GameId}, Player {PlayerId} failed to kick player {PlayerToKickId}. No admin authority.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
             return Task.FromResult(false);
         }
 
         if (askingPlayerId == playerId)
         {
-            _logger.LogWarning("In Game {gameId}, Player {playerId} tried to kick himself. Disallowing.", this.GetPrimaryKeyString(), playerId);
+            _logger.LogWarning("In Game {GameId}, Player {PlayerId} tried to kick himself. Disallowing.", this.GetPrimaryKeyString(), playerId);
             return Task.FromResult(false);
         }
 
@@ -33,7 +33,7 @@ public partial class GameActor
         // Must be ignored because the player actor may be sending data simultaneously.
         playerActor.LeaveGame().Ignore();
 
-        _logger.LogInformation("In Game {gameId}, Player {playerId} successfully kicked player {playerToKickId}.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
+        _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully kicked player {PlayerToKickId}.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
 
         return Task.FromResult(true);
     }
@@ -48,14 +48,14 @@ public partial class GameActor
                 state.IsReady = true;
             }
 
-            _logger.LogInformation("In Game {gameId}, Player {playerId} successfully forced ready state for all players.", this.GetPrimaryKeyString(), _gameActorState.State.AdminId);
+            _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully forced ready state for all players.", this.GetPrimaryKeyString(), _gameActorState.State.AdminId);
 
             await CheckGameStateUpdateEvents();
 
             return true;
         }
 
-        _logger.LogWarning("In Game {gameId}, Player {playerId} failed to force ready state for all players. No admin authority.", this.GetPrimaryKeyString(), askingPlayerId);
+        _logger.LogWarning("In Game {GameId}, Player {PlayerId} failed to force ready state for all players. No admin authority.", this.GetPrimaryKeyString(), askingPlayerId);
 
         return false;
     }
@@ -67,14 +67,14 @@ public partial class GameActor
 
         if (playerId == unitOwner)
         {
-            _logger.LogWarning("Game {gameId} refusing to move unit {unitId} to Player {sendingPlayerId}. Unit owner would not change.", this.GetPrimaryKeyString(), unitId, unitOwner);
+            _logger.LogWarning("Game {GameId} refusing to move unit {UnitId} to Player {SendingPlayerId}. Unit owner would not change.", this.GetPrimaryKeyString(), unitId, unitOwner);
 
             return false;
         }
 
         if (!_gameActorState.State.PlayerStates.TryGetValue(playerId, out var value))
         {
-            _logger.LogWarning("Game {gameId} refusing to move unit {unitId} to Player {sendingPlayerId}. Receiving player is not in the game.", this.GetPrimaryKeyString(), unitId, unitOwner);
+            _logger.LogWarning("Game {GameId} refusing to move unit {UnitId} to Player {SendingPlayerId}. Receiving player is not in the game.", this.GetPrimaryKeyString(), unitId, unitOwner);
 
             return false;
         }
@@ -92,7 +92,7 @@ public partial class GameActor
             }
         }
 
-        _logger.LogWarning("Game {gameId} failed to move Unit {unitId} from Player {sendingPlayerId} to Player {receivingPlayerId}. Unknown error.", this.GetPrimaryKeyString(), unitId, unitOwner, playerId);
+        _logger.LogWarning("Game {GameId} failed to move Unit {UnitId} from Player {SendingPlayerId} to Player {ReceivingPlayerId}. Unknown error.", this.GetPrimaryKeyString(), unitId, unitOwner, playerId);
 
         return false;
     }

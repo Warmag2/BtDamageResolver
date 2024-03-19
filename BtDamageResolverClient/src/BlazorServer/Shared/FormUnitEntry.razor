@@ -10,6 +10,9 @@
 @inject UserStateController _userStateController
 @implements IDisposable
 
+@if(_userStateController.PlayerState != null)
+{
+
 <div class="resolver_div_componentcontainer alternatingcolors" ondragover="event.preventDefault();">
 
     <div class="resolver_div_componentrow">
@@ -193,6 +196,7 @@
         </div>
     </div>
 </div>
+}
 
 @if (_showModalDelete)
 {

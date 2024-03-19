@@ -20,6 +20,33 @@ namespace Faemiyah.BtDamageResolver.Actors;
 /// </summary>
 public partial class GameActor
 {
+    /// <summary>
+    /// Gets the primary target of the unit.
+    /// Primary target is the target of the first weapon bay firing into the front arc, or the first weaponbay to have a target, if no weapon bays target front arc.
+    /// </summary>
+    /// <param name="unitEntry">The unit entry to find primary target for.</param>
+    /// <returns>The primary target, or Guid.Empty if no target was found.</returns>
+    private static Guid GetPrimaryTarget(UnitEntry unitEntry)
+    {
+        Guid? primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.Arc == Arc.Front)?.FiringSolution.Target;
+
+        if (primaryTargetCandidate == null)
+        {
+            var firstBayWithTarget = unitEntry.WeaponBays.Find(w => w.FiringSolution.Target != Guid.Empty);
+
+            if (firstBayWithTarget == null)
+            {
+                return Guid.Empty;
+            }
+            else
+            {
+                return firstBayWithTarget.FiringSolution.Target;
+            }
+        }
+
+        return primaryTargetCandidate.Value;
+    }
+
     private static void ProcessUnitHeat(List<DamageReport> damageReports, UnitEntry unit)
     {
         var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitId == unit.Id).Sum(damageReport => damageReport.AttackerHeat);
@@ -79,7 +106,7 @@ public partial class GameActor
         catch (Exception ex)
         {
             // I really want to clearly log any error in turn logic so I can fix it.
-            _logger.LogError(ex, "Game {gameId} experienced a critical failure while running game state update events.", this.GetPrimaryKeyString());
+            _logger.LogError(ex, "Game {GameId} experienced a critical failure while running game state update events.", this.GetPrimaryKeyString());
             throw;
         }
     }
@@ -95,18 +122,18 @@ public partial class GameActor
             _gameActorState.State.Turn++;
             _gameActorState.State.TurnTimeStamp = DateTime.UtcNow;
 
-            _logger.LogInformation("All players in game {gameId} are ready. Incrementing turn to {turn} and performing fire event.", this.GetPrimaryKeyString(), _gameActorState.State.Turn);
+            _logger.LogInformation("All players in game {GameId} are ready. Incrementing turn to {Turn} and performing fire event.", this.GetPrimaryKeyString(), _gameActorState.State.Turn);
 
             // Clear tagged state before firing tagging weapons
             ClearUnitPenalties(false, true);
-            _logger.LogInformation("Firing all tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
+            _logger.LogInformation("Firing all tagging weapons in game {GameId}.", this.GetPrimaryKeyString());
             var tagDamageReports = await ProcessFireEvent(true);
 
             // Apply effects from this turn's damage reports for tagging attacks
             ModifyGameStateBasedOnNarcAndTag(tagDamageReports);
 
             // Fire non-tagging weapons
-            _logger.LogInformation("Firing all non-tagging weapons in game {gameId}.", this.GetPrimaryKeyString());
+            _logger.LogInformation("Firing all non-tagging weapons in game {GameId}.", this.GetPrimaryKeyString());
             var damageReports = await ProcessFireEvent(false);
 
             // Apply effects from this turns damage reports for narc attacks
@@ -134,33 +161,6 @@ public partial class GameActor
         return false;
     }
 
-    /// <summary>
-    /// Gets the primary target of the unit.
-    /// Primary target is the target of the first weapon bay firing into the front arc, or the first weaponbay to have a target, if no weapon bays target front arc.
-    /// </summary>
-    /// <param name="unitEntry">The unit entry to find primary target for.</param>
-    /// <returns>The primary target, or Guid.Empty if no target was found.</returns>
-    private Guid GetPrimaryTarget(UnitEntry unitEntry)
-    {
-        Guid? primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.Arc == Arc.Front)?.FiringSolution.Target;
-
-        if (primaryTargetCandidate == null)
-        {
-            var firstBayWithTarget = unitEntry.WeaponBays.Find(w => w.FiringSolution.Target != Guid.Empty);
-
-            if (firstBayWithTarget == null)
-            {
-                return Guid.Empty;
-            }
-            else
-            {
-                return firstBayWithTarget.FiringSolution.Target;
-            }
-        }
-
-        return primaryTargetCandidate.Value;
-    }
-
     private async Task<DamageReport> ProcessDamageInstance(DamageInstance damageInstance)
     {
         var logicUnit = GetUnitLogic(damageInstance.UnitId);
@@ -179,7 +179,7 @@ public partial class GameActor
             {
                 bay.FiringSolution.Target = Guid.Empty;
                 bay.TimeStamp = DateTime.UtcNow;
-                _logger.LogWarning("Player {playerId} unit {unitId} tried to fire at an unit {targetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, bay.FiringSolution.Target);
+                _logger.LogWarning("Player {PlayerId} unit {UnitId} tried to fire at an unit {TargetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, bay.FiringSolution.Target);
             }
         }
 
@@ -228,7 +228,7 @@ public partial class GameActor
     {
         var targetNumberUpdate = new TargetNumberUpdate
         {
-            AmmoEstimate = new Dictionary<string, double>(),
+            AmmoEstimate = new Dictionary<string, decimal>(),
             AmmoWorstCase = new Dictionary<string, int>(),
             TargetNumbers = new Dictionary<Guid, TargetNumberUpdateSingleWeapon>(),
             TimeStamp = DateTime.UtcNow,
@@ -256,7 +256,7 @@ public partial class GameActor
                 if (weaponBay.FiringSolution.Target != Guid.Empty)
                 {
                     _logger.LogWarning(
-                        "In Game {gameId}, unit {unitId} tried to calculate target numbers for target {targetUnitId} which does not exist or is not in the same game.",
+                        "In Game {GameId}, unit {UnitId} tried to calculate target numbers for target {TargetUnitId} which does not exist or is not in the same game.",
                         this.GetPrimaryKeyString(),
                         unitEntry.Id,
                         weaponBay.FiringSolution.Target);
@@ -307,11 +307,11 @@ public partial class GameActor
 
             if (!setBlankNumbers)
             {
-                _logger.LogInformation("GameActor {gameId} succeeded in calculating target numbers for unit {unitId}.", this.GetPrimaryKeyString(), unitEntry.Id);
+                _logger.LogInformation("GameActor {GameId} succeeded in calculating target numbers for unit {UnitId}.", this.GetPrimaryKeyString(), unitEntry.Id);
             }
             else
             {
-                _logger.LogInformation("GameActor {gameId} succeeded in setting blank target numbers for unit {unitId}.", this.GetPrimaryKeyString(), unitEntry.Id);
+                _logger.LogInformation("GameActor {GameId} succeeded in setting blank target numbers for unit {UnitId}.", this.GetPrimaryKeyString(), unitEntry.Id);
             }
         }
 
@@ -323,7 +323,7 @@ public partial class GameActor
             targetNumberUpdate.HeatWorstCase += nonWeaponHeatDamageReport.AttackerHeat;
         }
 
-        _logger.LogInformation("GameActor {gameId} finished calculating new target number values for unit {unitId}.", this.GetPrimaryKeyString(), unitEntry.Id);
+        _logger.LogInformation("GameActor {GameId} finished calculating new target number values for unit {UnitId}.", this.GetPrimaryKeyString(), unitEntry.Id);
 
         return targetNumberUpdate;
     }

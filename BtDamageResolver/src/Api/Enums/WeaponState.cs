@@ -11,7 +11,18 @@ namespace Faemiyah.BtDamageResolver.Api.Enums;
 [Serializable]
 public enum WeaponState
 {
+    /// <summary>
+    /// Active weapon.
+    /// </summary>
     Active,
+
+    /// <summary>
+    /// Inactive weapon.
+    /// </summary>
     Inactive,
+
+    /// <summary>
+    /// Destroyed weapon.
+    /// </summary>
     Destroyed
 }

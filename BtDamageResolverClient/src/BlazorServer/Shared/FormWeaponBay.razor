@@ -7,6 +7,8 @@
 @inject UserStateController _userStateController
 @implements IDisposable
 
+@if(_userStateController.PlayerState != null)
+{
 <table>
     <tr style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
         <td colspan="4" class="draggable" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
@@ -38,6 +40,7 @@
         </td>
     </tr>
 </table>
+}
 
 @code {
     [Parameter]

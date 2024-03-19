@@ -22,7 +22,7 @@
 
 <tr class="resolver_tr_weaponentry draggable @(WeaponEntry.State == WeaponState.Active ? "active" : string.Empty)" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
     <td class="resolver_td_targetnumber" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', @calculationLog);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
-        <b>@targetNumber</b>
+        <b>@(targetNumber)</b>
     </td>
     <td>
         <FormToggle Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(_userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormToggle>

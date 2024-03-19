@@ -57,7 +57,7 @@ public class LoggingService : GrainService, ILoggingService
     {
         _writerActive = true;
         Task.Run(LogWriteLoop);
-        _logger.LogInformation("{service} running log writing loop.", this.GetType());
+        _logger.LogInformation("{Service} running log writing loop.", this.GetType());
 
         return base.Start();
     }
@@ -98,20 +98,20 @@ public class LoggingService : GrainService, ILoggingService
         {
             if (_gameLogEntries.IsEmpty && _playerLogEntries.IsEmpty)
             {
-                _logger.LogDebug("LoggingService has nothing to do, sleeping for {delay} milliseconds.", LoggingDelayMilliseconds);
+                _logger.LogDebug("LoggingService has nothing to do, sleeping for {Delay} milliseconds.", LoggingDelayMilliseconds);
                 await Task.Delay(LoggingDelayMilliseconds);
             }
             else
             {
                 if (!_gameLogEntries.IsEmpty)
                 {
-                    _logger.LogDebug("LoggingService writing {count} game log entries.", _gameLogEntries.Count);
+                    _logger.LogDebug("LoggingService writing {Count} game log entries.", _gameLogEntries.Count);
                     await _loggingRepository.WriteGameLogEntries(_gameLogEntries);
                 }
 
                 if (!_playerLogEntries.IsEmpty)
                 {
-                    _logger.LogDebug("LoggingService writing {count} user log entries.", _playerLogEntries.Count);
+                    _logger.LogDebug("LoggingService writing {Count} user log entries.", _playerLogEntries.Count);
                     await _loggingRepository.WriteUserLogEntries(_playerLogEntries);
                 }
             }

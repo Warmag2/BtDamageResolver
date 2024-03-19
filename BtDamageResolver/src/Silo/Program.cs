@@ -203,25 +203,6 @@ public static class Program
                         services.AddSingleton<CachedEntityRepository<Weapon, string>, CachedEntityRepository<Weapon, string>>();
                         services.AddSingleton<DataHelper>();
                     });
-                    /*.AddStartupTask((serviceProvider, _) =>
-                    {
-                        var ammoRepository = serviceProvider.GetService<CachedEntityRepository<Ammo, string>>();
-                        var clusterTableRepository = serviceProvider.GetService<CachedEntityRepository<ClusterTable, string>>();
-                        var criticalDamageRepository = serviceProvider.GetService<CachedEntityRepository<CriticalDamageTable, string>>();
-                        var paperDollRepository = serviceProvider.GetService<CachedEntityRepository<PaperDoll, string>>();
-                        var unitRepository = serviceProvider.GetService<CachedEntityRepository<Unit, string>>();
-                        var weaponRepository = serviceProvider.GetService<CachedEntityRepository<Weapon, string>>();
-                        var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-                        var logger = loggerFactory.CreateLogger("Startup");
-                        logger.LogInformation("AmmoRepository ready with {n} items.", ammoRepository.GetAll().Count);
-                        logger.LogInformation("CriticalDamageRepository ready with {n} items.", clusterTableRepository.GetAll().Count);
-                        logger.LogInformation("CriticalDamageRepository ready with {n} items.", criticalDamageRepository.GetAll().Count);
-                        logger.LogInformation("PaperDollRepository ready with {n} items.", paperDollRepository.GetAll().Count);
-                        logger.LogInformation("UnitRepository ready with {n} items.", unitRepository.GetAll().Count);
-                        logger.LogInformation("WeaponRepository ready with {n} items.", weaponRepository.GetAll().Count);
-
-                        return Task.CompletedTask;
-                    });*/
             });
 
         return siloHostBuilder.Build();
@@ -235,17 +216,6 @@ public static class Program
             ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), options.Value.ConnectionString)
             : throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
     }
-
-    /*private static SqlEntityRepository<TType> GetSqlEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
-    {
-        var options = serviceProvider.GetService<IOptions<FaemiyahClusterOptions>>();
-        if (options != null)
-        {
-            return new SqlEntityRepository<TType>(serviceProvider.GetService<ILogger<SqlEntityRepository<TType>>>(), options.Value.ConnectionString);
-        }
-
-        throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
-    }*/
 
     private static ISiloBuilder AddGrainStorage(this ISiloBuilder siloHostBuilder, string name, FaemiyahClusterOptions clusterOptions)
     {

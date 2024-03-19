@@ -7,6 +7,7 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Repositories;
 /// <summary>
 /// Interface for an Ammo Repository Actor.
 /// </summary>
+[Alias("IArcDiagramRepository")]
 public interface IArcDiagramRepository : IGrainWithIntegerKey, IExternalRepositoryActorBase<ArcDiagram, string>
 {
 }

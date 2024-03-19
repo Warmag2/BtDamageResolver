@@ -11,7 +11,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc/>
-    public async Task<(double Estimate, int Max)> ProjectAmmo(int targetNumber, WeaponEntry weaponEntry)
+    public async Task<(decimal Estimate, int Max)> ProjectAmmo(int targetNumber, WeaponEntry weaponEntry)
     {
         var hitChance = GetHitChanceForTargetNumber(targetNumber);
 
@@ -19,9 +19,9 @@ public partial class LogicUnit
 
         var weapon = await FormWeapon(weaponEntry);
 
-        if (!weapon.UsesAmmo || hitChance == 0d)
+        if (!weapon.UsesAmmo || hitChance == 0m)
         {
-            return (0d, 0);
+            return (0m, 0);
         }
 
         if (weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
