@@ -42,6 +42,16 @@ public class UserStateController
     public event Action OnPlayerOptionsUpdated;
 
     /// <summary>
+    /// Event for when the game state updates.
+    /// </summary>
+    public event Action OnGameStateUpdated;
+
+    /// <summary>
+    /// Event for when available unit list changes.
+    /// </summary>
+    public event Action OnGameUnitListUpdated;
+
+    /// <summary>
     /// Event for when a player updates his or her state.
     /// </summary>
     public event Action OnPlayerStateUpdated;
@@ -59,7 +69,7 @@ public class UserStateController
     /// <summary>
     /// Event for when player unit list gets changed.
     /// </summary>
-    public event Action OnPlayerUnitListChanged;
+    public event Action OnPlayerListOrderUpdated;
 
     /// <summary>
     /// Event for when game entries are received.
@@ -133,12 +143,13 @@ public class UserStateController
                 if (_gameState.TimeStamp < value.TimeStamp)
                 {
                     _gameState = value;
+                    OnGameStateUpdated?.Invoke();
                 }
             }
 
+            // The below method checks whether it is actually necessary to invoke UI refresh.
+            // Most of the time, this is not the case
             UpdateUnitList();
-
-            OnPlayerUnitListChanged?.Invoke();
         }
     }
 
@@ -285,7 +296,17 @@ public class UserStateController
         {
             PlayerState.TimeStamp = DateTime.UtcNow;
             OnPlayerStateUpdated();
-            OnPlayerUnitListChanged();
+        }
+    }
+
+    /// <summary>
+    /// Notification for when player list orders change.
+    /// </summary>
+    public void NotifyPlayerListOrderUpdated()
+    {
+        if (PlayerState != null)
+        {
+            OnPlayerListOrderUpdated();
         }
     }
 
@@ -426,6 +447,8 @@ public class UserStateController
         if (_unitList.Any(u => !newUnitList.ContainsKey(u.Key)) || newUnitList.Any(u => !_unitList.ContainsKey(u.Key)))
         {
             _unitList = newUnitList;
+
+            OnGameUnitListUpdated?.Invoke();
         }
         else
         {
@@ -436,6 +459,8 @@ public class UserStateController
                 if (oldUnit.PlayerId != newUnit.Value.PlayerId || oldUnit.Unit.Name != newUnit.Value.Unit.Name || oldUnit.Unit.Type != newUnit.Value.Unit.Type)
                 {
                     _unitList = newUnitList;
+
+                    OnGameUnitListUpdated?.Invoke();
                     break;
                 }
             }

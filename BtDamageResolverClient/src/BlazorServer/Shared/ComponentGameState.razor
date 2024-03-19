@@ -1,5 +1,7 @@
-﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
+@implements IDisposable
 
 @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
 {
@@ -9,11 +11,21 @@
 
     @foreach (var player in playerStateList)
     {
-        <ComponentPlayerState @key=@($"{player.PlayerId}_{player.TimeStamp}") PlayerId = "@player.PlayerId" ></ComponentPlayerState>
+        <ComponentPlayerState @key=@($"{player.PlayerId}_{player.TimeStamp}") PlayerId="@player.PlayerId" />
     }
 }
 
 @code {
     [Parameter]
     public bool DisplayOwnUnits { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _userStateController.OnGameStateUpdated += InvokeStateChange;
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnGameStateUpdated += InvokeStateChange;
+    }
 }

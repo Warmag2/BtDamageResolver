@@ -1,9 +1,11 @@
-﻿@using Faemiyah.BtDamageResolver.Api.Enums
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @using Faemiyah.BtDamageResolver.Api.Entities
 @inject CommonData _commonData
 @inject VisualStyleController _visualStyleController
 @inject UserStateController _userStateController
+@implements IDisposable
 
 @if (_userStateController.PlayerState != null)
 {
@@ -84,6 +86,8 @@
 
     protected override void OnInitialized()
     {
+        _userStateController.OnGameUnitListUpdated += InvokeStateChange;
+
         if (DamageInstance != null)
         {
             _targetUnit = DamageInstance.UnitId;
@@ -117,5 +121,10 @@
     private void OnCoverChanged(Cover cover)
     {
         _cover = cover;
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnGameUnitListUpdated -= InvokeStateChange;
     }
 }

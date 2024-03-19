@@ -141,6 +141,7 @@
     {
         _attackLogVisible = _userStateController.PlayerOptions?.ShowAttackLogByDefault ?? false;
         _logLineVisibility = _userStateController.GetAttackLogEntryVisibilityCopy();
+        _userStateController.OnDamageReportsUpdated += InvokeStateChange;
     }
 
     public void Delete()

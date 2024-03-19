@@ -1,7 +1,5 @@
-﻿@inherits BaseFaemiyahComponent
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
-@implements IDisposable
 
 <div class="resolver_div_componentlistcontainer resolver_div_componentrow">
     <h3 class="resolver_header @(_userStateController.GameState.Players[PlayerId].IsReady ? "ready" : string.Empty)">
@@ -10,21 +8,11 @@
 
     @foreach (var unitEntry in _userStateController.GameState.Players[PlayerId].UnitEntries)
     {
-        <ComponentUnit UnitEntry=@unitEntry></ComponentUnit>
+        <ComponentUnit @key=@($"{unitEntry.Id}_{unitEntry.TimeStamp}") UnitEntry=@unitEntry></ComponentUnit>
     }
 </div>
 
 @code {
     [Parameter]
     public string PlayerId { get; set; }
-
-    protected override void OnInitialized()
-    {
-        _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnTargetNumbersUpdated -= InvokeStateChange;
-    }
 }

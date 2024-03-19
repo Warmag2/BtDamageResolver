@@ -115,7 +115,6 @@ public class Startup
         app.UseAntiforgery();
 
         app.UseHsts();
-        app.UseHttpsRedirection();
 
         app.UseEndpoints(endpoints =>
         {

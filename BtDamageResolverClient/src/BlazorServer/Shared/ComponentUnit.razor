@@ -130,7 +130,7 @@
                         <table>
                             @foreach (var weaponEntry in weaponBay.Weapons)
                             {
-                                <ComponentWeaponEntry Unit=@UnitEntry WeaponEntry=@weaponEntry></ComponentWeaponEntry>
+                                <ComponentWeaponEntry @key=@($"{weaponEntry.Id}_{weaponEntry.TimeStamp}") Unit=@UnitEntry WeaponEntry=@weaponEntry></ComponentWeaponEntry>
                             }
                         </table>
                     </td>

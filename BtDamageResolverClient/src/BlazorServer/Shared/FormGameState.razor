@@ -33,7 +33,7 @@
 </ContainerAccordion>
 
 <ContainerAccordion Enabled="@_sectionEnabledDamageRequests" Title="Damage requests">
-    <FormDamageInstance @key="@_userStateController.GameState?.TimeStamp" DamageInstance=@_userStateController.DamageInstance></FormDamageInstance>
+    <FormDamageInstance DamageInstance=@_userStateController.DamageInstance></FormDamageInstance>
 </ContainerAccordion>
 
 <ContainerAccordion Enabled="@_sectionEnabledDamageReports" Title="Damage reports">
@@ -56,7 +56,7 @@
         _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
         _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
         _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
-        _userStateController.OnPlayerUnitListChanged += InvokeStateChange;
+        _userStateController.OnPlayerListOrderUpdated += InvokeStateChange;
     }
 
     private void AddUnit()
@@ -93,10 +93,13 @@
     {
         (_userStateController.PlayerState.UnitEntries[ix1], _userStateController.PlayerState.UnitEntries[ix2]) = (_userStateController.PlayerState.UnitEntries[ix2], _userStateController.PlayerState.UnitEntries[ix1]);
         _userStateController.NotifyPlayerDataUpdated();
+
+        // Dragdrop always induces a ordering check
+        _userStateController.NotifyPlayerListOrderUpdated();
     }
 
     public void Dispose()
     {
-        _userStateController.OnPlayerUnitListChanged -= InvokeStateChange;
+        _userStateController.OnPlayerListOrderUpdated -= InvokeStateChange;
     }
 }
