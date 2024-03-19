@@ -42,11 +42,6 @@ public class UserStateController
     public event Action OnPlayerOptionsUpdated;
 
     /// <summary>
-    /// Event for when the game state updates.
-    /// </summary>
-    public event Action OnGameStateUpdated;
-
-    /// <summary>
     /// Event for when available unit list changes.
     /// </summary>
     public event Action OnGameUnitListUpdated;
@@ -143,7 +138,6 @@ public class UserStateController
                 if (_gameState.TimeStamp < value.TimeStamp)
                 {
                     _gameState = value;
-                    OnGameStateUpdated?.Invoke();
                 }
             }
 

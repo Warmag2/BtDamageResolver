@@ -38,11 +38,11 @@
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
-    <FormGameState></FormGameState>
+    <FormGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}")></FormGameState>
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
-    <ComponentGameState DisplayOwnUnits="true" />
+    <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true" />
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
