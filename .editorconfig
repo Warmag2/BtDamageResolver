@@ -87,8 +87,8 @@ dotnet_diagnostic.SA1413.severity = None
 # Usings do not need blank lines in-between
 dotnet_diagnostic.SA1516.severity = None
 
-# Enumeration items should be documented
-dotnet_diagnostic.SA1602.severity = Suggestion
+# Enumeration items do not need to be documented
+dotnet_diagnostic.SA1602.severity = None
 
 # Allow properties to contain any kind of documentation line.
 dotnet_diagnostic.SA1623.severity = None
@@ -116,8 +116,11 @@ dotnet_diagnostic.S3358.severity = Warning
 dotnet_diagnostic.S3904.severity = Warning
 
 ##
-## SonarAnalyzers.CSharp
+## Orleans
 ##
 
 # I do not want to use Orleans binary serialization. Clarity over speed here.
 dotnet_diagnostic.ORLEANS0005.severity = None
+
+# No alias nagging please
+dotnet_diagnostic.ORLEANS0010.severity = None

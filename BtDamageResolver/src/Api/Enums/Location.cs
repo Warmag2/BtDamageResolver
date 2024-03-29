@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Faemiyah.BtDamageResolver.Api.Enums;
 
@@ -7,7 +6,6 @@ namespace Faemiyah.BtDamageResolver.Api.Enums;
 /// Possible hit locations.
 /// </summary>
 [Serializable]
-[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "Self-evident and fix would be very noisy.")]
 public enum Location
 {
     Reroll,

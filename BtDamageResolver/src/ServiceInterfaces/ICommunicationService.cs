@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orleans;
 using Orleans.Services;
 
 namespace Faemiyah.BtDamageResolver.Services.Interfaces;
@@ -8,7 +7,6 @@ namespace Faemiyah.BtDamageResolver.Services.Interfaces;
 /// <summary>
 /// Interface for providing client-server communication to the silo and server-to-client communication for grains.
 /// </summary>
-[Alias("ICommunicationService")]
 public interface ICommunicationService : IGrainService
 {
     /// <summary>
@@ -21,7 +19,6 @@ public interface ICommunicationService : IGrainService
     /// The envelope type is a hint for the recipient on how to process the data.
     /// </remarks>
     /// <returns>A task which finishes when the envelope has been sent.</returns>
-    [Alias("Send")]
     public Task Send(string playerId, string envelopeType, object data);
 
     /// <summary>
@@ -34,7 +31,6 @@ public interface ICommunicationService : IGrainService
     /// The envelope type is a hint for the recipient on how to process the data.
     /// </remarks>
     /// <returns>A task which finishes when the envelope has been sent to all recipients.</returns>
-    [Alias("SendToMany")]
     public Task SendToMany(List<string> playerIds, string envelopeType, object data);
 
     /// <summary>
@@ -46,6 +42,5 @@ public interface ICommunicationService : IGrainService
     /// The envelope type is a hint for the recipient on how to process the data.
     /// </remarks>
     /// <returns>A task which finishes when the envelope has been sent to all clients.</returns>
-    [Alias("SendToAllClients")]
     public Task SendToAllClients(string envelopeType, object data);
 }

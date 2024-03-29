@@ -7,7 +7,6 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Repositories;
 /// <summary>
 /// Interface for a Weapon Repository Actor.
 /// </summary>
-[Alias("IWeaponRepository")]
 public interface IWeaponRepository : IGrainWithIntegerKey, IExternalRepositoryActorBase<Weapon, string>
 {
 }

@@ -675,12 +675,14 @@
     background-color: var(--color_bg_dragdrop);
 }
 
-.resolver_tr_weaponentry.emptyrow {
-    height: 0.1rem;
+.emptydragtarget {
+    height: 0.5rem;
+    background-color: var(--color_bg_weaponentry_active);
 }
 
-.resolver_tr_weaponentry.emptyrow:hover {
+.emptydragtarget:hover {
     height: 1rem;
+    background-color: var(--color_bg_dragdrop);
 }
 
 .resolver_tr_unitinformation { }

@@ -7,7 +7,6 @@ namespace Faemiyah.BtDamageResolver.ActorInterfaces.Repositories;
 /// <summary>
 /// Interface for a ClusterTable Repository Actor.
 /// </summary>
-[Alias("IClusterTableRepository")]
 public interface IClusterTableRepository : IGrainWithIntegerKey, IExternalRepositoryActorBase<ClusterTable, string>
 {
 }
