@@ -87,7 +87,6 @@ public class Startup
         services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
         services.AddSingleton<CommonData>();
         services.AddSingleton<DataHelper>();
-        services.AddSingleton<VisualStyleController>();
         services.AddScoped<ClientHub>();
         services.AddScoped<LocalStorage>();
         services.AddScoped<ResolverCommunicator>();
@@ -128,6 +127,7 @@ public class Startup
         where TType : class, IEntity<string>
     {
         var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
+
         if (options != null)
         {
             return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), options.Value.ConnectionString);

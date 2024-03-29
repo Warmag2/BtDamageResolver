@@ -5,7 +5,6 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @using Newtonsoft.Json
 @inject CommonData _commonData
-@inject VisualStyleController _visualStyleController
 @inject UserStateController _userStateController
 
 @{
@@ -45,13 +44,13 @@
                     <FormRadio Options="@_commonData.MapAttackModifier" SelectedOption="@WeaponBay.FiringSolution.AttackModifier" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int attackModifier) => OnAttackModifierChanged(attackModifier)"></FormRadio>
                 </td>
             </tr>
-            <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetDirectionHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
+            <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetDirectionHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
                 <td>Direction</td>
                 <td>
                     <FormRadio Options="@_commonData.MapFacing" SelectedOption="@WeaponBay.FiringSolution.Direction" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
                 </td>
             </tr>
-            <tr style="@(VisualStyleController.HideElement(_visualStyleController.GetCoverHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
+            <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetCoverHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
                 <td>Cover</td>
                 <td>
                     <FormRadio Options="@_commonData.FormMapCover(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))" SelectedOption="@WeaponBay.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>

@@ -3,7 +3,6 @@
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
-@inject VisualStyleController _visualStyleController
 
 @{
     var attackingUnitOwnedByYou = _userStateController.PlayerState.UnitEntries.Any(u => u.Id == DamageReport.FiringUnitId);

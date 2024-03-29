@@ -676,12 +676,10 @@
 }
 
 .emptydragtarget {
-    height: 0.5rem;
     background-color: var(--color_bg_weaponentry_active);
 }
 
 .emptydragtarget:hover {
-    height: 1rem;
     background-color: var(--color_bg_dragdrop);
 }
 

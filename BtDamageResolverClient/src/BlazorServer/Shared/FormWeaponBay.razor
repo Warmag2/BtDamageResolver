@@ -29,9 +29,12 @@
     {
         <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" WeaponBay="@WeaponBay" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnUpdate" OnDeleted="@OnWeaponDeleted" OnDragWeapon="@DragWeapon" OnDropWeapon="@DropWeapon" />
     }
-    <tr class="resolver_tr_weaponentry draggable" draggable="true" @ondrop="@(() => DropWeapon(-1))">
-        <td colspan="7" class="emptydragtarget" />
-    </tr>
+    @if (!UnitEntry.StaticDataHidden)
+    {
+        <tr class="resolver_tr_weaponentry draggable" draggable="true" @ondrop="@(() => DropWeapon(-1))">
+            <td colspan="7" class="emptydragtarget">end of list</td>
+        </tr>
+    }
     <tr>
         <td colspan="7">
             <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
