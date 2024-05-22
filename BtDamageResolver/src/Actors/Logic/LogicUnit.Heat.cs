@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -116,7 +117,7 @@ public partial class LogicUnit
             return;
         }
 
-        int calculatedSingleHitheat = combatAction.Weapon.Heat[combatAction.RangeBracket];
+        int calculatedSingleHitheat = ResolveHeatForSingleHit(combatAction);
         int heat;
 
         if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
@@ -132,5 +133,19 @@ public partial class LogicUnit
 
         hitCalculationDamageReport.Log(new AttackLogEntry { Context = combatAction.Weapon.Name, Type = AttackLogEntryType.Heat, Number = heat });
         hitCalculationDamageReport.AttackerHeat += heat;
+    }
+
+    /// <summary>
+    /// Resolve heat for a single hit instance.
+    /// </summary>
+    /// <remarks>
+    /// Version for normal units, which do not have weapons that have varying heat values for different ranges.
+    /// Aerospace units may have weapon bays where certain versions of weapons fire for different ranges and produce different amounts of heat.
+    /// </remarks>
+    /// <param name="combatAction">The combat action to resolve heat for.</param>
+    /// <returns>The heat produced.</returns>
+    protected virtual int ResolveHeatForSingleHit(CombatAction combatAction)
+    {
+        return combatAction.Weapon.Heat[RangeBracket.Short];
     }
 }

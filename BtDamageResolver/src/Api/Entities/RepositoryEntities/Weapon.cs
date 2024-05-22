@@ -84,6 +84,14 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     public int HitModifier { get; set; }
 
     /// <summary>
+    /// The multiply value for a weapon.
+    /// </summary>
+    /// <remarks>
+    /// Never set manually, only for keeping track of merged and multiplied weapons.
+    /// </remarks>
+    public int Instances { get; set; } = 1;
+
+    /// <summary>
     /// Dictionary of range bracket values.
     /// </summary>
     public Dictionary<RangeBracket, int> Range { get; set; }
@@ -320,6 +328,11 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     /// <returns><b>True</b> if the merge was successful, and <b>false</b> if it was not.</returns>
     public bool MergeIntoBay(Weapon weapon)
     {
+        if (!Ammo.DeepEquals(weapon.Ammo))
+        {
+            return false;
+        }
+
         if (AttackType != weapon.AttackType)
         {
             return false;
@@ -383,6 +396,8 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
             return false;
         }
 
+        Instances++;
+
         return true;
     }
 
@@ -401,6 +416,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
         weapon.Damage.Multiply(amount);
         DamageAerospace.Multiply(amount);
         Heat.Multiply(amount);
+        Instances = amount;
 
         foreach (var specialDamageEntry in SpecialDamage)
         {

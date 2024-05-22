@@ -9,11 +9,11 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Orleans.Client" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Orleans.Sdk" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Orleans.Serialization.SystemTextJson" Version="8.0.0" />
-    <PackageReference Include="Npgsql" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Orleans.Client" Version="8.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="8.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="8.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Serialization.SystemTextJson" Version="8.1.0" />
+    <PackageReference Include="Npgsql" Version="8.0.3" />
   </ItemGroup>
 
   <ItemGroup>

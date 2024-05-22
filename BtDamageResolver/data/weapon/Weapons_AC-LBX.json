@@ -9,7 +9,7 @@
     "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 5
+      "Short": 4
     },
     "DamageAerospace": {
       "Short": 3
@@ -38,7 +38,7 @@
     "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 9
+      "Short": 8
     },
     "DamageAerospace": {
       "Short": 5
@@ -67,10 +67,10 @@
     "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 12
+      "Short": 11
     },
     "DamageAerospace": {
-      "Short": 8
+      "Short": 7
     },
     "Range": {
       "PointBlank": 0,
@@ -125,7 +125,7 @@
     "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 5
+      "Short": 4
     },
     "DamageAerospace": {
       "Short": 3
@@ -154,7 +154,7 @@
     "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 9
+      "Short": 8
     },
     "DamageAerospace": {
       "Short": 5
@@ -183,10 +183,10 @@
     "AmmoDefault": "Slug",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 12
+      "Short": 11
     },
     "DamageAerospace": {
-      "Short": 8
+      "Short": 7
     },
     "Range": {
       "PointBlank": 0,

@@ -34,14 +34,7 @@ public partial class GameActor
         {
             var firstBayWithTarget = unitEntry.WeaponBays.Find(w => w.FiringSolution.Target != Guid.Empty);
 
-            if (firstBayWithTarget == null)
-            {
-                return Guid.Empty;
-            }
-            else
-            {
-                return firstBayWithTarget.FiringSolution.Target;
-            }
+            return firstBayWithTarget == null ? Guid.Empty : firstBayWithTarget.FiringSolution.Target;
         }
 
         return primaryTargetCandidate.Value;
@@ -107,7 +100,7 @@ public partial class GameActor
         {
             // I really want to clearly log any error in turn logic so I can fix it.
             _logger.LogError(ex, "Game {GameId} experienced a critical failure while running game state update events.", this.GetPrimaryKeyString());
-            throw;
+            throw new InvalidOperationException($"Error while running game state events for game {this.GetPrimaryKeyString()}", ex);
         }
     }
 

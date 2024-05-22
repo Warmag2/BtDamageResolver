@@ -100,7 +100,7 @@ public static class Program
             Console.WriteLine(e);
 
             // If silo is in starting state, cancel the cancellation token to interrupt it.
-            CancellationTokenSource.Cancel();
+            await CancellationTokenSource.CancelAsync();
         }
 
         SiloStopped.Set();

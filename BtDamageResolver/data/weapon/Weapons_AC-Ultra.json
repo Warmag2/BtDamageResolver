@@ -12,7 +12,7 @@
       "Short": 2
     },
     "DamageAerospace": {
-      "Short": 5
+      "Short": 6
     },
     "Range": {
       "PointBlank": 0,
@@ -67,10 +67,10 @@
     "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 12
+      "Short": 11
     },
     "DamageAerospace": {
-      "Short": 18
+      "Short": 16
     },
     "Range": {
       "PointBlank": 0,
@@ -128,7 +128,7 @@
       "Short": 2
     },
     "DamageAerospace": {
-      "Short": 5
+      "Short": 6
     },
     "Range": {
       "PointBlank": 0,
@@ -183,10 +183,10 @@
     "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 12
+      "Short": 11
     },
     "DamageAerospace": {
-      "Short": 18
+      "Short": 16
     },
     "Range": {
       "PointBlank": 0,

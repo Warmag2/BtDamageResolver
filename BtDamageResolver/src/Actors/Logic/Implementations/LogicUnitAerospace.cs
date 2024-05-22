@@ -144,6 +144,16 @@ public abstract class LogicUnitAerospace : LogicUnit
         return Clusterize(damage, damage, combatAction.Weapon.SpecialDamage);
     }
 
+    /// <summary>
+    /// Resolve heat for a single hit instance.
+    /// </summary>
+    /// <param name="combatAction">The combat action to resolve heat for.</param>
+    /// <returns>The heat produced.</returns>
+    protected override int ResolveHeatForSingleHit(CombatAction combatAction)
+    {
+        return combatAction.Weapon.Heat[combatAction.RangeBracket];
+    }
+
     /// <inheritdoc />
     protected override Task<int> ResolveTotalOutgoingDamage(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
     {

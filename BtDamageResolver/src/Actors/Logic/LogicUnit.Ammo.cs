@@ -75,6 +75,12 @@ public partial class LogicUnit
             ammoUsed = 1;
         }
 
+        if (combatAction.Weapon.Instances != 1)
+        {
+            ammoUsed *= combatAction.Weapon.Instances;
+            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} is a weapon bay with more than one weapon instances. Ammo usage multiplier", Number = combatAction.Weapon.Instances, Type = AttackLogEntryType.Calculation });
+        }
+
         hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} number of rounds of ammunition expended", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
         hitCalculationDamageReport.SpendAmmoAttacker(combatAction.Weapon.Name, ammoUsed);
     }
