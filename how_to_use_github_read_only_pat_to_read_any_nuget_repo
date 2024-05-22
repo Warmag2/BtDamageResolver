@@ -1,0 +1,22 @@
+Trying out the latest build
+
+After each commit to the master branch, a new pre-release NuGet package is automatically published to GitHub Packages. To try it out, follow the steps below:
+
+    Create a Personal Access Token (classic) with at least read:packages scope.
+
+    Add our package source to your local user-specific nuget.config file by running:
+
+    dotnet nuget add source https://nuget.pkg.github.com/json-api-dotnet/index.json --name github-json-api --username YOUR-GITHUB-USERNAME --password YOUR-PAT-CLASSIC
+
+In the command above:
+
+    Replace YOUR-GITHUB-USERNAME with the username you use to login your GitHub account.
+    Replace YOUR-PAT-CLASSIC with the token your created above.
+
+⚠️ If the above command doesn't give you access in the next step, remove the package source by running:
+
+dotnet nuget remove source github-json-api
+
+and retry with the --store-password-in-clear-text switch added.
+
+Restart your IDE, open your project, and browse the list of packages from the github-json-api feed (make sure pre-release packages are included).
