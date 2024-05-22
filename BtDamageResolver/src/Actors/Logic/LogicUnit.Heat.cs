@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic;
@@ -29,11 +29,11 @@ public partial class LogicUnit
 
         if (weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
-            heatGenerated = MathExpression.Parse(rapidFeatureEntry.Data) * weapon.Heat[rangeBracket];
+            heatGenerated = MathExpression.Parse(rapidFeatureEntry.Data) * ResolveHeatForSingleHit(weapon, rangeBracket);
         }
         else
         {
-            heatGenerated = weapon.Heat[rangeBracket];
+            heatGenerated = ResolveHeatForSingleHit(weapon, rangeBracket);
         }
 
         if (weapon.HasFeature(WeaponFeature.Streak, out var _))
@@ -117,7 +117,7 @@ public partial class LogicUnit
             return;
         }
 
-        int calculatedSingleHitheat = ResolveHeatForSingleHit(combatAction);
+        int calculatedSingleHitheat = ResolveHeatForSingleHit(combatAction.Weapon, combatAction.RangeBracket);
         int heat;
 
         if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
@@ -142,10 +142,11 @@ public partial class LogicUnit
     /// Version for normal units, which do not have weapons that have varying heat values for different ranges.
     /// Aerospace units may have weapon bays where certain versions of weapons fire for different ranges and produce different amounts of heat.
     /// </remarks>
-    /// <param name="combatAction">The combat action to resolve heat for.</param>
+    /// <param name="weapon">The weapon to resolve heat for.</param>
+    /// <param name="rangeBracket">The range bracket to resolve heat for.</param>
     /// <returns>The heat produced.</returns>
-    protected virtual int ResolveHeatForSingleHit(CombatAction combatAction)
+    protected virtual int ResolveHeatForSingleHit(Weapon weapon, RangeBracket rangeBracket)
     {
-        return combatAction.Weapon.Heat[RangeBracket.Short];
+        return weapon.Heat[RangeBracket.Short];
     }
 }

@@ -263,10 +263,10 @@ public partial class GameActor
                     var attackLog = new AttackLog();
                     var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
 
-                    var (targetNumber, _) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry, weaponBay, isPrimaryTarget);
+                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry, weaponBay, isPrimaryTarget);
 
                     var (ammoEstimate, ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, weaponEntry);
-                    var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, weaponEntry);
+                    var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, rangeBracket, weaponEntry);
 
                     var weaponAmmoCombinedString = string.IsNullOrEmpty(weaponEntry.Ammo) ? $"{weaponEntry.WeaponName}" : $"{weaponEntry.WeaponName} {weaponEntry.Ammo}";
                     targetNumberUpdate.AmmoEstimate.AddIfNotZero(weaponAmmoCombinedString, ammoEstimate);

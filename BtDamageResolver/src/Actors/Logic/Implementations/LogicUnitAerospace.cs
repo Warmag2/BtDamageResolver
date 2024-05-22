@@ -147,11 +147,15 @@ public abstract class LogicUnitAerospace : LogicUnit
     /// <summary>
     /// Resolve heat for a single hit instance.
     /// </summary>
-    /// <param name="combatAction">The combat action to resolve heat for.</param>
+    /// <remarks>
+    /// Calculation for capital ships.
+    /// </remarks>
+    /// <param name="weapon">The combat action to resolve heat for.</param>
+    /// <param name="rangeBracket">The range bracket to resolve heat for.</param>
     /// <returns>The heat produced.</returns>
-    protected override int ResolveHeatForSingleHit(CombatAction combatAction)
+    protected override int ResolveHeatForSingleHit(Weapon weapon, RangeBracket rangeBracket)
     {
-        return combatAction.Weapon.Heat[combatAction.RangeBracket];
+        return weapon.Heat[rangeBracket];
     }
 
     /// <inheritdoc />

@@ -143,9 +143,10 @@ public interface ILogicUnit
     /// Calculates projected heat generation for weapon.
     /// </summary>
     /// <param name="targetNumber">The target number.</param>
-    /// <param name="weaponEntry">The weapon entry to calculate projection for.</param>
+    /// <param name="rangeBracket">The range bracket to calculate the projection for.</param>
+    /// <param name="weaponEntry">The weapon entry to calculate the projection for.</param>
     /// <returns>A tuple containing the estimated and maximum heat generation.</returns>
-    Task<(decimal Estimate, int Max)> ProjectHeat(int targetNumber, WeaponEntry weaponEntry);
+    Task<(decimal Estimate, int Max)> ProjectHeat(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry);
 
     /// <summary>
     /// Transforms a cluster roll based on unit type and possible other properties.
