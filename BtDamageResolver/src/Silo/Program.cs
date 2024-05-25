@@ -110,9 +110,7 @@ public static class Program
     {
         var (clientPort, siloPort) = GetSiloPortConfigurationFromEnvironment();
         var configuration = GetConfiguration("SiloSettings.json");
-
         var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>();
-        Console.WriteLine($"CONNECTION STRING: {clusterOptions?.ConnectionString}");
 
         var siloHostBuilder = Host.CreateDefaultBuilder()
             .ConfigureAppConfiguration((_, config) => { config.AddConfiguration(configuration); })
