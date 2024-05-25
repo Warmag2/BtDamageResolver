@@ -2,6 +2,7 @@
     "UnitType": "MechTripod",
     "Arcs":
     [
+        "Full",
         "Front",
         "Left",
         "Right",

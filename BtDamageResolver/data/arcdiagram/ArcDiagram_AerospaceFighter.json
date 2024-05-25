@@ -2,9 +2,11 @@
     "UnitType": "AerospaceFighter",
     "Arcs":
     [
-        "Front",
+        "Nose",
         "LeftWing",
         "RightWing",
-        "Rear"
+        "LeftWingRear",
+        "RightWingRear",
+        "Aft"
     ]
 }

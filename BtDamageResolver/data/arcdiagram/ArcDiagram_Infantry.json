@@ -2,9 +2,6 @@
     "UnitType": "Infantry",
     "Arcs":
     [
-        "Front",
-        "LeftWing",
-        "RightWing",
-        "Rear"
+        "Full"
     ]
 }

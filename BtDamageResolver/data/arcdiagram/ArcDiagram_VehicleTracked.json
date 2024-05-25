@@ -2,9 +2,10 @@
     "UnitType": "VehicleTracked",
     "Arcs":
     [
+        "Full",
         "Front",
-        "LeftWing",
-        "RightWing",
+        "Left",
+        "Right",
         "Rear"
     ]
 }
