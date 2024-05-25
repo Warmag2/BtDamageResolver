@@ -61,7 +61,7 @@ public partial class LogicUnit
 
         if (weaponEntry.Amount > 1)
         {
-            weapon = weapon.Multiply(weaponEntry.Amount);
+            return weapon.Multiply(weaponEntry.Amount);
         }
 
         return weapon;

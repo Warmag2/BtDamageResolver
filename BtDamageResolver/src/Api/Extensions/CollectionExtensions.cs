@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Extensions;
@@ -69,6 +70,29 @@ public static class CollectionExtensions
             {
                 return false;
             }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Compare list contents.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the item in the <see cref="List{TItem}"/>.</typeparam>
+    /// <param name="input">The base <see cref="List{TItem}"/>.</param>
+    /// <param name="other">The <see cref="List{TItem}"/> to compare to.</param>
+    /// <returns><b>True</b> if list contents are identical, <b>false</b> otherwise.</returns>
+    public static bool DeepEquals<TItem>(this List<TItem> input, List<TItem> other)
+        where TItem : IEquatable<TItem>
+    {
+        if (input.Count != other.Count)
+        {
+           return false;
+        }
+
+        if (!input.TrueForAll(s => other.Exists(f => s.Equals(f))))
+        {
+           return false;
         }
 
         return true;

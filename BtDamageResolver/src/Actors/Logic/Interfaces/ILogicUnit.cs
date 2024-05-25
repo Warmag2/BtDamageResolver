@@ -135,9 +135,10 @@ public interface ILogicUnit
     /// Calculates projected ammo usage for weapon.
     /// </summary>
     /// <param name="targetNumber">The target number.</param>
+    /// <param name="rangeBracket">The range bracket to calculate the projection for.</param>
     /// <param name="weaponEntry">The weapon entry to calculate projection for.</param>
     /// <returns>A tuple containing the estimated and maximum ammo usage.</returns>
-    Task<(decimal Estimate, int Max)> ProjectAmmo(int targetNumber, WeaponEntry weaponEntry);
+    Task<(decimal Estimate, int Max)> ProjectAmmo(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry);
 
     /// <summary>
     /// Calculates projected heat generation for weapon.

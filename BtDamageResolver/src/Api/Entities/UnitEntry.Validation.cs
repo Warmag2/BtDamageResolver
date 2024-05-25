@@ -194,16 +194,16 @@ public partial class UnitEntry
         // Weapon bay mergers for capital aerospace when a bay has more than 1 weapon
         foreach (var weaponBay in WeaponBays.Where(w => w.Weapons.Count > 1))
         {
-            var nameToMatch = weaponBay.Weapons[0].WeaponName;
+            var ammoNameToMatch = weaponBay.Weapons[0].Ammo;
 
             switch (Type)
             {
                 case UnitType.AerospaceCapital:
                 case UnitType.AerospaceDropshipAerodyne:
                 case UnitType.AerospaceDropshipSpheroid:
-                    if (weaponBay.Weapons.Exists(w => w.WeaponName != nameToMatch))
+                    if (weaponBay.Weapons.Exists(w => w.Ammo != ammoNameToMatch))
                     {
-                        validationResult.Fail($"Unit of type {Type} can not form a bay from nonidentical weapons. Offending bay: {weaponBay.Name}.");
+                        validationResult.Fail($"Unit of type {Type} has weapons with differing ammo in its bay. Offending bay: {weaponBay.Name}.");
                     }
 
                     break;

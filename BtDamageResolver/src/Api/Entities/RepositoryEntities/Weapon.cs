@@ -31,6 +31,11 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     public AttackType AttackType { get; set; }
 
     /// <summary>
+    /// The ammo that is currently applied to the weapon, if any.
+    /// </summary>
+    public string AppliedAmmo { get; set; }
+
+    /// <summary>
     /// Is the weapon capital scale.
     /// </summary>
     public bool CapitalScale { get; set; }
@@ -84,10 +89,10 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     public int HitModifier { get; set; }
 
     /// <summary>
-    /// The multiply value for a weapon.
+    /// How many instances of a single weapon are present in this weapon.
     /// </summary>
     /// <remarks>
-    /// Never set manually, only for keeping track of merged and multiplied weapons.
+    /// Only applies for multiplied weapons. Never set this explicitly, use the Multiply method instead.
     /// </remarks>
     public int Instances { get; set; } = 1;
 
@@ -153,7 +158,14 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     /// <returns>The weapon with the ammo applied.</returns>
     public Weapon ApplyAmmo(Ammo ammo)
     {
+        if (AppliedAmmo != null)
+        {
+            throw new InvalidOperationException($"Weapon already has ammo {AppliedAmmo} applied to it. Can not apply ammo {ammo.Name}.");
+        }
+
         var applyTarget = Copy();
+
+        applyTarget.AppliedAmmo = ammo.Name;
 
         if (ammo.ClusterBonus != null)
         {
@@ -272,6 +284,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
         {
             Ammo = Ammo.Copy(),
             AmmoDefault = AmmoDefault,
+            AppliedAmmo = AppliedAmmo,
             AttackType = AttackType,
             ClusterBonus = ClusterBonus.Copy(),
             ClusterDamage = ClusterDamage,
@@ -281,6 +294,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
             DamageAerospace = DamageAerospace.Copy(),
             Heat = Heat,
             HitModifier = HitModifier,
+            Instances = Instances,
             Name = Name,
             Range = Range.Copy(),
             RangeAerospace = RangeAerospace,
@@ -328,11 +342,6 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     /// <returns><b>True</b> if the merge was successful, and <b>false</b> if it was not.</returns>
     public bool MergeIntoBay(Weapon weapon)
     {
-        if (!Ammo.DeepEquals(weapon.Ammo))
-        {
-            return false;
-        }
-
         if (AttackType != weapon.AttackType)
         {
             return false;
@@ -348,13 +357,15 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
             return false;
         }
 
-        if (ClusterDamage != weapon.ClusterDamage || ClusterSize != weapon.ClusterSize || ClusterTable != weapon.ClusterTable)
+        if (ClusterDamage != weapon.ClusterDamage ||
+            ClusterSize != weapon.ClusterSize ||
+            ClusterTable != weapon.ClusterTable)
         {
             return false;
         }
 
         Damage.MergeAdditionally(weapon.Damage);
-        DamageAerospace.MergeAdditionally(weapon.Damage);
+        DamageAerospace.MergeAdditionally(weapon.DamageAerospace);
         Heat.MergeAdditionally(weapon.Heat);
 
         if (HitModifier != weapon.HitModifier)
@@ -375,13 +386,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
 
         MergeSpecialDamageEntries(weapon.SpecialDamage);
 
-        if (!SpecialDamage.Equals(weapon.SpecialDamage))
-        {
-            return false;
-        }
-
-        // Tricky shit
-        if (SpecialFeatures.Count != weapon.SpecialFeatures.Count || !SpecialFeatures.TrueForAll(s => weapon.SpecialFeatures.Exists(f => s.Equals(f))))
+        if (!SpecialFeatures.DeepEquals(weapon.SpecialFeatures))
         {
             return false;
         }
@@ -395,8 +400,6 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
         {
             return false;
         }
-
-        Instances++;
 
         return true;
     }
@@ -414,11 +417,11 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
         var weapon = Copy();
 
         weapon.Damage.Multiply(amount);
-        DamageAerospace.Multiply(amount);
-        Heat.Multiply(amount);
-        Instances = amount;
+        weapon.DamageAerospace.Multiply(amount);
+        weapon.Heat.Multiply(amount);
+        weapon.Instances = amount;
 
-        foreach (var specialDamageEntry in SpecialDamage)
+        foreach (var specialDamageEntry in weapon.SpecialDamage)
         {
             var oneInstance = specialDamageEntry.Data;
 

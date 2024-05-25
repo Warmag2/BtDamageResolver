@@ -33,7 +33,7 @@
         }
         else
         {
-            <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsWeaponAmount" SelectedOption="@WeaponEntry.Amount" Min =1 Max=12 Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+            <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsWeaponAmount" SelectedOption="@WeaponEntry.Amount" Min =1 Max=12 Width=3 Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
         }
     </td>
     <td class="resolver_td_weaponname">
@@ -49,7 +49,7 @@
     <td>
         @if (_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))
         {
-            <FormComboBox Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormComboBox>
+            <FormSelect Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
         }
     </td>
     <td>

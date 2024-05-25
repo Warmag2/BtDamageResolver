@@ -2,7 +2,7 @@
 @typeparam TItem
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
-<input class="resolver_input resolver_input_text @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="text" disabled="@Disabled" @bind="SelectedOptionInternal" @oninput="AdjustOptionList" @onfocus="ShowComboBoxItems" @onfocusout="CheckHideComboBoxItems" @onkeypress="@(e => CheckForClose(e))">
+<input class="resolver_input resolver_input_text @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : string.Empty)" type="text" disabled="@Disabled" @bind="SelectedOptionInternal" @oninput="AdjustOptionList" @onfocus="ShowComboBoxItems" @onfocusout="CheckHideComboBoxItems" @onkeypress="@(e => CheckForClose(e))">
 
 <div class="resolver_div_combobox" style="@VisualStyleController.HideElement(_comboBoxItemsHidden)">
     @foreach (var option in Options)
