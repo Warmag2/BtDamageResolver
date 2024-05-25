@@ -79,7 +79,7 @@ public abstract partial class LogicUnit
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target movement amount", Type = AttackLogEntryType.Calculation, Number = modifierMovement });
 
-        var modifierEvasion = target.GetEvasionModifier();
+        var modifierEvasion = GetEvasionModifier(target);
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target evasion", Type = AttackLogEntryType.Calculation, Number = modifierEvasion });
 
@@ -310,6 +310,25 @@ public abstract partial class LogicUnit
         }
 
         return 0;
+    }
+
+    private static int GetEvasionModifier(ILogicUnit target)
+    {
+        switch (target.Unit.Type)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                if (target.Unit.Evading)
+                {
+                    return target.GetEvasionModifier();
+                }
+
+                return 0;
+            default:
+                return 0;
+        }
     }
 
     private static int GetMovementClassModifier(ILogicUnit target, Weapon weapon)
