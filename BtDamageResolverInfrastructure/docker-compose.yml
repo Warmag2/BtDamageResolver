@@ -24,8 +24,8 @@ services:
     image: resolverclient:latest
     environment:
       ASPNETCORE_ENVIRONMENT: Release
-      Kestrel__Certificates__Default__Path: "./certs/fullchain.pem"
-      Kestrel__Certificates__Default__KeyPath: "./certs/privkey.pem"
+        #      Kestrel__Certificates__Default__Path: "./certs/fullchain.pem"
+        #      Kestrel__Certificates__Default__KeyPath: "./certs/privkey.pem"
       RESOLVER_ENVIRONMENT: Release
       CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     volumes:

@@ -1,8 +1,4 @@
 #!/bin/sh
-# Copy your certs inside the mount points here
-cp -L /path/to/fullchain.pem ./certs/fullchain.pem
-cp -L /path/to/privkey.pem ./certs/privkey.pem
-
 docker build --tag orleansdb -f ./postgresql/Dockerfile ./postgresql/
 chmod -R o+rx dashboards/
 chmod -R o+rx datasources/
