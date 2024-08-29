@@ -119,8 +119,6 @@ public class Startup
         app.UseRouting();
         app.UseAntiforgery();
 
-        //app.UseHsts();
-
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapBlazorHub();
