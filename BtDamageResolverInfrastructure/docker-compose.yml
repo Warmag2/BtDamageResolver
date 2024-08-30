@@ -32,7 +32,7 @@ services:
       - ./certs:/app/certs:ro
       - ./dpkeys:/app/dpkeys
     ports:
-      - 18787:8080
+      - 8787:8080
     networks:
       - resolvernet
     depends_on:
