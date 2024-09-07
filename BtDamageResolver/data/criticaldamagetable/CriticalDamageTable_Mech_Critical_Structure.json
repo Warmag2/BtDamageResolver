@@ -1,6 +1,6 @@
 {
   "Type": "Critical",
-  "Location": "Front",
+  "Location": "Structure",
   "UnitType": "Mech",
   "Mapping": {
     "2": [ "None" ],
