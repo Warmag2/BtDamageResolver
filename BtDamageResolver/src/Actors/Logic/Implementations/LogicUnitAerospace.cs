@@ -59,7 +59,7 @@ public abstract class LogicUnitAerospace : LogicUnit
             case Direction.Top:
                 return 2;
             default:
-                throw new InvalidOperationException($"Unexpected direction: {direction}");
+                throw new InvalidOperationException($"Unexpected direction for movement direction modifier: {direction}");
         }
     }
 

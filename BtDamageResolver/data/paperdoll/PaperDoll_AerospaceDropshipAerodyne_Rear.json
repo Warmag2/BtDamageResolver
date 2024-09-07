@@ -1,0 +1,31 @@
+{
+  "Type": "AerospaceDrophsipAerodyne",
+  "AttackType": "Normal",
+  "Direction": "Rear",
+  "LocationMapping": {
+    "2": [ "Rear" ],
+    "3": [ "Rear" ],
+    "4": [ "Right" ],
+    "5": [ "Right" ],
+    "6": [ "Rear" ],
+    "7": [ "Rear" ],
+    "8": [ "Rear" ],
+    "9": [ "Left" ],
+    "10": [ "Left" ],
+    "11": [ "Rear" ],
+    "12": [ "Rear" ]
+  },
+  "CriticalDamageMapping": {
+    "2": "Critical",
+    "3": "Critical",
+    "4": "Critical",
+    "5": "Critical",
+    "6": "Critical",
+    "7": "Critical",
+    "8": "Critical",
+    "9": "Critical",
+    "10": "Critical",
+    "11": "Critical",
+    "12": "Critical"
+  }
+}

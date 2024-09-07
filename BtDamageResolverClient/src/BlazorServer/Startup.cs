@@ -49,7 +49,7 @@ public class Startup
     /// For more information on how to configure your application, see https://go.microsoft.com/fwlink/?LinkID=398940.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    public void ConfigureServices(IServiceCollection services)
+    public static void ConfigureServices(IServiceCollection services)
     {
         var configuration = GetConfiguration("CommunicationSettings.json");
 

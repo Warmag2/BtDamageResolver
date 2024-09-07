@@ -43,7 +43,7 @@
                 <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetCoverHidden(_userStateController.GetUnitType(_targetUnit))))">
                     <td>Cover</td>
                     <td>
-                        <FormRadio Options="@_commonData.FormMapCover(_userStateController.GetUnitType(_targetUnit))" SelectedOption="@_cover" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
+                        <FormRadio Options="@CommonData.FormMapCover(_userStateController.GetUnitType(_targetUnit))" SelectedOption="@_cover" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
                     </td>
                 </tr>
                 <tr>

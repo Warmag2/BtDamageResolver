@@ -79,6 +79,16 @@ public enum Arc
     FrontRight,
 
     /// <summary>
+    /// Capital ship left broadside.
+    /// </summary>
+    BroadsideLeft,
+
+    /// <summary>
+    /// Capital ship right broadside.
+    /// </summary>
+    BroadsideRight,
+
+    /// <summary>
     /// Capital ship rear left.
     /// </summary>
     RearLeft,

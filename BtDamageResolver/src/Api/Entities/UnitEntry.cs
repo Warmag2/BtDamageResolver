@@ -204,7 +204,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             case MovementClass.OutOfControl:
                 return (int)Math.Ceiling(GetCurrentSpeedInternal(accountForHeat) * 1.5m);
             default:
-                throw new InvalidOperationException($"Movement class {MovementClass} not handled.");
+                throw new InvalidOperationException($"No current speed handling for movement class: {MovementClass}");
         }
     }
 
