@@ -10,5 +10,4 @@ RUN dotnet publish "BlazorServer.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-EXPOSE 8787
 ENTRYPOINT ["dotnet", "BlazorServer.dll"]

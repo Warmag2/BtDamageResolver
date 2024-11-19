@@ -102,11 +102,11 @@ public class UnitList
     /// <returns><b>True</b> if the unit entry is newer than its instance in this list or if it does not exist in this list.</returns>
     private bool IsNewOrNewer(UnitEntry unit)
     {
-        if (!_unitEntries.ContainsKey(unit.Id))
+        if (!_unitEntries.TryGetValue(unit.Id, out var value))
         {
             return true;
         }
 
-        return _unitEntries[unit.Id].TimeStamp < unit.TimeStamp;
+        return value.TimeStamp < unit.TimeStamp;
     }
 }

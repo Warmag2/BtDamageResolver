@@ -87,7 +87,7 @@ public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClie
                 await HandleTargetNumberUpdates(envelope.Data, envelope.CorrelationId);
                 break;
             default:
-                Logger.LogWarning("A client has sent data with unknown handling type {handlingType}.", envelope.Type);
+                Logger.LogWarning("A client has sent data with unknown handling type {HandlingType}.", envelope.Type);
                 break;
         }
     }

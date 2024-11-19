@@ -4,12 +4,11 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
-@inject VisualStyleController _visualStyleController
 @inject UserStateController _userStateController
 @implements IDisposable
 
 @{
-    var targetNumberUpdate = _userStateController.GetTargetNumberUpdateSingleWeapon(Unit.Id, WeaponEntry.Id);
+    var targetNumberUpdate = _userStateController.GetTargetNumberUpdateSingleWeapon(UnitEntry.Id, WeaponEntry.Id);
     var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
     var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName);
@@ -20,34 +19,44 @@
     }
 }
 
-<tr class="resolver_tr_weaponentry @(WeaponEntry.State == WeaponState.Active ? "active" : string.Empty)">
-    <td class="resolver_td_targetnumber draggable" draggable="true" @ondrag="@(()=> StartDrag(WeaponEntry))" @ondrop="@(()=> Drop(WeaponEntry))" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', @calculationLog);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
-        <b>@targetNumber</b>
+<tr class="resolver_tr_weaponentry draggable @(WeaponEntry.State == WeaponState.Active ? "active" : string.Empty)" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
+    <td class="resolver_td_targetnumber" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', @calculationLog);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
+        <b>@(targetNumber)</b>
     </td>
     <td>
         <FormToggle Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(_userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormToggle>
     </td>
+    <td style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponAmountHidden(UnitEntry.Type) && WeaponEntry.Amount == 1)">
+        @if (UnitEntry.StaticDataHidden)
+        {
+            <b>@WeaponEntry.Amount</b>
+        }
+        else
+        {
+            <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsWeaponAmount" SelectedOption="@WeaponEntry.Amount" Min =1 Max=12 Width=3 Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+        }
+    </td>
     <td class="resolver_td_weaponname">
-        @if (Unit.StaticDataHidden)
+        @if (UnitEntry.StaticDataHidden)
         {
             <b>@WeaponEntry.WeaponName</b>
         }
         else
         {
-            <FormComboBox Options="@_commonData.FormMapWeaponName(Unit.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
+            <FormComboBox Options="@_commonData.FormMapWeaponName(UnitEntry.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
         }
     </td>
     <td>
         @if (_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))
         {
-            <FormComboBox Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormComboBox>
+            <FormSelect Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
         }
     </td>
     <td>
         <button class="resolver_button" disabled="@Disabled" @onclick="MoveUp"><b>&uarr;</b></button>
         <button class="resolver_button" disabled="@Disabled" @onclick="MoveDown"><b>&darr;</b></button>
     </td>
-    <td style="@VisualStyleController.HideElement(Unit.StaticDataHidden)">
+    <td style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
         <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeapon">X</button>
     </td>
 </tr>
@@ -55,31 +64,39 @@
 @code
 {
     private string _weaponAmmo;
+    private int _weaponAmount;
     private WeaponState _weaponState;
     private string _weaponName;
+
+    [Parameter]
+    public WeaponBay WeaponBay { get; set; }
 
     [Parameter]
     public WeaponEntry WeaponEntry { get; set; }
 
     [Parameter]
-    public UnitEntry Unit { get; set; }
+    public UnitEntry UnitEntry { get; set; }
 
     [Parameter]
     public bool Disabled { get; set; }
 
     [Parameter]
-    public EventCallback<WeaponEntry> OnChanged { get; set; }
+    public EventCallback OnChanged { get; set; }
 
     [Parameter]
     public EventCallback<WeaponEntry> OnDeleted { get; set; }
 
     [Parameter]
-    public EventCallback<SwapTuple> OnSwap { get; set; }
+    public EventCallback<int> OnDragWeapon { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnDropWeapon { get; set; }
 
     protected override void OnInitialized()
     {
         // Necessary to set this way, because otherwise disabling the controls may emit null or incorrect values upwards.
         _weaponAmmo = WeaponEntry.Ammo;
+        _weaponAmount = WeaponEntry.Amount;
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
         _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
@@ -104,6 +121,11 @@
             WeaponEntry.Ammo = _weaponAmmo;
             anythingChanged = true;
         }
+        if (WeaponEntry.Amount != _weaponAmount)
+        {
+            WeaponEntry.Amount = _weaponAmount;
+            anythingChanged = true;
+        }
         if (WeaponEntry.State != _weaponState)
         {
             WeaponEntry.State = _weaponState;
@@ -123,6 +145,12 @@
         UpdateWeaponEntry();
     }
 
+    private void OnWeaponAmountChanged(int amount)
+    {
+        _weaponAmount = amount;
+        UpdateWeaponEntry();
+    }
+
     private void OnWeaponNameChanged(string name)
     {
         _weaponName = name;
@@ -137,44 +165,43 @@
 
     public void MoveUp()
     {
-        var index = Unit.Weapons.IndexOf(WeaponEntry);
+        var index = WeaponBay.Weapons.IndexOf(WeaponEntry);
 
         if (index >= 1)
         {
-            OnSwap.InvokeAsync(new SwapTuple(index - 1, index));
+            Swap(index - 1, index);
         }
     }
 
     public void MoveDown()
     {
-        var index = Unit.Weapons.IndexOf(WeaponEntry);
+        var index = WeaponBay.Weapons.IndexOf(WeaponEntry);
 
-        if (index < Unit.Weapons.Count - 1)
+        if (index < WeaponBay.Weapons.Count - 1)
         {
-            OnSwap.InvokeAsync(new SwapTuple(index, index + 1));
+            Swap(index, index + 1);
         }
+    }
+
+    private void Swap(int i1, int i2)
+    {
+        var swapTarget = WeaponBay.Weapons[i2];
+        WeaponBay.Weapons[i2] = WeaponBay.Weapons[i1];
+        WeaponBay.Weapons[i1] = swapTarget;
+
+        OnChanged.InvokeAsync();
     }
 
     #region dragdrop
 
-    void StartDrag(WeaponEntry weaponEntry)
+    private void Drag()
     {
-        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(Unit);
-        _userStateController.DraggedWeaponIndex = _userStateController.PlayerState.UnitEntries[_userStateController.DraggedUnitIndex].Weapons.IndexOf(weaponEntry);
+        OnDragWeapon.InvokeAsync(WeaponBay.Weapons.IndexOf(WeaponEntry));
     }
 
-    void Drop(WeaponEntry weaponEntry)
+    private void Drop()
     {
-        if (weaponEntry != null)
-        {
-            var unitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(Unit);
-
-            if (unitIndex == _userStateController.DraggedUnitIndex)
-            {
-                var targetWeaponIndex = _userStateController.PlayerState.UnitEntries[unitIndex].Weapons.IndexOf(weaponEntry);
-                OnSwap.InvokeAsync(new SwapTuple(_userStateController.DraggedWeaponIndex, targetWeaponIndex));
-            }
-        }
+        OnDropWeapon.InvokeAsync(WeaponBay.Weapons.IndexOf(WeaponEntry));
     }
 
     #endregion

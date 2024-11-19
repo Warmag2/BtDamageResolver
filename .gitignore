@@ -160,3 +160,6 @@ __pycache__/
 
 # Docker-Compose environment
 BtDamageResolverInfrastructure/.env
+
+# Possible resource files
+BtDamageResolverInfrastructure/dpkeys/

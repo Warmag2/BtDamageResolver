@@ -1,12 +1,11 @@
 ﻿@inherits BaseFaemiyahComponent
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@inject VisualStyleController _visualStyleController
 
 <div class="resolver_div_tabcontainer" style="@VisualStyleController.HideElement(!Enabled)">
     @foreach (var tab in TabNames)
     {
         <div class="resolver_div_tab">
-            <button class="@_visualStyleController.GetActiveClass(SelectedTab == tab)" @onclick="@(() => Select(tab))">@tab</button>
+            <button class="@VisualStyleController.GetActiveClass(SelectedTab == tab)" @onclick="@(() => Select(tab))">@tab</button>
         </div>
     }
     @ChildContent

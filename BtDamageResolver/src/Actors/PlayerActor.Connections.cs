@@ -18,7 +18,7 @@ public partial class PlayerActor
     {
         if (password == null)
         {
-            _logger.LogError("Player {playerId} connection request is malformed.", this.GetPrimaryKeyString());
+            _logger.LogError("Player {PlayerId} connection request is malformed.", this.GetPrimaryKeyString());
             return false;
         }
 
@@ -27,7 +27,7 @@ public partial class PlayerActor
         {
             (_playerActorState.State.PasswordHash, _playerActorState.State.PasswordSalt) = _hasher.Hash(password);
             await _playerActorState.WriteStateAsync();
-            _logger.LogInformation("New password and salt created for Player {playerId}.", this.GetPrimaryKeyString());
+            _logger.LogInformation("New password and salt created for Player {PlayerId}.", this.GetPrimaryKeyString());
         }
 
         if (_hasher.Verify(password, _playerActorState.State.PasswordSalt, _playerActorState.State.PasswordHash))
@@ -41,7 +41,7 @@ public partial class PlayerActor
             return true;
         }
 
-        _logger.LogWarning("Player {playerId} has received a failed connection request from a client. Incorrect password.", this.GetPrimaryKeyString());
+        _logger.LogWarning("Player {PlayerId} has received a failed connection request from a client. Incorrect password.", this.GetPrimaryKeyString());
 
         await SendErrorMessageToClient($"Player {this.GetPrimaryKeyString()} has received a failed connection request from a client.Incorrect password.");
 
@@ -58,7 +58,7 @@ public partial class PlayerActor
             return true;
         }
 
-        _logger.LogWarning("Player {playerId} has received a failed connection request from a client. Incorrect or expired authentication token.", this.GetPrimaryKeyString());
+        _logger.LogWarning("Player {PlayerId} has received a failed connection request from a client. Incorrect or expired authentication token.", this.GetPrimaryKeyString());
 
         await SendErrorMessageToClient($"Player {this.GetPrimaryKeyString()} has received a failed connection request from a client. Incorrect or expired authentication token. Please login with a password.");
 
@@ -70,13 +70,13 @@ public partial class PlayerActor
     {
         if (!await CheckAuthentication(authenticationToken))
         {
-            _logger.LogWarning("Player {playerId} has received a failed disconnection request from a client. Incorrect password.", this.GetPrimaryKeyString());
+            _logger.LogWarning("Player {PlayerId} has received a failed disconnection request from a client. Incorrect password.", this.GetPrimaryKeyString());
             return false;
         }
 
         if (IsConnectedToGame() && !await LeaveGame(authenticationToken))
         {
-            _logger.LogWarning("Player {playerId} has failed to disconnect while signing out.", this.GetPrimaryKeyString());
+            _logger.LogWarning("Player {PlayerId} has failed to disconnect while signing out.", this.GetPrimaryKeyString());
             await SendErrorMessageToClient($"Inconsistent state. Player {this.GetPrimaryKeyString()} Unable to sign out of the active game. {_playerActorState.State.GameId}");
         }
 
@@ -101,16 +101,16 @@ public partial class PlayerActor
         {
             if (gameId != _playerActorState.State.GameId)
             {
-                _logger.LogWarning("Player {playerId} trying to connect to a game {oldGameId} while being connected to game {newGameId}. Disconnecting first.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, gameId);
+                _logger.LogWarning("Player {PlayerId} trying to connect to a game {OldGameId} while being connected to game {NewGameId}. Disconnecting first.", this.GetPrimaryKeyString(), _playerActorState.State.GameId, gameId);
                 if (!await LeaveGame(authenticationToken))
                 {
-                    _logger.LogError("Player {playerId} failed to disconnect from {oldGameId}. Cannot join another game.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
+                    _logger.LogError("Player {PlayerId} failed to disconnect from {OldGameId}. Cannot join another game.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
                     await SendErrorMessageToClient($"Inconsistent state. Player {this.GetPrimaryKeyString()} claims to be a member of game {_playerActorState.State.GameId} but cannot disconnect.");
                     return false;
                 }
             }
 
-            _logger.LogInformation("Player {playerId} trying to connect to a game {oldGameId} while already connected to it. Falling back to resending join request.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
+            _logger.LogInformation("Player {PlayerId} trying to connect to a game {OldGameId} while already connected to it. Falling back to resending join request.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
         }
 
         return await JoinGameInternal(gameId, password);
@@ -132,7 +132,7 @@ public partial class PlayerActor
 
         if (!IsConnectedToGame())
         {
-            _logger.LogInformation("Player {id} tried to disconnect from game but is not in a game.", this.GetPrimaryKeyString());
+            _logger.LogInformation("Player {PlayerId} tried to disconnect from game but is not in a game.", this.GetPrimaryKeyString());
             await MarkDisconnectedStateAndSendToClient();
 
             return true;
@@ -140,13 +140,13 @@ public partial class PlayerActor
 
         if (await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).LeaveGame(this.GetPrimaryKeyString()))
         {
-            _logger.LogInformation("Player {id} successfully disconnected from the game {game}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
+            _logger.LogInformation("Player {PlayerId} successfully disconnected from the game {GameId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
             await MarkDisconnectedStateAndSendToClient();
 
             return true;
         }
 
-        _logger.LogInformation("Player {id} failed to disconnect from the {game}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
+        _logger.LogInformation("Player {PlayerId} failed to disconnect from the {GameId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
 
         return false;
     }
@@ -157,7 +157,7 @@ public partial class PlayerActor
 
         if (await gameActor.JoinGame(this.GetPrimaryKeyString(), password))
         {
-            _logger.LogInformation("Player {id} successfully connected to the game {game}.", this.GetPrimaryKeyString(), gameId);
+            _logger.LogInformation("Player {PlayerId} successfully connected to the game {GameId}.", this.GetPrimaryKeyString(), gameId);
             _playerActorState.State.GameId = gameId;
             _playerActorState.State.GamePassword = password;
             await _playerActorState.WriteStateAsync();
@@ -174,7 +174,7 @@ public partial class PlayerActor
             return true;
         }
 
-        _logger.LogInformation("Player {id} failed to connect to the game {game}.", this.GetPrimaryKeyString(), gameId);
+        _logger.LogInformation("Player {PlayerId} failed to connect to the game {GameId}.", this.GetPrimaryKeyString(), gameId);
 
         return false;
     }
@@ -190,7 +190,7 @@ public partial class PlayerActor
 
     private async Task PerformConnectionActions()
     {
-        _logger.LogInformation("Player {playerId} received a successful connection request from a client.", this.GetPrimaryKeyString());
+        _logger.LogInformation("Player {PlayerId} received a successful connection request from a client.", this.GetPrimaryKeyString());
 
         // Send personal state objects
         await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));

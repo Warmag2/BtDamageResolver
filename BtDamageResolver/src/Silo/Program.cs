@@ -61,6 +61,8 @@ public static class Program
 
         // Wait for the silo to completely shutdown before exiting.
         SiloStopped.WaitOne();
+
+        CancellationTokenSource.Dispose();
     }
 
     private static void SetupApplicationShutdown()
@@ -98,7 +100,7 @@ public static class Program
             Console.WriteLine(e);
 
             // If silo is in starting state, cancel the cancellation token to interrupt it.
-            CancellationTokenSource.Cancel();
+            await CancellationTokenSource.CancelAsync();
         }
 
         SiloStopped.Set();
@@ -108,9 +110,7 @@ public static class Program
     {
         var (clientPort, siloPort) = GetSiloPortConfigurationFromEnvironment();
         var configuration = GetConfiguration("SiloSettings.json");
-
         var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>();
-        Console.WriteLine($"CONNECTION STRING: {clusterOptions?.ConnectionString}");
 
         var siloHostBuilder = Host.CreateDefaultBuilder()
             .ConfigureAppConfiguration((_, config) => { config.AddConfiguration(configuration); })
@@ -184,6 +184,7 @@ public static class Program
                         services.AddSingleton<IMathExpression, MathExpression>();
                         services.AddSingleton<IResolverRandom, ResolverRandom>();
                         services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
+                        services.AddSingleton<IEntityRepository<ArcDiagram, string>>(GetRedisEntityRepository<ArcDiagram>);
                         services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
                         services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
                         services.AddSingleton<IEntityRepository<GameEntry, string>>(GetRedisEntityRepository<GameEntry>);
@@ -191,6 +192,7 @@ public static class Program
                         services.AddSingleton<IEntityRepository<Unit, string>>(GetRedisEntityRepository<Unit>);
                         services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
                         services.AddSingleton<CachedEntityRepository<Ammo, string>, CachedEntityRepository<Ammo, string>>();
+                        services.AddSingleton<CachedEntityRepository<ArcDiagram, string>, CachedEntityRepository<ArcDiagram, string>>();
                         services.AddSingleton<CachedEntityRepository<ClusterTable, string>, CachedEntityRepository<ClusterTable, string>>();
                         services.AddSingleton<CachedEntityRepository<CriticalDamageTable, string>, CachedEntityRepository<CriticalDamageTable, string>>();
                         services.AddSingleton<CachedEntityRepository<GameEntry, string>, CachedEntityRepository<GameEntry, string>>();
@@ -199,25 +201,6 @@ public static class Program
                         services.AddSingleton<CachedEntityRepository<Weapon, string>, CachedEntityRepository<Weapon, string>>();
                         services.AddSingleton<DataHelper>();
                     });
-                    /*.AddStartupTask((serviceProvider, _) =>
-                    {
-                        var ammoRepository = serviceProvider.GetService<CachedEntityRepository<Ammo, string>>();
-                        var clusterTableRepository = serviceProvider.GetService<CachedEntityRepository<ClusterTable, string>>();
-                        var criticalDamageRepository = serviceProvider.GetService<CachedEntityRepository<CriticalDamageTable, string>>();
-                        var paperDollRepository = serviceProvider.GetService<CachedEntityRepository<PaperDoll, string>>();
-                        var unitRepository = serviceProvider.GetService<CachedEntityRepository<Unit, string>>();
-                        var weaponRepository = serviceProvider.GetService<CachedEntityRepository<Weapon, string>>();
-                        var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-                        var logger = loggerFactory.CreateLogger("Startup");
-                        logger.LogInformation("AmmoRepository ready with {n} items.", ammoRepository.GetAll().Count);
-                        logger.LogInformation("CriticalDamageRepository ready with {n} items.", clusterTableRepository.GetAll().Count);
-                        logger.LogInformation("CriticalDamageRepository ready with {n} items.", criticalDamageRepository.GetAll().Count);
-                        logger.LogInformation("PaperDollRepository ready with {n} items.", paperDollRepository.GetAll().Count);
-                        logger.LogInformation("UnitRepository ready with {n} items.", unitRepository.GetAll().Count);
-                        logger.LogInformation("WeaponRepository ready with {n} items.", weaponRepository.GetAll().Count);
-
-                        return Task.CompletedTask;
-                    });*/
             });
 
         return siloHostBuilder.Build();
@@ -231,17 +214,6 @@ public static class Program
             ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), options.Value.ConnectionString)
             : throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
     }
-
-    /*private static SqlEntityRepository<TType> GetSqlEntityRepository<TType>(IServiceProvider serviceProvider) where TType : class, IEntity<string>
-    {
-        var options = serviceProvider.GetService<IOptions<FaemiyahClusterOptions>>();
-        if (options != null)
-        {
-            return new SqlEntityRepository<TType>(serviceProvider.GetService<ILogger<SqlEntityRepository<TType>>>(), options.Value.ConnectionString);
-        }
-
-        throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
-    }*/
 
     private static ISiloBuilder AddGrainStorage(this ISiloBuilder siloHostBuilder, string name, FaemiyahClusterOptions clusterOptions)
     {

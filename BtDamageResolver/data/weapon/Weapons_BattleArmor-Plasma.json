@@ -17,6 +17,9 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 0
+    "Heat": {
+      "Short": 0
+    },
+    "SpecialDamage": [ { "Data": "1d6", "Type": "Burst" } ]
   }
 ]

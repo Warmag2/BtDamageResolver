@@ -1,4 +1,11 @@
-﻿<input class="resolver_input resolver_input_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+﻿@if (Width == 0)
+{
+    <input class="resolver_input resolver_input_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+}
+else
+{
+    <input class="resolver_input resolver_input_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" style="width:@(Width)rem" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+}
 
 @code
 {
@@ -13,6 +20,9 @@
 
     [Parameter]
     public int Max { get; set; }
+
+    [Parameter]
+    public int Width { get; set; } = 0;
 
     [Parameter]
     public bool Disabled { get; set; }

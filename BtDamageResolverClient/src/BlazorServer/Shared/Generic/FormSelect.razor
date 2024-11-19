@@ -21,7 +21,7 @@
     private DateTime _updateTimeStamp = DateTime.MinValue;
 
     [Parameter]
-    public Dictionary<string, TItem> Options { get; set; }
+    public IDictionary<string, TItem> Options { get; set; }
 
     [Parameter]
     public TItem SelectedOption { get; set; }
@@ -51,7 +51,15 @@
 
     protected override void OnInitialized()
     {
-        SelectedOptionInternal = Options.FirstOrDefault(o => o.Value.Equals(SelectedOption)).Key;
+        if (Options.Values.Contains(SelectedOption))
+        {
+            SelectedOptionInternal = Options.FirstOrDefault(o => o.Value.Equals(SelectedOption)).Key;
+        }
+        else
+        {
+            SelectedOptionInternal = Options.FirstOrDefault().Key;
+        }
+
         _updateTimeStamp = DateTime.MinValue;
     }
 }

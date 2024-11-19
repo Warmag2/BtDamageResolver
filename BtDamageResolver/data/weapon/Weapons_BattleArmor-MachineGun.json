@@ -17,8 +17,10 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
-    "SpecialFeatures": [ { "Data": "1d6", "Type": "Burst" } ]
+    "Heat": {
+      "Short": 0
+    },
+    "SpecialDamage": [ { "Data": "1d6", "Type": "Burst" } ]
   },
   {
     "Name": "BA Light Machine Gun",
@@ -38,8 +40,10 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
-    "SpecialFeatures": [ { "Data": "1d6/2", "Type": "Burst" } ]
+    "Heat": {
+      "Short": 0
+    },
+    "SpecialDamage": [ { "Data": "1d6/2", "Type": "Burst" } ]
   },
   {
     "Name": "BA Heavy Machine Gun",
@@ -59,7 +63,9 @@
       "Extreme": 2
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
-    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" } ]
+    "Heat": {
+      "Short": 0
+    },
+    "SpecialDamage": [ { "Data": "2d6", "Type": "Burst" } ]
   }
 ]

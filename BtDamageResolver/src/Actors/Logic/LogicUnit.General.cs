@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
 
@@ -15,22 +16,21 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc />
-    public async Task<List<DamageReport>> ResolveCombat(ILogicUnit target, bool processOnlyTags)
+    public virtual async Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget)
     {
+        var allDamageReports = new List<DamageReport>();
         var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
 
-        foreach (var weaponEntry in Unit.Weapons.Where(w => w.State == WeaponState.Active))
+        foreach (var weapon in await GetActiveWeaponsFromBay(weaponBay))
         {
-            var weapon = await FormWeapon(weaponEntry);
-
             // If not processing tags, skip tag weapons
-            if (weapon.SpecialDamage.Type == SpecialDamageType.Tag && !processOnlyTags)
+            if (weapon.HasSpecialDamage(SpecialDamageType.Tag, out _) && !processOnlyTags)
             {
                 continue;
             }
 
             // If processing tags, skip non-tag weapons
-            if (weapon.SpecialDamage.Type != SpecialDamageType.Tag && processOnlyTags)
+            if (!weapon.HasSpecialDamage(SpecialDamageType.Tag, out _) && processOnlyTags)
             {
                 continue;
             }
@@ -38,7 +38,7 @@ public partial class LogicUnit
             var hitCalclulationDamageReport = new DamageReport
             {
                 Phase = weapon.GetUsePhase(),
-                DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, Unit.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
+                DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, weaponBay.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
                 FiringUnitId = Unit.Id,
                 FiringUnitName = Unit.Name,
                 TargetUnitId = target.Unit.Id,
@@ -46,19 +46,10 @@ public partial class LogicUnit
                 InitialTroopers = target.Unit.Troopers
             };
 
-            var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon);
+            var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon, weaponBay, isPrimaryTarget);
 
             damageReportCombatActionPairs.Add((hitCalclulationDamageReport, combatAction));
         }
-
-        // If we have no actions at all, return an empty list.
-        // No longer relevant
-        /*if (!damageReportCombatActionPairs.Any())
-        {
-            return new List<DamageReport>();
-        }*/
-
-        var allDamageReports = new List<DamageReport>();
 
         // Add damage resolution to damage reports based on combat actions
         foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.CombatAction.Weapon.GetUsePhase()))
@@ -95,5 +86,22 @@ public partial class LogicUnit
         }
 
         return allDamageReports;
+    }
+
+    /// <summary>
+    /// Form the weapon list from weapon entries in a bay.
+    /// </summary>
+    /// <param name="weaponBay">The bay to form the weapon list from.</param>
+    /// <returns>The weapon list formed from weapons in the bay.</returns>
+    protected virtual async Task<List<Weapon>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
+    {
+        var weapons = new List<Weapon>();
+
+        foreach (var weapon in weaponBay.Weapons.Where(w => w.State == WeaponState.Active))
+        {
+            weapons.Add(await FormWeapon(weapon));
+        }
+
+        return weapons;
     }
 }

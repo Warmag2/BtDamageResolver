@@ -661,7 +661,7 @@
 .resolver_tr_weaponentry.active { background-color: var(--color_bg_weaponentry_active); }
 
 .resolver_td_targetnumber {
-    width: 2rem;
+    width: 3.5rem;
     font-weight: bold;
     text-align: center;
 }
@@ -671,7 +671,17 @@
     padding-right: 0.5rem;
 }
 
-.resolver_td_targetnumber.draggable:hover { background-color: var(--color_bg_dragdrop); }
+.resolver_tr_weaponentry.draggable:hover {
+    background-color: var(--color_bg_dragdrop);
+}
+
+.emptydragtarget {
+    background-color: var(--color_bg_weaponentry_active);
+}
+
+.emptydragtarget:hover {
+    background-color: var(--color_bg_dragdrop);
+}
 
 .resolver_tr_unitinformation { }
 

@@ -1,13 +1,19 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
-@inject VisualStyleController _visualStyleController
 
 @{
     var pickDisabled = Disabled;
 }
 
-<input class="resolver_input resolver_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+@if (Width == 0)
+{
+    <input class="resolver_input resolver_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+}
+else
+{
+    <input class="resolver_input resolver_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" style="width:@(Width)rem" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+}
 <button class="resolver_button" disabled="@pickDisabled" @onclick="Pick">Pick</button>
 
 <div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
@@ -43,6 +49,9 @@
 
     [Parameter]
     public int Max { get; set; }
+
+    [Parameter]
+    public int Width { get; set; } = 0;
 
     [Parameter]
     public bool Disabled { get; set; }

@@ -14,7 +14,6 @@
 @inject NavigationManager _navigationManager
 @inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
-@inject VisualStyleController _visualStyleController
 @implements IDisposable
 
 <div class="resolver_div_errormessage">
@@ -34,27 +33,28 @@
 </ContainerTabSelector>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Data" TabSelection="@_selectedTab">
-    <FormData></FormData>
+    <FormData />
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
-    <FormGameState></FormGameState>
+    <FormGameState @key=@($"{_userStateController.PlayerState != null}") />
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
-    <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true"></ComponentGameState>
+    <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true" />
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
-    <FormDamageReports OnlyNewest="false"></FormDamageReports>
+    <FormDamageReports OnlyNewest="false" />
 </ContainerTab>
 
 <ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
-    <FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}")></FormOptions>
+    <FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}") />
 </ContainerTab>
 
 @code
 {
+    //@key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}")
     private FormServer _formServer;
     private readonly List<string> _tabs = new() { "Data", "Dashboard", "AllUnits", "DamageReports", "Options" };
     private string _selectedTab = "Dashboard";
@@ -142,7 +142,7 @@
         _hubConnection.On<byte[]>(EventNames.TargetNumbers, targetNumberUpdateData =>
         {
             _userStateController.RecordTargetNumberUpdates(_dataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
-            InvokeStateChange();
+            // Not necessary to invoke state change on target number data
         });
 
         _userStateController.OnPlayerStateUpdated += SendPlayerState;

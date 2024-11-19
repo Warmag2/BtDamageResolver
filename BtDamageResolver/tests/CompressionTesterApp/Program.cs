@@ -18,8 +18,7 @@ public static class Program
     /// <summary>
     /// Main program entrypoint.
     /// </summary>
-    /// <param name="args">Command line arguments.</param>
-    public static void Main(string[] args)
+    public static void Main()
     {
         // Some random text to compress, thanks to http://en.wikipedia.org/wiki/V8
         var originalText =

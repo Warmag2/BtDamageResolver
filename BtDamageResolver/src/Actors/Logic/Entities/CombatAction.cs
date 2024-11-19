@@ -1,4 +1,5 @@
 ﻿using System;
+using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
@@ -50,4 +51,9 @@ public class CombatAction
     /// The weapon which initiated the combat action.
     /// </summary>
     public Weapon Weapon { get; set; }
+
+    /// <summary>
+    /// The weapon bay which initiated the combat action.
+    /// </summary>
+    public WeaponBay WeaponBay { get; set; }
 }

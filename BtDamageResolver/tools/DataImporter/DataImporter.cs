@@ -48,11 +48,11 @@ public class DataImporter
     public async Task Work(DataImportOptions options)
     {
         var data = FetchData(options);
-        _logger.LogInformation("{count} data objects matched the filter(s)", data.Count);
+        _logger.LogInformation("{Count} data objects matched the filter(s)", data.Count);
 
         foreach (var dataObject in data)
         {
-            _logger.LogInformation("{object}", JsonSerializer.Serialize(dataObject, _jsonSerializerOptions));
+            _logger.LogInformation("{Object}", JsonSerializer.Serialize(dataObject, _jsonSerializerOptions));
         }
 
         using var host = await ConnectClient();
@@ -63,13 +63,16 @@ public class DataImporter
         {
             foreach (var dataObject in data)
             {
-                _logger.LogInformation("Importing Entity {type} {name}", dataObject.GetType(), (dataObject as IEntity<string>)?.GetId());
+                _logger.LogInformation("Importing Entity {Type} {Name}", dataObject.GetType(), (dataObject as IEntity<string>)?.GetId());
 
                 switch (dataObject)
                 {
                     case Ammo ammo:
                         ammo.FillMissingFields();
                         await client.GetAmmoRepository().AddOrUpdate(ammo);
+                        break;
+                    case ArcDiagram arcDiagram:
+                        await client.GetArcDiagramRepository().AddOrUpdate(arcDiagram);
                         break;
                     case ClusterTable clusterTable:
                         await client.GetClusterTableRepository().AddOrUpdate(clusterTable);
@@ -85,6 +88,14 @@ public class DataImporter
                         break;
                     case Weapon weapon:
                         weapon.FillMissingFields();
+
+                        var validationResult = weapon.Validate();
+                        if (!validationResult.IsValid)
+                        {
+                            _logger.LogError("Validation failed for weapon {Weapon}. Reason: {Reason}", weapon.GetId(), string.Join(' ', validationResult.Reasons));
+                            throw new InvalidOperationException($"Invalid data in weapon: {weapon.GetId()}");
+                        }
+
                         await client.GetWeaponRepository().AddOrUpdate(weapon);
                         break;
                     default:
@@ -188,18 +199,19 @@ public class DataImporter
     {
         var fileNamePrefix = Path.GetFileName(path).Split("_")[0];
 
-        _logger.LogInformation("Loading file: {file}", path);
+        _logger.LogInformation("Loading file: {FilePath}", path);
 
         var fileData = File.ReadAllText(path, Encoding.UTF8);
 
         return fileNamePrefix switch
         {
-            "Ammo" => (JsonSerializer.Deserialize<List<Ammo>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of ammo.")).Select(r => r as object),
+            "Ammo" => (JsonSerializer.Deserialize<List<Ammo>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into a list of ammo.")).Select(r => r as object),
+            "ArcDiagram" => new object[] { JsonSerializer.Deserialize<ArcDiagram>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into an arc diagram.") },
             "ClusterTable" => new object[] { JsonSerializer.Deserialize<ClusterTable>(fileData, _jsonSerializerOptions) },
             "CriticalDamageTable" => new object[] { JsonSerializer.Deserialize<CriticalDamageTable>(fileData, _jsonSerializerOptions) },
             "PaperDoll" => new object[] { JsonSerializer.Deserialize<PaperDoll>(fileData, _jsonSerializerOptions) },
             "Unit" => new object[] { JsonSerializer.Deserialize<Unit>(fileData, _jsonSerializerOptions) },
-            "Weapons" => (JsonSerializer.Deserialize<List<Weapon>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into list of weapons.")).Select(r => r as object),
+            "Weapons" => (JsonSerializer.Deserialize<List<Weapon>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into a list of weapons.")).Select(r => r as object),
             _ => throw new InvalidOperationException($"Cannot infer file type from file name for file: {path}"),
         };
     }

@@ -12,7 +12,7 @@
       "Short": 2
     },
     "DamageAerospace": {
-      "Short": 5
+      "Short": 6
     },
     "Range": {
       "PointBlank": 0,
@@ -22,10 +22,11 @@
       "Extreme": 25
     },
     "RangeAerospace": "Extreme",
-    "Heat": 1,
+    "Heat": {
+      "Short": 1
+    },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": [ { "Type": "None" } ]
+    "HitModifier": 0
   },
   {
     "Name": "Ultra AC/5",
@@ -50,10 +51,11 @@
       "Extreme": 20
     },
     "RangeAerospace": "Long",
-    "Heat": 1,
+    "Heat": {
+      "Short": 1
+    },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": [ { "Type": "None" } ]
+    "HitModifier": 0
   },
   {
     "Name": "Ultra AC/10",
@@ -65,10 +67,10 @@
     "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 12
+      "Short": 11
     },
     "DamageAerospace": {
-      "Short": 18
+      "Short": 16
     },
     "Range": {
       "PointBlank": 0,
@@ -78,10 +80,11 @@
       "Extreme": 18
     },
     "RangeAerospace": "Medium",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": [ { "Type": "None" } ]
+    "HitModifier": 0
   },
   {
     "Name": "Ultra AC/20",
@@ -106,10 +109,11 @@
       "Extreme": 10
     },
     "RangeAerospace": "Medium",
-    "Heat": 8,
+    "Heat": {
+      "Short": 8
+    },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": [ { "Type": "None" } ]
+    "HitModifier": 0
   },
   {
     "Name": "Clan Ultra AC/2",
@@ -124,7 +128,7 @@
       "Short": 2
     },
     "DamageAerospace": {
-      "Short": 5
+      "Short": 6
     },
     "Range": {
       "PointBlank": 0,
@@ -134,10 +138,11 @@
       "Extreme": 27
     },
     "RangeAerospace": "Extreme",
-    "Heat": 1,
+    "Heat": {
+      "Short": 1
+    },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": [ { "Type": "None" } ]
+    "HitModifier": 0
   },
   {
     "Name": "Clan Ultra AC/5",
@@ -162,10 +167,11 @@
       "Extreme": 21
     },
     "RangeAerospace": "Long",
-    "Heat": 1,
+    "Heat": {
+      "Short": 1
+    },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": [ { "Type": "None" } ]
+    "HitModifier": 0
   },
   {
     "Name": "Clan Ultra AC/10",
@@ -177,10 +183,10 @@
     "AmmoDefault": "Single",
     "AttackType": "Normal",
     "Damage": {
-      "Short": 12
+      "Short": 11
     },
     "DamageAerospace": {
-      "Short": 18
+      "Short": 16
     },
     "Range": {
       "PointBlank": 0,
@@ -190,10 +196,11 @@
       "Extreme": 18
     },
     "RangeAerospace": "Medium",
-    "Heat": 3,
+    "Heat": {
+      "Short": 3
+    },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": [ { "Type": "None" } ]
+    "HitModifier": 0
   },
   {
     "Name": "Clan Ultra AC/20",
@@ -218,9 +225,10 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": 7,
+    "Heat": {
+      "Short": 7
+    },
     "UsesAmmo": true,
-    "HitModifier": 0,
-    "SpecialFeatures": [ { "Type": "None" } ]
+    "HitModifier": 0
   }
 ]

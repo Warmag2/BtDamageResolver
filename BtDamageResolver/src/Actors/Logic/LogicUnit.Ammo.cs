@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic;
 
@@ -12,20 +12,22 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc/>
-    public async Task<(double Estimate, int Max)> ProjectAmmo(int targetNumber, WeaponEntry weaponEntry)
+    public async Task<(decimal Estimate, int Max)> ProjectAmmo(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry)
     {
         var hitChance = GetHitChanceForTargetNumber(targetNumber);
 
         int ammoUsed;
 
+        // This can only be a single weapon or a multiplied weapon.
+        // No need to loop through different ammo usages in the bay.
         var weapon = await FormWeapon(weaponEntry);
 
-        if (!weapon.UsesAmmo || hitChance == 0d)
+        if (!weapon.UsesAmmo || hitChance == 0m)
         {
-            return (0d, 0);
+            return (0m, 0);
         }
 
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+        if (weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
             ammoUsed = MathExpression.Parse(rapidFeatureEntry.Data);
         }
@@ -34,7 +36,10 @@ public partial class LogicUnit
             ammoUsed = 1;
         }
 
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out var _))
+        // If this is a multiplied weapon, multiply the ammo usage
+        ammoUsed *= weaponEntry.Amount;
+
+        if (weapon.HasFeature(WeaponFeature.Streak, out var _))
         {
             return (hitChance * ammoUsed, ammoUsed);
         }
@@ -48,35 +53,51 @@ public partial class LogicUnit
     /// Resolves the ammo usage of a combat action.
     /// </summary>
     /// <param name="hitCalculationDamageReport">The damage report for hit calculation.</param>
-    /// <param name="combatAction">The combat action to process the heat for.</param>
-    protected void ResolveAmmo(DamageReport hitCalculationDamageReport, CombatAction combatAction)
+    /// <param name="combatAction">The combat action to process the ammo for.</param>
+    /// <returns>A task which finishes when ammo has been resolved.</returns>
+    protected virtual Task ResolveAmmo(DamageReport hitCalculationDamageReport, CombatAction combatAction)
     {
         if (!combatAction.ActionHappened)
         {
             hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"Combat action was canceled for {combatAction.Weapon.Name} and no ammo will be expended", Type = AttackLogEntryType.Information });
-            return;
+            return Task.CompletedTask;
         }
 
         // All units may expend ammo when firing, so an unit type check is skipped
         // Bail out if ammo is not used by this weapon or the combat action was canceled
         if (!combatAction.Weapon.UsesAmmo)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        int ammoUsed;
+        SpendAmmo(hitCalculationDamageReport, combatAction.Weapon);
 
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Spends ammo based on rapid fire and other multipliers.
+    /// </summary>
+    /// <param name="damageReport">The damage report to apply ammo usage to.</param>
+    /// <param name="weapon">The weapon to apply ammo usage from.</param>
+    protected void SpendAmmo(DamageReport damageReport, Weapon weapon)
+    {
+        var ammoName = $"{weapon.Name} {weapon.AppliedAmmo}";
+        var ammoUsed = 1;
+
+        if (weapon.Instances > 1)
         {
-            ammoUsed = MathExpression.Parse(rapidFeatureEntry.Data);
-            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} rate of fire multiplier for ammo usage", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
-        }
-        else
-        {
-            ammoUsed = 1;
+            ammoUsed *= weapon.Instances;
+            damageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} is a multiplied weapon. Ammo usage multiplier for ammo {ammoName}", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
         }
 
-        hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} number of rounds of ammunition expended", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
-        hitCalculationDamageReport.SpendAmmoAttacker(combatAction.Weapon.Name, ammoUsed);
+        if (weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
+        {
+            ammoUsed *= MathExpression.Parse(rapidFeatureEntry.Data);
+            damageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} rate of fire multiplier for ammo usage", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
+        }
+
+        damageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} number of rounds of ammunition expended", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
+        damageReport.SpendAmmoAttacker(ammoName, ammoUsed);
     }
 }

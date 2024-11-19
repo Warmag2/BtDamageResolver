@@ -5,7 +5,6 @@ using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic;
 
@@ -14,21 +13,25 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 /// </summary>
 public abstract partial class LogicUnit
 {
-    private static readonly int[] MovementModifierArray = { 0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6 };
+    private static readonly int[] MovementModifierArray = [0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6];
 
     /// <inheritdoc/>
-    public async Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry)
+    public async Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry, WeaponBay weaponBay, bool isPrimaryTarget)
     {
-        return ResolveHitModifier(attackLog, target, await FormWeapon(weaponEntry));
+        return ResolveHitModifier(attackLog, target, await FormWeapon(weaponEntry), weaponBay, isPrimaryTarget);
     }
 
     /// <inheritdoc />
-    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon)
+    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, bool isPrimaryTarget)
     {
         var modifierBase = weapon.AttackType == AttackType.Normal ? Unit.Gunnery : Unit.Piloting;
 
         // NOTE: In this method, the damageReport may be null, as the target number calculation does not need a damage log. Everywhere else, it must exist.
         attackLog.Append(new AttackLogEntry { Context = "Base hit modifier", Type = AttackLogEntryType.Calculation, Number = modifierBase });
+
+        var modifierMultiTarget = GetMultiTargetModifier(weaponBay, isPrimaryTarget);
+
+        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from multiple targets", Type = AttackLogEntryType.Calculation, Number = modifierMultiTarget });
 
         var modifierHeat = Unit.GetHeatAttackPenalty();
 
@@ -36,11 +39,11 @@ public abstract partial class LogicUnit
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from EMP effects", Type = AttackLogEntryType.Calculation, Number = Unit.Penalty });
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from firing solution", Type = AttackLogEntryType.Calculation, Number = Unit.FiringSolution.AttackModifier });
+        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from firing solution", Type = AttackLogEntryType.Calculation, Number = weaponBay.FiringSolution.AttackModifier });
 
-        var rangeBracket = GetRangeBracket(weapon);
+        var rangeBracket = GetRangeBracket(weapon, weaponBay);
         var modifierRange = GetRangeModifier(rangeBracket);
-        modifierRange += GetMinimumRangeModifier(weapon);
+        modifierRange += GetMinimumRangeModifier(weapon, weaponBay);
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from range", Type = AttackLogEntryType.Calculation, Number = modifierRange });
 
@@ -56,7 +59,7 @@ public abstract partial class LogicUnit
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from unit type", Type = AttackLogEntryType.Calculation, Number = modifierUnitType });
 
-        var modifierCover = target.GetCoverModifier(Unit.FiringSolution.Cover);
+        var modifierCover = target.GetCoverModifier(weaponBay.FiringSolution.Cover);
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from cover", Type = AttackLogEntryType.Calculation, Number = modifierCover });
 
@@ -64,7 +67,7 @@ public abstract partial class LogicUnit
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target stance", Type = AttackLogEntryType.Calculation, Number = modifierStance });
 
-        var modifierMovementDirection = target.GetMovementDirectionModifier(Unit.FiringSolution.Direction);
+        var modifierMovementDirection = target.GetMovementDirectionModifier(weaponBay.FiringSolution.Direction);
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from movement direction", Type = AttackLogEntryType.Calculation, Number = modifierMovementDirection });
 
@@ -76,9 +79,17 @@ public abstract partial class LogicUnit
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target movement amount", Type = AttackLogEntryType.Calculation, Number = modifierMovement });
 
+        var modifierEvasion = GetEvasionModifier(target);
+
+        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target evasion", Type = AttackLogEntryType.Calculation, Number = modifierEvasion });
+
         var modifierOwnMovement = GetOwnMovementModifier();
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from own movement", Type = AttackLogEntryType.Calculation, Number = modifierOwnMovement });
+
+        var modifierOwnEvasion = GetOwnEvasionModifier(weapon);
+
+        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from own evasion", Type = AttackLogEntryType.Calculation, Number = modifierOwnEvasion });
 
         var modifierFeatures = target.GetFeatureModifier(weapon);
 
@@ -94,9 +105,10 @@ public abstract partial class LogicUnit
 
         var modifierTotal =
             modifierBase +
+            modifierMultiTarget +
             modifierHeat +
             Unit.Penalty +
-            Unit.FiringSolution.AttackModifier +
+            weaponBay.FiringSolution.AttackModifier +
             modifierRange +
             modifierArmor +
             modifierWeapon +
@@ -106,7 +118,9 @@ public abstract partial class LogicUnit
             modifierMovementDirection +
             modifierMovementClass +
             modifierMovement +
+            modifierEvasion +
             modifierOwnMovement +
+            modifierOwnEvasion +
             modifierFeatures +
             modifierWeather +
             modifierQuirks;
@@ -118,6 +132,12 @@ public abstract partial class LogicUnit
 
     /// <inheritdoc />
     public virtual int GetCoverModifier(Cover cover)
+    {
+        return 0;
+    }
+
+    /// <inheritdoc />
+    public virtual int GetEvasionModifier()
     {
         return 0;
     }
@@ -163,12 +183,13 @@ public abstract partial class LogicUnit
     /// </summary>
     /// <param name="weapon">The weapon in use.</param>
     /// <param name="distance">Distance to target.</param>
-    /// <param name="rangeMultiplier">Range multiplier for unit. Should be 1 for fighters and dropships and 2 for capital vessels.</param>
     /// <remarks>Yes, this looks like hardcoded shit, but it's because the ranges for aerospace are hardcoded in the rules.</remarks>
     /// <returns>The Range bracket that the target is in.</returns>
-    protected static RangeBracket GetRangeBracketAerospace(Weapon weapon, int distance, int rangeMultiplier = 1)
+    protected static RangeBracket GetRangeBracketAerospace(Weapon weapon, int distance)
     {
         int outOfRange;
+
+        var rangeMultiplier = weapon.CapitalScale ? 2 : 1;
 
         switch (weapon.RangeAerospace)
         {
@@ -208,24 +229,20 @@ public abstract partial class LogicUnit
             return RangeBracket.Long;
         }
 
-        if (distance <= 25 * rangeMultiplier)
-        {
-            return RangeBracket.Extreme;
-        }
-
-        throw new InvalidOperationException($"Range was unable to be determined for weapon-distance-rangeMultiplier {weapon.Name}-{distance}-{rangeMultiplier}.");
+        return RangeBracket.Extreme;
     }
 
     /// <summary>
     /// Get penalty caused by minimum range.
     /// </summary>
     /// <param name="weapon">The weapon used.</param>
+    /// <param name="weaponBay">The weapon bay the weapon is in.</param>
     /// <returns>The modifier for firing below weapon minimum range.</returns>
-    protected virtual int GetMinimumRangeModifier(Weapon weapon)
+    protected virtual int GetMinimumRangeModifier(Weapon weapon, WeaponBay weaponBay)
     {
-        if (Unit.FiringSolution.Distance <= weapon.RangeMinimum)
+        if (weaponBay.FiringSolution.Distance <= weapon.RangeMinimum)
         {
-            return weapon.RangeMinimum - Unit.FiringSolution.Distance + 1;
+            return weapon.RangeMinimum - weaponBay.FiringSolution.Distance + 1;
         }
 
         return 0;
@@ -255,13 +272,14 @@ public abstract partial class LogicUnit
     }
 
     /// <summary>
-    /// Gets the range bracket for a weapon in the context of this unit.
+    /// Gets the range bracket for a weapon in the context of this unit and a specific weapon bay.
     /// </summary>
     /// <param name="weapon">The weapon to get the range bracket for.</param>
+    /// <param name="weaponBay">The weapon bay to get the range bracket for.</param>
     /// <returns>The range bracket for a weapon in the context of this unit.</returns>
-    protected virtual RangeBracket GetRangeBracket(Weapon weapon)
+    protected virtual RangeBracket GetRangeBracket(Weapon weapon, WeaponBay weaponBay)
     {
-        return GetRangeBracketGround(weapon, Unit.FiringSolution.Distance);
+        return GetRangeBracketGround(weapon, weaponBay.FiringSolution.Distance);
     }
 
     /// <summary>
@@ -294,10 +312,29 @@ public abstract partial class LogicUnit
         return 0;
     }
 
+    private static int GetEvasionModifier(ILogicUnit target)
+    {
+        switch (target.Unit.Type)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                if (target.Unit.Evading)
+                {
+                    return target.GetEvasionModifier();
+                }
+
+                return 0;
+            default:
+                return 0;
+        }
+    }
+
     private static int GetMovementClassModifier(ILogicUnit target, Weapon weapon)
     {
         // Missile weapons ignore attacker movement modifier if the target is tagged and they have homing munitions
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Homing, out _) && (target.Unit.Tagged || target.Unit.Narced))
+        if (weapon.HasFeature(WeaponFeature.Homing, out _) && (target.Unit.Tagged || target.Unit.Narced))
         {
             return 0;
         }
@@ -308,7 +345,7 @@ public abstract partial class LogicUnit
     private static int GetMovementModifierBase(ILogicUnit target, Weapon weapon)
     {
         // Missile weapons ignore defender movement modifier if the target is tagged
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Homing, out _) && (target.Unit.Tagged || target.Unit.Narced))
+        if (weapon.HasFeature(WeaponFeature.Homing, out _) && (target.Unit.Tagged || target.Unit.Narced))
         {
             return 0;
         }
@@ -357,6 +394,63 @@ public abstract partial class LogicUnit
         return weapon.HitModifier;
     }
 
+    private int GetMultiTargetModifier(WeaponBay weaponBay, bool isPrimaryTarget)
+    {
+        if (isPrimaryTarget)
+        {
+            return 0;
+        }
+
+        if (Unit.HasFeature(UnitFeature.MultiTarget))
+        {
+            return 0;
+        }
+
+        switch (Unit.Type)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.BattleArmor:
+            case UnitType.Infantry:
+                return 0;
+            default:
+                // Front arc for secondary targets is 1 penalty, all other arcs are 2 penalty.
+                switch (weaponBay.FiringSolution.Arc)
+                {
+                    case Arc.Front:
+                        return 1;
+                    default:
+                        return 2;
+                }
+        }
+    }
+
+    private int GetOwnEvasionModifier(Weapon weapon)
+    {
+        if (Unit.Evading)
+        {
+            switch (Unit.Type)
+            {
+                case UnitType.AerospaceCapital:
+                case UnitType.AerospaceDropshipAerodyne:
+                case UnitType.AerospaceDropshipSpheroid:
+                    if (weapon.HasFeature(WeaponFeature.IgnoreOwnEvasion, out _))
+                    {
+                        return 0;
+                    }
+
+                    return 2;
+                case UnitType.AerospaceFighter:
+                    return LogicConstants.InvalidTargetNumber;
+                default:
+                    return 0;
+            }
+        }
+
+        return 0;
+    }
+
     private int GetQuirkModifier(ILogicUnit target, Weapon weapon)
     {
         if (Unit.HasFeature(UnitFeature.TargetingAntiAir))
@@ -364,7 +458,8 @@ public abstract partial class LogicUnit
             switch (target.Unit.Type)
             {
                 case UnitType.AerospaceCapital:
-                case UnitType.AerospaceDropship:
+                case UnitType.AerospaceDropshipAerodyne:
+                case UnitType.AerospaceDropshipSpheroid:
                 case UnitType.AerospaceFighter:
                 case UnitType.VehicleVtol:
                     return -2;

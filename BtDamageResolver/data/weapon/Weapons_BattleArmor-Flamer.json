@@ -17,9 +17,14 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 3,
-    "SpecialFeatures": [ { "Data": "3d6", "Type": "Burst" }, { "Data": "2", "Type": "Heat" } ],
-    "SpecialDamage": { "Data": "2", "Type": "Heat" },
+    "Heat": {
+      "Short": 3
+    },
+    "SpecialDamage": [
+      { "Data": "3d6", "Type": "Burst" },
+      { "Data": "2", "Type": "Heat" },
+      { "Data": "2", "Type": "HeatConverted" }
+    ],
     "ClusterDamage": 1,
     "ClusterSize": 5
   }

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -78,6 +79,7 @@ public class Startup
         });
         services.ConfigureJsonSerializerOptions();
         services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
+        services.AddSingleton<IEntityRepository<ArcDiagram, string>>(GetRedisEntityRepository<ArcDiagram>);
         services.AddSingleton<IEntityRepository<ClusterTable, string>>(GetRedisEntityRepository<ClusterTable>);
         services.AddSingleton<IEntityRepository<CriticalDamageTable, string>>(GetRedisEntityRepository<CriticalDamageTable>);
         services.AddSingleton<IEntityRepository<GameEntry, string>>(GetRedisEntityRepository<GameEntry>);
@@ -86,7 +88,6 @@ public class Startup
         services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
         services.AddSingleton<CommonData>();
         services.AddSingleton<DataHelper>();
-        services.AddSingleton<VisualStyleController>();
         services.AddScoped<ClientHub>();
         services.AddScoped<LocalStorage>();
         services.AddScoped<ResolverCommunicator>();
@@ -100,6 +101,11 @@ public class Startup
     /// <param name="env">The web host environment.</param>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        });
+
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -110,8 +116,8 @@ public class Startup
         }
 
         app.UseStaticFiles();
-
         app.UseRouting();
+        app.UseAntiforgery();
 
         app.UseEndpoints(endpoints =>
         {
@@ -125,6 +131,7 @@ public class Startup
         where TType : class, IEntity<string>
     {
         var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
+
         if (options != null)
         {
             return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), options.Value.ConnectionString);

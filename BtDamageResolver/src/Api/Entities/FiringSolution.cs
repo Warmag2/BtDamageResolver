@@ -10,6 +10,11 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 public class FiringSolution
 {
     /// <summary>
+    /// The arc the target is in.
+    /// </summary>
+    public Arc Arc { get; set; }
+
+    /// <summary>
     /// The attack modifier.
     /// </summary>
     public int AttackModifier { get; set; }
@@ -32,7 +37,12 @@ public class FiringSolution
     /// <summary>
     /// The ID of the target unit.
     /// </summary>
-    public Guid TargetUnit { get; set; }
+    public Guid Target { get; set; }
+
+    /// <summary>
+    /// The last update time of this firing solution.
+    /// </summary>
+    public DateTime TimeStamp { get; set; }
 
     /// <summary>
     /// Produces a deep copy of a firing solution.
@@ -46,7 +56,7 @@ public class FiringSolution
             Cover = Cover,
             Direction = Direction,
             Distance = Distance,
-            TargetUnit = TargetUnit
+            Target = Target
         };
     }
 }

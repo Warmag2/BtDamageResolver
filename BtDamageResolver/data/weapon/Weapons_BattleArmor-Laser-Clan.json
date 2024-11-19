@@ -17,7 +17,9 @@
       "Extreme": 5
     },
     "RangeAerospace": "Short",
-    "Heat": 1
+    "Heat": {
+      "Short": 1
+    }
   },
   {
     "Name": "BA Clan ER Small Laser",
@@ -37,7 +39,9 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 2
+    "Heat": {
+      "Short": 2
+    }
   },
   {
     "Name": "BA Clan ER Medium Laser",
@@ -57,7 +61,9 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": 5
+    "Heat": {
+      "Short": 5
+    }
   },
   {
     "Name": "BA Clan Micro Pulse Laser",
@@ -77,8 +83,13 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 1,
-    "SpecialFeatures": [ { "Data": "1d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "Heat": {
+      "Short": 1
+    },
+    "SpecialDamage": [
+      { "Data": "1d6", "Type": "Burst" }
+    ],
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
   {
@@ -99,8 +110,13 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 2,
-    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "Heat": {
+      "Short": 2
+    },
+    "SpecialDamage": [
+      { "Data": "2d6", "Type": "Burst" }
+    ],
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
   {
@@ -121,7 +137,9 @@
       "Extreme": 12
     },
     "RangeAerospace": "Short",
-    "Heat": 4,
+    "Heat": {
+      "Short": 2
+    },
     "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   }

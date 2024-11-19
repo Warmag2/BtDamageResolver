@@ -1,0 +1,247 @@
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
+@using Faemiyah.BtDamageResolver.Api.Enums
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject UserStateController _userStateController
+@implements IDisposable
+
+@if(_userStateController.PlayerState != null)
+{
+<table>
+    <tr style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
+        <td colspan="6" class="draggable" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
+            @if (UnitEntry.StaticDataHidden)
+            {
+                <b>@WeaponBay.Name</b>
+            }
+            else
+            {
+                <FormText SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
+            }
+        </td>
+        <td style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
+            <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
+        </td>
+    </tr>
+    @foreach (var weaponEntry in WeaponBay.Weapons)
+    {
+        <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" WeaponBay="@WeaponBay" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnUpdate" OnDeleted="@OnWeaponDeleted" OnDragWeapon="@DragWeapon" OnDropWeapon="@DropWeapon" />
+    }
+    @if (!UnitEntry.StaticDataHidden)
+    {
+        <tr class="resolver_tr_weaponentry draggable" draggable="true" @ondrop="@(() => DropWeapon(-1))">
+            <td colspan="7" class="emptydragtarget">end of list</td>
+        </tr>
+    }
+    <tr>
+        <td colspan="7">
+            <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
+                <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
+            </span>
+        </td>
+    </tr>
+</table>
+}
+
+@code {
+    [Parameter]
+    public UnitEntry UnitEntry { get; set; }
+
+    [Parameter]
+    public WeaponBay WeaponBay { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<WeaponBay> OnDeleted { get; set; }
+
+    [Parameter]
+    public EventCallback OnUpdate { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _userStateController.OnPlayerListOrderUpdated += InvokeStateChange;
+    }
+
+    public void AddWeapon()
+    {
+        var weaponToAdd = WeaponBay.Weapons.LastOrDefault();
+
+        if (weaponToAdd != null)
+        {
+            WeaponBay.Weapons.Add(weaponToAdd.Copy());
+        }
+        else
+        {
+            WeaponBay.Weapons.Add(CommonData.GetDefaultWeapon(UnitEntry.Type));
+        }
+
+        OnChanged.InvokeAsync();
+    }
+
+    public DateTime GetComparisonTime()
+    {
+        return _userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue;
+    }
+
+    public void DeleteWeaponBay()
+    {
+        OnDeleted.InvokeAsync(WeaponBay);
+    }
+
+    #region Property changing delegates
+
+    private void OnNameChanged(string name)
+    {
+        if (WeaponBay.Name != name)
+        {
+            WeaponBay.Name = name;
+            OnUpdate.InvokeAsync();
+        }
+    }
+
+    private void OnWeaponDeleted(WeaponEntry weaponEntry)
+    {
+        WeaponBay.Weapons.Remove(weaponEntry);
+        OnUpdate.InvokeAsync();
+    }
+
+    public void OnWeaponSwap(SwapTuple swapTuple)
+    {
+        if (swapTuple.From != swapTuple.To)
+        {
+            SwapWeapons(swapTuple.From, swapTuple.To);
+        }
+    }
+
+    private void SwapWeapons(int ix1, int ix2)
+    {
+        (WeaponBay.Weapons[ix1], WeaponBay.Weapons[ix2]) = (WeaponBay.Weapons[ix2], WeaponBay.Weapons[ix1]);
+        OnUpdate.InvokeAsync();
+    }
+
+    #endregion
+
+    #region dragdrop
+
+    private void Drag()
+    {
+        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+        _userStateController.DraggedWeaponBayIndex = UnitEntry.WeaponBays.IndexOf(WeaponBay);
+        _userStateController.DraggedWeaponIndex = null;
+    }
+
+    private void Drop()
+    {
+        var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+
+        // Dragging weapon bay
+        if (_userStateController.DraggedUnitIndex.HasValue && _userStateController.DraggedWeaponBayIndex.HasValue && !_userStateController.DraggedWeaponIndex.HasValue)
+        {
+            if (targetUnitIndex == _userStateController.DraggedUnitIndex)
+            {
+                // Get moved weaponbay
+                var weaponBayToMove = UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value];
+
+                // Get target weapon bay index
+                var targetWeaponBayIndex = UnitEntry.WeaponBays.IndexOf(WeaponBay);
+
+                // Insert a copy of the moved weapon bay at the right index
+                UnitEntry.WeaponBays.Insert(targetWeaponBayIndex, weaponBayToMove.Copy());
+
+                // Remove moved weapon bay from original place
+                UnitEntry.WeaponBays.Remove(weaponBayToMove);
+
+                OnUpdate.InvokeAsync();
+
+                // Dragdrop always induces a ordering check
+                _userStateController.NotifyPlayerListOrderUpdated();
+            }
+        }
+
+        // Dragging weapon, hitting weapon bay, insert into bay as last entry, remove from original
+        if (_userStateController.DraggedUnitIndex.HasValue && _userStateController.DraggedWeaponBayIndex.HasValue && _userStateController.DraggedWeaponIndex.HasValue)
+        {
+            if (targetUnitIndex == _userStateController.DraggedUnitIndex)
+            {
+                // Get moved weapon
+                var weaponToMove = UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons[_userStateController.DraggedWeaponIndex.Value];
+
+                // Insert copy of moved weapon to the end of the list at this weapon bay
+                WeaponBay.Weapons.Add(weaponToMove.Copy());
+
+                // Remove moved weapon from original place
+                UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons.Remove(weaponToMove);
+
+                OnUpdate.InvokeAsync();
+                
+                // Dragdrop always induces a ordering check
+                _userStateController.NotifyPlayerListOrderUpdated();
+            }
+        }
+
+        // Clear drag information
+        _userStateController.DraggedUnitIndex = null;
+        _userStateController.DraggedWeaponBayIndex = null;
+        _userStateController.DraggedWeaponIndex = null;
+    }
+
+    void DragWeapon(int sourceWeaponIndex)
+    {
+        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+        _userStateController.DraggedWeaponBayIndex = UnitEntry.WeaponBays.IndexOf(WeaponBay);
+        _userStateController.DraggedWeaponIndex = sourceWeaponIndex;
+    }
+
+    void DropWeapon(int targetWeaponIndex)
+    {
+        // Dragging weapon and hitting weapon, only valid situation
+        if (_userStateController.DraggedUnitIndex.HasValue && _userStateController.DraggedWeaponBayIndex.HasValue && _userStateController.DraggedWeaponIndex.HasValue)
+        {
+            var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
+
+            if (targetUnitIndex == _userStateController.DraggedUnitIndex)
+            {
+                // Get moved weapon
+                var weaponToMove = UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons[_userStateController.DraggedWeaponIndex.Value];
+
+                // if target weapon index is at end of list, add to the end
+                if (targetWeaponIndex == -1)
+                {
+                    WeaponBay.Weapons.Add(weaponToMove.Copy());
+                }
+                else
+                {
+                    // Insert copy of moved weapon to new place
+                    WeaponBay.Weapons.Insert(targetWeaponIndex, weaponToMove.Copy());
+                }
+
+                // Remove original moved weapon
+                UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons.Remove(weaponToMove);
+
+                OnUpdate.InvokeAsync();
+
+                // Dragdrop always induces a ordering check
+                _userStateController.NotifyPlayerListOrderUpdated();
+            }
+        }
+
+        // Clear drag information
+        _userStateController.DraggedUnitIndex = null;
+        _userStateController.DraggedWeaponBayIndex = null;
+        _userStateController.DraggedWeaponIndex = null;
+    }
+
+    #endregion
+
+    public void Dispose()
+    {
+        _userStateController.OnPlayerListOrderUpdated -= InvokeStateChange;
+    }
+}

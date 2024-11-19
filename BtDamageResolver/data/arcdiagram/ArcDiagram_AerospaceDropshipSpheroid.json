@@ -1,0 +1,12 @@
+{
+    "UnitType": "AerospaceDropshipSpheroid",
+    "Arcs":
+    [
+        "Nose",
+        "FrontLeft",
+        "FrontRight",
+        "RearLeft",
+        "RearRight",
+        "Aft"
+    ]
+}

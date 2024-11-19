@@ -17,9 +17,13 @@
       "Extreme": 5
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
+    "Heat": {
+      "Short": 0
+    },
     "UsesAmmo": true,
-    "SpecialDamage": { "Data": "1", "Type": "Narc" },
+    "SpecialDamage": [
+      { "Data": "1", "Type": "Narc" }
+    ],
     "ClusterSize": 1
   },
   {
@@ -40,7 +44,11 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
-    "SpecialDamage": { "Data": "1", "Type": "Tag" }
+    "Heat": {
+      "Short": 0
+    },
+    "SpecialDamage": [
+      { "Data": "1", "Type": "Tag" }
+    ]
   }
 ]

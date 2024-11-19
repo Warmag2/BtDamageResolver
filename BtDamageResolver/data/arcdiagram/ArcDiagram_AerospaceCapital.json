@@ -1,0 +1,12 @@
+{
+    "UnitType": "AerospaceCapital",
+    "Arcs":
+    [
+        "Nose",
+        "FrontLeft",
+        "FrontRight",
+        "RearLeft",
+        "RearRight",
+        "Aft"
+    ]
+}

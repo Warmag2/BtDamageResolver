@@ -53,12 +53,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not add entity {entityName} of type {entityType} into redis database. Database failure with error code {code}.", entity.GetId(), typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not add entity {EntityName} of type {EntityType} into redis database. Database failure with error code {Code}.", entity.GetId(), typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add entity {entityName} of type {entityType} into redis database. Unknown failure.", entity.GetId(), typeof(TEntity));
+            _logger.LogError(ex, "Could not add entity {EntityName} of type {EntityType} into redis database. Unknown failure.", entity.GetId(), typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -80,12 +80,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not delete entity {entityName} of type {entityType}. Database failure with error code {code}.", key, typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not delete entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", key, typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not delete entity {entityName} of type {entityType}. Unknown failure.", key, typeof(TEntity));
+            _logger.LogError(ex, "Could not delete entity {EntityName} of type {EntityType}. Unknown failure.", key, typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -108,12 +108,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not get entity {entityName} of type {entityType}. Database failure with error code {code}.", key, typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not get entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", key, typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not get entity {entityName} of type {entityType}. Unknown failure.", key, typeof(TEntity));
+            _logger.LogError(ex, "Could not get entity {EntityName} of type {EntityType}. Unknown failure.", key, typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -136,12 +136,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not get entity {entityName} of type {entityType}. Database failure with error code {code}.", key, typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not get entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", key, typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not get entity {entityName} of type {entityType}. Unknown failure.", key, typeof(TEntity));
+            _logger.LogError(ex, "Could not get entity {EntityName} of type {EntityType}. Unknown failure.", key, typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -166,12 +166,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not get all entities of type {entityType}. Database failure with error code {code}.", typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not get all entities of type {EntityType}. Database failure with error code {Code}.", typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not get all entities of type {entityType}. Unknown failure.", typeof(TEntity));
+            _logger.LogError(ex, "Could not get all entities of type {EntityType}. Unknown failure.", typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -196,12 +196,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not get all entities of type {entityType}. Database failure with error code {code}.", typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not get all entities of type {EntityType}. Database failure with error code {Code}.", typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not get all entities of type {entityType}. Unknown failure.", typeof(TEntity));
+            _logger.LogError(ex, "Could not get all entities of type {EntityType}. Unknown failure.", typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -217,12 +217,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not get keys for all entities of type {entityType}. Database failure with error code {code}.", typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not get keys for all entities of type {EntityType}. Database failure with error code {Code}.", typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not get keys for all entities of type {entityType}. Unknown failure.", typeof(TEntity));
+            _logger.LogError(ex, "Could not get keys for all entities of type {EntityType}. Unknown failure.", typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -248,12 +248,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not update entity {entityName} of type {entityType}. Database failure with error code {code}.", entity.GetId(), typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not update entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", entity.GetId(), typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not update entity {entityName} of type {entityType}. Unknown failure.", entity.GetId(), typeof(TEntity));
+            _logger.LogError(ex, "Could not update entity {EntityName} of type {EntityType}. Unknown failure.", entity.GetId(), typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }

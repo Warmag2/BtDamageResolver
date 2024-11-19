@@ -1,4 +1,5 @@
 {
+    "Name": "Magrider Hovertank",
     "Gunnery": 4,
     "Piloting": 5,
     "Features":
@@ -9,15 +10,19 @@
     "Tonnage": 25,
     "Troopers": 1,
     "Sinks": 0,
-    "Weapons":
+    "WeaponBays":
     [
         {
-            "WeaponName": "PPC",
-            "Ammo": "Normal"
-        },
-        {
-            "WeaponName": "Machine Gun"
+            "Name": "Default",
+            "Weapons": [
+                {
+                    "WeaponName": "PPC",
+                    "Ammo": "Normal"
+                },
+                {
+                    "WeaponName": "Machine Gun"
+                }
+            ]
         }
-    ],
-    "Name": "Magrider Hovertank"
+    ]
 }

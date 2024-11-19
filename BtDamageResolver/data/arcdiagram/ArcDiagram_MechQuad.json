@@ -1,0 +1,11 @@
+{
+    "UnitType": "MechQuad",
+    "Arcs":
+    [
+        "Full",
+        "Front",
+        "Left",
+        "Right",
+        "Rear"
+    ]
+}

@@ -19,6 +19,16 @@ public class CommonData
     private const string InfantryWeaponPrefix = "Infantry ";
     private const string MeleeWeaponPrefix = "Melee ";
 
+    private static readonly int RangeShort = 6;
+    private static readonly int[] RangesMedium = [6, 12];
+    private static readonly int[] RangesLong = [6, 12, 20];
+    private static readonly int[] RangesExtreme = [6, 12, 20, 25];
+
+    private static readonly int RangeShortCapital = 12;
+    private static readonly int[] RangesMediumCapital = [12, 24];
+    private static readonly int[] RangesLongCapital = [12, 24, 40];
+    private static readonly int[] RangesExtremeCapital = [12, 24, 40, 50];
+
     private readonly IEntityRepository<GameEntry, string> _gameEntryRepository;
     private readonly IEntityRepository<Unit, string> _unitRepository;
     private readonly SortedDictionary<string, string> _mapWeaponNamesNormal;
@@ -30,6 +40,7 @@ public class CommonData
     /// <summary>
     /// Initializes a new instance of the <see cref="CommonData"/> class.
     /// </summary>
+    /// <param name="arcRepository">The arc repository.</param>
     /// <param name="ammoRepository">The ammo repository.</param>
     /// <param name="clusterTableRepository">The cluster table repository.</param>
     /// <param name="criticalDamageTableRepository">The critical damage table repository.</param>
@@ -38,6 +49,7 @@ public class CommonData
     /// <param name="unitRepository">The unit repository.</param>
     /// <param name="weaponRepository">The weapon repository.</param>
     public CommonData(
+        IEntityRepository<ArcDiagram, string> arcRepository,
         IEntityRepository<Ammo, string> ammoRepository,
         IEntityRepository<ClusterTable, string> clusterTableRepository,
         IEntityRepository<CriticalDamageTable, string> criticalDamageTableRepository,
@@ -52,7 +64,7 @@ public class CommonData
         // Pre-bake lists used to generate options
         DictionaryUnitType = new List<UnitType>
         {
-            UnitType.Building, UnitType.AerospaceDropship, UnitType.AerospaceFighter, UnitType.BattleArmor,
+            UnitType.Building, UnitType.AerospaceDropshipAerodyne, UnitType.AerospaceDropshipSpheroid, UnitType.AerospaceFighter, UnitType.BattleArmor,
             UnitType.Infantry, UnitType.Mech, UnitType.VehicleTracked, UnitType.VehicleWheeled,
             UnitType.VehicleHover, UnitType.VehicleVtol
         }.ToDictionary(u => u.ToString());
@@ -68,6 +80,7 @@ public class CommonData
         {
             { "Front", Direction.Front }, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top }
         };
+        DictionaryArc = arcRepository.GetAll().OrderBy(a => a.UnitType).ToDictionary(a => a.UnitType);
         DictionaryAmmo = ammoRepository.GetAll().OrderBy(a => a.Name).ToDictionary(a => a.Name);
         DictionaryClusterTable = clusterTableRepository.GetAll().OrderBy(w => w.Name).ToDictionary(w => w.Name);
         DictionaryCriticalDamageTable = criticalDamageTableRepository.GetAll().OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
@@ -135,6 +148,27 @@ public class CommonData
     private Dictionary<string, Ammo> DictionaryAmmo { get; }
 
     /// <summary>
+    /// Dictionary for arcs.
+    /// </summary>
+    private Dictionary<UnitType, ArcDiagram> DictionaryArc { get; }
+
+    /// <summary>
+    /// Gets a default weapon bay for an unit type.
+    /// </summary>
+    /// <param name="unitType">The type of the unit to ask for.</param>
+    /// <returns>The default weapon bay for the given unit type.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the unit type is unknown.</exception>
+    public static WeaponBay GetDefaultWeaponBay(UnitType unitType)
+    {
+        return new WeaponBay
+        {
+            FiringSolution = new FiringSolution(),
+            Name = "Default",
+            Weapons = new List<WeaponEntry> { GetDefaultWeapon(unitType) }
+        };
+    }
+
+    /// <summary>
     /// Gets a default weapon for an unit type.
     /// </summary>
     /// <param name="unitType">The type of the unit to ask for.</param>
@@ -146,7 +180,8 @@ public class CommonData
         {
             case UnitType.Building:
             case UnitType.AerospaceCapital:
-            case UnitType.AerospaceDropship:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
             case UnitType.AerospaceFighter:
             case UnitType.Mech:
             case UnitType.MechTripod:
@@ -257,7 +292,7 @@ public class CommonData
     {
         if (DictionaryWeapon.TryGetValue(weaponName, out var weapon))
         {
-            return weapon.Ammo.Any();
+            return weapon.Ammo.Count != 0;
         }
 
         return false;
@@ -271,6 +306,16 @@ public class CommonData
     public async Task<bool> DeleteUnit(string unitName)
     {
         return await _unitRepository.DeleteAsync(unitName);
+    }
+
+    /// <summary>
+    /// Creates a map of arc valid for a given unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type to create for.</param>
+    /// <returns>A display map for arc options for the given unit type.</returns>
+    public Dictionary<string, Arc> FormMapArc(UnitType unitType)
+    {
+        return DictionaryArc[unitType].Arcs.ToDictionary(a => a.ToString(), a => a);
     }
 
     /// <summary>
@@ -330,7 +375,8 @@ public class CommonData
             case UnitType.Building:
                 return GenerateOptions(new List<MovementClass> { MovementClass.Immobile });
             case UnitType.AerospaceCapital:
-            case UnitType.AerospaceDropship:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
             case UnitType.AerospaceFighter:
                 return GenerateOptions(new List<MovementClass> { MovementClass.Immobile, MovementClass.Normal, MovementClass.Fast, MovementClass.OutOfControl });
             case UnitType.BattleArmor:
@@ -435,46 +481,53 @@ public class CommonData
     /// <summary>
     /// Form pick brackets for distance options when firing weapons.
     /// </summary>
-    /// <param name="unit">The unit to form the pick brackets for.</param>
+    /// <param name="weaponBay">The unit to form the pick brackets for.</param>
+    /// <param name="type">The firing unit type.</param>
     /// <returns>Pick brackets for selecting valid engagement distances.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the range bracket to form for is unknown.</exception>
-    public List<PickBracket> FormPickBracketsDistance(UnitEntry unit)
+    public List<PickBracket> FormPickBracketsDistance(WeaponBay weaponBay, UnitType type)
     {
         var allRangeChanges = new List<int>();
 
-        foreach (var weaponEntry in unit.Weapons)
+        foreach (var weaponEntry in weaponBay.Weapons)
         {
             var weapon = FormWeapon(weaponEntry);
-            if (unit.Type == UnitType.AerospaceDropship || unit.Type == UnitType.AerospaceFighter)
+            switch (type)
             {
-                switch (weapon.RangeAerospace)
-                {
-                    case RangeBracket.Short:
-                        allRangeChanges.Add(6);
-                        break;
-                    case RangeBracket.Medium:
-                        allRangeChanges.AddRange(new[] { 6, 12 });
-                        break;
-                    case RangeBracket.Long:
-                        allRangeChanges.AddRange(new[] { 6, 12, 20 });
-                        break;
-                    case RangeBracket.Extreme:
-                        allRangeChanges.AddRange(new[] { 6, 12, 20, 25 });
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(unit), "Invalid range bracket.");
-                }
-            }
-            else
-            {
-                allRangeChanges.AddRange(weapon.Range.Values);
-                if (weapon.RangeMinimum != -1)
-                {
-                    for (int ii = 0; ii <= weapon.RangeMinimum; ii++)
+                case UnitType.AerospaceCapital:
+                case UnitType.AerospaceDropshipAerodyne:
+                case UnitType.AerospaceDropshipSpheroid:
+                case UnitType.AerospaceFighter:
+                    switch (weapon.RangeAerospace)
                     {
-                        allRangeChanges.Add(ii);
+                        case RangeBracket.Short:
+                            allRangeChanges.Add(weapon.CapitalScale ? RangeShortCapital : RangeShort);
+                            break;
+                        case RangeBracket.Medium:
+                            allRangeChanges.AddRange(weapon.CapitalScale ? RangesMediumCapital : RangesMedium);
+                            break;
+                        case RangeBracket.Long:
+                            allRangeChanges.AddRange(weapon.CapitalScale ? RangesLongCapital : RangesLong);
+                            break;
+                        case RangeBracket.Extreme:
+                            allRangeChanges.AddRange(weapon.CapitalScale ? RangesExtremeCapital : RangesExtreme);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(weaponBay), "Invalid range bracket.");
                     }
-                }
+
+                    break;
+                default:
+                    allRangeChanges.AddRange(weapon.Range.Values);
+                    if (weapon.RangeMinimum != -1)
+                    {
+                        for (int ii = 0; ii <= weapon.RangeMinimum; ii++)
+                        {
+                            allRangeChanges.Add(ii);
+                        }
+                    }
+
+                    break;
             }
         }
 
@@ -545,6 +598,15 @@ public class CommonData
     }
 
     /// <summary>
+    /// Form pick brackets for valid numbers of weapons.
+    /// </summary>
+    /// <returns>Pick brackets for selecting valid numbers of weapons.</returns>
+    public List<PickBracket> FormPickBracketsWeaponAmount()
+    {
+        return MakeSimplePickBrackets(1, 1, 12);
+    }
+
+    /// <summary>
     /// Forms a weapon from a weapon entry.
     /// </summary>
     /// <param name="weaponEntry">The weapon entry.</param>
@@ -564,9 +626,9 @@ public class CommonData
     {
         var weapon = DictionaryWeapon[weaponName];
 
-        if (!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.ContainsKey(ammoName))
+        if (!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.TryGetValue(ammoName, out var value))
         {
-            return weapon.ApplyAmmo(DictionaryAmmo[weapon.Ammo[ammoName]]);
+            return weapon.ApplyAmmo(DictionaryAmmo[value]);
         }
 
         return weapon;

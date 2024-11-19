@@ -42,6 +42,11 @@ public class UserStateController
     public event Action OnPlayerOptionsUpdated;
 
     /// <summary>
+    /// Event for when available unit list changes.
+    /// </summary>
+    public event Action OnGameUnitListUpdated;
+
+    /// <summary>
     /// Event for when a player updates his or her state.
     /// </summary>
     public event Action OnPlayerStateUpdated;
@@ -59,7 +64,7 @@ public class UserStateController
     /// <summary>
     /// Event for when player unit list gets changed.
     /// </summary>
-    public event Action OnPlayerUnitListChanged;
+    public event Action OnPlayerListOrderUpdated;
 
     /// <summary>
     /// Event for when game entries are received.
@@ -74,12 +79,17 @@ public class UserStateController
     /// <summary>
     /// Index of the dragged unit.
     /// </summary>
-    public int DraggedUnitIndex { get; set; }
+    public int? DraggedUnitIndex { get; set; }
 
     /// <summary>
     /// Index of the dragged weapon.
     /// </summary>
-    public int DraggedWeaponIndex { get; set; }
+    public int? DraggedWeaponIndex { get; set; }
+
+    /// <summary>
+    /// Index of the dragged weapon bay.
+    /// </summary>
+    public int? DraggedWeaponBayIndex { get; set; }
 
     /// <summary>
     /// The damage instance.
@@ -131,9 +141,11 @@ public class UserStateController
                 }
             }
 
+            // The below method checks whether it is actually necessary to invoke UI refresh.
+            // Most of the time, this is not the case
             UpdateUnitList();
 
-            OnPlayerUnitListChanged?.Invoke();
+            NotifyPlayerListOrderUpdated();
         }
     }
 
@@ -184,7 +196,7 @@ public class UserStateController
     {
         if (unit == null)
         {
-            var newUnit = PlayerState.UnitEntries.Any() ? PlayerState.UnitEntries[^1].Copy() : CommonData.GetBlankUnit();
+            var newUnit = PlayerState.UnitEntries.Count == 0 ? CommonData.GetBlankUnit() : PlayerState.UnitEntries[^1].Copy();
             PlayerState.UnitEntries.Add(newUnit);
         }
         else
@@ -280,7 +292,17 @@ public class UserStateController
         {
             PlayerState.TimeStamp = DateTime.UtcNow;
             OnPlayerStateUpdated();
-            OnPlayerUnitListChanged();
+        }
+    }
+
+    /// <summary>
+    /// Notification for when player list orders change.
+    /// </summary>
+    public void NotifyPlayerListOrderUpdated()
+    {
+        if (PlayerState != null)
+        {
+            OnPlayerListOrderUpdated();
         }
     }
 
@@ -421,6 +443,8 @@ public class UserStateController
         if (_unitList.Any(u => !newUnitList.ContainsKey(u.Key)) || newUnitList.Any(u => !_unitList.ContainsKey(u.Key)))
         {
             _unitList = newUnitList;
+
+            OnGameUnitListUpdated?.Invoke();
         }
         else
         {
@@ -431,6 +455,8 @@ public class UserStateController
                 if (oldUnit.PlayerId != newUnit.Value.PlayerId || oldUnit.Unit.Name != newUnit.Value.Unit.Name || oldUnit.Unit.Type != newUnit.Value.Unit.Type)
                 {
                     _unitList = newUnitList;
+
+                    OnGameUnitListUpdated?.Invoke();
                     break;
                 }
             }

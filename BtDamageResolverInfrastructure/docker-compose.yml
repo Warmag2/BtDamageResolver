@@ -23,11 +23,16 @@ services:
     hostname: resolverclient
     image: resolverclient:latest
     environment:
-      ASPNETCORE_URLS: "http://+:8787"
+      ASPNETCORE_ENVIRONMENT: Release
+        #      Kestrel__Certificates__Default__Path: "./certs/fullchain.pem"
+        #      Kestrel__Certificates__Default__KeyPath: "./certs/privkey.pem"
       RESOLVER_ENVIRONMENT: Release
       CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+    volumes:
+      - ./certs:/app/certs:ro
+      - ./dpkeys:/app/dpkeys
     ports:
-      - 8787:8787
+      - 8787:8080
     networks:
       - resolvernet
     depends_on:

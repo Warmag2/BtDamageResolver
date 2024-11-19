@@ -42,15 +42,16 @@ public class DamageReportCollection
     /// <returns><b>True</b> if the damage report was successfully added, <b>false</b> otherwise.</returns>
     public bool Add(DamageReport damageReport)
     {
-        if (!DamageReports.ContainsKey(damageReport.Turn))
+        if (!DamageReports.TryGetValue(damageReport.Turn, out var damageReportList))
         {
-            DamageReports.Add(damageReport.Turn, new List<DamageReport>());
+            damageReportList = new List<DamageReport>();
+            DamageReports.Add(damageReport.Turn, damageReportList);
             Visibility.Add(damageReport.Turn, true);
         }
 
-        if (DamageReports[damageReport.Turn].TrueForAll(d => d.Id != damageReport.Id))
+        if (damageReportList.TrueForAll(d => d.Id != damageReport.Id))
         {
-            DamageReports[damageReport.Turn].Add(damageReport);
+            damageReportList.Add(damageReport);
             TimeStamp = DateTime.UtcNow;
 
             return true;
@@ -98,7 +99,7 @@ public class DamageReportCollection
     /// <returns>All the damage reports in this damage report collection for the specified turn, or an empty list, if none found.</returns>
     public List<DamageReport> GetReportsForTurn(int turn)
     {
-        return DamageReports.ContainsKey(turn) && DamageReports[turn] != null ? DamageReports[turn] : new List<DamageReport>();
+        return DamageReports.TryGetValue(turn, out var damageReportsForTurn) && damageReportsForTurn != null ? damageReportsForTurn : new List<DamageReport>();
     }
 
     /// <summary>
@@ -112,7 +113,7 @@ public class DamageReportCollection
 
         if (DamageReports[damageReport.Turn].Remove(damageReportToRemove))
         {
-            if (!DamageReports[damageReport.Turn].Any())
+            if (DamageReports[damageReport.Turn].Count == 0)
             {
                 DamageReports.Remove(damageReport.Turn);
                 Visibility.Remove(damageReport.Turn);
@@ -173,6 +174,6 @@ public class DamageReportCollection
     /// <returns><b>True</b> if the damage report collection is empty, <b>false</b> otherwise.</returns>
     public bool IsEmpty()
     {
-        return !DamageReports.Any();
+        return DamageReports.Count == 0;
     }
 }

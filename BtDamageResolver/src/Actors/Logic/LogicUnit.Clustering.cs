@@ -6,7 +6,6 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic;
 
@@ -88,7 +87,7 @@ public partial class LogicUnit
 
     private static int TransformClusterRollBasedOnWeaponFeatures(DamageReport damageReport, CombatAction combatAction, int clusterRoll)
     {
-        if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.Streak, out _))
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Streak, out _))
         {
             clusterRoll = 11;
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value by a streak weapon", Number = clusterRoll });
@@ -106,7 +105,7 @@ public partial class LogicUnit
 
         if (target.Unit.HasFeature(UnitFeature.Ams))
         {
-            if (combatAction.Weapon.SpecialFeatures.HasFeature(WeaponFeature.AmsImmune, out _))
+            if (combatAction.Weapon.HasFeature(WeaponFeature.AmsImmune, out _))
             {
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is immune to AMS defenses" });
             }

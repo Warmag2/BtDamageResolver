@@ -264,7 +264,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendPlayerStateRequest.PlayerName).SendPlayerState(unpackedSendPlayerStateRequest.AuthenticationToken, unpackedSendPlayerStateRequest.PlayerState))
         {
             // Do not use regular LogWarning here - SendPlayerState has internal error handling and sends its own sensible error messages to the player
-            _logger.LogWarning("Failed to handle a {type} for player {playerId}", unpackedSendPlayerStateRequest.GetType(), unpackedSendPlayerStateRequest.PlayerName);
+            _logger.LogWarning("Failed to handle a message of type {Type} for player {PlayerId}", unpackedSendPlayerStateRequest.GetType(), unpackedSendPlayerStateRequest.PlayerName);
         }
         else
         {
@@ -286,7 +286,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
     private void LogWarning(RequestBase request)
     {
-        _logger.LogWarning("Failed to handle a {type} for player {playerId}", request.GetType(), request.PlayerName);
+        _logger.LogWarning("Failed to handle a message of type {Type} for player {PlayerId}", request.GetType(), request.PlayerName);
         Send(request.PlayerName, EventNames.ErrorMessage, $"Failed to handle a {request.GetType()} for player {request.PlayerName}.");
     }
 }

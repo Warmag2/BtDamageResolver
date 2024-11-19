@@ -5,7 +5,7 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
 /// <summary>
 /// Controls visual styles and field visibility.
 /// </summary>
-public class VisualStyleController
+public static class VisualStyleController
 {
     /// <summary>
     /// Returns a style text to hide an element or avoid doing so.
@@ -22,7 +22,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if cover should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetCoverHidden(UnitType unitType)
+    public static bool GetCoverHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -40,7 +40,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if attack direction should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetDirectionHidden(UnitType unitType)
+    public static bool GetDirectionHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -54,11 +54,30 @@ public class VisualStyleController
     }
 
     /// <summary>
+    /// Indicates whether evasion should be hidden for this unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type.</param>
+    /// <returns><b>True</b> if evasion should be hidden, <b>false</b> otherwise.</returns>
+    public static bool GetEvasionHidden(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    /// <summary>
     /// Indicates whether the number of jump jets should be hidden for this unit type.
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if the number of jump jets should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetJumpJetsHidden(UnitType unitType)
+    public static bool GetJumpJetsHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -78,7 +97,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if firing penalty should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetPenaltyHidden(UnitType unitType)
+    public static bool GetPenaltyHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -95,7 +114,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if the number of heat sinks should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetSinksHidden(UnitType unitType)
+    public static bool GetSinksHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -114,7 +133,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if unit speed should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetSpeedHidden(UnitType unitType)
+    public static bool GetSpeedHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -130,7 +149,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if unit stance should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetStanceHidden(UnitType unitType)
+    public static bool GetStanceHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -150,7 +169,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if unit tonnage should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetTonnageHidden(UnitType unitType)
+    public static bool GetTonnageHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -167,7 +186,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if trooper count should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetTroopersHidden(UnitType unitType)
+    public static bool GetTroopersHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -184,7 +203,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if unit state indicators should be hidden, <b>false</b> otherwise.</returns>
-    public bool GetUnitStateHidden(UnitType unitType)
+    public static bool GetUnitStateHidden(UnitType unitType)
     {
         switch (unitType)
         {
@@ -197,18 +216,32 @@ public class VisualStyleController
     }
 
     /// <summary>
+    /// Indicates whether unit state indicators should be hidden for this unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type.</param>
+    /// <returns><b>True</b> if unit state indicators should be hidden, <b>false</b> otherwise.</returns>
+    public static bool GetWeaponAmountHidden(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    /// <summary>
     /// Gets a class for active indication.
     /// </summary>
     /// <param name="active">Active or not.</param>
     /// <returns>The correct class for active indication.</returns>
-    public string GetActiveClass(bool active)
+    public static string GetActiveClass(bool active)
     {
-        if (active)
-        {
-            return "active";
-        }
-
-        return "inactive";
+        return active ? "active" : "inactive";
     }
 
     /// <summary>
@@ -216,7 +249,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="heat">The heat level.</param>
     /// <returns>The correct style for the given heat level.</returns>
-    public string GetStyleForHeat(int heat)
+    public static string GetStyleForHeat(int heat)
     {
         if (heat >= 14)
         {
@@ -236,7 +269,7 @@ public class VisualStyleController
     /// </summary>
     /// <param name="heat">The attack penalty.</param>
     /// <returns>The correct style for the given attack penalty.</returns>
-    public string GetStyleForPenalty(int heat)
+    public static string GetStyleForPenalty(int heat)
     {
         if (heat >= 2)
         {

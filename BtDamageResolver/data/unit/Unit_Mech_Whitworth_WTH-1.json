@@ -1,4 +1,5 @@
 {
+    "Name": "Whitworth WTH-1",
     "Gunnery": 4,
     "Piloting": 5,
     "Features":
@@ -11,25 +12,30 @@
     "Tonnage": 40,
     "Troopers": 1,
     "Sinks": 10,
-    "Weapons":
+    "WeaponBays":
     [
         {
-            "WeaponName": "LRM-10",
-            "Ammo": "Normal"
-        },
-        {
-            "WeaponName": "LRM-10",
-            "Ammo": "Normal"
-        },
-        {
-            "WeaponName": "Medium Laser"
-        },
-        {
-            "WeaponName": "Medium Laser"
-        },
-        {
-            "WeaponName": "Medium Laser"
+            "Name": "Default",
+            "Weapons":
+            [
+                {
+                    "WeaponName": "LRM-10",
+                    "Ammo": "Normal"
+                },
+                {
+                    "WeaponName": "LRM-10",
+                    "Ammo": "Normal"
+                },
+                {
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "WeaponName": "Medium Laser"
+                }
+            ]
         }
-    ],
-    "Name": "Whitworth WTH-1"
+    ]
 }

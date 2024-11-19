@@ -22,7 +22,7 @@ public class LogicUnitMech : LogicUnitMechBase
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="random">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    public LogicUnitMech(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+    public LogicUnitMech(ILogger<LogicUnitMech> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
     {
     }
 

@@ -17,7 +17,9 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
+    "Heat": {
+      "Short": 0
+    },
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterTable": "InfantryRifleBallistic",
     "ClusterSize": 2,
@@ -41,7 +43,9 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
+    "Heat": {
+      "Short": 0
+    },
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterTable": "InfantryRifleEnergy",
     "ClusterSize": 2,
@@ -65,8 +69,13 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 0,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Burst", "Data": "1d6" } ],
+    "Heat": {
+      "Short": 0
+    },
+    "SpecialDamage": [
+      { "Type": "Burst", "Data": "1d6" }
+    ],
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterTable": "InfantryMachineGun",
     "ClusterSize": 2,
     "ClusterDamage": 1
@@ -90,7 +99,9 @@
     },
     "RangeMinimum": 0,
     "RangeAerospace": "Short",
-    "Heat": 0,
+    "Heat": {
+      "Short": 0
+    },
     "UsesAmmo": true,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ],
     "ClusterTable": "InfantrySRM",
@@ -121,7 +132,9 @@
     },
     "RangeMinimum": 6,
     "RangeAerospace": "Short",
-    "Heat": 0,
+    "Heat": {
+      "Short": 0
+    },
     "UsesAmmo": true,
     "ClusterTable": "InfantryLRM",
     "ClusterSize": 2,
@@ -146,8 +159,13 @@
     },
     "RangeMinimum": 0,
     "RangeAerospace": "Short",
-    "Heat": 0,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Burst", "Data": "1d6" } ],
+    "Heat": {
+      "Short": 0
+    },
+    "SpecialDamage": [
+      { "Data": "1d6", "Type": "Burst" }
+    ],
+    "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterTable": "InfantryFlamer",
     "ClusterSize": 2,
     "ClusterDamage": 1

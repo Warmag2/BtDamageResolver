@@ -1,0 +1,11 @@
+{
+    "UnitType": "VehicleHover",
+    "Arcs":
+    [
+        "Full",
+        "Front",
+        "Left",
+        "Right",
+        "Rear"
+    ]
+}

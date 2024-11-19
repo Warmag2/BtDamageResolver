@@ -27,6 +27,12 @@ public class LogicUnitAerospaceFighter : LogicUnitAerospace
     }
 
     /// <inheritdoc />
+    public override int GetEvasionModifier()
+    {
+        return 3;
+    }
+
+    /// <inheritdoc />
     public override PaperDollType GetPaperDollType()
     {
         return PaperDollType.AerospaceFighter;

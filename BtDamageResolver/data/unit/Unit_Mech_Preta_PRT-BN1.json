@@ -1,4 +1,5 @@
 {
+    "Name": "Preta PRT-BN1",
     "Gunnery": 3,
     "Piloting": 3,
     "Features":
@@ -11,21 +12,26 @@
     "Tonnage": 45,
     "Troopers": 1,
     "Sinks": 22,
-    "Weapons":
+    "WeaponBays":
     [
         {
-            "WeaponName": "Large Pulse Laser"
-        },
-        {
-            "WeaponName": "Medium Pulse Laser"
-        },
-        {
-            "WeaponName": "ER Medium Laser"
-        },
-        {
-            "WeaponName": "Melee Retractable Blade",
-            "Ammo": "AP Strike"
+            "Name": "Default",
+            "Weapons":
+            [
+                {
+                    "WeaponName": "Large Pulse Laser"
+                },
+                {
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "WeaponName": "ER Medium Laser"
+                },
+                {
+                    "WeaponName": "Melee Retractable Blade",
+                    "Ammo": "AP Strike"
+                }
+            ]
         }
-    ],
-    "Name": "Preta PRT-BN1"
+    ]
 }

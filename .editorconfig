@@ -23,7 +23,7 @@ dotnet_diagnostic.IDE0046.severity = None
 dotnet_diagnostic.IDE0057.severity = None
 
 # Switch expression suggestions are fine.
-dotnet_diagnostic.IDE0066.severity = Suggestion
+dotnet_diagnostic.IDE0066.severity = None
 
 # Disagree about clarity of primary constructor
 dotnet_diagnostic.IDE0290.severity = None
@@ -54,6 +54,9 @@ dotnet_diagnostic.SA0001.severity = None
 # Closing parenthesis should not be preceded by a space
 dotnet_diagnostic.SA1009.severity = Warning
 
+# Square brackets preceded by space is fine.
+dotnet_diagnostic.SA1010.severity = None
+
 # Prefix local calls with this
 dotnet_diagnostic.SA1101.severity = None
 
@@ -64,7 +67,7 @@ dotnet_diagnostic.SA1128.severity = None
 dotnet_diagnostic.SA1200.severity = None
 
 # Static members should come before non-static members
-dotnet_diagnostic.SA1204.severity = None
+dotnet_diagnostic.SA1204.severity = Warning
 
 # Fields should begin with a lowercase letter
 dotnet_diagnostic.SA1306.severity = None
@@ -84,8 +87,8 @@ dotnet_diagnostic.SA1413.severity = None
 # Usings do not need blank lines in-between
 dotnet_diagnostic.SA1516.severity = None
 
-# Enumeration items should be documented
-dotnet_diagnostic.SA1602.severity = Suggestion
+# Enumeration items do not need to be documented
+dotnet_diagnostic.SA1602.severity = None
 
 # Allow properties to contain any kind of documentation line.
 dotnet_diagnostic.SA1623.severity = None
@@ -113,8 +116,11 @@ dotnet_diagnostic.S3358.severity = Warning
 dotnet_diagnostic.S3904.severity = Warning
 
 ##
-## SonarAnalyzers.CSharp
+## Orleans
 ##
 
 # I do not want to use Orleans binary serialization. Clarity over speed here.
 dotnet_diagnostic.ORLEANS0005.severity = None
+
+# No alias nagging please
+dotnet_diagnostic.ORLEANS0010.severity = None

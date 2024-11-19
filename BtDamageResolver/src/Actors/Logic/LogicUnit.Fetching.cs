@@ -46,7 +46,7 @@ public partial class LogicUnit
     }
 
     /// <summary>
-    /// Apply ammo to a weapon.
+    /// Apply ammo and multiplication to a weapon.
     /// </summary>
     /// <param name="weaponEntry">The weapon entry to base the applied weapon on.</param>
     /// <returns>The <see cref="Weapon"/> with the chosen ammo in the weapon entry applied, if possible.</returns>
@@ -54,9 +54,14 @@ public partial class LogicUnit
     {
         var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
 
-        if (!string.IsNullOrWhiteSpace(weaponEntry.Ammo) && weapon.Ammo.ContainsKey(weaponEntry.Ammo))
+        if (!string.IsNullOrWhiteSpace(weaponEntry.Ammo) && weapon.Ammo.TryGetValue(weaponEntry.Ammo, out var value))
         {
-            return weapon.ApplyAmmo(await GrainFactory.GetAmmoRepository().Get(weapon.Ammo[weaponEntry.Ammo]));
+            weapon = weapon.ApplyAmmo(await GrainFactory.GetAmmoRepository().Get(value));
+        }
+
+        if (weaponEntry.Amount > 1)
+        {
+            return weapon.Multiply(weaponEntry.Amount);
         }
 
         return weapon;

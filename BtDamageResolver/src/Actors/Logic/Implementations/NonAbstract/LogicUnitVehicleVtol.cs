@@ -4,7 +4,6 @@ using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -32,7 +31,7 @@ public class LogicUnitVehicleVtol : LogicUnitVehicle
     /// <inheritdoc />
     public override int GetFeatureModifier(Weapon weapon)
     {
-        if (weapon.SpecialFeatures.HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
+        if (weapon.HasFeature(WeaponFeature.Flak, out var flakFeatureEntry))
         {
             return MathExpression.Parse(flakFeatureEntry.Data);
         }

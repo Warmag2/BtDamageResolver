@@ -17,7 +17,9 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 1
+    "Heat": {
+      "Short": 1
+    }
   },
   {
     "Name": "BA Medium Laser",
@@ -37,7 +39,9 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": 3
+    "Heat": {
+      "Short": 3
+    }
   },
   {
     "Name": "BA ER Small Laser",
@@ -57,7 +61,9 @@
       "Extreme": 5
     },
     "RangeAerospace": "Short",
-    "Heat": 2
+    "Heat": {
+      "Short": 2
+    }
   },
   {
     "Name": "BA ER Medium Laser",
@@ -77,7 +83,9 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": 5
+    "Heat": {
+      "Short": 5
+    }
   },
   {
     "Name": "BA Small Pulse Laser",
@@ -97,8 +105,13 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": 2,
-    "SpecialFeatures": [ { "Data": "2d6", "Type": "Burst" }, { "Type": "Pulse" } ],
+    "Heat": {
+      "Short": 2
+    },
+    "SpecialDamage": [
+      { "Data": "2d6", "Type": "Burst" }
+    ],
+    "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   },
   {
@@ -119,7 +132,9 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": 4,
+    "Heat": {
+      "Short": 4
+    },
     "SpecialFeatures": [ { "Type": "Pulse" } ],
     "HitModifier": -2
   }

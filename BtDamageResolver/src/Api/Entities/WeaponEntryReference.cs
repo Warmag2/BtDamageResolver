@@ -6,29 +6,24 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 /// A weapon entry portraying a weapon and its current settings.
 /// </summary>
 [Serializable]
-public class WeaponReference
+public class WeaponEntryReference
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="WeaponReference"/> class.
+    /// Initializes a new instance of the <see cref="WeaponEntryReference"/> class.
     /// </summary>
-    public WeaponReference()
+    public WeaponEntryReference()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="WeaponReference"/> class.
+    /// Initializes a new instance of the <see cref="WeaponEntryReference"/> class.
     /// </summary>
     /// <param name="weaponEntry">The weapon entry to create this weapon reference from.</param>
-    public WeaponReference(WeaponEntry weaponEntry)
+    public WeaponEntryReference(WeaponEntry weaponEntry)
     {
         Ammo = weaponEntry.Ammo;
         WeaponName = weaponEntry.WeaponName;
     }
-
-    /// <summary>
-    /// The name of the weapon this weapon entry refers to.
-    /// </summary>
-    public string WeaponName { get; set; }
 
     /// <summary>
     /// The name of the ammo to use.
@@ -36,10 +31,20 @@ public class WeaponReference
     public string Ammo { get; set; }
 
     /// <summary>
+    /// The number of copies of this weapon1.
+    /// </summary>
+    public int Amount { get; set; } = 1;
+
+    /// <summary>
+    /// The name of the weapon this weapon entry refers to.
+    /// </summary>
+    public string WeaponName { get; set; }
+
+    /// <summary>
     /// Makes a copy of this weapon entry.
     /// </summary>
     /// <returns>A copy of the weapon entry.</returns>
-    public WeaponReference Copy()
+    public WeaponEntryReference Copy()
     {
         return new WeaponEntry
         {

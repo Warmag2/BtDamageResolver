@@ -1,8 +1,10 @@
-﻿@using Faemiyah.BtDamageResolver.Api.Enums
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 @inject UserStateController _userStateController
+@implements IDisposable
 
 @{
     var targetNumberUpdate = _userStateController.GetTargetNumberUpdateSingleWeapon(Unit.Id, WeaponEntry.Id);
@@ -11,7 +13,10 @@
 
 <tr class="resolver_tr_weaponentry @(WeaponEntry.State == WeaponState.Active ? "active" : string.Empty)">
     <td class="resolver_td_targetnumber">
-        <div class="resolver_div_unitinformation_data"><b>@targetNumber</b></div>
+        <b>@targetNumber</b>
+    </td>
+    <td>
+        <div class="resolver_div_unitinformation_data">@($"{WeaponEntry.Amount}x")</div>
     </td>
     <td>
         <div class="resolver_div_unitinformation_data">@WeaponEntry.WeaponName</div>
@@ -31,4 +36,14 @@
 
     [Parameter]
     public WeaponEntry WeaponEntry { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnTargetNumbersUpdated -= InvokeStateChange;
+    }
 }

@@ -1,0 +1,10 @@
+{
+    "UnitType": "Mech",
+    "Arcs":
+    [
+        "Front",
+        "LeftArm",
+        "RightArm",
+        "Rear"
+    ]
+}
