@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Faemiyah.BtDamageResolver.Api.Entities.Prototypes;
+using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -9,7 +9,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 /// The critical damage table.
 /// </summary>
 [Serializable]
-public class CriticalDamageTable : EntityBase<string>
+public class CriticalDamageTable : IEntity<string>
 {
     /// <summary>
     /// The location of the hit.
@@ -34,26 +34,26 @@ public class CriticalDamageTable : EntityBase<string>
     /// <summary>
     /// Get a critical damage table ID from its properties.
     /// </summary>
-    /// <param name="unitType">The unit type.</param>
+    /// <param name="paperDollType">The paper doll type.</param>
     /// <param name="criticalDamageTableType">The critical damage table type.</param>
     /// <param name="location">The location of the hit.</param>
     /// <returns>The ID of the critical damage table.</returns>
-    public static string GetIdFromProperties(PaperDollType unitType, CriticalDamageTableType criticalDamageTableType, Location location)
+    public static string GetIdFromProperties(PaperDollType paperDollType, CriticalDamageTableType criticalDamageTableType, Location location)
     {
-        return $"{unitType}_{criticalDamageTableType}_{location}";
+        return $"{paperDollType}_{criticalDamageTableType}_{location}";
     }
 
     /// <summary>
     /// Needed because the id is concatenated from several properties in this critical damage table.
     /// </summary>
     /// <returns>The ID of this specific critical damage table.</returns>
-    public override string GetId()
+    public string GetId()
     {
         return GetIdFromProperties(UnitType, Type, Location);
     }
 
     /// <inheritdoc />
-    public override void SetId(string id)
+    public void SetId(string id)
     {
         throw new InvalidOperationException("You should never have to set a Critical Damage Table ID manually.");
     }

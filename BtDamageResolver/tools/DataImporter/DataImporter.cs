@@ -206,11 +206,11 @@ public class DataImporter
         return fileNamePrefix switch
         {
             "Ammo" => (JsonSerializer.Deserialize<List<Ammo>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into a list of ammo.")).Select(r => r as object),
-            "ArcDiagram" => new object[] { JsonSerializer.Deserialize<ArcDiagram>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into an arc diagram.") },
-            "ClusterTable" => new object[] { JsonSerializer.Deserialize<ClusterTable>(fileData, _jsonSerializerOptions) },
-            "CriticalDamageTable" => new object[] { JsonSerializer.Deserialize<CriticalDamageTable>(fileData, _jsonSerializerOptions) },
-            "PaperDoll" => new object[] { JsonSerializer.Deserialize<PaperDoll>(fileData, _jsonSerializerOptions) },
-            "Unit" => new object[] { JsonSerializer.Deserialize<Unit>(fileData, _jsonSerializerOptions) },
+            "ArcDiagram" => [JsonSerializer.Deserialize<ArcDiagram>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into an arc diagram.")],
+            "ClusterTable" => [JsonSerializer.Deserialize<ClusterTable>(fileData, _jsonSerializerOptions)],
+            "CriticalDamageTable" => [JsonSerializer.Deserialize<CriticalDamageTable>(fileData, _jsonSerializerOptions)],
+            "PaperDoll" => [JsonSerializer.Deserialize<PaperDoll>(fileData, _jsonSerializerOptions)],
+            "Unit" => [JsonSerializer.Deserialize<Unit>(fileData, _jsonSerializerOptions)],
             "Weapons" => (JsonSerializer.Deserialize<List<Weapon>>(fileData, _jsonSerializerOptions) ?? throw new InvalidDataException("Could not deserialize into a list of weapons.")).Select(r => r as object),
             _ => throw new InvalidOperationException($"Cannot infer file type from file name for file: {path}"),
         };

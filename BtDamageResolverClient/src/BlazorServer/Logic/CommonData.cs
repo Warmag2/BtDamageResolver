@@ -64,7 +64,7 @@ public class CommonData
         // Pre-bake lists used to generate options
         DictionaryUnitType = new List<UnitType>
         {
-            UnitType.Building, UnitType.AerospaceDropshipAerodyne, UnitType.AerospaceDropshipSpheroid, UnitType.AerospaceFighter, UnitType.BattleArmor,
+            UnitType.Building, UnitType.AerospaceCapital, UnitType.AerospaceDropshipAerodyne, UnitType.AerospaceDropshipSpheroid, UnitType.AerospaceFighter, UnitType.BattleArmor,
             UnitType.Infantry, UnitType.Mech, UnitType.VehicleTracked, UnitType.VehicleWheeled,
             UnitType.VehicleHover, UnitType.VehicleVtol
         }.ToDictionary(u => u.ToString());
@@ -153,18 +153,15 @@ public class CommonData
     private Dictionary<UnitType, ArcDiagram> DictionaryArc { get; }
 
     /// <summary>
-    /// Gets a default weapon bay for an unit type.
+    /// Constructs a blank unit.
     /// </summary>
-    /// <param name="unitType">The type of the unit to ask for.</param>
-    /// <returns>The default weapon bay for the given unit type.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the unit type is unknown.</exception>
-    public static WeaponBay GetDefaultWeaponBay(UnitType unitType)
+    /// <returns>A blank unit.</returns>
+    public static UnitEntry GetBlankUnit()
     {
-        return new WeaponBay
+        return new()
         {
-            FiringSolution = new FiringSolution(),
-            Name = "Default",
-            Weapons = new List<WeaponEntry> { GetDefaultWeapon(unitType) }
+            Type = UnitType.Mech,
+            Name = "New Unit"
         };
     }
 
@@ -216,16 +213,188 @@ public class CommonData
     }
 
     /// <summary>
-    /// Constructs a blank unit.
+    /// Gets a default weapon bay for an unit type.
     /// </summary>
-    /// <returns>A blank unit.</returns>
-    public static UnitEntry GetBlankUnit()
+    /// <param name="unitType">The type of the unit to ask for.</param>
+    /// <returns>The default weapon bay for the given unit type.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the unit type is unknown.</exception>
+    public static WeaponBay GetDefaultWeaponBay(UnitType unitType)
     {
-        return new()
+        return new WeaponBay
         {
-            Type = UnitType.Mech,
-            Name = "New Unit"
+            FiringSolution = new FiringSolution(),
+            Name = "Default",
+            Weapons = new List<WeaponEntry> { GetDefaultWeapon(unitType) }
         };
+    }
+
+    /// <summary>
+    /// Creates a display map for cover options.
+    /// </summary>
+    /// <param name="unitType">The unit type to create for.</param>
+    /// <returns>A display map for cover options for the given unit type.</returns>
+    public static Dictionary<string, Cover> FormMapCover(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.Mech:
+            case UnitType.MechTripod:
+            case UnitType.MechQuad:
+                return new Dictionary<string, Cover> { { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right } };
+            default:
+                return new Dictionary<string, Cover> { { "None", Cover.None } };
+        }
+    }
+
+    /// <summary>
+    /// Creates a map of valid movement classes for the given unit.
+    /// </summary>
+    /// <param name="unit">The unit to create the map for.</param>
+    /// <returns>A map of valid movement classes for the given unit.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the unit type is unknown.</exception>
+    public static Dictionary<string, MovementClass> FormMapMovementClass(Unit unit)
+    {
+        switch (unit.Type)
+        {
+            case UnitType.Building:
+                return GenerateOptions(new List<MovementClass> { MovementClass.Immobile });
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                return GenerateOptions(new List<MovementClass> { MovementClass.Immobile, MovementClass.Normal, MovementClass.Fast, MovementClass.OutOfControl });
+            case UnitType.BattleArmor:
+            case UnitType.Infantry:
+                var listOfModesInfantry = new List<MovementClass> { MovementClass.Normal };
+                if (unit.JumpJets > 0)
+                {
+                    listOfModesInfantry.Add(MovementClass.Jump);
+                }
+
+                return GenerateOptions(listOfModesInfantry);
+            case UnitType.Mech:
+            case UnitType.MechTripod:
+            case UnitType.MechQuad:
+                var listOfModesMech = new List<MovementClass> { MovementClass.Immobile, MovementClass.Stationary, MovementClass.Normal, MovementClass.Fast };
+                if (unit.HasFeature(UnitFeature.Masc))
+                {
+                    listOfModesMech.Add(MovementClass.Masc);
+                }
+
+                if (unit.JumpJets > 0)
+                {
+                    listOfModesMech.Add(MovementClass.Jump);
+                }
+
+                return GenerateOptions(listOfModesMech);
+            case UnitType.VehicleHover:
+            case UnitType.VehicleTracked:
+            case UnitType.VehicleVtol:
+            case UnitType.VehicleWheeled:
+                var listOfModesVehicle = new List<MovementClass> { MovementClass.Immobile, MovementClass.Stationary, MovementClass.Normal, MovementClass.Fast };
+                if (unit.HasFeature(UnitFeature.Masc))
+                {
+                    listOfModesVehicle.Add(MovementClass.Masc);
+                }
+
+                return GenerateOptions(listOfModesVehicle);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(unit), unit.Type, null);
+        }
+    }
+
+    /// <summary>
+    /// Creates a map of valid stances for the given unit type.
+    /// </summary>
+    /// <param name="type">The unit type to create the map for.</param>
+    /// <returns>A map of valid stances for the given unit.</returns>
+    public static Dictionary<string, Stance> FormMapStance(UnitType type)
+    {
+        switch (type)
+        {
+            case UnitType.BattleArmor:
+                return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
+            case UnitType.Infantry:
+                return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "DugIn", Stance.DugIn }, { "Prone", Stance.Prone }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
+            case UnitType.Mech:
+            case UnitType.MechTripod:
+            case UnitType.MechQuad:
+                return new Dictionary<string, Stance> { { "Normal", Stance.Normal }, { "Crouch", Stance.Crouch }, { "Prone", Stance.Prone } };
+            default:
+                return new Dictionary<string, Stance> { { "Normal", Stance.Normal } };
+        }
+    }
+
+    /// <summary>
+    /// Form pick brackets for valid unit speeds.
+    /// </summary>
+    /// <returns>Pick brackets for selecting valid speeds.</returns>
+    public static List<PickBracket> FormPickBracketsSpeed()
+    {
+        return MakeSimplePickBrackets(1, 1, 20);
+    }
+
+    /// <summary>
+    /// Form pick brackets for valid numbers of jump jets.
+    /// </summary>
+    /// <returns>Pick brackets for selecting valid numbers of jump jets.</returns>
+    public static List<PickBracket> FormPickBracketsJumpJets()
+    {
+        return MakeSimplePickBrackets(0, 1, 12);
+    }
+
+    /// <summary>
+    /// Form pick brackets for valid firing penalty amounts.
+    /// </summary>
+    /// <returns>Pick brackets for selecting valid firing penalty amounts.</returns>
+    public static List<PickBracket> FormPickBracketsPenalty()
+    {
+        return MakeSimplePickBrackets(0, 1, 12);
+    }
+
+    /// <summary>
+    /// Form pick brackets for valid skill values.
+    /// </summary>
+    /// <returns>Pick brackets for selecting valid skill values.</returns>
+    public static List<PickBracket> FormPickBracketsSkills()
+    {
+        return MakeSimplePickBrackets(1, 1, 8);
+    }
+
+    /// <summary>
+    /// Form pick brackets for selecting unit tonnage.
+    /// </summary>
+    /// <returns>Pick brackets for selecting unit tonnage.</returns>
+    public static List<PickBracket> FormPickBracketsTonnage()
+    {
+        return MakeSimplePickBrackets(0, 5, 100);
+    }
+
+    /// <summary>
+    /// Form pick brackets for selecting the number of troopers.
+    /// </summary>
+    /// <returns>Pick brackets for selecting the number of troopers.</returns>
+    public static List<PickBracket> FormPickBracketsTroopers()
+    {
+        return MakeSimplePickBrackets(1, 1, 30);
+    }
+
+    /// <summary>
+    /// Form pick brackets for selecting the number of heat sinks.
+    /// </summary>
+    /// <returns>Pick brackets for selecting the number of heat sinks.</returns>
+    public static List<PickBracket> FormPickBracketsSinks()
+    {
+        return MakeSimplePickBrackets(0, 1, 60);
+    }
+
+    /// <summary>
+    /// Form pick brackets for valid numbers of weapons.
+    /// </summary>
+    /// <returns>Pick brackets for selecting valid numbers of weapons.</returns>
+    public static List<PickBracket> FormPickBracketsWeaponAmount()
+    {
+        return MakeSimplePickBrackets(1, 1, 12);
     }
 
     /// <summary>
@@ -319,24 +488,6 @@ public class CommonData
     }
 
     /// <summary>
-    /// Creates a display map for cover options.
-    /// </summary>
-    /// <param name="unitType">The unit type to create for.</param>
-    /// <returns>A display map for cover options for the given unit type.</returns>
-    public Dictionary<string, Cover> FormMapCover(UnitType unitType)
-    {
-        switch (unitType)
-        {
-            case UnitType.Mech:
-            case UnitType.MechTripod:
-            case UnitType.MechQuad:
-                return new Dictionary<string, Cover> { { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right } };
-            default:
-                return new Dictionary<string, Cover> { { "None", Cover.None } };
-        }
-    }
-
-    /// <summary>
     /// Create a map of valid movement amounts for a given unit.
     /// </summary>
     /// <param name="unitEntry">The unit to create the map for.</param>
@@ -360,85 +511,6 @@ public class CommonData
         var brackets = MakeDualSidedPickBrackets(possibleMovementAmounts);
 
         return brackets.ToDictionary(p => p.ToString(), p => p.Begin);
-    }
-
-    /// <summary>
-    /// Creates a map of valid movement classes for the given unit.
-    /// </summary>
-    /// <param name="unit">The unit to create the map for.</param>
-    /// <returns>A map of valid movement classes for the given unit.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the unit type is unknown.</exception>
-    public Dictionary<string, MovementClass> FormMapMovementClass(Unit unit)
-    {
-        switch (unit.Type)
-        {
-            case UnitType.Building:
-                return GenerateOptions(new List<MovementClass> { MovementClass.Immobile });
-            case UnitType.AerospaceCapital:
-            case UnitType.AerospaceDropshipAerodyne:
-            case UnitType.AerospaceDropshipSpheroid:
-            case UnitType.AerospaceFighter:
-                return GenerateOptions(new List<MovementClass> { MovementClass.Immobile, MovementClass.Normal, MovementClass.Fast, MovementClass.OutOfControl });
-            case UnitType.BattleArmor:
-            case UnitType.Infantry:
-                var listOfModesInfantry = new List<MovementClass> { MovementClass.Normal };
-                if (unit.JumpJets > 0)
-                {
-                    listOfModesInfantry.Add(MovementClass.Jump);
-                }
-
-                return GenerateOptions(listOfModesInfantry);
-            case UnitType.Mech:
-            case UnitType.MechTripod:
-            case UnitType.MechQuad:
-                var listOfModesMech = new List<MovementClass> { MovementClass.Immobile, MovementClass.Stationary, MovementClass.Normal, MovementClass.Fast };
-                if (unit.HasFeature(UnitFeature.Masc))
-                {
-                    listOfModesMech.Add(MovementClass.Masc);
-                }
-
-                if (unit.JumpJets > 0)
-                {
-                    listOfModesMech.Add(MovementClass.Jump);
-                }
-
-                return GenerateOptions(listOfModesMech);
-            case UnitType.VehicleHover:
-            case UnitType.VehicleTracked:
-            case UnitType.VehicleVtol:
-            case UnitType.VehicleWheeled:
-                var listOfModesVehicle = new List<MovementClass> { MovementClass.Immobile, MovementClass.Stationary, MovementClass.Normal, MovementClass.Fast };
-                if (unit.HasFeature(UnitFeature.Masc))
-                {
-                    listOfModesVehicle.Add(MovementClass.Masc);
-                }
-
-                return GenerateOptions(listOfModesVehicle);
-            default:
-                throw new ArgumentOutOfRangeException(nameof(unit), unit.Type, null);
-        }
-    }
-
-    /// <summary>
-    /// Creates a map of valid stances for the given unit type.
-    /// </summary>
-    /// <param name="type">The unit type to create the map for.</param>
-    /// <returns>A map of valid stances for the given unit.</returns>
-    public Dictionary<string, Stance> FormMapStance(UnitType type)
-    {
-        switch (type)
-        {
-            case UnitType.BattleArmor:
-                return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
-            case UnitType.Infantry:
-                return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "DugIn", Stance.DugIn }, { "Prone", Stance.Prone }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
-            case UnitType.Mech:
-            case UnitType.MechTripod:
-            case UnitType.MechQuad:
-                return new Dictionary<string, Stance> { { "Normal", Stance.Normal }, { "Crouch", Stance.Crouch }, { "Prone", Stance.Prone } };
-            default:
-                return new Dictionary<string, Stance> { { "Normal", Stance.Normal } };
-        }
     }
 
     /// <summary>
@@ -532,78 +604,6 @@ public class CommonData
         }
 
         return MakeArbitraryPickBrackets(allRangeChanges);
-    }
-
-    /// <summary>
-    /// Form pick brackets for valid unit speeds.
-    /// </summary>
-    /// <returns>Pick brackets for selecting valid speeds.</returns>
-    public List<PickBracket> FormPickBracketsSpeed()
-    {
-        return MakeSimplePickBrackets(1, 1, 20);
-    }
-
-    /// <summary>
-    /// Form pick brackets for valid numbers of jump jets.
-    /// </summary>
-    /// <returns>Pick brackets for selecting valid numbers of jump jets.</returns>
-    public List<PickBracket> FormPickBracketsJumpJets()
-    {
-        return MakeSimplePickBrackets(0, 1, 12);
-    }
-
-    /// <summary>
-    /// Form pick brackets for valid firing penalty amounts.
-    /// </summary>
-    /// <returns>Pick brackets for selecting valid firing penalty amounts.</returns>
-    public List<PickBracket> FormPickBracketsPenalty()
-    {
-        return MakeSimplePickBrackets(0, 1, 12);
-    }
-
-    /// <summary>
-    /// Form pick brackets for valid skill values.
-    /// </summary>
-    /// <returns>Pick brackets for selecting valid skill values.</returns>
-    public List<PickBracket> FormPickBracketsSkills()
-    {
-        return MakeSimplePickBrackets(1, 1, 8);
-    }
-
-    /// <summary>
-    /// Form pick brackets for selecting unit tonnage.
-    /// </summary>
-    /// <returns>Pick brackets for selecting unit tonnage.</returns>
-    public List<PickBracket> FormPickBracketsTonnage()
-    {
-        return MakeSimplePickBrackets(0, 5, 100);
-    }
-
-    /// <summary>
-    /// Form pick brackets for selecting the number of troopers.
-    /// </summary>
-    /// <returns>Pick brackets for selecting the number of troopers.</returns>
-    public List<PickBracket> FormPickBracketsTroopers()
-    {
-        return MakeSimplePickBrackets(1, 1, 30);
-    }
-
-    /// <summary>
-    /// Form pick brackets for selecting the number of heat sinks.
-    /// </summary>
-    /// <returns>Pick brackets for selecting the number of heat sinks.</returns>
-    public List<PickBracket> FormPickBracketsSinks()
-    {
-        return MakeSimplePickBrackets(0, 1, 60);
-    }
-
-    /// <summary>
-    /// Form pick brackets for valid numbers of weapons.
-    /// </summary>
-    /// <returns>Pick brackets for selecting valid numbers of weapons.</returns>
-    public List<PickBracket> FormPickBracketsWeaponAmount()
-    {
-        return MakeSimplePickBrackets(1, 1, 12);
     }
 
     /// <summary>

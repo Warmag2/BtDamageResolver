@@ -221,6 +221,13 @@ public partial class UnitEntry
         switch (Type)
         {
             // Aerospace capital ships do not have a relevant maximum tonnage
+            case UnitType.AerospaceCapital:
+                if (Tonnage < 100000)
+                {
+                    validationResult.Fail("Capital ship minimum tonnage is 100000 tons.");
+                }
+
+                break;
             case UnitType.AerospaceDropshipAerodyne:
             case UnitType.AerospaceDropshipSpheroid:
                 if (Tonnage is < 100 or > 100000)

@@ -38,12 +38,6 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
     }
 
     /// <inheritdoc />
-    public override PaperDollType GetPaperDollType()
-    {
-        return PaperDollType.AerospaceCapital;
-    }
-
-    /// <inheritdoc />
     public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
     {
         return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));

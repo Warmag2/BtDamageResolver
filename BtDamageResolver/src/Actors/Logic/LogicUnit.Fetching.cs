@@ -19,17 +19,7 @@ public partial class LogicUnit
     {
         var transformedTargetType = GetPaperDollType();
 
-        Location transformedLocation;
-
-        // Not self-evident, but all mech crit tables are actually just the default crit-ot-not table.
-        if (Unit.Type == UnitType.Mech || Unit.Type == UnitType.Building)
-        {
-            transformedLocation = Location.Front;
-        }
-        else
-        {
-            transformedLocation = location;
-        }
+        Location transformedLocation = TransformLocation(location);
 
         var criticalDamageTableId = CriticalDamageTable.GetIdFromProperties(transformedTargetType, criticalDamageTableType, transformedLocation);
 
@@ -100,6 +90,20 @@ public partial class LogicUnit
         }
 
         return transformedAttackType;
+    }
+
+    /// <summary>
+    /// Transform location based on unit type.
+    /// </summary>
+    /// <remarks>
+    /// Required because sometimes the number of critical damage tables for an unit does not match the number
+    /// of hit locations for an unit and the location needs to be transformed to match the available tables.
+    /// </remarks>
+    /// <param name="location">The location to transform.</param>
+    /// <returns>The transformed location.</returns>
+    protected virtual Location TransformLocation(Location location)
+    {
+        return location;
     }
 
     /// <summary>
