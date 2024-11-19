@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <RootNamespace>Faemiyah.BtDamageResolver.Client.BlazorServer</RootNamespace>
     <AssemblyName>BlazorServer</AssemblyName>
     <ServerGarbageCollection>true</ServerGarbageCollection>
@@ -22,10 +22,10 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.378" />
-    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.378" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.379" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.379" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
   </ItemGroup>
 
 </Project>

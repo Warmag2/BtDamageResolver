@@ -5,8 +5,11 @@
         "Nose",
         "FrontLeft",
         "FrontRight",
+<<<<<<< HEAD
         "BroadsideLeft",
         "BroadsideRight",
+=======
+>>>>>>> master
         "RearLeft",
         "RearRight",
         "Aft"

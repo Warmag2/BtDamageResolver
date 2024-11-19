@@ -126,6 +126,12 @@
                         <FormToggle @key=@($"evasion_{UnitEntry.Id}_{UnitEntry.Evading}") Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnEvasionChanged">Evading</FormToggle>
                     </td>
                 </tr>
+                <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetEvasionHidden(UnitEntry.Type)))">
+                    <td>Evasion</td>
+                    <td>
+                        <FormToggle @key=@($"evasion_{UnitEntry.Id}_{UnitEntry.Evading}") Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnEvasionChanged">Evading</FormToggle>
+                    </td>
+                </tr>
                 <tr>
                     <td>Hexes moved</td>
                     <td>
