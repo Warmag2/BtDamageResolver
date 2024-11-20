@@ -72,11 +72,11 @@
         {
             var connectionResponse = _dataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
-            // If we have disconnected from a game, clear the game state, damage reports
-            // and game options to make sure user state agrees with server and visuals.
+            // If we have disconnected from a game, clear damage reports and game options
+            // to make sure user state agrees with server and visuals.
+            // Server will send a gamestate update that will clear our state later.
             if (connectionResponse.GameId == null)
             {
-                _userStateController.GameState = null;
                 _userStateController.GameOptions = null;
                 _userStateController.DamageReportCollection.Clear();
                 _userStateController.NotifyDamageReportsChanged();
@@ -91,6 +91,7 @@
             }
             else
             {
+                // Failure to connect should reset everything
                 _resolverCommunicator.SetAuthenticationToken(Guid.Empty);
                 _userStateController.IsConnectedToServer = false;
                 _userStateController.GameState = null;
