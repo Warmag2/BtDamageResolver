@@ -77,6 +77,7 @@
             // Server will send a gamestate update that will clear our state later.
             if (connectionResponse.GameId == null)
             {
+                _userStateController.GameState = null;
                 _userStateController.GameOptions = null;
                 _userStateController.DamageReportCollection.Clear();
                 _userStateController.NotifyDamageReportsChanged();
