@@ -9,7 +9,7 @@
     var showMovement = _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false;
 }
 
-@if (_userStateController.DamageReportCollection.IsEmpty())
+@if (_userStateController.DamageReportCollection.IsEmpty() || _userStateController.PlayerState == null)
 {
     <h3>
         No damagereports available

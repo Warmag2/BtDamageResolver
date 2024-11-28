@@ -45,7 +45,7 @@
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
-    <FormDamageReports OnlyNewest="false" />
+    <FormDamageReports @key=@($"{_userStateController.DamageReportCollection?.TimeStamp}_{_userStateController.PlayerState!=null}") OnlyNewest="false" />
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
