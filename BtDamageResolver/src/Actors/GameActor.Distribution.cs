@@ -19,6 +19,7 @@ public partial class GameActor
     /// <param name="playerId">The player ID of the player to send the damage reports to.</param>
     private async Task DistributeAllDamageReportsToPlayer(string playerId)
     {
+        _logger.LogInformation("Game {GameId} is sending a damage report update to player {Player}.", this.GetPrimaryKeyString(), playerId);
         await _communicationServiceClient.Send(playerId, EventNames.DamageReports, _gameActorState.State.DamageReports.GetAll());
     }
 
@@ -28,21 +29,8 @@ public partial class GameActor
     /// <param name="damageReports">A list of <see cref="DamageReport"/>s that are to be distributed to players.</param>
     private async Task DistributeDamageReportsToPlayers(List<DamageReport> damageReports)
     {
-        _logger.LogInformation("Game {GameId} is sending an damage reports to all players.", this.GetPrimaryKeyString());
-
+        _logger.LogInformation("Game {GameId} is sending a damage report update to all players ({PlayerIds}).", this.GetPrimaryKeyString(), string.Join(", ", _gameActorState.State.PlayerIds));
         await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.DamageReports, damageReports);
-    }
-
-    /// <summary>
-    /// Sends the game state update to all players.
-    /// </summary>
-    /// <param name="markStateAsNew">Mark the game state to be as recent as possible.</param>
-    private async Task DistributeGameStateToPlayers(bool markStateAsNew)
-    {
-        _logger.LogInformation("Game {GameId} is sending a game state update to all players.", this.GetPrimaryKeyString());
-        var gameState = GetGameState(markStateAsNew);
-
-        await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.GameState, gameState);
     }
 
     /// <summary>
@@ -51,7 +39,20 @@ public partial class GameActor
     /// <param name="playerId">The player ID of the player to send the game state to.</param>
     private async Task DistributeGameStateToPlayer(string playerId)
     {
+        _logger.LogInformation("Game {GameId} is sending a game state update to player {Player}.", this.GetPrimaryKeyString(), playerId);
         await _communicationServiceClient.Send(playerId, EventNames.GameState, GetGameState(false));
+    }
+
+    /// <summary>
+    /// Sends the game state update to all players.
+    /// </summary>
+    /// <param name="markStateAsNew">Mark the game state to be as recent as possible.</param>
+    private async Task DistributeGameStateToPlayers(bool markStateAsNew)
+    {
+        _logger.LogInformation("Game {GameId} is sending a game state update to all players ({PlayerIds}).", this.GetPrimaryKeyString(), string.Join(", ", _gameActorState.State.PlayerIds));
+        var gameState = GetGameState(markStateAsNew);
+
+        await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.GameState, gameState);
     }
 
     /// <summary>
@@ -61,7 +62,6 @@ public partial class GameActor
     private async Task DistributeGameOptionsToPlayer(string playerId)
     {
         _logger.LogInformation("Game {GameId} is sending an options update to player {Player}.", this.GetPrimaryKeyString(), playerId);
-
         await _communicationServiceClient.Send(playerId, EventNames.GameOptions, _gameActorState.State.Options);
     }
 
@@ -70,8 +70,7 @@ public partial class GameActor
     /// </summary>
     private async Task DistributeGameOptionsToPlayers()
     {
-        _logger.LogInformation("Game {GameId} is sending an options update to all players.", this.GetPrimaryKeyString());
-
+        _logger.LogInformation("Game {GameId} is sending an options update to all players ({PlayerIds}).", this.GetPrimaryKeyString(), string.Join(", ", _gameActorState.State.PlayerIds));
         await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.GameOptions, _gameActorState.State.Options);
     }
 
@@ -81,7 +80,6 @@ public partial class GameActor
     private async Task DistributeTargetNumberUpdatesToPlayer(string playerId, List<TargetNumberUpdate> targetNumberUpdates)
     {
         _logger.LogInformation("Game {GameId} is sending {Count} target number updates to player {Player}.", this.GetPrimaryKeyString(), targetNumberUpdates.Count, playerId);
-
         await _communicationServiceClient.Send(playerId, EventNames.TargetNumbers, targetNumberUpdates);
     }
 
@@ -90,8 +88,7 @@ public partial class GameActor
     /// </summary>
     private async Task DistributeTargetNumberUpdatesToPlayers(List<TargetNumberUpdate> targetNumberUpdates)
     {
-        _logger.LogInformation("Game {GameId} is sending target number updates to all players.", this.GetPrimaryKeyString());
-
+        _logger.LogInformation("Game {GameId} is sending target number updates to all players ({PlayerIds}).", this.GetPrimaryKeyString(), string.Join(", ", _gameActorState.State.PlayerIds));
         await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.TargetNumbers, targetNumberUpdates);
     }
 }
