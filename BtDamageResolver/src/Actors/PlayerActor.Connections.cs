@@ -165,10 +165,11 @@ public partial class PlayerActor
             // When we connect to a game, the game is not guaranteed to have our state. Send it and mark all units as updated.
             await gameActor.SendPlayerState(this.GetPrimaryKeyString(), await GetPlayerState(), _playerActorState.State.UnitEntries.UnitIds);
 
-            // Fetch game options on join
+            // Fetch game data on join
             await gameActor.RequestGameOptions(this.GetPrimaryKeyString());
+            await gameActor.RequestDamageReports(this.GetPrimaryKeyString());
 
-            // Connection state has been updated, so send it
+            // Connection state has been updated, so respond with it
             await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
 
             return true;

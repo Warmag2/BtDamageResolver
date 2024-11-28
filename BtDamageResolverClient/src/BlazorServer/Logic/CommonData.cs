@@ -161,7 +161,12 @@ public class CommonData
         return new()
         {
             Type = UnitType.Mech,
-            Name = "New Unit"
+            Name = "New Unit",
+            Gunnery = 4,
+            Piloting = 5,
+            Sinks = 20,
+            Speed = 4,
+            Tonnage = 50
         };
     }
 
