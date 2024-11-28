@@ -80,8 +80,6 @@ public partial class PlayerActor
             }
         }
 
-        var success = false;
-
         try
         {
             if (playerState.TimeStamp > _playerActorState.State.UpdateTimeStamp)
@@ -97,14 +95,16 @@ public partial class PlayerActor
                 // arising from changes incurred by uploading the state to the game actor.
                 await _playerActorState.WriteStateAsync();
 
-                if (IsConnectedToGame())
-                {
-                    // If we are connected to the game, also push player state to the game actor to be distributed to other players.
-                    success = await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendPlayerState(this.GetPrimaryKeyString(), playerState, updatedUnits);
-                }
-
                 // Log the number of updated units to permanent store
                 await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.UpdateUnit, updatedUnits.Count);
+
+                // If we are connected to the game, also push player state to the game actor to be distributed to other players.
+                if (IsConnectedToGame())
+                {
+                    return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendPlayerState(this.GetPrimaryKeyString(), playerState, updatedUnits);
+                }
+
+                return false;
             }
             else
             {
@@ -113,14 +113,14 @@ public partial class PlayerActor
                     this.GetPrimaryKeyString(),
                     playerState.TimeStamp,
                     _playerActorState.State.UpdateTimeStamp);
+
+                return false;
             }
         }
         catch (Exception ex)
         {
             await SendErrorMessageToClient($"{ex.Message}\n{ex.StackTrace}");
         }
-
-        return success;
     }
 
     /// <inheritdoc />

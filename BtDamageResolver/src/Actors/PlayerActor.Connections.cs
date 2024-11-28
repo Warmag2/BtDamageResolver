@@ -193,7 +193,6 @@ public partial class PlayerActor
         _logger.LogInformation("Player {PlayerId} received a successful connection request from a client.", this.GetPrimaryKeyString());
 
         // Send personal state objects
-        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
         await SendDataToClient(EventNames.PlayerOptions, _playerActorState.State.Options);
 
         // Ask for game-related state objects
@@ -201,6 +200,9 @@ public partial class PlayerActor
         await RequestGameState(_playerActorState.State.AuthenticationToken);
         await RequestDamageReports(_playerActorState.State.AuthenticationToken);
         await RequestTargetNumbers();
+
+        // Respond with a connection response
+        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
 
         // Log the login to permanent store
         await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Login, 0);
