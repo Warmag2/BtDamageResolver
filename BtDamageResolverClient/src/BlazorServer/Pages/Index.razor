@@ -105,8 +105,7 @@
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
         {
-            var data = _dataHelper.Unpack<List<DamageReport>>(damageReportData);
-            _userStateController.DamageReportCollection.AddRange(data);
+            _userStateController.DamageReportCollection.AddRange(_dataHelper.Unpack<List<DamageReport>>(damageReportData));
             _userStateController.NotifyDamageReportsChanged();
         });
 

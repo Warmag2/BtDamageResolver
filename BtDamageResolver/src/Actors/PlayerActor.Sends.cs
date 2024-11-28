@@ -103,8 +103,6 @@ public partial class PlayerActor
                 {
                     return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendPlayerState(this.GetPrimaryKeyString(), playerState, updatedUnits);
                 }
-
-                return false;
             }
             else
             {
@@ -113,14 +111,14 @@ public partial class PlayerActor
                     this.GetPrimaryKeyString(),
                     playerState.TimeStamp,
                     _playerActorState.State.UpdateTimeStamp);
-
-                return false;
             }
         }
         catch (Exception ex)
         {
             await SendErrorMessageToClient($"{ex.Message}\n{ex.StackTrace}");
         }
+
+        return false;
     }
 
     /// <inheritdoc />
