@@ -52,6 +52,9 @@
     <FormOptions @key=@($"{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}") />
 </ContainerTab>
 
+<!-- This is here because we only want exactly one /-->
+<div id="resolver_tooltip_paperdoll" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
+
 @code
 {
     //@key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}")

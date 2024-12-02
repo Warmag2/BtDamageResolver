@@ -633,7 +633,8 @@ public class CommonData
 
         if (!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.TryGetValue(ammoName, out var value))
         {
-            return weapon.ApplyAmmo(DictionaryAmmo[value]);
+            var ammo = DictionaryAmmo[value];
+            return weapon.ApplyAmmo(ammo);
         }
 
         return weapon;
