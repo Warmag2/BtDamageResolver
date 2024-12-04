@@ -20,7 +20,7 @@ public partial class GameActor
     private async Task DistributeAllDamageReportsToPlayer(string playerId)
     {
         _logger.LogInformation("Game {GameId} is sending a damage report update to player {Player}.", this.GetPrimaryKeyString(), playerId);
-        await _communicationServiceClient.Send(playerId, EventNames.DamageReports, _gameActorState.State.DamageReports.GetAll());
+        await _communicationServiceClient.Send(playerId, EventNames.DamageReports, _gameActorDamageReportState.State.DamageReports.GetAll());
     }
 
     /// <summary>
