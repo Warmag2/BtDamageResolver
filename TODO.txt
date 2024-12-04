@@ -8,7 +8,7 @@ TODO: Damage tracking.
 
 	Open Bugs
 
-None known at the moment. Report some.
+[BUG] It is possible for a person to get a null/empty gamestate which poisons the ability to join a game or get updates.
 
 		Could not reproduce
 

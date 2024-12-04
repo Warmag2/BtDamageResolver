@@ -3,16 +3,16 @@
   "Location": "Left",
   "UnitType": "AerospaceCapital",
   "Mapping": {
-    "2": [ "WeaponDestroyed" ],
-    "3": [ "Fcs" ],
-    "4": [ "Sensors" ],
-    "5": [ "Thruster" ],
-    "6": [ "Cargo" ],
-    "7": [ "WeaponDestroyed" ],
-    "8": [ "Door" ],
-    "9": [ "Thruster" ],
-    "10": [ "Avionics" ],
-    "11": [ "Engine" ],
-    "12": [ "WeaponDestroyed" ]
+    "2": [ "Avionics" ],
+    "3": [ "Sensors" ],
+    "4": [ "WeaponDestroyed" ],
+    "5": [ "DockingCollar" ],
+    "6": [ "WarpDrive" ],
+    "7": [ "WeaponDestroyedBroadside" ],
+    "8": [ "GravDeck" ],
+    "9": [ "Door" ],
+    "10": [ "WeaponDestroyed" ],
+    "11": [ "Cargo" ],
+    "12": [ "Engine" ]
   }
 }

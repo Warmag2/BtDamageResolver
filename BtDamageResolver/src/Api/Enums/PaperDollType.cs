@@ -11,6 +11,8 @@ public enum PaperDollType
 {
     AerospaceFighter,
     AerospaceCapital,
+    AerospaceDropshipAerodyne,
+    AerospaceDropshipSpheroid,
     BattleArmor,
     Building,
     Mech,

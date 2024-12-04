@@ -18,7 +18,6 @@ public class GameActorState
     {
         TimeStamp = DateTime.UtcNow;
         PlayerIds = new HashSet<string>();
-        DamageReports = new DamageReportCollection();
         Options = new GameOptions();
         Password = string.Empty;
         PlayerStates = new SortedDictionary<string, PlayerState>();
@@ -33,11 +32,6 @@ public class GameActorState
     /// The players in the game.
     /// </summary>
     public HashSet<string> PlayerIds { get; set; }
-
-    /// <summary>
-    /// The damage reports.
-    /// </summary>
-    public DamageReportCollection DamageReports { get; set; }
 
     /// <summary>
     /// The game options.
@@ -74,7 +68,6 @@ public class GameActorState
     /// </summary>
     public void Reset()
     {
-        DamageReports.Clear();
         TurnTimeStamp = DateTime.UtcNow;
         Turn = 0;
     }

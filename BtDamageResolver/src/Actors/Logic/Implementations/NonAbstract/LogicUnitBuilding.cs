@@ -45,4 +45,10 @@ public class LogicUnitBuilding : LogicUnit
 
         return 12;
     }
+
+    /// <inheritdoc />
+    protected override Location TransformLocation(Location location)
+    {
+        return Location.Structure;
+    }
 }

@@ -64,7 +64,7 @@ public partial class GameActor
     {
         try
         {
-            // Don't check against the player timestamp. If we received new data, then this actor state has updated by definition
+            // No need to check against the player timestamp. If we are here, then this actor state has updated by definition
             _gameActorState.State.TimeStamp = DateTime.UtcNow;
 
             CheckForPlayerCountEvents();
@@ -82,6 +82,10 @@ public partial class GameActor
 
             // Save game actor state
             await _gameActorState.WriteStateAsync();
+            if (fireEventHappened)
+            {
+                await _gameActorDamageReportState.WriteStateAsync();
+            }
 
             // Log update to permanent store
             await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
@@ -136,7 +140,7 @@ public partial class GameActor
             ClearUnitPenalties(true, false);
             ModifyGameStateBasedOnDamageReports(tagDamageReports.Concat(damageReports).ToList());
 
-            await DistributeDamageReportsToPlayers(_gameActorState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
+            await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
 
             // Unmark ready in local memory
             foreach (var playerState in _gameActorState.State.PlayerStates.Values)
@@ -185,7 +189,7 @@ public partial class GameActor
         // Mark that the damage reports happened during this turn
         damageReports.ForEach(d => d.Turn = _gameActorState.State.Turn);
 
-        _gameActorState.State.DamageReports.AddRange(damageReports);
+        _gameActorDamageReportState.State.DamageReports.AddRange(damageReports);
 
         return damageReports;
     }

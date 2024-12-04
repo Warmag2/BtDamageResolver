@@ -1,0 +1,18 @@
+{
+  "Type": "Critical",
+  "Location": "Left",
+  "UnitType": "AerospaceDropshipAerodyne",
+  "Mapping": {
+    "2": [ "WeaponDestroyed" ],
+    "3": [ "Fcs" ],
+    "4": [ "Sensors" ],
+    "5": [ "Thruster" ],
+    "6": [ "Cargo" ],
+    "7": [ "WeaponDestroyed" ],
+    "8": [ "Door" ],
+    "9": [ "Thruster" ],
+    "10": [ "Avionics" ],
+    "11": [ "Engine" ],
+    "12": [ "WeaponDestroyed" ]
+  }
+}

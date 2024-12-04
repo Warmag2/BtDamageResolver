@@ -24,24 +24,28 @@ public partial class GameActor : Grain, IGameActor
     private readonly ICommunicationServiceClient _communicationServiceClient;
     private readonly ILoggingServiceClient _loggingServiceClient;
     private readonly IPersistentState<GameActorState> _gameActorState;
+    private readonly IPersistentState<GameActorDamageReportState> _gameActorDamageReportState;
     private readonly ILogicUnitFactory _logicUnitFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameActor"/> class.
     /// </summary>
     /// <param name="gameActorState">The state object for this actor.</param>
+    /// <param name="gameActorDamageReportState">The state object for this actor containing damage reports.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="communicationServiceClient">The communication service client.</param>
     /// <param name="logicUnitFactory">The unit logic factory.</param>
     /// <param name="loggingServiceClient">The logging service client.</param>
     public GameActor(
         [PersistentState(nameof(GameActorState), Settings.ActorStateStoreName)] IPersistentState<GameActorState> gameActorState,
+        [PersistentState(nameof(GameActorDamageReportState), Settings.ActorStateStoreName)] IPersistentState<GameActorDamageReportState> gameActorDamageReportState,
         ILogger<GameActor> logger,
         ICommunicationServiceClient communicationServiceClient,
         ILogicUnitFactory logicUnitFactory,
         ILoggingServiceClient loggingServiceClient)
     {
         _gameActorState = gameActorState;
+        _gameActorDamageReportState = gameActorDamageReportState;
         _logger = logger;
         _communicationServiceClient = communicationServiceClient;
         _logicUnitFactory = logicUnitFactory;
@@ -155,10 +159,8 @@ public partial class GameActor : Grain, IGameActor
             return false;
         }
 
-        if (_gameActorState.State.PlayerStates.ContainsKey(playerId))
+        if (_gameActorState.State.PlayerStates.Remove(playerId) || _gameActorState.State.PlayerIds.Remove(playerId))
         {
-            _gameActorState.State.PlayerStates.Remove(playerId);
-            _gameActorState.State.PlayerIds.Remove(playerId);
             _gameActorState.State.TimeStamp = DateTime.UtcNow;
             await CheckGameStateUpdateEvents();
 
@@ -181,6 +183,7 @@ public partial class GameActor : Grain, IGameActor
         if (_gameActorState.State.PlayerStates.Count == 0)
         {
             _gameActorState.State.Reset();
+            _gameActorDamageReportState.State.Reset();
             _logger.LogInformation("Game {GameId} has lost all of its players. Resetting to turn 0 and clearing damage reports.", this.GetPrimaryKeyString());
         }
 

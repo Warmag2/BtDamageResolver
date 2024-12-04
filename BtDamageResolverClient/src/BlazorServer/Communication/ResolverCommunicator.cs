@@ -234,6 +234,11 @@ public class ResolverCommunicator
     /// <param name="damageInstance">The damage instance to send.</param>
     public void SendDamageInstance(DamageInstance damageInstance)
     {
+        if (damageInstance == null)
+        {
+            return;
+        }
+
         SendRequest(
             RequestNames.SendDamageInstanceRequest,
             new SendDamageInstanceRequest
@@ -250,6 +255,11 @@ public class ResolverCommunicator
     /// <param name="gameOptions">The game options.</param>
     public void SendGameOptions(GameOptions gameOptions)
     {
+        if (gameOptions == null)
+        {
+            return;
+        }
+
         SendRequest(
             RequestNames.SendGameOptions,
             new SendGameOptionsRequest
@@ -266,6 +276,11 @@ public class ResolverCommunicator
     /// <param name="playerOptions">The player options.</param>
     public void SendPlayerOptions(PlayerOptions playerOptions)
     {
+        if (playerOptions == null)
+        {
+            return;
+        }
+
         SendRequest(
             RequestNames.SendPlayerOptions,
             new SendPlayerOptionsRequest
@@ -282,6 +297,11 @@ public class ResolverCommunicator
     /// <param name="playerState">The player state.</param>
     public void SendPlayerState(PlayerState playerState)
     {
+        if (playerState == null)
+        {
+            return;
+        }
+
         SendRequest(
             RequestNames.SendPlayerState,
             new SendPlayerStateRequest

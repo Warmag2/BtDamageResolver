@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Faemiyah.BtDamageResolver.Api.Entities.Prototypes;
+using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -9,7 +9,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 /// Diagram listing the firing arcs and possible bay locations of an unit.
 /// </summary>
 [Serializable]
-public class ArcDiagram : EntityBase<string>
+public class ArcDiagram : IEntity<string>
 {
     /// <summary>
     /// The collection of firing arcs for an unit type.
@@ -22,10 +22,10 @@ public class ArcDiagram : EntityBase<string>
     public UnitType UnitType { get; set; }
 
     /// <inheritdoc />
-    public override string GetId() => UnitType.ToString();
+    public string GetId() => UnitType.ToString();
 
     /// <inheritdoc />
-    public override void SetId(string id)
+    public void SetId(string id)
     {
         throw new InvalidOperationException("You should never have to set a Arc Diagram ID manually.");
     }

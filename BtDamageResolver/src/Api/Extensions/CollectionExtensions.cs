@@ -19,6 +19,11 @@ public static class CollectionExtensions
     /// <returns>A deep copy of the input <see cref="HashSet{TType}"/>.</returns>
     public static HashSet<TType> Copy<TType>(this HashSet<TType> input)
     {
+        if (input == null)
+        {
+            return new();
+        }
+
         var returnValue = new HashSet<TType>();
 
         foreach (var item in input)
@@ -38,6 +43,11 @@ public static class CollectionExtensions
     /// <returns>A deep copy of the input <see cref="Dictionary{TKey, TValue}"/>.</returns>
     public static Dictionary<TKey, TValue> Copy<TKey, TValue>(this Dictionary<TKey, TValue> input)
     {
+        if (input == null)
+        {
+            return new();
+        }
+
         var returnValue = new Dictionary<TKey, TValue>();
 
         foreach (var item in input)

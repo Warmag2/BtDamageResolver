@@ -5,13 +5,13 @@
   "LocationMapping": {
     "2": [ "Front" ],
     "3": [ "Front" ],
-    "4": [ "Right" ],
-    "5": [ "Right" ],
+    "4": [ "FrontRight" ],
+    "5": [ "FrontRight" ],
     "6": [ "Front" ],
     "7": [ "Front" ],
     "8": [ "Front" ],
-    "9": [ "Left" ],
-    "10": [ "Left" ],
+    "9": [ "FrontLeft" ],
+    "10": [ "FrontLeft" ],
     "11": [ "Front" ],
     "12": [ "Front" ]
   },
