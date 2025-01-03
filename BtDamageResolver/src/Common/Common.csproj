@@ -5,7 +5,7 @@
     <RootNamespace>Faemiyah.BtDamageResolver.Common</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.Common</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.380</Version>
+    <Version>0.0.383</Version>
     <PackageProjectUrl>https://github.com/Warmag2/BtDamageResolver</PackageProjectUrl>
     <Company>Faemiyah</Company>
     <Product>BtDamageResolver</Product>
@@ -20,8 +20,8 @@ Useful if you want to build your own client.</Description>
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
-    <PackageReference Include="Serilog" Version="4.1.0" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />

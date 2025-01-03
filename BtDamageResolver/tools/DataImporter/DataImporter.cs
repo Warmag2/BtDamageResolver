@@ -59,7 +59,7 @@ public class DataImporter
 
         var client = host.Services.GetRequiredService<IClusterClient>();
 
-        if (options.Import)
+        if (!options.DryRun)
         {
             foreach (var dataObject in data)
             {
@@ -145,7 +145,7 @@ public class DataImporter
         }
         else
         {
-            throw new FileNotFoundException("{target} is not a valid directory.");
+            throw new FileNotFoundException($"{options.Folder} is not a valid directory.");
         }
 
         return importedDataObjects;

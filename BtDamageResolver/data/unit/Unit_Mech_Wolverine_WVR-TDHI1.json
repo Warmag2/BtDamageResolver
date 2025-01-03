@@ -1,9 +1,5 @@
 {
-    "Name": "Wolverine WVR-TDHI1",
-    "Gunnery": 4,
-    "Piloting": 5,
-    "Features":
-    [
+    "Features": [
         "CommandUnit",
         "ExtendedTorsoTwist",
         "HardToPilot",
@@ -12,37 +8,41 @@
         "ProtectedActuators"
     ],
     "JumpJets": 5,
+    "Sinks": 26,
     "Speed": 5,
     "Type": "Mech",
     "Tonnage": 55,
     "Troopers": 1,
-    "Sinks": 26,
-    "WeaponBays":
-    [
+    "WeaponBays": [
         {
-            "Name": "Default",
-            "Weapons":
-            [
+            "Weapons": [
                 {
+                    "Amount": 1,
                     "WeaponName": "Large Pulse Laser"
                 },
                 {
-                    "WeaponName": "SRM-6",
-                    "Ammo": "Normal"
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "SRM-6"
                 },
                 {
-                    "WeaponName": "SRM-6",
-                    "Ammo": "Normal"
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "SRM-6"
                 },
                 {
-                    "WeaponName": "SRM-6",
-                    "Ammo": "Normal"
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "SRM-6"
                 },
                 {
-                    "WeaponName": "SRM-6",
-                    "Ammo": "Normal"
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "SRM-6"
                 }
-            ]
+            ],
+            "Name": "Default"
         }
-    ]
+    ],
+    "Name": "Wolverine WVR-TDHI1"
 }

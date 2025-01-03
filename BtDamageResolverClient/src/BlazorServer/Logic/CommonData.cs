@@ -153,24 +153,6 @@ public class CommonData
     private Dictionary<UnitType, ArcDiagram> DictionaryArc { get; }
 
     /// <summary>
-    /// Constructs a blank unit.
-    /// </summary>
-    /// <returns>A blank unit.</returns>
-    public static UnitEntry GetBlankUnit()
-    {
-        return new()
-        {
-            Type = UnitType.Mech,
-            Name = "New Unit",
-            Gunnery = 4,
-            Piloting = 5,
-            Sinks = 20,
-            Speed = 4,
-            Tonnage = 50
-        };
-    }
-
-    /// <summary>
     /// Gets a default weapon for an unit type.
     /// </summary>
     /// <param name="unitType">The type of the unit to ask for.</param>

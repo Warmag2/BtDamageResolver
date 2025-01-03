@@ -35,6 +35,11 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public bool Evading { get; set; }
 
     /// <summary>
+    /// The gunnery skill of this unit.
+    /// </summary>
+    public int Gunnery { get; set; } = 4;
+
+    /// <summary>
     /// The amount of heat this unit currently has.
     /// </summary>
     public int Heat { get; set; }
@@ -53,6 +58,11 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     /// Current amount of targeting difficulty -inducing effects for this unit (for now, only EMP).
     /// </summary>
     public int Penalty { get; set; }
+
+    /// <summary>
+    /// The piloting skill of this unit.
+    /// </summary>
+    public int Piloting { get; set; } = 5;
 
     /// <summary>
     /// Is this unit currently tagged.
@@ -226,23 +236,23 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
         {
             Features = Features.Copy(),
             Gunnery = Gunnery,
-            JumpJets = JumpJets,
-            Piloting = Piloting,
-            Sinks = Sinks,
-            Speed = Speed,
-            Tonnage = Tonnage,
-            Troopers = Troopers,
-            Type = Type,
             Heat = Heat,
             Id = id,
+            JumpJets = JumpJets,
             Movement = Movement,
             MovementClass = MovementClass,
             Name = GenerateName(Name),
             Narced = Narced,
             Penalty = Penalty,
+            Piloting = Piloting,
+            Sinks = Sinks,
+            Speed = Speed,
             StaticDataHidden = StaticDataHidden,
             Tagged = Tagged,
             TimeStamp = DateTime.UtcNow,
+            Tonnage = Tonnage,
+            Troopers = Troopers,
+            Type = Type,
             WeaponBays = WeaponBays.Select(w => w.Copy()).ToList(),
         };
     }
@@ -255,9 +265,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public void FromUnit(Unit unit)
     {
         Features = unit.Features.Copy();
-        Gunnery = unit.Gunnery;
         JumpJets = unit.JumpJets;
-        Piloting = unit.Piloting;
         Sinks = unit.Sinks;
         Speed = unit.Speed;
         Tonnage = unit.Tonnage;
@@ -278,10 +286,8 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
         return new Unit
         {
             Features = Features.Copy(),
-            Gunnery = Gunnery,
             JumpJets = JumpJets,
             Name = Name,
-            Piloting = Piloting,
             Sinks = Sinks,
             Speed = Speed,
             Tonnage = Tonnage,

@@ -1,41 +1,41 @@
 {
-    "Name": "Whitworth WTH-1",
-    "Gunnery": 4,
-    "Piloting": 5,
-    "Features":
-    [
+    "Features": [
         "WeakLegs"
     ],
     "JumpJets": 4,
+    "Sinks": 10,
     "Speed": 4,
     "Type": "Mech",
     "Tonnage": 40,
     "Troopers": 1,
-    "Sinks": 10,
-    "WeaponBays":
-    [
+    "WeaponBays": [
         {
-            "Name": "Default",
-            "Weapons":
-            [
+            "Weapons": [
                 {
-                    "WeaponName": "LRM-10",
-                    "Ammo": "Normal"
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "LRM-10"
                 },
                 {
-                    "WeaponName": "LRM-10",
-                    "Ammo": "Normal"
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "LRM-10"
                 },
                 {
+                    "Amount": 1,
                     "WeaponName": "Medium Laser"
                 },
                 {
+                    "Amount": 1,
                     "WeaponName": "Medium Laser"
                 },
                 {
+                    "Amount": 1,
                     "WeaponName": "Medium Laser"
                 }
-            ]
+            ],
+            "Name": "Default"
         }
-    ]
+    ],
+    "Name": "Whitworth WTH-1"
 }

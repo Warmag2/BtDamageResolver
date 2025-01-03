@@ -10,10 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
+namespace Faemiyah.BtDamageResolver.Tools.DataExporter;
 
 /// <summary>
-/// Data importer main program class.
+/// Data exporter main program class.
 /// </summary>
 [ExcludeFromCodeCoverage]
 public static class Program
@@ -29,18 +29,18 @@ public static class Program
     /// <returns>Zero on no errors, nonzero on error.</returns>
     public static int Main(string[] args)
     {
-        var configuration = GetConfiguration("DataImporterSettings.json");
+        var configuration = GetConfiguration("DataExporterSettings.json");
         var section = configuration.GetSection(Settings.LoggingOptionsBlockName);
         var loggingOptions = Options.Create(section.Get<FaemiyahLoggingOptions>());
         var loggerFactory = new FaemiyahLoggerFactory(loggingOptions);
 
-        var logger = loggerFactory.CreateLogger("DataImporter");
+        var logger = loggerFactory.CreateLogger("DataExporter");
         logger.LogInformation(LogoText);
         logger.LogInformation(Disclaimer);
 
-        var result = Parser.Default.ParseArguments<DataImportOptions>(args)
+        var result = Parser.Default.ParseArguments<DataExportOptions>(args)
             .MapResult(
-                initOptions => RunDataImport(logger, initOptions).Result,
+                initOptions => RunDataExport(logger, initOptions).Result,
                 errs => 1);
 
         return result;
@@ -52,12 +52,12 @@ public static class Program
         return config.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(settingsFile).Build();
     }
 
-    private static async Task<int> RunDataImport(ILogger logger, DataImportOptions options)
+    private static async Task<int> RunDataExport(ILogger logger, DataExportOptions options)
     {
         try
         {
-            var dataImporter = new DataImporter(logger);
-            await dataImporter.Work(options);
+            var dataExporter = new DataExporter(logger);
+            await dataExporter.Work(options);
         }
         catch (Exception e)
         {
