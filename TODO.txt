@@ -8,10 +8,7 @@ TODO: Damage tracking.
 
 	Open Bugs
 
-[BUG] Refresh does not seem to work for these items:
-- Unit list
-- Unit entry background color (for error marking)
-This is regression from performance updates. Don't know how to fix yet.
+[BUG] Experienced some issues with weather effects. Needs further investigation.
 
 		Could not reproduce
 
