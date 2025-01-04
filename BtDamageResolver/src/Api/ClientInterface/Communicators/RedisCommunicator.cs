@@ -78,6 +78,15 @@ public abstract class RedisCommunicator
     }
 
     /// <summary>
+    /// Uninitialize.
+    /// </summary>
+    public void Stop()
+    {
+        Unsubscribe();
+        _redisConnectionMultiplexer.CloseAsync();
+    }
+
+    /// <summary>
     /// The processor method to run on the listened queue.
     /// </summary>
     /// <param name="envelope">The envelope to process.</param>

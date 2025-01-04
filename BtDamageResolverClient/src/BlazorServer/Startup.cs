@@ -12,10 +12,12 @@ using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -92,6 +94,14 @@ public class Startup
         services.AddScoped<LocalStorage>();
         services.AddScoped<ResolverCommunicator>();
         services.AddScoped<UserStateController>();
+        services.AddScoped<HubConnection>(serviceProvider =>
+        {
+            var navigationManager = serviceProvider.GetRequiredService<NavigationManager>();
+            return new HubConnectionBuilder()
+            .WithAutomaticReconnect()
+                .WithUrl(navigationManager.ToAbsoluteUri("/ClientHub"))
+                .Build();
+        });
     }
 
     /// <summary>

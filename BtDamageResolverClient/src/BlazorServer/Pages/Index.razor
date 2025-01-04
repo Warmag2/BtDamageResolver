@@ -1,4 +1,5 @@
 ﻿@inherits BaseFaemiyahComponent
+@implements IDisposable
 @page "/"
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
@@ -14,8 +15,8 @@
 @inject LocalStorage _localStorage
 @inject NavigationManager _navigationManager
 @inject ResolverCommunicator _resolverCommunicator
+@inject HubConnection _hubConnection;
 @inject UserStateController _userStateController
-@implements IDisposable
 
 <div class="resolver_div_errormessage">
     <verbatim>
@@ -38,7 +39,7 @@
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
-    <FormGameState @key=@($"{_userStateController.GameState?.TurnTimeStamp}") />
+    <FormGameState @key=@($"{_userStateController.IsConnectedToServer}_{_userStateController.GameState?.TurnTimeStamp}") />
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
@@ -65,14 +66,14 @@
     private readonly List<string> _tabs = new() { "Data", "Dashboard", "AllUnits", "DamageReports", "Options" };
     private string _selectedTab = "Dashboard";
     private string _errorMessage;
-    private HubConnection _hubConnection;
+    //private HubConnection _hubConnection;
 
     protected override void OnInitialized()
     {
-        _hubConnection = new HubConnectionBuilder()
+        /*_hubConnection = new HubConnectionBuilder()
             .WithAutomaticReconnect()
             .WithUrl(_navigationManager.ToAbsoluteUri("/ClientHub"))
-            .Build();
+            .Build();*/
 
         _hubConnection.On<byte[]>(EventNames.ConnectionResponse, async (connectionResponseData) =>
         {
@@ -163,7 +164,7 @@
     {
         if (firstRender)
         {
-            _resolverCommunicator.SetHubConnection(_hubConnection);
+            //_resolverCommunicator.SetHubConnection(_hubConnection);
             await _hubConnection.StartAsync();
 
             var (credentialsFound, credentials) = await _localStorage.GetUserCredentials();
@@ -211,6 +212,7 @@
         _userStateController.OnGameOptionsUpdated -= SendGameOptions;
         _userStateController.OnPlayerOptionsUpdated -= SendPlayerOptions;
         _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
+        _resolverCommunicator?.Dispose();
         _hubConnection?.DisposeAsync();
     }
 }

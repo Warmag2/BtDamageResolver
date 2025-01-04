@@ -15,31 +15,34 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 /// <summary>
 /// The resolver communicator.
 /// </summary>
-public class ResolverCommunicator
+public class ResolverCommunicator : IDisposable
 {
     private readonly ILogger<ResolverCommunicator> _logger;
     private readonly IOptions<JsonSerializerOptions> _jsonSerializerOptions;
     private readonly DataHelper _dataHelper;
     private readonly CommunicationOptions _communicationOptions;
-    private HubConnection _hubConnection;
+    private readonly HubConnection _hubConnection;
 
     private string _playerName;
     private Guid _authenticationToken;
     private ClientToServerCommunicator _clientToServerCommunicator;
+    private bool disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResolverCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="communicationOptions">The communication options.</param>
-    /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, DataHelper dataHelper, IOptions<JsonSerializerOptions> jsonSerializerOptions)
+    /// <param name="dataHelper">The data compression helper.</param>
+    /// <param name="hubConnection">The SignalR hub connection.</param>
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, HubConnection hubConnection)
     {
         _logger = logger;
-        _dataHelper = dataHelper;
         _jsonSerializerOptions = jsonSerializerOptions;
         _communicationOptions = communicationOptions.Value;
+        _dataHelper = dataHelper;
+        _hubConnection = hubConnection;
     }
 
     /// <summary>
@@ -51,14 +54,14 @@ public class ResolverCommunicator
         _authenticationToken = authenticationToken;
     }
 
-    /// <summary>
+    /*/// <summary>
     /// Sets the signalR hub connection.
     /// </summary>
     /// <param name="hubConnection">The hub connection.</param>
     public void SetHubConnection(HubConnection hubConnection)
     {
         _hubConnection = hubConnection;
-    }
+    }*/
 
     /// <summary>
     /// Connects to the server.
@@ -349,5 +352,25 @@ public class ResolverCommunicator
     private void SendErrorMessage(string errorMessage)
     {
         _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                _clientToServerCommunicator?.Stop();
+            }
+
+            disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }
