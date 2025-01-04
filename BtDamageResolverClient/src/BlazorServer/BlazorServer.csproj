@@ -17,14 +17,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="CommunicationSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="CommunicationSettings.Debug.json">
       <CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
     </None>
-    <None Include="CommunicationSettings.json">
-      <CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
-    </None>
     <None Include="CommunicationSettings.Release.json">
-      <CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

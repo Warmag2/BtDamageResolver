@@ -24,13 +24,13 @@
 
   <ItemGroup>
     <None Update="DataImporterSettings.json">
-      <CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DataImporterSettings.Debug.json">
       <CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
     </None>
     <None Update="DataImporterSettings.Release.json">
-      <CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
