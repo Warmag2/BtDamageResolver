@@ -163,3 +163,6 @@ BtDamageResolverInfrastructure/.env
 
 # Possible resource files
 BtDamageResolverInfrastructure/dpkeys/
+
+# Debug settings containing password data
+*.Debug.json

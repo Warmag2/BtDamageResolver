@@ -1,8 +1,0 @@
-﻿{
-  "LoggingOptions": {
-    "LogLevel": "Debug"
-  },
-  "CommunicationOptions": {
-    "ConnectionString": "YOURIPHERE:63790,password=YOURPASSWORDHERE"
-  }
-}
