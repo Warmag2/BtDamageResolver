@@ -1,4 +1,6 @@
-﻿using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+﻿using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
+using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
@@ -44,6 +46,12 @@ public class LogicUnitBuilding : LogicUnit
         damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value against a building", Number = 12 });
 
         return 12;
+    }
+
+    /// <inheritdoc />
+    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
+    {
+        return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
     }
 
     /// <inheritdoc />

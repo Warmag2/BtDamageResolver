@@ -3,6 +3,6 @@
     "LogLevel": "Debug"
   },
   "CommunicationOptions": {
-    "ConnectionString": "10.2.0.3:63790,password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd"
+    "ConnectionString": "YOURIPHERE:63790,password=YOURPASSWORDHERE"
   }
 }

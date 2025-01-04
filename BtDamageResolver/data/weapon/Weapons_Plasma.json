@@ -54,7 +54,7 @@
     "SpecialDamage": [
       { "Data": "3d6", "Type": "Burst" },
       { "Data": "2d6", "Type": "Heat" },
-      { "Data": "3d6", "Type": "Heat" }
+      { "Data": "3d6", "Type": "HeatConverted" }
     ],
     "ClusterDamage": 1,
     "ClusterSize": 5

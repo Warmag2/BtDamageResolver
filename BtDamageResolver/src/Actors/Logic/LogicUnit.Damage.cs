@@ -317,6 +317,12 @@ public partial class LogicUnit
         {
             foreach (var entry in damagePacket.SpecialDamageEntries)
             {
+                if (entry.Type == SpecialDamageType.Critical && !target.CanTakeCriticalHits())
+                {
+                    damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive critical hits, removing special damage entry", Type = AttackLogEntryType.Information });
+                    entry.Clear();
+                }
+
                 if (entry.Type == SpecialDamageType.Emp && !target.CanTakeEmpHits())
                 {
                     damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive EMP damage, removing special damage entry", Type = AttackLogEntryType.Information });
@@ -326,6 +332,18 @@ public partial class LogicUnit
                 if (entry.Type == SpecialDamageType.Heat && !target.IsHeatTracking())
                 {
                     damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive Heat damage, removing special damage entry", Type = AttackLogEntryType.Information });
+                    entry.Clear();
+                }
+
+                if (entry.Type == SpecialDamageType.Motive && !target.CanTakeMotiveHits())
+                {
+                    damageReport.Log(new AttackLogEntry { Context = "Target unit cannot receive motive hits, removing special damage entry", Type = AttackLogEntryType.Information });
+                    entry.Clear();
+                }
+
+                // Handled earlier and transformed to regular damage, can be removed at this point.
+                if (entry.Type == SpecialDamageType.HeatConverted || entry.Type == SpecialDamageType.Burst)
+                {
                     entry.Clear();
                 }
             }

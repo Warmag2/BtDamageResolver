@@ -4,6 +4,6 @@
     "OrleansLogLevel": "Information"
   },
   "ClusterOptions": {
-    "ConnectionString": "User ID=resolver;Password=2UaXv3Jd1iuWXIfdd2RIKDFUR3dpy4wd;Host=10.2.0.3;Port=65432;Database=BtDamageResolver"
+    "ConnectionString": "User ID=resolver;Password=YOURPASSWORDHERE;Host=YOURIPHERE;Port=65432;Database=BtDamageResolver"
   }
 }

@@ -8,7 +8,10 @@ TODO: Damage tracking.
 
 	Open Bugs
 
-[BUG] It is possible for a person to get a null/empty gamestate which poisons the ability to join a game or get updates.
+[BUG] Refresh does not seem to work for these items:
+- Unit list
+- Unit entry background color (for error marking)
+This is regression from performance updates. Don't know how to fix yet.
 
 		Could not reproduce
 
