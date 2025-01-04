@@ -17,6 +17,7 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 1
     },
@@ -43,6 +44,7 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 2
     },
@@ -69,6 +71,7 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 2
     },
@@ -95,6 +98,7 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 3
     },
@@ -121,6 +125,7 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 3
     },
@@ -147,6 +152,7 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 4
     },

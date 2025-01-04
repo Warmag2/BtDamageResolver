@@ -3,10 +3,20 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
 @{
-    var invalidSelection = !Options.Values.Any(v => v.Equals(SelectedOption));
+    var invalidSelection = !Options.ContainsKey(SelectedOptionInternal);
+    string extraClass = string.Empty;
+
+    if (EnableErrorDisplay && invalidSelection)
+    {
+        extraClass = "error";
+    }
+    else if (ComparisonTimeStamp > _updateTimeStamp)
+    {
+        extraClass = "reminder";
+    }
 }
 
-<input class="resolver_input resolver_input_text @(invalidSelection ? "error" : string.Empty) @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : string.Empty)" type="text" disabled="@Disabled" @bind="SelectedOptionInternal" @oninput="AdjustOptionList" @onfocus="ShowComboBoxItems" @onfocusout="CheckHideComboBoxItems" @onkeypress="@(e => CheckForClose(e))">
+<input class="resolver_input resolver_input_text @(extraClass)" type="text" disabled="@Disabled" @bind="SelectedOptionInternal" @oninput="AdjustOptionList" @onfocus="ShowComboBoxItems" @onfocusout="CheckHideComboBoxItems" @onkeypress="@(e => CheckForClose(e))">
 
 <div class="resolver_div_combobox" style="@VisualStyleController.HideElement(_comboBoxItemsHidden)">
     @foreach (var option in Options)
@@ -49,6 +59,9 @@
 
     [Parameter]
     public EventCallback OnOutOfFocus { get; set; }
+
+    [Parameter]
+    public bool EnableErrorDisplay { get; set; }
 
     public string SelectedOptionInternal
     {

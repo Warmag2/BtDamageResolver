@@ -55,7 +55,7 @@
         _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
         _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
         _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
-        _userStateController.OnPlayerListOrderUpdated += InvokeStateChange;
+        _userStateController.OnPlayerUnitListUpdated += InvokeStateChange;
     }
 
     private void AddUnit()
@@ -94,11 +94,11 @@
         _userStateController.NotifyPlayerDataUpdated();
 
         // Dragdrop always induces a ordering check
-        _userStateController.NotifyPlayerListOrderUpdated();
+        _userStateController.NotifyPlayerUnitListUpdated();
     }
 
     public void Dispose()
     {
-        _userStateController.OnPlayerListOrderUpdated -= InvokeStateChange;
+        _userStateController.OnPlayerUnitListUpdated -= InvokeStateChange;
     }
 }

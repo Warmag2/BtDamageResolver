@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Microsoft.Extensions.Logging;
 using Orleans;
 

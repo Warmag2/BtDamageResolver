@@ -10,6 +10,7 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
@@ -270,7 +271,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
         {
             // In this case, clear error message on success, so that the player knows he is in spec.
             // This is the only error message the player should ever see if the game is working properly, so I won't bother to worry about this discrepancy too much.
-            Send(unpackedSendPlayerStateRequest.PlayerName, EventNames.ErrorMessage, string.Empty);
+            SendErrorMessage(unpackedSendPlayerStateRequest.PlayerName, string.Empty);
         }
 
         return true;
@@ -287,6 +288,6 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
     private void LogWarning(RequestBase request)
     {
         _logger.LogWarning("Failed to handle a message of type {Type} for player {PlayerId}", request.GetType(), request.PlayerName);
-        Send(request.PlayerName, EventNames.ErrorMessage, $"Failed to handle a {request.GetType()} for player {request.PlayerName}.");
+        SendErrorMessage(request.PlayerName, $"Failed to handle a {request.GetType()} for player {request.PlayerName}.");
     }
 }

@@ -18,6 +18,7 @@ public class UserStateController
     private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers;
     private Dictionary<string, GameEntry> _gameEntries;
     private GameState _gameState;
+    private HashSet<Guid> _invalidUnitIds = new();
     private ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> _unitList;
 
     /// <summary>
@@ -64,7 +65,7 @@ public class UserStateController
     /// <summary>
     /// Event for when player unit list gets changed.
     /// </summary>
-    public event Action OnPlayerListOrderUpdated;
+    public event Action OnPlayerUnitListUpdated;
 
     /// <summary>
     /// Event for when game entries are received.
@@ -145,7 +146,23 @@ public class UserStateController
             // Most of the time, this is not the case
             UpdateUnitList();
 
-            NotifyPlayerListOrderUpdated();
+            NotifyPlayerUnitListUpdated();
+        }
+    }
+
+    /// <summary>
+    /// IDs for any invalid units as reported by the server.
+    /// </summary>
+    public HashSet<Guid> InvalidUnitIds
+    {
+        get => _invalidUnitIds;
+        set
+        {
+            if (value != null)
+            {
+                _invalidUnitIds = value;
+                NotifyPlayerUnitListUpdated();
+            }
         }
     }
 
@@ -215,6 +232,15 @@ public class UserStateController
     {
         PlayerState.UnitEntries.Remove(unit);
         NotifyPlayerDataUpdated();
+    }
+
+    /// <summary>
+    /// Get comparison time for field highlighting.
+    /// </summary>
+    /// <returns>The comparison time for field highlighting.</returns>
+    public DateTime GetComparisonTime()
+    {
+        return PlayerOptions.HighlightUnalteredFields ? GameState.TurnTimeStamp : DateTime.MinValue;
     }
 
     /// <summary>
@@ -298,11 +324,11 @@ public class UserStateController
     /// <summary>
     /// Notification for when player list orders change.
     /// </summary>
-    public void NotifyPlayerListOrderUpdated()
+    public void NotifyPlayerUnitListUpdated()
     {
         if (PlayerState != null)
         {
-            OnPlayerListOrderUpdated();
+            OnPlayerUnitListUpdated();
         }
     }
 

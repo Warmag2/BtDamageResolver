@@ -1,8 +1,9 @@
 ﻿@inherits BaseFaemiyahComponent
 @page "/"
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
-@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
+@using Faemiyah.BtDamageResolver.Api.Constants
+@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Api.Options
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
@@ -37,7 +38,7 @@
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
-    <FormGameState @key=@($"{_userStateController.PlayerState?.TimeStamp}") />
+    <FormGameState @key=@($"{_userStateController.GameState?.TurnTimeStamp}") />
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
@@ -57,6 +58,8 @@
 
 @code
 {
+    //@key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.GameState.TurnTimeStamp}")
+    //<FormGameState @key=@($"{_userStateController.GameState.TurnTimeStamp}") />
     //@key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}")
     private FormServer _formServer;
     private readonly List<string> _tabs = new() { "Data", "Dashboard", "AllUnits", "DamageReports", "Options" };
@@ -114,7 +117,9 @@
 
         _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
         {
-            _errorMessage = _dataHelper.Unpack<string>(errorMessage);
+            var errorEvent = _dataHelper.Unpack<ClientErrorEvent>(errorMessage);
+            _errorMessage = errorEvent.ErrorMessage;
+            _userStateController.InvalidUnitIds = errorEvent.InvalidUnitIds;
             InvokeStateChange();
         });
 

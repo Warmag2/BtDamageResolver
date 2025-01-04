@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -111,7 +112,7 @@ public abstract class RedisCommunicator
     /// <param name="errorMessage">The error message.</param>
     protected void SendErrorMessage(string target, string errorMessage)
     {
-        SendEnvelope(target, new Envelope(EventNames.ErrorMessage, DataHelper.Pack(errorMessage)));
+        SendEnvelope(target, new Envelope(EventNames.ErrorMessage, DataHelper.Pack(new ClientErrorEvent(errorMessage))));
     }
 
     /// <summary>

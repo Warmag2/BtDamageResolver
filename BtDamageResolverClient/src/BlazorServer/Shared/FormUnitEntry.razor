@@ -4,15 +4,13 @@
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@using Newtonsoft.Json
 @inject CommonData _commonData
 @inject UserStateController _userStateController
 @implements IDisposable
 
 @if(_userStateController.PlayerState != null)
 {
-
-<div class="resolver_div_componentcontainer alternatingcolors" ondragover="event.preventDefault();">
+<div class="resolver_div_componentcontainer @(_userStateController.InvalidUnitIds.Contains(UnitEntry.Id) ? "error" : "alternatingcolors")" ondragover="event.preventDefault();">
 
     <div class="resolver_div_componentrow">
         <div class="resolver_div_unitid">
@@ -105,43 +103,43 @@
                 <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetTroopersHidden(UnitEntry.Type)))">
                     <td>Troopers</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsTroopers" SelectedOption="@UnitEntry.Troopers" Min="1" Max="30" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTroopersChanged"></FormNumberPicker>
+                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsTroopers" SelectedOption="@UnitEntry.Troopers" Min="1" Max="30" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnTroopersChanged"></FormNumberPicker>
                     </td>
                 </tr>
                 <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
                     <td>Sinks</td>
                     <td>
-                        <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" SelectedOption="@UnitEntry.Sinks" Min="1" Max="100" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnSinksChanged"></FormNumberPicker>
+                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" SelectedOption="@UnitEntry.Sinks" Min="1" Max="100" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnSinksChanged"></FormNumberPicker>
                     </td>
                 </tr>
                 <tr>
                     <td>Movement</td>
                     <td>
-                        <FormRadio Options="@CommonData.FormMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
+                            <FormRadio Options="@CommonData.FormMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
                     </td>
                 </tr>
                 <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetEvasionHidden(UnitEntry.Type)))">
                     <td>Evasion</td>
                     <td>
-                        <FormToggle @key=@($"evasion_{UnitEntry.Id}_{UnitEntry.Evading}") Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnEvasionChanged">Evading</FormToggle>
+                            <FormToggle @key=@($"evasion_{UnitEntry.Id}_{UnitEntry.Evading}") Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnEvasionChanged">Evading</FormToggle>
                     </td>
                 </tr>
                 <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetEvasionHidden(UnitEntry.Type)))">
                     <td>Evasion</td>
                     <td>
-                        <FormToggle @key=@($"evasion_{UnitEntry.Id}_{UnitEntry.Evading}") Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnEvasionChanged">Evading</FormToggle>
+                            <FormToggle @key=@($"evasion_{UnitEntry.Id}_{UnitEntry.Evading}") Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnEvasionChanged">Evading</FormToggle>
                     </td>
                 </tr>
                 <tr>
                     <td>Hexes moved</td>
                     <td>
-                        <FormRadio Options="@_commonData.FormMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
+                            <FormRadio Options="@_commonData.FormMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
                     </td>
                 </tr>
                 <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetStanceHidden(UnitEntry.Type)))">
                     <td>Stance</td>
                     <td>
-                        <FormRadio Options="@CommonData.FormMapStance(UnitEntry.Type)" SelectedOption="@UnitEntry.Stance" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="(Stance stance) => OnStanceChanged(stance)"></FormRadio>
+                            <FormRadio Options="@CommonData.FormMapStance(UnitEntry.Type)" SelectedOption="@UnitEntry.Stance" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(Stance stance) => OnStanceChanged(stance)"></FormRadio>
                     </td>
                 </tr>
                 <tr>
@@ -150,8 +148,8 @@
                     </td>
                     <td>
                         <div>
-                            <FormToggle @key=@($"narc_{UnitEntry.Id}_{UnitEntry.TimeStamp}") Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormToggle>
-                            <FormToggle @key=@($"tag_{UnitEntry.Id}_{UnitEntry.TimeStamp}") Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
+                                <FormToggle @key=@($"narc_{UnitEntry.Id}_{UnitEntry.TimeStamp}") Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormToggle>
+                                <FormToggle @key=@($"tag_{UnitEntry.Id}_{UnitEntry.TimeStamp}") Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
                         </div>
                     </td>
                 </tr>
@@ -159,7 +157,8 @@
 
             @foreach(var weaponBay in UnitEntry.WeaponBays)
             {
-                <FormFiringSolution @key="@weaponBay.Id" UnitEntry="@UnitEntry" WeaponBay="@weaponBay" OnChanged="@SendUpdate" />
+                    <FormFiringSolution @key="@weaponBay.Id" UnitEntry="@UnitEntry" WeaponBay="@weaponBay" />
+                    //OnChanged="@SendUpdate"
             }
         </div>
 
@@ -293,7 +292,7 @@
     protected override void OnInitialized()
     {
         _userStateController.OnGameUnitListUpdated += InvokeStateChange;
-        _userStateController.OnPlayerListOrderUpdated += InvokeStateChange;
+        _userStateController.OnPlayerUnitListUpdated += InvokeStateChange;
     }
 
     public void AddWeaponBay()
@@ -310,11 +309,6 @@
         }
 
         SendUpdate();
-    }
-
-    public DateTime GetComparisonTime()
-    {
-        return _userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue;
     }
 
     private void SendUpdate()
@@ -586,7 +580,7 @@
                 SendUpdate();
                 
                 // Dragdrop always induces a ordering check
-                _userStateController.NotifyPlayerListOrderUpdated();
+                _userStateController.NotifyPlayerUnitListUpdated();
             }
         }
 
@@ -650,6 +644,6 @@
     public void Dispose()
     {
         _userStateController.OnGameUnitListUpdated -= InvokeStateChange;
-        _userStateController.OnPlayerListOrderUpdated -= InvokeStateChange;
+        _userStateController.OnPlayerUnitListUpdated -= InvokeStateChange;
     }
 }

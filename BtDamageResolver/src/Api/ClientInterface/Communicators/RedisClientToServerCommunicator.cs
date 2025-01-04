@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;

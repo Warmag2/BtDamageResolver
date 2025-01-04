@@ -17,6 +17,7 @@
       "Extreme": 2
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 0
     },
@@ -40,6 +41,7 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 0
     },
@@ -63,6 +65,7 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 0
     },
