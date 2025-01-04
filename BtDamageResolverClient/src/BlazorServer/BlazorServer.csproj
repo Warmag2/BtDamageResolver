@@ -9,23 +9,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="CommunicationSettings.Debug.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CommunicationSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CommunicationSettings.Release.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.387" />
     <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.387" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="CommunicationSettings.Debug.json">
+      <CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
+    </None>
+    <None Include="CommunicationSettings.json">
+      <CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
+    </None>
+    <None Include="CommunicationSettings.Release.json">
+      <CopyToOutputDirectory>IfDifferent</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
