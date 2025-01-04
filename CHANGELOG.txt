@@ -1,5 +1,6 @@
 	Implemented
 
+[FEATURE] Units that violate of game rules have their whole background drawn in red.
 [FEATURE] Exporter for unit data.
 [FEATURE] Invalid target is now shown in red when editing units.
 [FEATURE] Unit rules validation.
@@ -43,8 +44,11 @@
 
 	Implemented (internal)
 
+[FEATURE] Reduce amount of over/redraw - key components more carefully and trust user view when sending data.
+
 [FEATURE] Refactored Gunnery/Piloting out of base unit class. Now in UnitEntry so that unit loading works correctly.
 
+[FEATURE] Server sends metadata with error messages.
 [FEATURE] Got rid of UnitActor.
 [FEATURE] Refactor code for .NET 7 and Orleans 7.
 [FEATURE] Logic reflection for easier expansions.

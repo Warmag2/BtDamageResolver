@@ -51,7 +51,7 @@
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
-    <FormOptions @key=@($"{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}") />
+    <FormOptions @key=@($"{_userStateController.IsConnectedToServer}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}") />
 </ContainerTab>
 
 <!-- This is here because we only want exactly one /-->
