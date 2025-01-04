@@ -212,7 +212,7 @@
         _userStateController.OnGameOptionsUpdated -= SendGameOptions;
         _userStateController.OnPlayerOptionsUpdated -= SendPlayerOptions;
         _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
-        _resolverCommunicator?.Dispose();
-        _hubConnection?.DisposeAsync();
+        //_resolverCommunicator?.Dispose(); // We could, but let's not do this manually and let GC handle it
+        //_hubConnection?.DisposeAsync();
     }
 }

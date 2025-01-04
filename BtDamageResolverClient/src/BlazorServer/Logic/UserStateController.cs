@@ -48,6 +48,11 @@ public class UserStateController
     public event Action OnGameUnitListUpdated;
 
     /// <summary>
+    /// Event for when unit of invalid units changes.
+    /// </summary>
+    public event Action OnInvalidUnitListUpdated;
+
+    /// <summary>
     /// Event for when a player updates his or her state.
     /// </summary>
     public event Action OnPlayerStateUpdated;
@@ -161,7 +166,15 @@ public class UserStateController
             if (value != null)
             {
                 _invalidUnitIds = value;
-                NotifyPlayerUnitListUpdated();
+                NotifyInvalidUnitListUpdated();
+            }
+            else
+            {
+                if (_invalidUnitIds.Any())
+                {
+                    _invalidUnitIds.Clear();
+                    NotifyInvalidUnitListUpdated();
+                }
             }
         }
     }
@@ -307,6 +320,17 @@ public class UserStateController
         }
 
         return dictionary;
+    }
+
+    /// <summary>
+    /// Notification for when list of invalid units updates.
+    /// </summary>
+    public void NotifyInvalidUnitListUpdated()
+    {
+        if (PlayerState != null)
+        {
+            OnPlayerUnitListUpdated();
+        }
     }
 
     /// <summary>

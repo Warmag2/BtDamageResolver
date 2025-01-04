@@ -292,7 +292,7 @@
     protected override void OnInitialized()
     {
         _userStateController.OnGameUnitListUpdated += InvokeStateChange;
-        _userStateController.OnPlayerUnitListUpdated += InvokeStateChange;
+        _userStateController.OnInvalidUnitListUpdated += InvokeStateChange;
     }
 
     public void AddWeaponBay()
@@ -645,6 +645,6 @@
     public void Dispose()
     {
         _userStateController.OnGameUnitListUpdated -= InvokeStateChange;
-        _userStateController.OnPlayerUnitListUpdated -= InvokeStateChange;
+        _userStateController.OnInvalidUnitListUpdated -= InvokeStateChange;
     }
 }
