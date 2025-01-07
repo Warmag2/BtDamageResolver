@@ -54,15 +54,6 @@ public class ResolverCommunicator : IDisposable
         _authenticationToken = authenticationToken;
     }
 
-    /*/// <summary>
-    /// Sets the signalR hub connection.
-    /// </summary>
-    /// <param name="hubConnection">The hub connection.</param>
-    public void SetHubConnection(HubConnection hubConnection)
-    {
-        _hubConnection = hubConnection;
-    }*/
-
     /// <summary>
     /// Connects to the server.
     /// </summary>
@@ -315,6 +306,33 @@ public class ResolverCommunicator : IDisposable
             });
     }
 
+    /// <summary>
+    /// Standard dispose pattern.
+    /// </summary>
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Dispose of managed resources.
+    /// </summary>
+    /// <param name="dispose">Should managed resources be disposed.</param>
+    protected virtual void Dispose(bool dispose)
+    {
+        if (!disposed)
+        {
+            if (dispose)
+            {
+                _clientToServerCommunicator?.Stop();
+            }
+
+            disposed = true;
+        }
+    }
+
     private void SendRequest<TRequest>(string requestType, TRequest request)
         where TRequest : class
     {
@@ -352,25 +370,5 @@ public class ResolverCommunicator : IDisposable
     private void SendErrorMessage(string errorMessage)
     {
         _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposed)
-        {
-            if (disposing)
-            {
-                _clientToServerCommunicator?.Stop();
-            }
-
-            disposed = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }
