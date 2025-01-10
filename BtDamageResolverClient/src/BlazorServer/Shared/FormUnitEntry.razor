@@ -142,8 +142,8 @@
                         </td>
                         <td>
                             <div>
-                                <FormToggle @key="@_userStateController.GetComparisonTime()" Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormToggle>
-                                <FormToggle @key="@_userStateController.GetComparisonTime()" Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
+                                <FormToggle @key="@($"narc_{_userStateController.GetComparisonTime()}")" Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormToggle>
+                                <FormToggle @key="@($"tag_{_userStateController.GetComparisonTime()}")" Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
                             </div>
                         </td>
                     </tr>
