@@ -110,7 +110,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     /// Gets the penalty to attacks from heat.
     /// </summary>
     /// <returns>The penalty to attacks from unit heat.</returns>
-    public int GetHeatAttackPenalty()
+    public int GetAttackHeatModifier()
     {
         if (!IsHeatTracking())
         {

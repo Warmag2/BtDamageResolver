@@ -42,6 +42,14 @@ public class WeaponEntry : WeaponEntryReference
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Static attack modifier for this specific weapon entry.
+    /// </summary>
+    /// <remarks>
+    /// Almost always 0. Exceptions are accurate/inaccurate weapon quirks and actuator damage.
+    /// </remarks>
+    public int Modifier { get; set; }
+
+    /// <summary>
     /// The state of the weapon.
     /// </summary>
     public WeaponState State { get; set; }

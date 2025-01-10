@@ -1,4 +1,5 @@
-﻿using Faemiyah.BtDamageResolver.Api.Enums;
+﻿using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
 
@@ -213,6 +214,16 @@ public static class VisualStyleController
             default:
                 return false;
         }
+    }
+
+    /// <summary>
+    /// Indicates whether weapon static hit modifiers should be hidden for this unit entry.
+    /// </summary>
+    /// <param name="unitEntry">The unit entry.</param>
+    /// <returns><b>True</b> if unit weapon static hit modifiers should be hidden, <b>false</b> otherwise.</returns>
+    public static bool GetWeaponModifierHidden(UnitEntry unitEntry)
+    {
+        return false;
     }
 
     /// <summary>

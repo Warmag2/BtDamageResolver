@@ -331,6 +331,15 @@ public class CommonData
     }
 
     /// <summary>
+    /// Form pick brackets for static weapon firing modifier.
+    /// </summary>
+    /// <returns>Pick brackets for static weapon firing modifiers.</returns>
+    public static List<PickBracket> FormPickBracketsModifier()
+    {
+        return MakeSimplePickBrackets(-4, 1, 4);
+    }
+
+    /// <summary>
     /// Form pick brackets for valid firing penalty amounts.
     /// </summary>
     /// <returns>Pick brackets for selecting valid firing penalty amounts.</returns>

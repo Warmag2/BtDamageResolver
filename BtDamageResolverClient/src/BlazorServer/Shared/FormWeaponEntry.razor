@@ -29,11 +29,21 @@
     <td style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponAmountHidden(UnitEntry.Type) && WeaponEntry.Amount == 1)">
         @if (UnitEntry.StaticDataHidden)
         {
-            <b>@WeaponEntry.Amount</b>
+            <b>@(WeaponEntry.Amount)x</b>
         }
         else
         {
             <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" SelectedOption="@WeaponEntry.Amount" Min =1 Max=12 Width=3 Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+        }
+    </td>
+    <td style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0)">
+        @if (UnitEntry.StaticDataHidden)
+        {
+            <b>@($"{(WeaponEntry.Modifier >= 0 ? "+" : string.Empty)}{WeaponEntry.Modifier}")</b>
+        }
+        else
+        {
+            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" SelectedOption="@WeaponEntry.Amount" Min=-4 Max=4 Width=2 Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
         }
     </td>
     <td class="resolver_td_weaponname">
@@ -65,6 +75,7 @@
 {
     private string _weaponAmmo;
     private int _weaponAmount;
+    private int _weaponModifier;
     private WeaponState _weaponState;
     private string _weaponName;
 
@@ -126,6 +137,11 @@
             WeaponEntry.Amount = _weaponAmount;
             anythingChanged = true;
         }
+        if (WeaponEntry.Modifier != _weaponModifier)
+        {
+            WeaponEntry.Modifier = _weaponModifier;
+            anythingChanged = true;
+        }
         if (WeaponEntry.State != _weaponState)
         {
             WeaponEntry.State = _weaponState;
@@ -148,6 +164,12 @@
     private void OnWeaponAmountChanged(int amount)
     {
         _weaponAmount = amount;
+        UpdateWeaponEntry();
+    }
+
+    private void OnWeaponModifierChanged(int modifier)
+    {
+        _weaponModifier = modifier;
         UpdateWeaponEntry();
     }
 

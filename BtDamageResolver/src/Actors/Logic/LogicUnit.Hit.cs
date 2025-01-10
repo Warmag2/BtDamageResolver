@@ -84,7 +84,7 @@ public partial class LogicUnit
     {
         hitCalculationDamageReport.Log(new AttackLogEntry { Context = weapon.Name, Type = AttackLogEntryType.FiringSolution });
 
-        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weapon, weaponBay, isPrimaryTarget);
+        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weaponBay, weapon, isPrimaryTarget);
 
         // Weapons with target numbers above 12 cannot hit
         if (targetNumber > 12)

@@ -22,9 +22,9 @@ public enum UnitFeature
     ArmorStealth,
 
     /// <summary>
-    /// Unit has a beagle active probe.
+    /// Unit has an active probe.
     /// </summary>
-    Bap,
+    ActiveProbe,
 
     /// <summary>
     /// Bonus of 1 to hit in melee.
