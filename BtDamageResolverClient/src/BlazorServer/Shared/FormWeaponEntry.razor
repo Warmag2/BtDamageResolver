@@ -33,7 +33,7 @@
         }
         else
         {
-            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" SelectedOption="@WeaponEntry.Amount" Min =1 Max=12 Width=3 Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_normal")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
         }
     </td>
     <td style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0)">
@@ -43,7 +43,7 @@
         }
         else
         {
-            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" SelectedOption="@WeaponEntry.Amount" Min=-4 Max=4 Width=2 Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
+            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_normal")" NumberToDisplay="@WeaponEntry.Modifier" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
         }
     </td>
     <td class="resolver_td_weaponname">
