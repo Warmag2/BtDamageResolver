@@ -22,7 +22,7 @@ public enum UnitFeature
     ArmorStealth,
 
     /// <summary>
-    /// Unit has a beagle active probe (or the Improved Sensors quirk).
+    /// Unit has a beagle active probe.
     /// </summary>
     Bap,
 
@@ -70,6 +70,11 @@ public enum UnitFeature
     /// Unit has improved communications systems (no effect yet).
     /// </summary>
     ImprovedCommunications,
+
+    /// <summary>
+    /// Unit has a more capable sensor system.
+    /// </summary>
+    ImprovedSensors,
 
     /// <summary>
     /// The main weapon of this unit is externally carried and can be picked up and put down during combat (no effect yet).
