@@ -19,6 +19,9 @@
         <div class="resolver_div_unitinformation_data">@($"{WeaponEntry.Amount}x")</div>
     </td>
     <td>
+        <div class="resolver_div_unitinformation_data">@($"{(WeaponEntry.Modifier >= 0 ? "+" : string.Empty)}{WeaponEntry.Modifier}")</div>
+    </td>
+    <td>
         <div class="resolver_div_unitinformation_data">@WeaponEntry.WeaponName</div>
     </td>
     @{
