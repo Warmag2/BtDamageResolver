@@ -332,6 +332,7 @@
 }
 
 .resolver_distance_picker_display_only {
+    padding: 4px 8px;
     font-weight: bold;
 }
 
