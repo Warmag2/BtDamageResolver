@@ -170,7 +170,7 @@ public class UserStateController
             }
             else
             {
-                if (_invalidUnitIds.Any())
+                if (_invalidUnitIds.Count != 0)
                 {
                     _invalidUnitIds.Clear();
                     NotifyInvalidUnitListUpdated();
@@ -329,7 +329,7 @@ public class UserStateController
     {
         if (PlayerState != null)
         {
-            OnPlayerUnitListUpdated();
+            OnInvalidUnitListUpdated();
         }
     }
 

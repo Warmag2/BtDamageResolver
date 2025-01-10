@@ -21,7 +21,7 @@ public partial class LogicUnit
         var allDamageReports = new List<DamageReport>();
         var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
 
-        foreach (var weapon in await GetActiveWeaponsFromBay(weaponBay))
+        foreach (var (weapon, weaponEntry) in await GetActiveWeaponsFromBay(weaponBay))
         {
             // If not processing tags, skip tag weapons
             if (weapon.HasSpecialDamage(SpecialDamageType.Tag, out _) && !processOnlyTags)
@@ -46,7 +46,7 @@ public partial class LogicUnit
                 InitialTroopers = target.Unit.Troopers
             };
 
-            var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon, weaponBay, isPrimaryTarget);
+            var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon, weaponBay, weaponEntry, isPrimaryTarget);
 
             damageReportCombatActionPairs.Add((hitCalclulationDamageReport, combatAction));
         }
@@ -93,13 +93,13 @@ public partial class LogicUnit
     /// </summary>
     /// <param name="weaponBay">The bay to form the weapon list from.</param>
     /// <returns>The weapon list formed from weapons in the bay.</returns>
-    protected virtual async Task<List<Weapon>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
+    protected virtual async Task<List<(Weapon Weapon, WeaponEntry WeaponEntry)>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
     {
-        var weapons = new List<Weapon>();
+        var weapons = new List<(Weapon, WeaponEntry)>();
 
-        foreach (var weapon in weaponBay.Weapons.Where(w => w.State == WeaponState.Active))
+        foreach (var weaponEntry in weaponBay.Weapons.Where(w => w.State == WeaponState.Active))
         {
-            weapons.Add(await FormWeapon(weapon));
+            weapons.Add((await FormWeapon(weaponEntry), weaponEntry));
         }
 
         return weapons;

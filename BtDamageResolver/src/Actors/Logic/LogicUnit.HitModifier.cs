@@ -33,7 +33,7 @@ public abstract partial class LogicUnit
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from multiple targets", Type = AttackLogEntryType.Calculation, Number = modifierMultiTarget });
 
-        var modifierHeat = Unit.GetAttackHeatModifier();
+        var modifierHeat = Unit.GetHeatAttackPenalty();
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from heat effects", Type = AttackLogEntryType.Calculation, Number = modifierHeat });
 
