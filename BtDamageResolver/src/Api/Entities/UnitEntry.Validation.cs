@@ -54,10 +54,12 @@ public partial class UnitEntry
             case UnitType.Infantry:
                 switch (MovementClass)
                 {
-                    case MovementClass.Fast:
+                    case MovementClass.Immobile:
+                    case MovementClass.Stationary:
                     case MovementClass.Masc:
+                    case MovementClass.Fast:
                     case MovementClass.OutOfControl:
-                        validationResult.Fail("Fast/Masc/OutOfControl are invalid movement modes for battle armor and infantry units.");
+                        validationResult.Fail("Immobile/Stationary/Fast/Masc/OutOfControl are invalid movement modes for battle armor and infantry units.");
                         break;
                 }
 

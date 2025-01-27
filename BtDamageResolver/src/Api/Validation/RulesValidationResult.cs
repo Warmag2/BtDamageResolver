@@ -39,6 +39,6 @@ public class RulesValidationResult
     /// <inheritdoc />
     public override string ToString()
     {
-        return string.Join(", ", Reasons);
+        return string.Join(" - ", Reasons);
     }
 }
