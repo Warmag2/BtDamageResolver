@@ -107,7 +107,7 @@
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
-                        <td>Sinks</td>
+                        <td>Dissipation</td>
                         <td>
                             <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" SelectedOption="@UnitEntry.Sinks" Min="1" Max="100" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnSinksChanged"></FormNumberPicker>
                         </td>
