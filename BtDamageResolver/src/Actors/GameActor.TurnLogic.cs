@@ -114,7 +114,7 @@ public partial class GameActor
     /// <returns><b>True</b> if a fire event happened, <b>false</b> otherwise.</returns>
     private async Task<bool> CheckForFireEvent()
     {
-        if (_gameActorState.State.PlayerStates.Count != 0 && _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).All(p => p.Value.IsReady))
+        if (_gameActorState.State.PlayerStates.Any(p => !p.Value.IsSpectator) && _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).All(p => p.Value.IsReady))
         {
             _gameActorState.State.Turn++;
             _gameActorState.State.TurnTimeStamp = DateTime.UtcNow;
