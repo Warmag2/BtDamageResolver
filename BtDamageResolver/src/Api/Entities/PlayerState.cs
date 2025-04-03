@@ -33,6 +33,12 @@ public class PlayerState
     public bool IsReady { get; set; }
 
     /// <summary>
+    /// Should this player will be ignored when considering turn completion conditions
+    /// and should units owned by this player be ignored when resolving combat.
+    /// </summary>
+    public bool IsSpectator { get; set; }
+
+    /// <summary>
     /// The units the player controls.
     /// </summary>
     public List<UnitEntry> UnitEntries { get; set; }
