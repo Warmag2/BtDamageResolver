@@ -6,8 +6,10 @@ WORKDIR /build
 COPY ["BtDamageResolver/src/", "src/"]
 COPY ["BtDamageResolverInfrastructure/sdk/", "."]
 WORKDIR "/build/src/Api"
+RUN dotnet build "Api.csproj" -c Release
 RUN dotnet pack "Api.csproj" -c Release -o /app/packages
 WORKDIR "/build/src/Common"
+RUN dotnet build "Common.csproj" -c Release
 RUN dotnet pack "Common.csproj" -c Release -o /app/packages
 
 FROM base AS final
