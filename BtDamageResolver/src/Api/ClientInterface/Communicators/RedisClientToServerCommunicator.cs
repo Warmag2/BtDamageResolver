@@ -30,7 +30,7 @@ public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClie
     public void Send<TType>(string envelopeType, TType data)
         where TType : class
     {
-        SendEnvelope(ServerStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
+        SendSingle(ServerStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
     }
 
     /// <inheritdoc />

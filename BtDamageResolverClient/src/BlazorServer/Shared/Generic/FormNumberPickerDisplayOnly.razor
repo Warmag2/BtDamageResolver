@@ -2,7 +2,11 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 
-<span class="resolver_distance_picker_display_only @(StyleSelectorDelegate(_selectedOption))" @onclick="Pick">@NumberToDisplay</span>
+@{
+    var numberPrefix = DisplayNumberPrefix ? (NumberToDisplay >= 0 ? "+" : string.Empty) : string.Empty;
+}
+
+<span class="resolver_distance_picker_display_only @(StyleSelectorDelegate(_selectedOption))" @onclick="Pick">@($"{numberPrefix}{NumberToDisplay}")</span>
 
 <div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
     @foreach (var option in _options)
@@ -33,6 +37,9 @@
 
     [Parameter]
     public int NumberToDisplay { get; set; }
+
+    [Parameter]
+    public bool DisplayNumberPrefix { get; set; }
 
     [Parameter]
     public int Min { get; set; }

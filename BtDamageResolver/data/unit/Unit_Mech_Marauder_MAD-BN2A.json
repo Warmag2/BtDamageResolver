@@ -1,0 +1,41 @@
+{
+    "Features": [
+        "CommandUnit",
+        "NarrowLowProfile"
+    ],
+    "JumpJets": 4,
+    "Sinks": 24,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 75,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Cluster",
+                    "Amount": 1,
+                    "WeaponName": "LBX AC/5"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Plasma Rifle"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Plasma Rifle"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Marauder MAD-BN2A"
+}

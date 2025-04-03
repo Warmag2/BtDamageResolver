@@ -1,0 +1,37 @@
+{
+    "Features": [
+        "Masc"
+    ],
+    "JumpJets": 4,
+    "Sinks": 36,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 95,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "Clan LRM-20"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "Clan LRM-20"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Executioner EXE-CEO1"
+}

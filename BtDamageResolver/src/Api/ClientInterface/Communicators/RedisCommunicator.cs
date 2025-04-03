@@ -107,11 +107,12 @@ public abstract class RedisCommunicator
     /// </summary>
     /// <param name="target">The target where to send data.</param>
     /// <param name="data">The data to send.</param>
-    protected void SendEnvelope(string target, Envelope data)
+    /// <returns>The number of clients the message was delivered to.</returns>
+    protected long SendEnvelope(string target, Envelope data)
     {
         var channel = new RedisChannel(target, RedisChannel.PatternMode.Literal);
         CheckChannelConnection(channel);
-        RedisSubscriber.Publish(channel, JsonSerializer.Serialize(data, JsonSerializerOptions), CommandFlags.FireAndForget);
+        return RedisSubscriber.Publish(channel, JsonSerializer.Serialize(data, JsonSerializerOptions), CommandFlags.FireAndForget);
     }
 
     /// <summary>
@@ -121,7 +122,22 @@ public abstract class RedisCommunicator
     /// <param name="errorMessage">The error message.</param>
     protected void SendErrorMessage(string target, string errorMessage)
     {
-        SendEnvelope(target, new Envelope(EventNames.ErrorMessage, DataHelper.Pack(new ClientErrorEvent(errorMessage))));
+        SendSingle(target, new Envelope(EventNames.ErrorMessage, DataHelper.Pack(new ClientErrorEvent(errorMessage))));
+    }
+
+    /// <summary>
+    /// Send a message to a single client and display warnings if necessary.
+    /// </summary>
+    /// <param name="clientName">The target where to send data.</param>
+    /// <param name="envelope">The data to send.</param>
+    protected void SendSingle(string clientName, Envelope envelope)
+    {
+        var clientCount = SendEnvelope(clientName, envelope);
+
+        if (clientCount != 0)
+        {
+            Logger.LogWarning("Number of clients receiving targeted message with target {Target} was {Count} instead of 1 as expected.", clientName, clientCount);
+        }
     }
 
     /// <summary>

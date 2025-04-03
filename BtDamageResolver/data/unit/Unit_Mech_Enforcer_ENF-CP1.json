@@ -1,0 +1,34 @@
+{
+    "Features": [],
+    "JumpJets": 5,
+    "Sinks": 20,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 50,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Slug",
+                    "Amount": 1,
+                    "WeaponName": "LBX AC/10"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Enforcer ENF-CP1"
+}

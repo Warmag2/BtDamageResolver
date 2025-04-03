@@ -1,0 +1,53 @@
+{
+    "Features": [
+        "Ams",
+        "CommandUnit",
+        "Ecm",
+        "ImprovedCommunications",
+        "ImprovedSensors"
+    ],
+    "JumpJets": 4,
+    "Sinks": 36,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 100,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Melee Hatchet"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Melee Hatchet"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Tag"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Archangel C-ANG-HG"
+}

@@ -43,7 +43,7 @@
         }
         else
         {
-            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_normal")" NumberToDisplay="@WeaponEntry.Modifier" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
+            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_normal")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
         }
     </td>
     <td class="resolver_td_weaponentry">
