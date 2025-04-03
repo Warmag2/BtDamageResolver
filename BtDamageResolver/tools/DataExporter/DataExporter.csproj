@@ -26,10 +26,13 @@
     <None Update="DataExporterSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DataExporterSettings.Debug.json">
+    <None Update="DataExporterSettings.Release.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DataExporterSettings.Release.json">
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Update="DataExporterSettings.Debug.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

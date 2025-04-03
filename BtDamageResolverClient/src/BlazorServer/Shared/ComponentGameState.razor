@@ -7,6 +7,18 @@
            _userStateController.GameState.Players.Select(p => p.Value) :
            _userStateController.GameState.Players.Where(p => p.Value.PlayerId != _userStateController.PlayerName).Select(p => p.Value);
 
+    var spectatorList = _userStateController.GameState.Players.Values.Where(p => p.IsSpectator).Select(p => p.PlayerId);
+
+    @if(spectatorList.Any()) {
+        <h2 class="resolver_header">
+            Spectators
+        </h2>
+
+        <p>
+            @string.Join("<br>", spectatorList);
+        </p>
+    }
+
     @foreach (var player in playerStateList)
     {
         <ComponentPlayerState @key=@($"{player.PlayerId}_{player.TimeStamp}") PlayerId="@player.PlayerId" />

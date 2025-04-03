@@ -114,7 +114,7 @@ public partial class GameActor
     /// <returns><b>True</b> if a fire event happened, <b>false</b> otherwise.</returns>
     private async Task<bool> CheckForFireEvent()
     {
-        if (_gameActorState.State.PlayerStates.Count != 0 && _gameActorState.State.PlayerStates.All(p => p.Value.IsReady))
+        if (_gameActorState.State.PlayerStates.Count != 0 && _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).All(p => p.Value.IsReady))
         {
             _gameActorState.State.Turn++;
             _gameActorState.State.TurnTimeStamp = DateTime.UtcNow;
@@ -146,7 +146,7 @@ public partial class GameActor
             foreach (var playerState in _gameActorState.State.PlayerStates.Values)
             {
                 playerState.IsReady = false;
-                playerState.TimeStamp = DateTime.UtcNow;
+                playerState.TimeStamp = _gameActorState.State.TurnTimeStamp;
             }
 
             // Log turns to permanent store
@@ -170,7 +170,7 @@ public partial class GameActor
         var damageReports = new List<DamageReport>();
 
         // Reset firing solutions with invalid targets
-        foreach (var bay in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries).SelectMany(u => u.WeaponBays))
+        foreach (var bay in _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).SelectMany(p => p.Value.UnitEntries).SelectMany(u => u.WeaponBays))
         {
             if (bay.FiringSolution.Target != Guid.Empty && !await IsUnitInGame(bay.FiringSolution.Target))
             {
@@ -181,7 +181,7 @@ public partial class GameActor
         }
 
         // Fire
-        foreach (var unit in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries))
+        foreach (var unit in _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).SelectMany(p => p.Value.UnitEntries))
         {
             damageReports.AddRange(await ProcessUnitFireEvent(unit, processOnlyTags));
         }
