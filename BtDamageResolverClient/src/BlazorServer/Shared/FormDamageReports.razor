@@ -21,7 +21,7 @@ else
     {
         @foreach (var damageReport in _userStateController.DamageReportCollection.DamageReports.Last().Value)
         {
-            if (_userStateController.DamageReportConcernsPlayer(damageReport))
+            if (_userStateController.PlayerState.IsSpectator || _userStateController.DamageReportConcernsPlayer(damageReport))
             {
                 if (showMovement || damageReport.Phase != Phase.Movement)
                 {
