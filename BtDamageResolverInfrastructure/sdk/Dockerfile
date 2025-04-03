@@ -6,13 +6,11 @@ WORKDIR /build
 COPY ["BtDamageResolver/src/", "src/"]
 COPY ["BtDamageResolverInfrastructure/sdk/", "."]
 WORKDIR "/build/src/Api"
-RUN dotnet publish "Api.csproj" -c Release -o /app/publish
+RUN dotnet pack "Api.csproj" -c Release -o /app/packages
 WORKDIR "/build/src/Common"
-RUN dotnet publish "Common.csproj" -c Release -o /app/publish
+RUN dotnet pack "Common.csproj" -c Release -o /app/packages
 
 FROM base AS final
 WORKDIR /build
-COPY ["BtDamageResolverInfrastructure/sdk/nuget.config", "."]
-COPY --from=build /app/publish/*.nupkg .
-RUN mkdir customnugets
-RUN mv *.nupkg ./customnugets/
+COPY ["BtDamageResolverInfrastructure/sdk/", "."]
+COPY --from=build ["/app/packages/*.nupkg", "customnugets/"]
