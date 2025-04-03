@@ -4,8 +4,8 @@
 @if (_userStateController.PlayerName != null && _userStateController.GameState != null)
 {
     var playerStateList = DisplayOwnUnits ?
-           _userStateController.GameState.Players.Select(p => p.Value) :
-           _userStateController.GameState.Players.Where(p => p.Value.PlayerId != _userStateController.PlayerName).Select(p => p.Value);
+           _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator) :
+           _userStateController.GameState.Players.Where(p => p.Value.PlayerId != _userStateController.PlayerName).Select(p => p.Value).Where(p => !p.IsSpectator);
 
     var spectatorList = _userStateController.GameState.Players.Values.Where(p => p.IsSpectator).Select(p => p.PlayerId);
 
@@ -15,7 +15,7 @@
         </h2>
 
         <p>
-            @string.Join("<br>", spectatorList);
+            @string.Join("<br>", spectatorList)
         </p>
     }
 
