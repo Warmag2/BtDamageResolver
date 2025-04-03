@@ -20,10 +20,13 @@
     <None Include="CommunicationSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CommunicationSettings.Debug.json">
+    <None Include="CommunicationSettings.Release.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="CommunicationSettings.Release.json">
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Include="CommunicationSettings.Debug.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
