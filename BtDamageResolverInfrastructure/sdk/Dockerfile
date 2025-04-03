@@ -4,6 +4,7 @@ WORKDIR /app
 FROM base AS build
 WORKDIR /build
 COPY ["BtDamageResolver/src/", "src/"]
+COPY ["BtDamageResolverInfrastructure/sdk/", "."]
 WORKDIR "/build/src/Api"
 RUN dotnet publish "Api.csproj" -c Release -o /app/publish
 WORKDIR "/build/src/Common"
