@@ -151,7 +151,7 @@
 
                 @foreach(var weaponBay in UnitEntry.WeaponBays)
                 {
-                    <FormFiringSolution @key=@($"{weaponBay.Id}_{_userStateController.UnitList.GetHashCode()}") UnitEntry="@UnitEntry" WeaponBay="@weaponBay" />
+                    <FormFiringSolution @key=@weaponBay.Id UnitEntry="@UnitEntry" WeaponBay="@weaponBay" />
                 }
             </div>
 
