@@ -18,8 +18,4 @@
     <ProjectReference Include="..\..\src\Actors\Actors.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="SonarAnalyzer.CSharp" Version="10.7.0.110445" />
-  </ItemGroup>
-
 </Project>
