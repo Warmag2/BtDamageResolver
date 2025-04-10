@@ -1,7 +1,7 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 
-@if (_userStateController.PlayerName != null && _userStateController.GameState != null)
+@if (_userStateController.IsConnectedToGame)
 {
     var playerStateList = DisplayOwnUnits ?
            _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator) :

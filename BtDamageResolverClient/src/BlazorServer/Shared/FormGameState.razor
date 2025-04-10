@@ -5,7 +5,7 @@
 @inject UserStateController _userStateController
 @implements IDisposable
 
-@if (_userStateController.PlayerName != null && _userStateController.GameState != null)
+@if (_userStateController.IsConnectedToGame)
 {
     <ContainerAccordion Enabled="@_sectionEnabledYourUnits" Title="Units">
         @if(_userStateController.PlayerState.IsSpectator)

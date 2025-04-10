@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.394" />
-    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.394" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.395" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.395" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
   </ItemGroup>

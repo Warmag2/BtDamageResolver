@@ -120,7 +120,7 @@ public class UserStateController
     /// <summary>
     /// Indicates whether the player is connected to a game.
     /// </summary>
-    public bool IsConnectedToGame => GameState?.GameId != null;
+    public bool IsConnectedToGame => PlayerName != null && GameState?.GameId != null;
 
     /// <summary>
     /// Indicates whether the player is connected to the server.
@@ -471,7 +471,7 @@ public class UserStateController
     {
         var newUnitList = new ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)>();
 
-        if (GameState?.GameId != null)
+        if (IsConnectedToGame)
         {
             foreach (var player in GameState.Players.Values)
             {
