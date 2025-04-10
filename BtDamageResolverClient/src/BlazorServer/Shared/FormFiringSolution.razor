@@ -13,7 +13,7 @@
     var targetingText = UnitEntry.WeaponBays.Count > 1 ? $"({WeaponBay.Name})" : string.Empty;
 }
 
-    <div class="resolver_div_unit resolver_div_componentcell">
+<div class="resolver_div_unit resolver_div_componentcell">
         <table>
             <tr>
                 <th colspan="2">
@@ -23,7 +23,7 @@
             <tr>
                 <td>Target</td>
                 <td>
-                    <FormComboBox @key="@_userStateController.UnitList" EnableErrorDisplay="true" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
+                    <FormComboBox EnableErrorDisplay="true" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
                 </td>
             </tr>
             <tr style="@(VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1))">
@@ -57,7 +57,7 @@
                 </td>
             </tr>
         </table>
-    </div>
+</div>
 
 @code {
     [Parameter]
