@@ -7,7 +7,7 @@
            _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator) :
            _userStateController.GameState.Players.Where(p => p.Value.PlayerId != _userStateController.PlayerName).Select(p => p.Value).Where(p => !p.IsSpectator);
 
-    var spectatorList = _userStateController.GameState.Players.Values.Where(p => p.IsSpectator).Select(p => p.PlayerId);
+    var spectatorList = _userStateController.GameState.Players.Values.Where(p => p.IsSpectator).Select(p => p.PlayerId).ToList();
 
     @if(spectatorList.Any()) {
         <h2 class="resolver_header">
@@ -15,7 +15,12 @@
         </h2>
 
         <p>
-            @string.Join("<br>", spectatorList)
+            @for(var ii=0; ii<spectatorList.Count-1; ii++)
+            {
+                @spectatorList[ii]
+                <br />
+            }
+            @spectatorList.Last()
         </p>
     }
 
