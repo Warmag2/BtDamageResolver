@@ -7,7 +7,7 @@
 @inject UserStateController _userStateController
 @implements IDisposable
 
-@if(_userStateController.PlayerState != null)
+@if(_userStateController.IsConnectedToGame)
 {
 <table>
     <tr style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">

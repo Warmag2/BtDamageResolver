@@ -8,7 +8,7 @@
 @inject UserStateController _userStateController
 @implements IDisposable
 
-@if(_userStateController.PlayerState != null)
+@if(_userStateController.IsConnectedToGame)
 {
     <div class="resolver_div_componentcontainer @(_userStateController.InvalidUnitIds.Contains(UnitEntry.Id) ? "error" : "alternatingcolors")" ondragover="event.preventDefault();">
 
