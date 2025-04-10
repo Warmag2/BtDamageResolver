@@ -11,8 +11,6 @@
     var targetingText = UnitEntry.WeaponBays.Count > 1 ? $"({WeaponBay.Name})" : string.Empty;
 }
 
-@if (_userStateController.IsConnectedToGame)
-{
     <div class="resolver_div_unit resolver_div_componentcell">
         <table>
             <tr>
@@ -58,7 +56,6 @@
             </tr>
         </table>
     </div>
-}
 
 @code {
     [Parameter]
