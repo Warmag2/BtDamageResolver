@@ -39,19 +39,19 @@
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
-    <FormGameState @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.GameState?.TurnTimeStamp}") />
+    <FormGameState @key=@($"{_userStateController.GameState?.TurnTimeStamp}") />
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
-    <ComponentGameState @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true" />
+    <ComponentGameState @key=@($"{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true" />
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
-    <FormDamageReports @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.DamageReportCollection?.TimeStamp}") OnlyNewest="false" />
+    <FormDamageReports @key=@($"{_userStateController.DamageReportCollection?.TimeStamp}") OnlyNewest="false" />
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
-    <FormOptions @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}") />
+    <FormOptions @key=@($"{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}") />
 </ContainerTab>
 
 <!-- This is here because we only want exactly one /-->

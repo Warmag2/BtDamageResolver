@@ -1,9 +1,8 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
-@if (TabIdentity == TabSelection && Enabled)
-{
+<div class="resolver_div_tabcontent" style="@VisualStyleController.HideElement(TabIdentity != TabSelection || !Enabled)">
     @ChildContent
-}
+</div>
 
 @code
 {
