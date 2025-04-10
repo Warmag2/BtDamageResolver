@@ -1,5 +1,4 @@
-﻿@inherits BaseFaemiyahComponent
-@using Faemiyah.BtDamageResolver.Api.Entities
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
@@ -7,7 +6,6 @@
 @using Newtonsoft.Json
 @inject CommonData _commonData
 @inject UserStateController _userStateController
-@implements IDisposable
 
 @{
     var targetingText = UnitEntry.WeaponBays.Count > 1 ? $"({WeaponBay.Name})" : string.Empty;
@@ -68,11 +66,6 @@
 
     [Parameter]
     public EventCallback OnChanged { get; set; }
-
-    protected override void OnInitialized()
-    {
-        _userStateController.OnGameUnitListUpdated += InvokeStateChange;
-    }
 
     private void SendUpdate()
     {
@@ -138,10 +131,5 @@
             SendUpdate();
             //OnChanged.InvokeAsync();
         }
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnInvalidUnitListUpdated -= InvokeStateChange;
     }
 }

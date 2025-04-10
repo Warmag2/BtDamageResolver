@@ -151,8 +151,7 @@
 
                 @foreach(var weaponBay in UnitEntry.WeaponBays)
                 {
-                    <FormFiringSolution @key="@weaponBay.Id" UnitEntry="@UnitEntry" WeaponBay="@weaponBay" />
-                    //OnChanged="@SendUpdate"
+                    <FormFiringSolution @key=@($"{weaponBay.Id}_{_userStateController.UnitList.GetHashCode()}") UnitEntry="@UnitEntry" WeaponBay="@weaponBay" />
                 }
             </div>
 
@@ -285,6 +284,7 @@
 
     protected override void OnInitialized()
     {
+        _userStateController.OnGameUnitListUpdated += InvokeStateChange;
         _userStateController.OnInvalidUnitListUpdated += InvokeStateChange;
     }
 
@@ -637,6 +637,7 @@
 
     public void Dispose()
     {
+        _userStateController.OnGameUnitListUpdated -= InvokeStateChange;
         _userStateController.OnInvalidUnitListUpdated -= InvokeStateChange;
     }
 }
