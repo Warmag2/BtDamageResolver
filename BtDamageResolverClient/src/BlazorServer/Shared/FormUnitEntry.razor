@@ -285,7 +285,6 @@
 
     protected override void OnInitialized()
     {
-        _userStateController.OnGameUnitListUpdated += InvokeStateChange;
         _userStateController.OnInvalidUnitListUpdated += InvokeStateChange;
     }
 
@@ -638,7 +637,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnGameUnitListUpdated -= InvokeStateChange;
         _userStateController.OnInvalidUnitListUpdated -= InvokeStateChange;
     }
 }
