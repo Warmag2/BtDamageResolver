@@ -53,7 +53,7 @@
                     <FormDataDisplayWeapon @key=@_entryName WeaponName=@_entryName Ammo=@_ammoName></FormDataDisplayWeapon>
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new NotImplementedException($"Handling for data type {_selectedDataType} not present.");
             }
         }
     </div>
@@ -91,7 +91,7 @@
                 _items = _commonData.DictionaryWeapon.Keys.ToList();
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new NotImplementedException($"Handling for data type {_selectedDataType} not implemented.");
         }
 
         _entryName = _items.FirstOrDefault();

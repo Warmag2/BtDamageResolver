@@ -34,7 +34,7 @@
                 @($"{age.TotalDays:0.}d")
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentException(nameof(timeUnit));
         }
     </td>
     <td>

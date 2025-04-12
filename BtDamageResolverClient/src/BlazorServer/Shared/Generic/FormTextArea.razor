@@ -39,7 +39,7 @@
                 _text = value;
                 _updateTimeStamp = DateTime.UtcNow;
 
-                if (!InvalidOptionGenerator().Any(o => o.Equals(value)))
+                if (!InvalidOptionGenerator().Contains(value))
                 {
                     OnChanged.InvokeAsync(value);
                     _erraneousInput = false;

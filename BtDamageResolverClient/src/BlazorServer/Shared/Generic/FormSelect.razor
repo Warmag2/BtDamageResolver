@@ -1,15 +1,15 @@
 ﻿@typeparam TItem
 
 <select class="resolver_input resolver_input_select @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" disabled="@Disabled" @bind="SelectedOptionInternal">
-    @foreach (var option in Options)
+    @foreach (var key in Options.Select(o => o.Key))
     {
-        if (option.Key.Equals(SelectedOptionInternal))
+        if (key.Equals(SelectedOptionInternal))
         {
-            <option value="@option.Key" selected>@option.Key</option>
+            <option value="@key" selected>@key</option>
         }
         else
         {
-            <option value="@option.Key">@option.Key</option>
+            <option value="@key">@key</option>
         }
 
     }

@@ -40,7 +40,7 @@
                 <FormPaperDollVehicleVtol FormPaperDoll="@this" />
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new NotImplementedException($"Paperdoll view for unit type {DamagePaperDoll.Type} not implemented.");
         }
     </div>
 
@@ -87,7 +87,7 @@
                                     @($"Critical damage to: {criticalDamageEntry.Type} ({criticalDamageEntry.InducingDamage})")
                                     break;
                                 default:
-                                    throw new ArgumentOutOfRangeException();
+                                        throw new NotImplementedException($"Critical damage description for threat type {criticalDamageEntry.ThreatType} not implemented.");
                             }
 
                             break;

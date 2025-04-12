@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
@@ -66,7 +65,6 @@ public class Startup
             options.ApplicationMaxBufferSize = 1048576;
             options.TransportMaxBufferSize = 1048576;
         });
-        services.AddBlazoredLocalStorage();
         services.AddLogging(conf =>
         {
             conf.AddFaemiyahLogging();

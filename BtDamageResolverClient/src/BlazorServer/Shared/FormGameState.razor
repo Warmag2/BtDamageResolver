@@ -7,7 +7,7 @@
 
 @if (_userStateController.IsConnectedToGame)
 {
-    <ContainerAccordion Enabled="@_sectionEnabledYourUnits" Title="Units">
+    <ContainerAccordion Enabled=@true Title="Units">
         @if(_userStateController.PlayerState.IsSpectator)
         {
             <div class="resolver_div_hr">
@@ -58,7 +58,6 @@
 @code
 {
     private bool _sectionEnabledTools;
-    private bool _sectionEnabledYourUnits = true;
     private bool _sectionEnabledDamageReports;
     private bool _sectionEnabledDamageRequests;
 

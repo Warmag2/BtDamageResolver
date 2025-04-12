@@ -3,7 +3,8 @@
 @inject CommonData _commonData
 
 @{
-    var numberPrefix = DisplayNumberPrefix ? (NumberToDisplay >= 0 ? "+" : string.Empty) : string.Empty;
+    var numberPrefixString = NumberToDisplay >= 0 ? "+" : string.Empty;
+    var numberPrefix = DisplayNumberPrefix ? numberPrefixString : string.Empty;
 }
 
 <span class="resolver_distance_picker_display_only @(StyleSelectorDelegate(_selectedOption))" @onclick="Pick">@($"{numberPrefix}{NumberToDisplay}")</span>
@@ -66,7 +67,7 @@
 
     private void Pick()
     {
-        if (_selectionBoxHidden == false)
+        if (!_selectionBoxHidden)
         {
             HideSelectionBox();
         }

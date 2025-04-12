@@ -155,12 +155,11 @@
     {
         if (firstRender)
         {
-            //_resolverCommunicator.SetHubConnection(_hubConnection);
             await _hubConnection.StartAsync();
 
-            var (credentialsFound, credentials) = await _localStorage.GetUserCredentials();
+            var credentials = await _localStorage.GetUserCredentials();
 
-            if (credentialsFound)
+            if (credentials != null)
             {
                 _formServer.Connect(credentials);
             }
