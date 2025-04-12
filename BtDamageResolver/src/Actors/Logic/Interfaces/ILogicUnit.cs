@@ -220,20 +220,21 @@ public interface ILogicUnit
     /// <param name="target">The target unit logic.</param>
     /// <param name="weapon">The weapon used.</param>
     /// <param name="weaponBay">The weapon bay the weapon is in.</param>
+    /// <param name="weaponEntry">The weapon entry used.</param>
     /// <param name="isPrimaryTarget">Is this the primary target of the unit.</param>
     /// <returns>A tuple with the hit modifier and the range bracket.</returns>
-    (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, bool isPrimaryTarget);
+    (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget);
 
     /// <summary>
     /// Resolves a hit modifier and logs events related to the calculation in the given damage report.
     /// </summary>
     /// <param name="attackLog">The attack log to log to.</param>
     /// <param name="target">The target unit logic.</param>
-    /// <param name="weaponEntry">The weapon entry used.</param>
     /// <param name="weaponBay">The weapon bay the weapon is in.</param>
+    /// <param name="weaponEntry">The weapon entry used.</param>
     /// <param name="isPrimaryTarget">Is this the primary target of the unit.</param>
     /// <returns>A tuple with the hit modifier and the range bracket.</returns>
-    Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry, WeaponBay weaponBay, bool isPrimaryTarget);
+    Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget);
 
     /// <summary>
     /// Calculates all heat buildup not related to weapon fire.

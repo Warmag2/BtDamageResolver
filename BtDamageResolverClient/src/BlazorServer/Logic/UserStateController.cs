@@ -18,6 +18,7 @@ public class UserStateController
     private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers;
     private Dictionary<string, GameEntry> _gameEntries;
     private GameState _gameState;
+    private HashSet<Guid> _invalidUnitIds = new();
     private ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> _unitList;
 
     /// <summary>
@@ -47,6 +48,11 @@ public class UserStateController
     public event Action OnGameUnitListUpdated;
 
     /// <summary>
+    /// Event for when unit of invalid units changes.
+    /// </summary>
+    public event Action OnInvalidUnitListUpdated;
+
+    /// <summary>
     /// Event for when a player updates his or her state.
     /// </summary>
     public event Action OnPlayerStateUpdated;
@@ -64,7 +70,7 @@ public class UserStateController
     /// <summary>
     /// Event for when player unit list gets changed.
     /// </summary>
-    public event Action OnPlayerListOrderUpdated;
+    public event Action OnPlayerUnitListUpdated;
 
     /// <summary>
     /// Event for when game entries are received.
@@ -114,7 +120,7 @@ public class UserStateController
     /// <summary>
     /// Indicates whether the player is connected to a game.
     /// </summary>
-    public bool IsConnectedToGame => GameState?.GameId != null;
+    public bool IsConnectedToGame => PlayerState != null && GameState?.GameId != null;
 
     /// <summary>
     /// Indicates whether the player is connected to the server.
@@ -145,7 +151,31 @@ public class UserStateController
             // Most of the time, this is not the case
             UpdateUnitList();
 
-            NotifyPlayerListOrderUpdated();
+            NotifyPlayerUnitListUpdated();
+        }
+    }
+
+    /// <summary>
+    /// IDs for any invalid units as reported by the server.
+    /// </summary>
+    public HashSet<Guid> InvalidUnitIds
+    {
+        get => _invalidUnitIds;
+        set
+        {
+            if (value != null)
+            {
+                _invalidUnitIds = value;
+                NotifyInvalidUnitListUpdated();
+            }
+            else
+            {
+                if (_invalidUnitIds.Count != 0)
+                {
+                    _invalidUnitIds.Clear();
+                    NotifyInvalidUnitListUpdated();
+                }
+            }
         }
     }
 
@@ -196,7 +226,7 @@ public class UserStateController
     {
         if (unit == null)
         {
-            var newUnit = PlayerState.UnitEntries.Count == 0 ? CommonData.GetBlankUnit() : PlayerState.UnitEntries[^1].Copy();
+            var newUnit = PlayerState.UnitEntries.Count == 0 ? new() { Name = "New Unit" } : PlayerState.UnitEntries[^1].Copy();
             PlayerState.UnitEntries.Add(newUnit);
         }
         else
@@ -215,6 +245,15 @@ public class UserStateController
     {
         PlayerState.UnitEntries.Remove(unit);
         NotifyPlayerDataUpdated();
+    }
+
+    /// <summary>
+    /// Get comparison time for field highlighting.
+    /// </summary>
+    /// <returns>The comparison time for field highlighting.</returns>
+    public DateTime GetComparisonTime()
+    {
+        return PlayerOptions.HighlightUnalteredFields ? GameState.TurnTimeStamp : DateTime.MinValue;
     }
 
     /// <summary>
@@ -284,6 +323,17 @@ public class UserStateController
     }
 
     /// <summary>
+    /// Notification for when list of invalid units updates.
+    /// </summary>
+    public void NotifyInvalidUnitListUpdated()
+    {
+        if (PlayerState != null)
+        {
+            OnInvalidUnitListUpdated?.Invoke();
+        }
+    }
+
+    /// <summary>
     /// Notification for when player data updates.
     /// </summary>
     public void NotifyPlayerDataUpdated()
@@ -291,18 +341,18 @@ public class UserStateController
         if (PlayerState != null)
         {
             PlayerState.TimeStamp = DateTime.UtcNow;
-            OnPlayerStateUpdated();
+            OnPlayerStateUpdated?.Invoke();
         }
     }
 
     /// <summary>
     /// Notification for when player list orders change.
     /// </summary>
-    public void NotifyPlayerListOrderUpdated()
+    public void NotifyPlayerUnitListUpdated()
     {
         if (PlayerState != null)
         {
-            OnPlayerListOrderUpdated();
+            OnPlayerUnitListUpdated?.Invoke();
         }
     }
 
@@ -421,7 +471,7 @@ public class UserStateController
     {
         var newUnitList = new ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)>();
 
-        if (GameState?.GameId != null)
+        if (GameState != null)
         {
             foreach (var player in GameState.Players.Values)
             {

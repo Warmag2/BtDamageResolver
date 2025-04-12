@@ -1,0 +1,34 @@
+{
+    "Features": [
+        "BattleFists",
+        "Ecm"
+    ],
+    "JumpJets": 5,
+    "Sinks": 20,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 55,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "PPC"
+                },
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "WeaponName": "Ultra AC/10"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Small Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Shadow Hawk SHD-BN1"
+}

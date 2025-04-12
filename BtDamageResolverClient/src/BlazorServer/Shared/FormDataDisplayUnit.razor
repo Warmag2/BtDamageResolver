@@ -27,12 +27,8 @@
                 <td>@_unit.Type</td>
             </tr>
             <tr>
-                <td>Gunnery</td>
-                <td>@_unit.Gunnery</td>
-            </tr>
-            <tr>
-                <td>Piloting</td>
-                <td>@_unit.Piloting</td>
+                <td>Dissipation</td>
+                <td>@_unit.Sinks</td>
             </tr>
             <tr>
                 <td>Speed</td>
@@ -51,10 +47,6 @@
                 <td>@_unit.Troopers</td>
             </tr>
             <tr>
-                <td>Sinks</td>
-                <td>@_unit.Sinks</td>
-            </tr>
-            <tr>
                 <td>Features</td>
                 <td>
                     @foreach (var feature in _unit.Features)
@@ -69,44 +61,41 @@
 
     @if (_unit.WeaponBays.Any())
     {
-        @foreach(var weaponBay in _unit.WeaponBays)
+        @foreach(var weaponBay in _unit.WeaponBays.Where(w => w.Weapons.Count != 0))
         {
-            @if (weaponBay.Weapons.Any())
-            {
-                <div class="resolver_div_componentrow">
-                    <table class="resolver_table">
-                        <tr>
-                            @if (_unit.WeaponBays.Count > 1)
-                            {
-                                <th colspan="3">Weapon bay @weaponBay.Name</th>
-                            }
-                            else
-                            {
-                                <th colspan="3">Weapons</th>
-                            }
-                        </tr>
-                        <tr>
-                            <th>Amount</th>
-                            <th>Name</th>
-                            <th>Ammo</th>
-                        </tr>
-                        @foreach (var weaponReference in weaponBay.Weapons)
+            <div class="resolver_div_componentrow">
+                <table class="resolver_table">
+                    <tr>
+                        @if (_unit.WeaponBays.Count > 1)
                         {
-                            <tr>
-                                <td>
-                                    @($"{weaponReference.Amount}x")
-                                </td>
-                                <td>
-                                    @weaponReference.WeaponName
-                                </td>
-                                <td>
-                                    @(weaponReference.Ammo ?? "None")
-                                </td>
-                            </tr>
+                            <th colspan="3">Weapon bay @weaponBay.Name</th>
                         }
-                    </table>
-                </div>
-            }
+                        else
+                        {
+                            <th colspan="3">Weapons</th>
+                        }
+                    </tr>
+                    <tr>
+                        <th>Amount</th>
+                        <th>Name</th>
+                        <th>Ammo</th>
+                    </tr>
+                    @foreach (var weaponReference in weaponBay.Weapons)
+                    {
+                        <tr>
+                            <td>
+                                @($"{weaponReference.Amount}x")
+                            </td>
+                            <td>
+                                @weaponReference.WeaponName
+                            </td>
+                            <td>
+                                @(weaponReference.Ammo ?? "None")
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
         }
     }
 

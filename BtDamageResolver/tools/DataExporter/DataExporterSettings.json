@@ -1,0 +1,14 @@
+﻿{
+  "LoggingOptions": {
+    "LogFile": "/logs/DataExporter_.log",
+    "ProgramName": "DataExporter",
+    "LogToConsole": true,
+    "LogToFile": false,
+    "LogLevel": "Information",
+    "LogLevelOrleans": "Warning"
+  },
+  "ClusterOptions": {
+    "Invariant": "Npgsql",
+    "ConnectionString": "User ID=USERNAME;Password=PASSWORD;Host=orleansdb;Port=5432;Database=BtDamageResolver"
+  }
+}

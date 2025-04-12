@@ -64,9 +64,9 @@
                     }
                     else
                     {
-                        foreach (var rangeBracket in _weapon.Damage)
+                        foreach (var bracket in _weapon.Damage)
                         {
-                            @($"{rangeBracket.Key}: {rangeBracket.Value}")
+                            @($"{bracket.Key}: {bracket.Value}")
                             <br/>
                         }
                     }
@@ -81,9 +81,9 @@
                     }
                     else
                     {
-                        foreach (var rangeBracket in _weapon.DamageAerospace)
+                        foreach (var bracket in _weapon.DamageAerospace)
                         {
-                            @($"{rangeBracket.Key}: {rangeBracket.Value}")
+                            @($"{bracket.Key}: {bracket.Value}")
                             <br/>
                         }
                     }
@@ -91,7 +91,20 @@
             </tr>
             <tr>
                 <td>Heat</td>
-                <td>@_weapon.Heat</td>
+                <td>
+                    @if (AllValuesAreEqual(_weapon.Heat))
+                    {
+                        @($"All: {_weapon.Heat.First().Value}")
+                    }
+                    else
+                    {
+                        foreach (var bracket in _weapon.Heat)
+                        {
+                            @($"{bracket.Key}: {bracket.Value}")
+                            <br />
+                        }
+                    }
+                </td>
             </tr>
             <tr>
                 <td>UsesAmmo</td>
@@ -132,15 +145,21 @@
             </tr>
             <tr>
                 <td>Special Damage</td>
-                <td>@($"{_weapon.SpecialDamage}")</td>
+                <td>
+                    @foreach (var entry in _weapon.SpecialDamage)
+                    {
+                        @entry
+                        <br />
+                    }
+                </td>
             </tr>
             <tr>
                 <td>Special Features</td>
                 <td>
                     @foreach (var entry in _weapon.SpecialFeatures)
                     {
-                        @($"{entry}")
-                        <br/>
+                        @entry
+                        <br />
                     }
                 </td>
             </tr>
@@ -158,7 +177,7 @@
     [Parameter]
     public string Ammo { get; set; }
 
-    private bool AllValuesAreEqual(Dictionary<RangeBracket, int> valueDict)
+    private static bool AllValuesAreEqual(Dictionary<RangeBracket, int> valueDict)
     {
         if (valueDict.Values.Distinct().Count() == 1)
         {

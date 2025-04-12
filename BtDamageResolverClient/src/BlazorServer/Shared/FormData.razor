@@ -27,12 +27,17 @@
             <div class="resolver_div_componentrow">
                 <FormComboBox @key="@_entryName" Options="@sortedItemDict" SelectedOption=@_entryName OnChanged="(string entryName) => OnEntityChanged(entryName)"></FormComboBox>
             </div>
-            
+
             @if (_selectedDataType == ResolverDataType.Weapon)
             {
-                <div class="resolver_div_componentrow">
-                    <FormComboBox @key="@_entryName" Options="@_commonData.FormMapWeaponAmmo(_entryName)" SelectedOption=@_commonData.GetWeaponDefaultAmmo(_entryName) OnChanged="(string ammoName) => OnAmmoChanged(ammoName)"></FormComboBox>
-                </div>
+                var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(_entryName);
+
+                @if (mapWeaponAmmo.Count > 0)
+                {
+                    <div class="resolver_div_componentrow">
+                        <FormComboBox @key="@_entryName" Options=@mapWeaponAmmo SelectedOption=@_commonData.GetWeaponDefaultAmmo(_entryName) OnChanged="(string ammoName) => OnAmmoChanged(ammoName)"></FormComboBox>
+                    </div>
+                }
             }
             
             @switch (_selectedDataType)
@@ -53,7 +58,7 @@
                     <FormDataDisplayWeapon @key=@_entryName WeaponName=@_entryName Ammo=@_ammoName></FormDataDisplayWeapon>
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new NotImplementedException($"Handling for data type {_selectedDataType} not present.");
             }
         }
     </div>
@@ -91,7 +96,7 @@
                 _items = _commonData.DictionaryWeapon.Keys.ToList();
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new NotImplementedException($"Handling for data type {_selectedDataType} not implemented.");
         }
 
         _entryName = _items.FirstOrDefault();

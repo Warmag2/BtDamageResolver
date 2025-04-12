@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -30,7 +30,7 @@ public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClie
     public void Send<TType>(string envelopeType, TType data)
         where TType : class
     {
-        SendEnvelope(ServerStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
+        SendSingle(ServerStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
     }
 
     /// <inheritdoc />

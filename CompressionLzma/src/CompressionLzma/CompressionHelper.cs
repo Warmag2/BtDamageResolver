@@ -1,6 +1,5 @@
 // 7Zip helper code, original by Peter Bromberg
 // http://www.eggheadcafe.com/tutorials/aspnet/064b41e4-60bc-4d35-9136-368603bcc27a/7zip-lzma-inmemory-com.aspx
-using System;
 using System.IO;
 
 namespace SevenZip.Compression.LZMA;
@@ -35,12 +34,12 @@ public static class CompressionHelper
     // these are the default properties, keeping it simple for now:
     private static readonly object[] Properties =
     {
-        (Int32)Dictionary,
-        (Int32)2,
-        (Int32)3,
-        (Int32)0,
-        (Int32)2,
-        (Int32)128,
+        Dictionary,
+        2,
+        3,
+        0,
+        2,
+        128,
         "bt4",
         Eos
     };

@@ -1,4 +1,4 @@
-﻿namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
+﻿namespace Faemiyah.BtDamageResolver.Api.Constants;
 
 /// <summary>
 /// Names for all server -> player -interaction operations.

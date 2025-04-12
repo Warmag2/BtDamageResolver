@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;

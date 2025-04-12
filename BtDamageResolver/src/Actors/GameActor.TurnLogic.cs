@@ -64,7 +64,7 @@ public partial class GameActor
     {
         try
         {
-            // Don't check against the player timestamp. If we received new data, then this actor state has updated by definition
+            // No need to check against the player timestamp. If we are here, then this actor state has updated by definition
             _gameActorState.State.TimeStamp = DateTime.UtcNow;
 
             CheckForPlayerCountEvents();
@@ -82,6 +82,10 @@ public partial class GameActor
 
             // Save game actor state
             await _gameActorState.WriteStateAsync();
+            if (fireEventHappened)
+            {
+                await _gameActorDamageReportState.WriteStateAsync();
+            }
 
             // Log update to permanent store
             await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
@@ -110,7 +114,7 @@ public partial class GameActor
     /// <returns><b>True</b> if a fire event happened, <b>false</b> otherwise.</returns>
     private async Task<bool> CheckForFireEvent()
     {
-        if (_gameActorState.State.PlayerStates.Count != 0 && _gameActorState.State.PlayerStates.All(p => p.Value.IsReady))
+        if (_gameActorState.State.PlayerStates.Any(p => !p.Value.IsSpectator) && _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).All(p => p.Value.IsReady))
         {
             _gameActorState.State.Turn++;
             _gameActorState.State.TurnTimeStamp = DateTime.UtcNow;
@@ -136,13 +140,13 @@ public partial class GameActor
             ClearUnitPenalties(true, false);
             ModifyGameStateBasedOnDamageReports(tagDamageReports.Concat(damageReports).ToList());
 
-            await DistributeDamageReportsToPlayers(_gameActorState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
+            await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
 
             // Unmark ready in local memory
             foreach (var playerState in _gameActorState.State.PlayerStates.Values)
             {
                 playerState.IsReady = false;
-                playerState.TimeStamp = DateTime.UtcNow;
+                playerState.TimeStamp = _gameActorState.State.TurnTimeStamp;
             }
 
             // Log turns to permanent store
@@ -166,7 +170,7 @@ public partial class GameActor
         var damageReports = new List<DamageReport>();
 
         // Reset firing solutions with invalid targets
-        foreach (var bay in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries).SelectMany(u => u.WeaponBays))
+        foreach (var bay in _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).SelectMany(p => p.Value.UnitEntries).SelectMany(u => u.WeaponBays))
         {
             if (bay.FiringSolution.Target != Guid.Empty && !await IsUnitInGame(bay.FiringSolution.Target))
             {
@@ -177,7 +181,7 @@ public partial class GameActor
         }
 
         // Fire
-        foreach (var unit in _gameActorState.State.PlayerStates.SelectMany(p => p.Value.UnitEntries))
+        foreach (var unit in _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).SelectMany(p => p.Value.UnitEntries))
         {
             damageReports.AddRange(await ProcessUnitFireEvent(unit, processOnlyTags));
         }
@@ -185,7 +189,7 @@ public partial class GameActor
         // Mark that the damage reports happened during this turn
         damageReports.ForEach(d => d.Turn = _gameActorState.State.Turn);
 
-        _gameActorState.State.DamageReports.AddRange(damageReports);
+        _gameActorDamageReportState.State.DamageReports.AddRange(damageReports);
 
         return damageReports;
     }
@@ -263,7 +267,7 @@ public partial class GameActor
                     var attackLog = new AttackLog();
                     var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
 
-                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponEntry, weaponBay, isPrimaryTarget);
+                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponBay, weaponEntry, isPrimaryTarget);
 
                     var (ammoEstimate, ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, rangeBracket, weaponEntry);
                     var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, rangeBracket, weaponEntry);

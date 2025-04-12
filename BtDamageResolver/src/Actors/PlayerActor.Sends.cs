@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.Actors.States.Types;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
@@ -67,20 +69,26 @@ public partial class PlayerActor
 
         // Validate unit entries and do not proceed if they contain data that would compromise the rules engine.
         // This player state is not updated with invalid state.
+        string errorMessage = string.Empty;
+        var unitsWithErrors = new HashSet<Guid>();
+
         foreach (var unit in playerState.UnitEntries)
         {
             var validationResult = unit.Validate();
 
             if (!validationResult.IsValid)
             {
-                await SendErrorMessageToClient($"Unit {unit} has the following errors: {validationResult}");
+                errorMessage += $"Unit {unit} has the following errors: {validationResult}\n";
+                unitsWithErrors.Add(unit.Id);
                 _logger.LogWarning("Player {PlayerId} is sending invalid data for unit {UnitId}. Reason: {ValidationResult}", this.GetPrimaryKeyString(), unit.Id, validationResult);
-
-                return false;
             }
         }
 
-        var success = false;
+        if (unitsWithErrors.Count > 0)
+        {
+            await SendErrorMessageToClient(new ClientErrorEvent(errorMessage, unitsWithErrors));
+            return false;
+        }
 
         try
         {
@@ -97,14 +105,14 @@ public partial class PlayerActor
                 // arising from changes incurred by uploading the state to the game actor.
                 await _playerActorState.WriteStateAsync();
 
-                if (IsConnectedToGame())
-                {
-                    // If we are connected to the game, also push player state to the game actor to be distributed to other players.
-                    success = await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendPlayerState(this.GetPrimaryKeyString(), playerState, updatedUnits);
-                }
-
                 // Log the number of updated units to permanent store
                 await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.UpdateUnit, updatedUnits.Count);
+
+                // If we are connected to the game, also push player state to the game actor to be distributed to other players.
+                if (IsConnectedToGame())
+                {
+                    return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).SendPlayerState(this.GetPrimaryKeyString(), playerState, updatedUnits);
+                }
             }
             else
             {
@@ -120,7 +128,7 @@ public partial class PlayerActor
             await SendErrorMessageToClient($"{ex.Message}\n{ex.StackTrace}");
         }
 
-        return success;
+        return false;
     }
 
     /// <inheritdoc />

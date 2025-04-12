@@ -59,7 +59,7 @@ public abstract class LogicUnitAerospace : LogicUnit
             case Direction.Top:
                 return 2;
             default:
-                throw new InvalidOperationException($"Unexpected direction: {direction}");
+                throw new InvalidOperationException($"Unexpected direction for movement direction modifier: {direction}");
         }
     }
 
@@ -182,7 +182,7 @@ public abstract class LogicUnitAerospace : LogicUnit
                     }
                 }
 
-                if (target.Unit.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
+                if (target.Unit.HasFeature(UnitFeature.Ecm))
                 {
                     var ecmPenalty = Random.Next(3);
                     damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender ECM roll for cluster damage reduction", Number = ecmPenalty });

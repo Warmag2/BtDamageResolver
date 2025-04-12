@@ -1,0 +1,43 @@
+{
+    "Features": [],
+    "JumpJets": 6,
+    "Sinks": 20,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 45,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "WeaponName": "LRM-10"
+                },
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "WeaponName": "LRM-10"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "ER Small Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "ER Small Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Hellspawn HSN-CP1"
+}

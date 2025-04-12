@@ -16,13 +16,13 @@ public abstract partial class LogicUnit
     private static readonly int[] MovementModifierArray = [0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6];
 
     /// <inheritdoc/>
-    public async Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponEntry weaponEntry, WeaponBay weaponBay, bool isPrimaryTarget)
+    public async Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget)
     {
-        return ResolveHitModifier(attackLog, target, await FormWeapon(weaponEntry), weaponBay, isPrimaryTarget);
+        return ResolveHitModifier(attackLog, target, await FormWeapon(weaponEntry), weaponBay, weaponEntry, isPrimaryTarget);
     }
 
     /// <inheritdoc />
-    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, bool isPrimaryTarget)
+    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget)
     {
         var modifierBase = weapon.AttackType == AttackType.Normal ? Unit.Gunnery : Unit.Piloting;
 
@@ -37,9 +37,13 @@ public abstract partial class LogicUnit
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from heat effects", Type = AttackLogEntryType.Calculation, Number = modifierHeat });
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from EMP effects", Type = AttackLogEntryType.Calculation, Number = Unit.Penalty });
+        var modifierPenalty = GetPenaltyModifier();
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from firing solution", Type = AttackLogEntryType.Calculation, Number = weaponBay.FiringSolution.AttackModifier });
+        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from EMP effects", Type = AttackLogEntryType.Calculation, Number = modifierPenalty });
+
+        var modifierFiringSolution = GetFiringSolutionModifier(weaponBay.FiringSolution);
+
+        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from firing solution", Type = AttackLogEntryType.Calculation, Number = modifierFiringSolution });
 
         var rangeBracket = GetRangeBracket(weapon, weaponBay);
         var modifierRange = GetRangeModifier(rangeBracket);
@@ -54,6 +58,8 @@ public abstract partial class LogicUnit
         var modifierWeapon = GetWeaponModifier(weapon);
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weapon properties", Type = AttackLogEntryType.Calculation, Number = modifierWeapon });
+
+        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weapon entry properties", Type = AttackLogEntryType.Calculation, Number = weaponEntry.Modifier });
 
         var modifierUnitType = target.GetUnitTypeModifier();
 
@@ -107,11 +113,12 @@ public abstract partial class LogicUnit
             modifierBase +
             modifierMultiTarget +
             modifierHeat +
-            Unit.Penalty +
-            weaponBay.FiringSolution.AttackModifier +
+            modifierPenalty +
+            modifierFiringSolution +
             modifierRange +
             modifierArmor +
             modifierWeapon +
+            weaponEntry.Modifier +
             modifierUnitType +
             modifierCover +
             modifierStance +
@@ -394,6 +401,23 @@ public abstract partial class LogicUnit
         return weapon.HitModifier;
     }
 
+    private int GetFiringSolutionModifier(FiringSolution firingSolution)
+    {
+        var baseModifier = firingSolution.AttackModifier;
+
+        if (Unit.HasFeature(UnitFeature.ActiveProbe) && baseModifier > 0)
+        {
+            baseModifier--;
+        }
+
+        if (Unit.HasFeature(UnitFeature.ImprovedSensors) && baseModifier > 0)
+        {
+            baseModifier--;
+        }
+
+        return baseModifier;
+    }
+
     private int GetMultiTargetModifier(WeaponBay weaponBay, bool isPrimaryTarget)
     {
         if (isPrimaryTarget)
@@ -449,6 +473,11 @@ public abstract partial class LogicUnit
         }
 
         return 0;
+    }
+
+    private int GetPenaltyModifier()
+    {
+        return Math.Max(0, Math.Min(Unit.Penalty, 2));
     }
 
     private int GetQuirkModifier(ILogicUnit target, Weapon weapon)

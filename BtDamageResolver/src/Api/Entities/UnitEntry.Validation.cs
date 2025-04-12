@@ -54,10 +54,12 @@ public partial class UnitEntry
             case UnitType.Infantry:
                 switch (MovementClass)
                 {
-                    case MovementClass.Fast:
+                    case MovementClass.Immobile:
+                    case MovementClass.Stationary:
                     case MovementClass.Masc:
+                    case MovementClass.Fast:
                     case MovementClass.OutOfControl:
-                        validationResult.Fail("Fast/Masc/OutOfControl are invalid movement modes for battle armor and infantry units.");
+                        validationResult.Fail("Immobile/Stationary/Fast/Masc/OutOfControl are invalid movement modes for battle armor and infantry units.");
                         break;
                 }
 
@@ -221,6 +223,13 @@ public partial class UnitEntry
         switch (Type)
         {
             // Aerospace capital ships do not have a relevant maximum tonnage
+            case UnitType.AerospaceCapital:
+                if (Tonnage < 100000)
+                {
+                    validationResult.Fail("Capital ship minimum tonnage is 100000 tons.");
+                }
+
+                break;
             case UnitType.AerospaceDropshipAerodyne:
             case UnitType.AerospaceDropshipSpheroid:
                 if (Tonnage is < 100 or > 100000)

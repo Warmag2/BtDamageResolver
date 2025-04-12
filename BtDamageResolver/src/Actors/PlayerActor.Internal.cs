@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Orleans;
 
@@ -77,6 +78,11 @@ public partial class PlayerActor
     }
 
     private async Task SendErrorMessageToClient(string errorMessage)
+    {
+        await SendDataToClient(EventNames.ErrorMessage, new ClientErrorEvent(errorMessage));
+    }
+
+    private async Task SendErrorMessageToClient(ClientErrorEvent errorMessage)
     {
         await SendDataToClient(EventNames.ErrorMessage, errorMessage);
     }

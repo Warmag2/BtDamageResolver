@@ -29,14 +29,21 @@ public abstract class RedisServerToClientCommunicator : RedisCommunicator, IServ
     public void Send<TType>(string clientName, string envelopeType, TType data)
         where TType : class
     {
-        SendEnvelope(clientName, new Envelope(envelopeType, DataHelper.Pack(data)));
+        var envelope = new Envelope(envelopeType, DataHelper.Pack(data));
+
+        SendSingle(clientName, envelope);
     }
 
     /// <inheritdoc />
     public void SendToAll<TType>(string envelopeType, TType data)
         where TType : class
     {
-        SendEnvelope(ClientStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
+        var clientCount = SendEnvelope(ClientStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
+
+        if (clientCount == 0)
+        {
+            Logger.LogWarning("SendEnvelope delivered a global message of type {EnvelopeType} to zero clients.", envelopeType);
+        }
     }
 
     /// <inheritdoc />
@@ -46,7 +53,7 @@ public abstract class RedisServerToClientCommunicator : RedisCommunicator, IServ
         var envelope = new Envelope(envelopeType, DataHelper.Pack(data));
         foreach (var clientName in clientNames)
         {
-            SendEnvelope(clientName, envelope);
+            SendSingle(clientName, envelope);
         }
     }
 

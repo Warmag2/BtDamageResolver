@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
@@ -38,23 +39,22 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
     }
 
     /// <inheritdoc />
-    public override PaperDollType GetPaperDollType()
-    {
-        return PaperDollType.AerospaceCapital;
-    }
-
-    /// <inheritdoc />
     public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
     {
         return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
     }
 
     /// <inheritdoc />
-    protected override async Task<List<Weapon>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
+    protected override async Task<List<(Weapon Weapon, WeaponEntry WeaponEntry)>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
     {
-        var weapons = await base.GetActiveWeaponsFromBay(weaponBay);
+        if (!weaponBay.Weapons.All(w => w.Modifier == weaponBay.Weapons[0].Modifier))
+        {
+            throw new InvalidOperationException("Malformed weapon bay. Weapons have different static modifiers. Cannot resolve combat.");
+        }
 
-        var (successful, weapon) = Weapon.CreateWeaponBayWeapon(weapons);
+        var weaponWeaponEntryPairs = await base.GetActiveWeaponsFromBay(weaponBay);
+
+        var (successful, weapon) = Weapon.CreateWeaponBayWeapon(weaponWeaponEntryPairs.Select(w => w.Weapon).ToList());
 
         if (!successful)
         {
@@ -62,7 +62,7 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
         }
         else
         {
-            return new List<Weapon> { weapon };
+            return new List<(Weapon, WeaponEntry)> { (weapon, new() { Modifier = weaponBay.Weapons[0].Modifier }) };
         }
     }
 

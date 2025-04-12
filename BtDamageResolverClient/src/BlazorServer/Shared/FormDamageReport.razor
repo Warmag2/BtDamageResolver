@@ -17,10 +17,11 @@
     }
     else 
     {
-        unitAttackString = _userStateController.UnitList.ContainsKey(DamageReport.FiringUnitId) ?
-            attackingUnitOwnedByYou ?
+        var unitTitleString = attackingUnitOwnedByYou ?
                 $"{DamageReport.FiringUnitName}" :
-                $"{DamageReport.FiringUnitName} ({_userStateController.UnitList[DamageReport.FiringUnitId].PlayerId})"
+                $"{DamageReport.FiringUnitName} ({_userStateController.UnitList[DamageReport.FiringUnitId].PlayerId})";
+        unitAttackString = _userStateController.UnitList.ContainsKey(DamageReport.FiringUnitId) ?
+            unitTitleString
             : "Unknown unit";
     }
 

@@ -1,2 +1,2 @@
 #!/bin/sh
-dotnet DataImporter.dll import -i -s '*.json' -f ./data/
+dotnet DataImporter.dll import -s '*.json' -f ./data/

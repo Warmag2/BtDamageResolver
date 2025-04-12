@@ -1,0 +1,49 @@
+{
+    "Features": [],
+    "JumpJets": 0,
+    "Sinks": 24,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 95,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "WeaponName": "Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Pulse Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Banshee BNC-SB1"
+}

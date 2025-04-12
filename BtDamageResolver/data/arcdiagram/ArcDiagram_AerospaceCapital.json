@@ -5,6 +5,8 @@
         "Nose",
         "FrontLeft",
         "FrontRight",
+        "BroadsideLeft",
+        "BroadsideRight",
         "RearLeft",
         "RearRight",
         "Aft"

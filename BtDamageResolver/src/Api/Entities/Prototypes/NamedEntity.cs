@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.Prototypes;
 
@@ -7,7 +8,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.Prototypes;
 /// A named entity.
 /// </summary>
 [Serializable]
-public abstract class NamedEntity : EntityBase<string>
+public abstract class NamedEntity : IEntity<string>
 {
     /// <summary>
     /// The name of the entity.
@@ -19,10 +20,10 @@ public abstract class NamedEntity : EntityBase<string>
     public string Name { get; set; }
 
     /// <inheritdoc />
-    public override string GetId() => Name;
+    public string GetId() => Name;
 
     /// <inheritdoc />
-    public override void SetId(string id)
+    public void SetId(string id)
     {
         Name = id;
     }

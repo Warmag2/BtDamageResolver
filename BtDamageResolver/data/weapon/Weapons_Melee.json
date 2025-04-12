@@ -72,7 +72,7 @@
     "SpecialFeatures": [ { "Data": "$tonnage/5", "Type": "Melee" } ]
   },
   {
-    "Name": "Melee Sword",
+    "Name": "Melee Mace",
     "Type": "Melee",
     "AttackType": "Melee",
     "Damage": {
@@ -92,13 +92,13 @@
     "Heat": {
       "Short": 0
     },
-    "HitModifier": -2,
-    "SpecialFeatures": [ { "Data": "$tonnage/10 + 1", "Type": "Melee" } ]
+    "HitModifier": 1,
+    "SpecialFeatures": [ { "Data": "$tonnage/4", "Type": "Melee" } ]
   },
   {
     "Name": "Melee Retractable Blade",
     "Type": "Melee",
-    "AttackType": "Punch",
+    "AttackType": "Melee",
     "Ammo": {
       "Normal": "Blank",
       "AP Strike": "Melee-APStrike"
@@ -125,6 +125,30 @@
     "SpecialFeatures": [ { "Data": "$tonnage/10", "Type": "Melee" } ]
   },
   {
+    "Name": "Melee Sword",
+    "Type": "Melee",
+    "AttackType": "Melee",
+    "Damage": {
+      "Short": 0
+    },
+    "DamageAerospace": {
+      "Short": 0
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 1,
+      "Medium": 1,
+      "Long": 1,
+      "Extreme": 1
+    },
+    "RangeAerospace": "Short",
+    "Heat": {
+      "Short": 0
+    },
+    "HitModifier": -2,
+    "SpecialFeatures": [ { "Data": "$tonnage/10 + 1", "Type": "Melee" } ]
+  },
+  {
     "Name": "Melee Stomp",
     "Type": "Melee",
     "AttackType": "Melee",
@@ -142,6 +166,7 @@
       "Extreme": 0
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 0
     },
@@ -166,6 +191,7 @@
       "Extreme": 0
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 0
     },
@@ -193,6 +219,7 @@
       "Extreme": 0
     },
     "RangeAerospace": "Short",
+    "RangeMinimum": -1,
     "Heat": {
       "Short": 0
     },

@@ -13,7 +13,7 @@
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
     var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName);
     
-    if(WeaponEntry.Ammo == null || !mapWeaponAmmo.ContainsKey(WeaponEntry.Ammo))
+    if (WeaponEntry.Ammo == null || !mapWeaponAmmo.ContainsKey(WeaponEntry.Ammo))
     {
         WeaponEntry.Ammo = _commonData.GetWeaponDefaultAmmo(WeaponEntry.WeaponName);
     }
@@ -26,17 +26,27 @@
     <td>
         <FormToggle Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(_userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormToggle>
     </td>
-    <td style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponAmountHidden(UnitEntry.Type) && WeaponEntry.Amount == 1)">
+    <td class="resolver_td_weaponentry" style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponAmountHidden(UnitEntry.Type) && WeaponEntry.Amount == 1)">
         @if (UnitEntry.StaticDataHidden)
         {
-            <b>@WeaponEntry.Amount</b>
+            <b>@(WeaponEntry.Amount)x</b>
         }
         else
         {
-            <FormNumberPicker BracketCreatorDelegate="@_commonData.FormPickBracketsWeaponAmount" SelectedOption="@WeaponEntry.Amount" Min =1 Max=12 Width=3 Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_normal")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
         }
     </td>
-    <td class="resolver_td_weaponname">
+    <td class="resolver_td_weaponentry" style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0)">
+        @if (UnitEntry.StaticDataHidden)
+        {
+            <b>@($"{(WeaponEntry.Modifier >= 0 ? "+" : string.Empty)}{WeaponEntry.Modifier}")</b>
+        }
+        else
+        {
+            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_normal")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
+        }
+    </td>
+    <td class="resolver_td_weaponentry">
         @if (UnitEntry.StaticDataHidden)
         {
             <b>@WeaponEntry.WeaponName</b>
@@ -65,6 +75,7 @@
 {
     private string _weaponAmmo;
     private int _weaponAmount;
+    private int _weaponModifier;
     private WeaponState _weaponState;
     private string _weaponName;
 
@@ -126,6 +137,11 @@
             WeaponEntry.Amount = _weaponAmount;
             anythingChanged = true;
         }
+        if (WeaponEntry.Modifier != _weaponModifier)
+        {
+            WeaponEntry.Modifier = _weaponModifier;
+            anythingChanged = true;
+        }
         if (WeaponEntry.State != _weaponState)
         {
             WeaponEntry.State = _weaponState;
@@ -148,6 +164,12 @@
     private void OnWeaponAmountChanged(int amount)
     {
         _weaponAmount = amount;
+        UpdateWeaponEntry();
+    }
+
+    private void OnWeaponModifierChanged(int modifier)
+    {
+        _weaponModifier = modifier;
         UpdateWeaponEntry();
     }
 
@@ -206,7 +228,7 @@
 
     #endregion
 
-    private string GetTargetNumberText(AttackLog attackLog, bool showAllLines)
+    private static string GetTargetNumberText(AttackLog attackLog, bool showAllLines)
     {
         if (attackLog != null && attackLog.Log.Any())
         {

@@ -118,7 +118,7 @@ public partial class LogicUnit
             }
         }
 
-        if (target.Unit.HasFeature(UnitFeature.Ecm) && !Unit.HasFeature(UnitFeature.Bap))
+        if (target.Unit.HasFeature(UnitFeature.Ecm))
         {
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender ECM", Number = -2 });
             clusterBonus -= 2;

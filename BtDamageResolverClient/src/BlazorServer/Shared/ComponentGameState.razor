@@ -1,11 +1,28 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 
-@if (_userStateController.PlayerName != null && _userStateController.GameState != null)
+@if (_userStateController.IsConnectedToGame)
 {
     var playerStateList = DisplayOwnUnits ?
-           _userStateController.GameState.Players.Select(p => p.Value) :
-           _userStateController.GameState.Players.Where(p => p.Value.PlayerId != _userStateController.PlayerName).Select(p => p.Value);
+           _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator) :
+           _userStateController.GameState.Players.Where(p => p.Value.PlayerId != _userStateController.PlayerName).Select(p => p.Value).Where(p => !p.IsSpectator);
+
+    var spectatorList = _userStateController.GameState.Players.Values.Where(p => p.IsSpectator).Select(p => p.PlayerId).ToList();
+
+    @if(spectatorList.Any()) {
+        <h2 class="resolver_header">
+            Spectators
+        </h2>
+
+        <p>
+            @for(var ii=0; ii<spectatorList.Count-1; ii++)
+            {
+                @spectatorList[ii]
+                <br />
+            }
+            @spectatorList[^1]
+        </p>
+    }
 
     @foreach (var player in playerStateList)
     {

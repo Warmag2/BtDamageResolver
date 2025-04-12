@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
@@ -39,11 +39,14 @@ public partial class PlayerActor
             return false;
         }
 
-        _logger.LogInformation("Player {PlayerId} requested game options.", this.GetPrimaryKeyString());
-        if (_playerActorState.State.GameId != null)
+        if (IsConnectedToGame())
         {
-            var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
-            await gameActor.RequestGameOptions(this.GetPrimaryKeyString());
+            _logger.LogInformation("Player {PlayerId} requested game options from game {GameId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
+            await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).RequestGameOptions(this.GetPrimaryKeyString());
+        }
+        else
+        {
+            _logger.LogInformation("Player {PlayerId} requested game options, but is not in a game.", this.GetPrimaryKeyString());
         }
 
         return true;
@@ -59,10 +62,12 @@ public partial class PlayerActor
 
         if (IsConnectedToGame())
         {
+            _logger.LogInformation("Player {PlayerId} requested game state from game {GameId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
             await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).RequestGameState(this.GetPrimaryKeyString());
         }
         else
         {
+            _logger.LogInformation("Player {PlayerId} requested game state, but is not in a game. Sending only player own state.", this.GetPrimaryKeyString());
             await SendOnlyThisPlayerGameStateToClient();
         }
 
@@ -89,15 +94,14 @@ public partial class PlayerActor
     /// <remarks>No outside call path so authentication is not needed.</remarks>
     private async Task RequestTargetNumbers()
     {
-        if (_playerActorState.State.GameId != null)
+        if (IsConnectedToGame())
         {
             _logger.LogInformation("Player {PlayerId} requesting target numbers from game {GameId}.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
-            var gameActor = GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId);
-            await gameActor.RequestTargetNumbers(this.GetPrimaryKeyString());
+            await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).RequestTargetNumbers(this.GetPrimaryKeyString());
         }
         else
         {
-            _logger.LogInformation("Player {PlayerId} is not in a game and won't ask for target numbers.", this.GetPrimaryKeyString());
+            _logger.LogInformation("Player {PlayerId} requested target numbers but is not in a game.", this.GetPrimaryKeyString());
         }
     }
 }

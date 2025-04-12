@@ -1,0 +1,25 @@
+{
+    "Features": [],
+    "JumpJets": 3,
+    "Sinks": 10,
+    "Speed": 2,
+    "Type": "BattleArmor",
+    "Tonnage": 1,
+    "Troopers": 6,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "WeaponName": "BA Recoilless Rifle Medium"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "BA Light Machine Gun"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "BA Knight Serpent"
+}

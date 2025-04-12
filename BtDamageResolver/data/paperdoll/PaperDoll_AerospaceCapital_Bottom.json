@@ -3,17 +3,17 @@
   "AttackType": "Normal",
   "Direction": "Bottom",
   "LocationMapping": {
-    "2": [ "Front", "Rear" ],
-    "3": [ "Front", "Rear" ],
-    "4": [ "Front", "Rear" ],
-    "5": [ "Left", "Right" ],
-    "6": [ "Left", "Right" ],
-    "7": [ "Left", "Right" ],
-    "8": [ "Left", "Right" ],
-    "9": [ "Left", "Right" ],
-    "10": [ "Front", "Rear" ],
-    "11": [ "Front", "Rear" ],
-    "12": [ "Front", "Rear" ]
+    "2": [ "Front" ],
+    "3": [ "FrontLeft", "FrontRight" ],
+    "4": [ "FrontLeft", "FrontRight" ],
+    "5": [ "FrontLeft", "FrontRight" ],
+    "6": [ "FrontLeft", "FrontRight" ],
+    "7": [ "RearLeft", "RearRight" ],
+    "8": [ "RearLeft", "RearRight" ],
+    "9": [ "RearLeft", "RearRight" ],
+    "10": [ "RearLeft", "RearRight" ],
+    "11": [ "Rear" ],
+    "12": [ "Rear" ]
   },
   "CriticalDamageMapping": {
     "2": "Critical",

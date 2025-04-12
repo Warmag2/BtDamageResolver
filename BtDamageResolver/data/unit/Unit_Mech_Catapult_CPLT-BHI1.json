@@ -1,0 +1,45 @@
+{
+    "Features": [
+        "NoMinimalArms"
+    ],
+    "JumpJets": 4,
+    "Sinks": 20,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 65,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "WeaponName": "LRM-15"
+                },
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "WeaponName": "LRM-15"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Catapult CPLT-BHI1"
+}

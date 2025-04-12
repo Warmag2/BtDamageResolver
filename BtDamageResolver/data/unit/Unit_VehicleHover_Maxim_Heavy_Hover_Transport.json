@@ -1,0 +1,29 @@
+{
+    "Features": [],
+    "JumpJets": 3,
+    "Sinks": 20,
+    "Speed": 8,
+    "Type": "VehicleHover",
+    "Tonnage": 50,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "WeaponName": "Streak SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "ER Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Maxim Heavy Hover Transport"
+}

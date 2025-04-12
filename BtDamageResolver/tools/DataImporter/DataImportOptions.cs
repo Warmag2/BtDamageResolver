@@ -15,10 +15,10 @@ public class DataImportOptions
     public string Folder { get; set; }
 
     /// <summary>
-    /// Import or not. If not set, will produce a dry-run.
+    /// Import or not. If set, will produce a dry-run.
     /// </summary>
-    [Option('i', "import", Required = false, HelpText = "Import data or not. If not set, will only print the deserialized data.")]
-    public bool Import { get; set; }
+    [Option('d', "dry-run", Required = false, HelpText = "If set, will only print the deserialized data and not import.", Default = false)]
+    public bool DryRun { get; set; }
 
     /// <summary>
     /// Import only a subset of entries which have this text in their filename.

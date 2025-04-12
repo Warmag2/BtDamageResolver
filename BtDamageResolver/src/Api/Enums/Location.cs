@@ -25,11 +25,15 @@ public enum Location
     RearRightLeg,
     Left,
     Right,
-    Front,
-    Rear,
+    Front,          // Also nose
+    Rear,           // Also aft
+    FrontLeft,      // Aerospace capital fore-left
+    FrontRight,     // Aerospace capital fore-right
+    RearLeft,       // Aerospace capital aft-left
+    RearRight,      // Aerospace capital aft-right
     Turret,
-    Propulsion,
+    Propulsion,     // VTOL propulsion
     BattleArmor,
     Trooper,
-    Structure
+    Structure,      // Single-block Internal structure, unimplemented
 }

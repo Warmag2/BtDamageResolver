@@ -7,34 +7,40 @@
 <div class="resolver_div_componentrow">
 
     <div class="resolver_div_imagecontainer">
-        @switch (DamagePaperDoll.PaperDoll.Type)
+        @switch (DamagePaperDoll.Type)
         {
             case PaperDollType.AerospaceFighter:
-                <FormPaperDollAerospaceFighter FormPaperDoll="@this"></FormPaperDollAerospaceFighter>
+                <FormPaperDollAerospaceFighter FormPaperDoll="@this" />
                 break;
             case PaperDollType.AerospaceCapital:
-                <FormPaperDollAerospaceCapital FormPaperDoll="@this"></FormPaperDollAerospaceCapital>
+                <FormPaperDollAerospaceCapital FormPaperDoll="@this" />
+                break;
+            case PaperDollType.AerospaceDropshipAerodyne:
+                <FormPaperDollAerospaceDropshipAerodyne FormPaperDoll="@this" />
+                break;
+            case PaperDollType.AerospaceDropshipSpheroid:
+                <FormPaperDollAerospaceDropshipSpheroid FormPaperDoll="@this" />
                 break;
             case PaperDollType.Building:
-                <FormPaperDollBuilding FormPaperDoll="@this"></FormPaperDollBuilding>
+                <FormPaperDollBuilding FormPaperDoll="@this" />
                 break;
             case PaperDollType.Mech:
-                <FormPaperDollMech FormPaperDoll="@this"></FormPaperDollMech>
+                <FormPaperDollMech FormPaperDoll="@this" />
                 break;
             case PaperDollType.BattleArmor:
-                <FormPaperDollBattleArmor FormPaperDoll="@this" DamageReport="@DamageReport"></FormPaperDollBattleArmor>
+                <FormPaperDollBattleArmor FormPaperDoll="@this" DamageReport="@DamageReport" />
                 break;
             case PaperDollType.Trooper:
-                <FormPaperDollTrooper FormPaperDoll="@this" DamageReport="@DamageReport"></FormPaperDollTrooper>
+                <FormPaperDollTrooper FormPaperDoll="@this" DamageReport="@DamageReport" />
                 break;
             case PaperDollType.Vehicle:
-                <FormPaperDollVehicle FormPaperDoll="@this"></FormPaperDollVehicle>
+                <FormPaperDollVehicle FormPaperDoll="@this" />
                 break;
             case PaperDollType.VehicleVtol:
-                <FormPaperDollVehicleVtol FormPaperDoll="@this"></FormPaperDollVehicleVtol>
+                <FormPaperDollVehicleVtol FormPaperDoll="@this" />
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new NotImplementedException($"Paperdoll view for unit type {DamagePaperDoll.Type} not implemented.");
         }
     </div>
 
@@ -81,7 +87,7 @@
                                     @($"Critical damage to: {criticalDamageEntry.Type} ({criticalDamageEntry.InducingDamage})")
                                     break;
                                 default:
-                                    throw new ArgumentOutOfRangeException();
+                                        throw new NotImplementedException($"Critical damage description for threat type {criticalDamageEntry.ThreatType} not implemented.");
                             }
 
                             break;

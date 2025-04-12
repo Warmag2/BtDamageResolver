@@ -3,16 +3,16 @@
   "Location": "Rear",
   "UnitType": "AerospaceCapital",
   "Mapping": {
-    "2": [ "LifeSupport" ],
-    "3": [ "Control" ],
+    "2": [ "Fuel" ],
+    "3": [ "Avionics" ],
     "4": [ "WeaponDestroyed" ],
-    "5": [ "Door" ],
+    "5": [ "Thruster" ],
     "6": [ "Engine" ],
     "7": [ "WeaponDestroyed" ],
-    "8": [ "DockingCollar" ],
-    "9": [ "Door" ],
+    "8": [ "Engine" ],
+    "9": [ "Thruster" ],
     "10": [ "WeaponDestroyed" ],
-    "11": [ "Gear" ],
-    "12": [ "Fuel" ]
+    "11": [ "Control" ],
+    "12": [ "WarpDrive" ]
   }
 }

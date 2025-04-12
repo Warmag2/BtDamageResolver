@@ -8,7 +8,7 @@ TODO: Damage tracking.
 
 	Open Bugs
 
-None known at the moment. Report some.
+[BUG] Experienced some issues with weather effects. Needs further investigation.
 
 		Could not reproduce
 

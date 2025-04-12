@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
@@ -12,10 +11,12 @@ using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -49,7 +50,7 @@ public class Startup
     /// For more information on how to configure your application, see https://go.microsoft.com/fwlink/?LinkID=398940.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    public void ConfigureServices(IServiceCollection services)
+    public static void ConfigureServices(IServiceCollection services)
     {
         var configuration = GetConfiguration("CommunicationSettings.json");
 
@@ -57,14 +58,13 @@ public class Startup
         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
         services.Configure<CircuitOptions>(options =>
         {
-            options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromDays(1);
+            options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromHours(1);
         })
         .Configure<HttpConnectionDispatcherOptions>(options =>
         {
             options.ApplicationMaxBufferSize = 1048576;
             options.TransportMaxBufferSize = 1048576;
         });
-        services.AddBlazoredLocalStorage();
         services.AddLogging(conf =>
         {
             conf.AddFaemiyahLogging();
@@ -92,6 +92,14 @@ public class Startup
         services.AddScoped<LocalStorage>();
         services.AddScoped<ResolverCommunicator>();
         services.AddScoped<UserStateController>();
+        services.AddScoped<HubConnection>(serviceProvider =>
+        {
+            var navigationManager = serviceProvider.GetRequiredService<NavigationManager>();
+            return new HubConnectionBuilder()
+            .WithAutomaticReconnect()
+                .WithUrl(navigationManager.ToAbsoluteUri("/ClientHub"))
+                .Build();
+        });
     }
 
     /// <summary>

@@ -13,7 +13,6 @@ namespace Faemiyah.BtDamageResolver.Common.Logging;
 
 /// <summary>
 /// Specific implementation of ILoggerFactory.
-/// Provides logging options into file system or ElasticSearch.
 /// Use extension method to enable logging in console / asp.net applications.
 /// See <see cref="FaemiyahLoggingExtensions"/>.
 /// </summary>

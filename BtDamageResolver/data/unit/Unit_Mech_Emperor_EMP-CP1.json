@@ -1,0 +1,39 @@
+{
+    "Features": [
+        "CommandUnit"
+    ],
+    "JumpJets": 3,
+    "Sinks": 26,
+    "Speed": 3,
+    "Type": "Mech",
+    "Tonnage": 90,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Slug",
+                    "Amount": 1,
+                    "WeaponName": "LBX AC/10"
+                },
+                {
+                    "Ammo": "Slug",
+                    "Amount": 1,
+                    "WeaponName": "LBX AC/10"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "PPC"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Emperor EMP-CP1"
+}

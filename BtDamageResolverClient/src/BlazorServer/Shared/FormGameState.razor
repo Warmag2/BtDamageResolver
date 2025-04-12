@@ -5,15 +5,22 @@
 @inject UserStateController _userStateController
 @implements IDisposable
 
-<ContainerAccordion Enabled="@_sectionEnabledYourUnits" Title="Units">
-    @if (_userStateController.PlayerName != null)
-    {
-        <h2 class="resolver_header">
-            @_userStateController.PlayerName @(_userStateController.IsConnectedToGame ? $" - {_userStateController.GameState?.GameId} - Turn {_userStateController.GameState?.Turn}" : string.Empty)
-        </h2>
-
-        if (_userStateController.PlayerState != null)
+@if (_userStateController.IsConnectedToGame)
+{
+    <ContainerAccordion Enabled=@true Title="Units">
+        @if(_userStateController.PlayerState.IsSpectator)
         {
+            @foreach (var player in _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator))
+            {
+                <ComponentPlayerState @key=@($"{player.PlayerId}_{player.TimeStamp}") PlayerId="@player.PlayerId" />
+            }
+        }
+        else
+        {
+            <h2 class="resolver_header">
+                @_userStateController.PlayerName @(_userStateController.IsConnectedToGame ? $" - {_userStateController.GameState?.GameId} - Turn {_userStateController.GameState?.Turn}" : string.Empty)
+            </h2>
+
             <div class="resolver_div_componentlistcontainer">
                 @foreach (var unitEntry in _userStateController.PlayerState.UnitEntries)
                 {
@@ -24,29 +31,28 @@
             <div class="resolver_div_hr">
                 <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">+</button>
                 <button class="resolver_button resolver_button_ready" @onclick="Ready">@(_userStateController.PlayerState.IsReady ? "UnReady" : "Ready")</button>
-            </div> <!-- This is here because we only want exactly one /-->
+            </div>
 
             <div id="resolver_tooltip_targetnumber" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
         }
-    }
-</ContainerAccordion>
+    </ContainerAccordion>
 
-<ContainerAccordion Enabled="@_sectionEnabledDamageRequests" Title="Damage requests">
-    <FormDamageInstance DamageInstance=@_userStateController.DamageInstance></FormDamageInstance>
-</ContainerAccordion>
+    <ContainerAccordion Enabled="@_sectionEnabledDamageRequests" Title="Damage requests">
+        <FormDamageInstance DamageInstance=@_userStateController.DamageInstance></FormDamageInstance>
+    </ContainerAccordion>
 
-<ContainerAccordion Enabled="@_sectionEnabledDamageReports" Title="Damage reports">
-    <FormDamageReports OnlyNewest="true"></FormDamageReports>
-</ContainerAccordion>
+    <ContainerAccordion Enabled="@_sectionEnabledDamageReports" Title="Damage reports">
+        <FormDamageReports OnlyNewest="true"></FormDamageReports>
+    </ContainerAccordion>
 
-<ContainerAccordion Enabled="@_sectionEnabledTools" Title="Admin tools">
-    <FormTools @key="@_userStateController.GameState?.TimeStamp"></FormTools>
-</ContainerAccordion>
+    <ContainerAccordion Enabled="@_sectionEnabledTools" Title="Tools">
+        <FormTools @key="@_userStateController.GameState?.TimeStamp"></FormTools>
+    </ContainerAccordion>
+}
 
 @code
 {
     private bool _sectionEnabledTools;
-    private bool _sectionEnabledYourUnits = true;
     private bool _sectionEnabledDamageReports;
     private bool _sectionEnabledDamageRequests;
 
@@ -55,7 +61,7 @@
         _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
         _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
         _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
-        _userStateController.OnPlayerListOrderUpdated += InvokeStateChange;
+        _userStateController.OnPlayerUnitListUpdated += InvokeStateChange;
     }
 
     private void AddUnit()
@@ -76,8 +82,8 @@
 
     private void OnUnitLoad(UnitEntry unit)
     {
-        _userStateController.RemoveUnit(unit);
-        _userStateController.AddUnit(unit);
+        // No need to do more.
+        _userStateController.NotifyPlayerDataUpdated();
     }
 
     public void OnUnitSwap(SwapTuple swapTuple)
@@ -94,11 +100,11 @@
         _userStateController.NotifyPlayerDataUpdated();
 
         // Dragdrop always induces a ordering check
-        _userStateController.NotifyPlayerListOrderUpdated();
+        _userStateController.NotifyPlayerUnitListUpdated();
     }
 
     public void Dispose()
     {
-        _userStateController.OnPlayerListOrderUpdated -= InvokeStateChange;
+        _userStateController.OnPlayerUnitListUpdated -= InvokeStateChange;
     }
 }

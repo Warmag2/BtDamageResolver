@@ -1,3 +1,4 @@
+cd BtDamageResolverInfrastructure
 docker build --tag orleansdb -f ./postgresql/Dockerfile ./postgresql/
 docker build --tag resolvergrafana -f ./grafana/Dockerfile ./grafana/
 docker build --tag resolverredis -f ./redis/Dockerfile ./redis/
@@ -8,3 +9,4 @@ docker build --tag resolverclient -f ../BtDamageResolverClient/src/BlazorServer/
 
 docker-compose down
 docker-compose up -d
+cd ..

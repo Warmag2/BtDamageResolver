@@ -1,4 +1,4 @@
-﻿<label class="resolver_label_checkbox">
+﻿<label class="resolver_label_checkbox @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : string.Empty)">
   <span>@ChildContent</span>
   <input type="checkbox" disabled="@Disabled" @bind="CheckedInternal">
   <span class="checkmark"></span>
@@ -38,6 +38,5 @@
     protected override void OnInitialized()
     {
         CheckedInternal = Checked;
-        _updateTimeStamp = DateTime.MinValue;
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Faemiyah.BtDamageResolver.Api.Entities.Prototypes;
+using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -10,7 +10,7 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 /// The paper doll.
 /// </summary>
 [Serializable]
-public class PaperDoll : EntityBase<string>
+public class PaperDoll : IEntity<string>
 {
     /// <summary>
     /// The type of the paper doll.
@@ -74,13 +74,13 @@ public class PaperDoll : EntityBase<string>
     /// Needed because the id is concatenated from several properties in this paperdoll.
     /// </summary>
     /// <returns>The ID of this paper doll.</returns>
-    public override string GetId()
+    public string GetId()
     {
         return GetIdFromProperties(Type, AttackType, Direction, Rules);
     }
 
     /// <inheritdoc />
-    public override void SetId(string id)
+    public void SetId(string id)
     {
         throw new InvalidOperationException("You should never have to set a PaperDoll Id manually.");
     }

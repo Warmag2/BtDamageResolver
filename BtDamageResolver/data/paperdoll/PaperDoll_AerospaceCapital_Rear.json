@@ -5,13 +5,13 @@
   "LocationMapping": {
     "2": [ "Rear" ],
     "3": [ "Rear" ],
-    "4": [ "Left" ],
-    "5": [ "Left" ],
+    "4": [ "RearRight" ],
+    "5": [ "RearRight" ],
     "6": [ "Rear" ],
     "7": [ "Rear" ],
     "8": [ "Rear" ],
-    "9": [ "Right" ],
-    "10": [ "Right" ],
+    "9": [ "RearLeft" ],
+    "10": [ "RearLeft" ],
     "11": [ "Rear" ],
     "12": [ "Rear" ]
   },

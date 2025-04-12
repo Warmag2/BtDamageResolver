@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -165,10 +165,11 @@ public partial class PlayerActor
             // When we connect to a game, the game is not guaranteed to have our state. Send it and mark all units as updated.
             await gameActor.SendPlayerState(this.GetPrimaryKeyString(), await GetPlayerState(), _playerActorState.State.UnitEntries.UnitIds);
 
-            // Fetch game options on join
+            // Fetch game data on join
             await gameActor.RequestGameOptions(this.GetPrimaryKeyString());
+            await gameActor.RequestDamageReports(this.GetPrimaryKeyString());
 
-            // Connection state has been updated, so send it
+            // Connection state has been updated, so respond with it
             await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
 
             return true;
@@ -193,7 +194,6 @@ public partial class PlayerActor
         _logger.LogInformation("Player {PlayerId} received a successful connection request from a client.", this.GetPrimaryKeyString());
 
         // Send personal state objects
-        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
         await SendDataToClient(EventNames.PlayerOptions, _playerActorState.State.Options);
 
         // Ask for game-related state objects
@@ -201,6 +201,9 @@ public partial class PlayerActor
         await RequestGameState(_playerActorState.State.AuthenticationToken);
         await RequestDamageReports(_playerActorState.State.AuthenticationToken);
         await RequestTargetNumbers();
+
+        // Respond with a connection response
+        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
 
         // Log the login to permanent store
         await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Login, 0);

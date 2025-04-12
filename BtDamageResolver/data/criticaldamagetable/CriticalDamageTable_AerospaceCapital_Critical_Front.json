@@ -3,16 +3,16 @@
   "Location": "Front",
   "UnitType": "AerospaceCapital",
   "Mapping": {
-    "2": [ "CrewKilled" ],
-    "3": [ "Avionics" ],
+    "2": [ "LifeSupport" ],
+    "3": [ "Control" ],
     "4": [ "WeaponDestroyed" ],
     "5": [ "Thruster" ],
-    "6": [ "Fcs" ],
+    "6": [ "CombatInformationCenter" ],
     "7": [ "WeaponDestroyed" ],
-    "8": [ "Control" ],
+    "8": [ "Sensors" ],
     "9": [ "Thruster" ],
     "10": [ "WeaponDestroyed" ],
-    "11": [ "Sensors" ],
+    "11": [ "Crew" ],
     "12": [ "WarpDrive" ]
   }
 }

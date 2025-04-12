@@ -1,0 +1,26 @@
+{
+    "Features": [],
+    "JumpJets": 0,
+    "Sinks": 0,
+    "Speed": 9,
+    "Type": "VehicleHover",
+    "Tonnage": 25,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "PPC"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Machine Gun"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Magrider Hovertank"
+}

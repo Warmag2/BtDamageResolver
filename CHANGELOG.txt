@@ -1,5 +1,8 @@
 	Implemented
 
+[FEATURE] Units that violate of game rules have their whole background drawn in red.
+[FEATURE] Exporter for unit data.
+[FEATURE] Invalid target is now shown in red when editing units.
 [FEATURE] Unit rules validation.
 [FEATURE] Ammo.
 [FEATURE] Stances for infantry/mechs.
@@ -41,7 +44,12 @@
 
 	Implemented (internal)
 
-[FEATURE] Get rid of UnitActor.
+[FEATURE] Reduce amount of over/redraw - key components more carefully and trust user view when sending data.
+
+[FEATURE] Refactored Gunnery/Piloting out of base unit class. Now in UnitEntry so that unit loading works correctly.
+
+[FEATURE] Server sends metadata with error messages.
+[FEATURE] Got rid of UnitActor.
 [FEATURE] Refactor code for .NET 7 and Orleans 7.
 [FEATURE] Logic reflection for easier expansions.
 [FEATURE] Faster and stabler repositories.
@@ -63,9 +71,20 @@
 [FEATURE] All compressed data is now sent with the same method, reducing complexity.
 [FEATURE] Weapon rework, now all rules are simply weapon special features.
 [FEATURE] Proper single missile attack handling.
+[FEATURE] Weapon bays.
+[FEATURE] Capital ships.
 
 	Fixed
 
+[BUG] Burst/HeatConverted are visible on mechs etc. Fix by more carefully cleaning damage reports of invalid damage type per receiving unit type.
+
+[BUG] Backspace cannot be held when manipulating any combobox.
+[BUG] Null unit list will be loaded for users who load their state after inactivity.
+[BUG] Damage is not visible on hover on all damage reports.
+[BUG] MML ammo types cause a crash on turn resolution.
+[BUG] Battle armor and infantry weapons had 0 minimum range. Now -1 -> no effect.
+[BUG] Damage tooltip not visible in damagereports screen, only in dashboard.
+[BUG] Regression bug with weapons which do not have properties before ammo gets applied.
 [BUG] Vehicle motive hit rolls modified by vechile type could get results over 12.
 
 [BUG] Forced critical hits (such as that from AC AP ammo) would inflict critical hits 

@@ -1,0 +1,42 @@
+{
+    "Features": [
+        "TargetingMediumRange"
+    ],
+    "JumpJets": 5,
+    "Sinks": 24,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 60,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "Clan LRM-20"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "WeaponName": "SRM-6"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Vulture MDD-BN1"
+}

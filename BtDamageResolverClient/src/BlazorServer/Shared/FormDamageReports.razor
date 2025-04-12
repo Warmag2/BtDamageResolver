@@ -9,7 +9,7 @@
     var showMovement = _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false;
 }
 
-@if (_userStateController.DamageReportCollection.IsEmpty())
+@if (_userStateController.DamageReportCollection.IsEmpty() || _userStateController.PlayerState == null)
 {
     <h3>
         No damagereports available
@@ -21,7 +21,7 @@ else
     {
         @foreach (var damageReport in _userStateController.DamageReportCollection.DamageReports.Last().Value)
         {
-            if (_userStateController.DamageReportConcernsPlayer(damageReport))
+            if (_userStateController.PlayerState.IsSpectator || _userStateController.DamageReportConcernsPlayer(damageReport))
             {
                 if (showMovement || damageReport.Phase != Phase.Movement)
                 {
@@ -54,9 +54,6 @@ else
         }
     }
 }
-
-<!-- This is here because we only want exactly one /-->
-<div id="resolver_tooltip_paperdoll" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
 
 @code
 {

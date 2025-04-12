@@ -1,9 +1,0 @@
-﻿{
-  "LoggingOptions": {
-    "LogLevel": "Debug",
-    "OrleansLogLevel": "Information"
-  },
-  "ClusterOptions": {
-    "ConnectionString": "User ID=USERNAME;Password=PASSWORD;Host=10.2.0.3;Port=65432;Database=BtDamageResolver"
-  }
-}

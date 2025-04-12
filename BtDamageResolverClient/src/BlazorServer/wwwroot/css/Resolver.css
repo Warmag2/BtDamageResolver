@@ -333,8 +333,6 @@
 
 .resolver_distance_picker_display_only {
     padding: 4px 8px;
-    margin-left: 0.25em;
-    margin-right: 0.5em;
     font-weight: bold;
 }
 
@@ -573,6 +571,11 @@
     float: left;
 }
 
+.resolver_div_componentcontainer.error {
+    background: var(--color_bg_error);
+    color: var(--color_text_error);
+}
+
 .resolver_div_componentcontainer.alternatingcolors:nth-child(odd) {
     background-color: var(--color_bg_base);
     color: var(--color_text_base);
@@ -666,7 +669,7 @@
     text-align: center;
 }
 
-.resolver_td_weaponname {
+.resolver_td_weaponentry {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 }

@@ -40,7 +40,7 @@ public static class Program
 
         var result = Parser.Default.ParseArguments<DataImportOptions>(args)
             .MapResult(
-                initOptions => RunDataImport(loggerFactory.CreateLogger("DataImporter"), initOptions).Result,
+                initOptions => RunDataImport(logger, initOptions).Result,
                 errs => 1);
 
         return result;

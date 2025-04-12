@@ -1,8 +1,10 @@
 ﻿@inherits BaseFaemiyahComponent
+@implements IDisposable
 @page "/"
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
-@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
+@using Faemiyah.BtDamageResolver.Api.Constants
+@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Api.Options
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
@@ -13,8 +15,8 @@
 @inject LocalStorage _localStorage
 @inject NavigationManager _navigationManager
 @inject ResolverCommunicator _resolverCommunicator
+@inject HubConnection _hubConnection;
 @inject UserStateController _userStateController
-@implements IDisposable
 
 <div class="resolver_div_errormessage">
     <verbatim>
@@ -32,52 +34,47 @@
     </div>
 </ContainerTabSelector>
 
-<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Data" TabSelection="@_selectedTab">
+<ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Data" TabSelection="@_selectedTab">
     <FormData />
 </ContainerTab>
 
-<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
-    <FormGameState @key=@($"{_userStateController.PlayerState != null}") />
+<ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Dashboard" TabSelection="@_selectedTab">
+    <FormGameState @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.GameState?.TurnTimeStamp}") />
 </ContainerTab>
 
-<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
-    <ComponentGameState @key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true" />
+<ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="AllUnits" TabSelection="@_selectedTab">
+    <ComponentGameState @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.GameState?.TimeStamp}") DisplayOwnUnits="true" />
 </ContainerTab>
 
-<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
-    <FormDamageReports OnlyNewest="false" />
+<ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
+    <FormDamageReports @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.DamageReportCollection?.TimeStamp}") OnlyNewest="false" />
 </ContainerTab>
 
-<ContainerTab Enabled="_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
-    <FormOptions @key=@($"{_userStateController.PlayerName}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}") />
+<ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
+    <FormOptions @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.PlayerOptions?.TimeStamp}_{_userStateController.GameOptions?.TimeStamp}") />
 </ContainerTab>
+
+<!-- This is here because we only want exactly one /-->
+<div id="resolver_tooltip_paperdoll" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
 
 @code
 {
-    //@key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}")
     private FormServer _formServer;
     private readonly List<string> _tabs = new() { "Data", "Dashboard", "AllUnits", "DamageReports", "Options" };
     private string _selectedTab = "Dashboard";
     private string _errorMessage;
-    private HubConnection _hubConnection;
 
     protected override void OnInitialized()
     {
-        _hubConnection = new HubConnectionBuilder()
-            .WithAutomaticReconnect()
-            .WithUrl(_navigationManager.ToAbsoluteUri("/ClientHub"))
-            .Build();
-
         _hubConnection.On<byte[]>(EventNames.ConnectionResponse, async (connectionResponseData) =>
         {
             var connectionResponse = _dataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
-            // If we have disconnected from a game, clear the game state, damage reports
-            // and game options to make sure user state agrees with server and visuals.
+            // If we have disconnected from a game, clear damage reports and game options
+            // to make sure user state agrees with server and visuals.
+            // Server will send a gamestate update that will set our game state later.
             if (connectionResponse.GameId == null)
             {
-                _userStateController.GameState = null;
-                _userStateController.GameOptions = null;
                 _userStateController.DamageReportCollection.Clear();
                 _userStateController.NotifyDamageReportsChanged();
             }
@@ -91,8 +88,10 @@
             }
             else
             {
+                // Failure to connect should reset everything
                 _resolverCommunicator.SetAuthenticationToken(Guid.Empty);
                 _userStateController.IsConnectedToServer = false;
+                _userStateController.GameOptions = null;
                 _userStateController.GameState = null;
                 _userStateController.PlayerName = null;
                 _userStateController.PlayerOptions = null;
@@ -104,14 +103,15 @@
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
         {
-            var data = _dataHelper.Unpack<List<DamageReport>>(damageReportData);
-            _userStateController.DamageReportCollection.AddRange(data);
+            _userStateController.DamageReportCollection.AddRange(_dataHelper.Unpack<List<DamageReport>>(damageReportData));
             _userStateController.NotifyDamageReportsChanged();
         });
 
         _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
         {
-            _errorMessage = _dataHelper.Unpack<string>(errorMessage);
+            var errorEvent = _dataHelper.Unpack<ClientErrorEvent>(errorMessage);
+            _errorMessage = errorEvent.ErrorMessage;
+            _userStateController.InvalidUnitIds = errorEvent.InvalidUnitIds;
             InvokeStateChange();
         });
 
@@ -155,12 +155,11 @@
     {
         if (firstRender)
         {
-            _resolverCommunicator.SetHubConnection(_hubConnection);
             await _hubConnection.StartAsync();
 
-            var (credentialsFound, credentials) = await _localStorage.GetUserCredentials();
+            var credentials = await _localStorage.GetUserCredentials();
 
-            if (credentialsFound)
+            if (credentials != null)
             {
                 _formServer.Connect(credentials);
             }
@@ -203,6 +202,7 @@
         _userStateController.OnGameOptionsUpdated -= SendGameOptions;
         _userStateController.OnPlayerOptionsUpdated -= SendPlayerOptions;
         _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
+        _resolverCommunicator?.Dispose();
         _hubConnection?.DisposeAsync();
     }
 }

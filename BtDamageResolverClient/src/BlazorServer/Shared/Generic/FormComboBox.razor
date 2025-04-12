@@ -2,20 +2,34 @@
 @typeparam TItem
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
-<input class="resolver_input resolver_input_text @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : string.Empty)" type="text" disabled="@Disabled" @bind="SelectedOptionInternal" @oninput="AdjustOptionList" @onfocus="ShowComboBoxItems" @onfocusout="CheckHideComboBoxItems" @onkeypress="@(e => CheckForClose(e))">
+@{
+    var invalidSelection = !Options.ContainsKey(SelectedOptionInternal);
+    string extraClass = string.Empty;
+
+    if (EnableErrorDisplay && invalidSelection)
+    {
+        extraClass = "error";
+    }
+    else if (ComparisonTimeStamp > _updateTimeStamp)
+    {
+        extraClass = "reminder";
+    }
+}
+
+<input class="resolver_input resolver_input_text @(extraClass)" type="text" disabled="@Disabled" @bind="SelectedOptionInternal" @oninput="AdjustOptionList" @onfocus="ShowComboBoxItems" @onfocusout="CheckHideComboBoxItems" @onkeypress="@(e => CheckForClose(e))">
 
 <div class="resolver_div_combobox" style="@VisualStyleController.HideElement(_comboBoxItemsHidden)">
-    @foreach (var option in Options)
+    @foreach (var key in Options.Select(o => o.Key))
     {
-        var optionToSelect = $"{option.Key}";
-        var hide = !option.Key.Contains(_searchString, StringComparison.InvariantCultureIgnoreCase);
-        if (option.Key.Equals(SelectedOptionInternal))
+        var optionToSelect = $"{key}";
+        var hide = !key.Contains(_searchString, StringComparison.InvariantCultureIgnoreCase);
+        if (key.Equals(SelectedOptionInternal))
         {
-            <div class="resolver_div_comboboxitem active" style="@VisualStyleController.HideElement(hide)" @onmouseover="SuppressOutOfFocus" @onmouseout="UnSuppressOutOfFocus" @onclick="@(e => SelectOptionImmediate(optionToSelect))">@option.Key</div>
+            <div class="resolver_div_comboboxitem active" style="@VisualStyleController.HideElement(hide)" @onmouseover="SuppressOutOfFocus" @onmouseout="UnSuppressOutOfFocus" @onclick="@(e => SelectOptionImmediate(optionToSelect))">@key</div>
         }
         else
         {
-            <div class="resolver_div_comboboxitem" style="@VisualStyleController.HideElement(hide)" @onmouseover="SuppressOutOfFocus" @onmouseout="UnSuppressOutOfFocus" @onclick="@(e => SelectOptionImmediate(optionToSelect))">@option.Key</div>
+            <div class="resolver_div_comboboxitem" style="@VisualStyleController.HideElement(hide)" @onmouseover="SuppressOutOfFocus" @onmouseout="UnSuppressOutOfFocus" @onclick="@(e => SelectOptionImmediate(optionToSelect))">@key</div>
         }
     }
 </div>
@@ -46,6 +60,9 @@
     [Parameter]
     public EventCallback OnOutOfFocus { get; set; }
 
+    [Parameter]
+    public bool EnableErrorDisplay { get; set; }
+
     public string SelectedOptionInternal
     {
         get => _selectedOption;
@@ -71,7 +88,7 @@
         // Check if the text matches an option exactly, even if it is not the only matching string
         if (optionsMatchingSearchString.Count == 1)
         {
-            SelectedOptionInternal = optionsMatchingSearchString.First().Key;
+            SelectedOptionInternal = optionsMatchingSearchString[0].Key;
         }
         else
         {
@@ -121,7 +138,7 @@
         // Check if only one match is possible, and select that immediately if this is the case
         if (optionsContainingSearchString.Count == 1)
         {
-            SelectedOptionInternal = optionsContainingSearchString.First().Key;
+            SelectedOptionInternal = optionsContainingSearchString[0].Key;
         }
         else
         {
@@ -131,7 +148,7 @@
             // Check if the text matches an option exactly, even if it is not the only matching string
             if (optionsMatchingSearchString.Count == 1)
             {
-                SelectedOptionInternal = optionsMatchingSearchString.First().Key;
+                SelectedOptionInternal = optionsMatchingSearchString[0].Key;
             }
         }
 
