@@ -10,10 +10,6 @@
     <ContainerAccordion Enabled=@true Title="Units">
         @if(_userStateController.PlayerState.IsSpectator)
         {
-            <div class="resolver_div_hr">
-                <button class="resolver_button resolver_button_ready" @onclick="Spectate">Stop spectating</button>
-            </div>
-
             @foreach (var player in _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator))
             {
                 <ComponentPlayerState @key=@($"{player.PlayerId}_{player.TimeStamp}") PlayerId="@player.PlayerId" />
@@ -35,7 +31,6 @@
             <div class="resolver_div_hr">
                 <button class="resolver_button resolver_button_add" @onclick="AddUnit" disabled="@_userStateController.PlayerState.IsReady">+</button>
                 <button class="resolver_button resolver_button_ready" @onclick="Ready">@(_userStateController.PlayerState.IsReady ? "UnReady" : "Ready")</button>
-                <button class="resolver_button resolver_button_ready" @onclick="Spectate">Spectate</button>
             </div>
 
             <div id="resolver_tooltip_targetnumber" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
@@ -50,7 +45,7 @@
         <FormDamageReports OnlyNewest="true"></FormDamageReports>
     </ContainerAccordion>
 
-    <ContainerAccordion Enabled="@_sectionEnabledTools" Title="Admin tools">
+    <ContainerAccordion Enabled="@_sectionEnabledTools" Title="Tools">
         <FormTools @key="@_userStateController.GameState?.TimeStamp"></FormTools>
     </ContainerAccordion>
 }
@@ -77,12 +72,6 @@
     public void Ready()
     {
         _userStateController.PlayerState.IsReady = !_userStateController.PlayerState.IsReady;
-        _userStateController.NotifyPlayerDataUpdated();
-    }
-
-    public void Spectate()
-    {
-        _userStateController.PlayerState.IsSpectator = !_userStateController.PlayerState.IsSpectator;
         _userStateController.NotifyPlayerDataUpdated();
     }
 

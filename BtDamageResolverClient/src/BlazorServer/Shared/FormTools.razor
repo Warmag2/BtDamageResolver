@@ -19,6 +19,7 @@
             <button class="resolver_button" disabled="@(!adminRights)" @onclick="ForceReady">Force Ready</button>
             <button class="resolver_button" disabled="@(!adminRights)" @onclick="ShowModalKick">Kick Player</button>
             <button class="resolver_button" @onclick="ShowModalMoveUnit">Move Unit</button>
+            <button class="resolver_button" @onclick="Spectate">@(_userStateController.PlayerState.IsSpectator ? "Stop spectating" : "Spectate")</button>
         </div>
     </div>
 </div>
@@ -120,5 +121,11 @@
     private void ShowModalMoveUnit()
     {
         _showModalMoveUnit = true;
+    }
+
+    public void Spectate()
+    {
+        _userStateController.PlayerState.IsSpectator = !_userStateController.PlayerState.IsSpectator;
+        _userStateController.NotifyPlayerDataUpdated();
     }
 }
