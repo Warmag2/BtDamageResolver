@@ -13,15 +13,13 @@ TODO: Write something actually useful here.
 ### Creating and running the docker images
 
 * Pull this repository into a Linux/Unix server with docker support installed
-* Run `build_producenugets.sh` in repository root. This will create the Nuget files required by the client implementation and put them in the `CustomNugets` subdirectory where the build system needs them to be.
-  - If you do not have a build system installed in the server and have a Windows system, run `build_producenugets.bat` therein and copy the files to the aforementioned place.
-  - If you do not have a build system installed at all, and do not have access to my nuget feed, download the nugets manually instead. You can do this from the sidebar in the Github repository page. Save them to the `CustomNugets` folder in repository root.
 * Go to the `BtDamageResolverInfrastructure` folder found in repository root
 * Copy or rename the `.env_sample` file to just `.env`
-* Type a secure password into the password environment variable in the `.env` file.
+* Type a secure password into the password environment variable in the `.env` file
+* Go back to repository root
 * Run `refresh.sh`
 
-This will create a compliation docker image, create all BtDamageResolver project docker images, create a postgresql image, redis image and a grafana image, and start all of them. Everything should work automatically, but might take some time. Once all the images are running and the server program can be reached, a data import task will launch and populate the entity databases with initial data.
+This will first create a compilation image with the Nuget files required by the client application, create all BtDamageResolver project docker images, create a postgresql image, redis image and a grafana image, and start all of them. Everything should work automatically, but might take some time. Once all the images are running and the server program can be reached, a data import task will launch and populate the entity databases with initial data.
 
 After the import data succeeds (should take a few seconds) the web client should be available and fully operational on port 8787 of localhost.
 
@@ -31,9 +29,10 @@ After the import data succeeds (should take a few seconds) the web client should
 
 This can be caused by Docker Desktop. Disabling "Docker Compose V2" from the settings of Docker Desktop might fix this.
 
-> Build can't find the NuGet files
+> You are toying with BtDamageResolverClient but can't find the NuGet files
 
 If you downloaded the NuGet packages from GitHub manually, be sure that you renamed them correctly. The name should also contain the version number.
+If you did not do this, you can run `build_producenugets.bat` (in Windows) to produce the nugets and copy them to a CustomNugets directory. Make sure to add this to your `NuGet.config`.
 
 > Unhandled exception rendering component: Cannot assign requested address (localhost:8080)
 
@@ -68,9 +67,11 @@ To start the system at any later time, do the following:
 * Go to the `BtDamageResolverInfrastructure` folder in repository root
 * Type `docker-compose up -d`
 
+Currently there is a bug where accessing the client before the data import task finishes (after bringing the system up) fails. You must wait for the task to finish before starting to use the system. This is related to Redis not persisting properly and the backend not being able to recover if it doesn't immediately find the data it needs. It would probably be easy to fix but I haven't bothered yet because it does so little harm.
+
 ### Getting rid of all BtDamageResolver data
 
-Normal docker prune methods should work once the system has been shut down. If you are sure that there is nothing in your docker installation that you want to keep, you can also do the following:
+Normal docker prune methods should work once the system has been shut down. If you are sure that there is nothing you want to keep, you can also do the following:
 
 * Go to the `BtDamageResolverInfrastructure` folder in repository root
 * Run `prune.sh`
@@ -83,17 +84,11 @@ The easiest way is to develop a client would be to use the nuget feed provided b
 
     <add key="githubWarma" value="https://nuget.pkg.github.com/Warmag2/index.json" />
 
-To be able to use the source, add the following credential block in its entirety or add the `githubWarma` source to your credentials block:
+To be able to use the NuGet source, use the following credential block in its entirety or add the contained `githubWarma` source to your credentials block:
 
     <packageSourceCredentials>
       <githubWarma>
         <add key="Username" value="Warmag2" />
-        <add key="ClearTextPassword" value="INSERT_READ_ONLY_NUGET_FEED_PAT_HERE" />
+        <add key="ClearTextPassword" value="INSERT_YOUR_READ_ONLY_NUGET_FEED_PAT_HERE" />
       </githubWarma>
     </packageSourceCredentials>
-
-Unfortunately Github watches the commits I push into this repository, and if they contain the hash for the PAT, the PAT will be immediately revoked. Therefore I cannot share it in this readme directly. I guess this service isn't meant for actually allowing others to access your feeds or repositories or something.
-
-To circumvent this, mail me or contact me in IRC (Ircnet/Warma), and I will give you the read-only PAT so you can read the feed and get those nugets.
-
-I will fix this later if someone tells me how to do it properly.
