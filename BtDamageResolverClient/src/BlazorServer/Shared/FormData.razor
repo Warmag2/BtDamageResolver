@@ -27,12 +27,17 @@
             <div class="resolver_div_componentrow">
                 <FormComboBox @key="@_entryName" Options="@sortedItemDict" SelectedOption=@_entryName OnChanged="(string entryName) => OnEntityChanged(entryName)"></FormComboBox>
             </div>
-            
+
             @if (_selectedDataType == ResolverDataType.Weapon)
             {
-                <div class="resolver_div_componentrow">
-                    <FormComboBox @key="@_entryName" Options="@_commonData.FormMapWeaponAmmo(_entryName)" SelectedOption=@_commonData.GetWeaponDefaultAmmo(_entryName) OnChanged="(string ammoName) => OnAmmoChanged(ammoName)"></FormComboBox>
-                </div>
+                var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(_entryName);
+
+                @if (mapWeaponAmmo.Count > 0)
+                {
+                    <div class="resolver_div_componentrow">
+                        <FormComboBox @key="@_entryName" Options=@mapWeaponAmmo SelectedOption=@_commonData.GetWeaponDefaultAmmo(_entryName) OnChanged="(string ammoName) => OnAmmoChanged(ammoName)"></FormComboBox>
+                    </div>
+                }
             }
             
             @switch (_selectedDataType)
