@@ -140,6 +140,6 @@ public interface IPlayerActor : IGrainWithStringKey
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <param name="playerState">A <see cref="PlayerState"/> object containing the new state for this player.</param>
-    /// <returns><b>True</b> if the actor has detected that its observer is in a faulted state <b>false</b> otherwise.</returns>
+    /// <returns><b>True</b> if the player state was successfully updated and the game accepted it, <b>false</b> otherwise.</returns>
     public Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState);
 }
