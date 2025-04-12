@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
 
@@ -11,14 +12,16 @@ public class LocalStorage
 {
     private const string LocalStorageVariableUserCredentials = "BtDamageResolverUserCredentials";
     private readonly ILocalStorageService _localStorageService;
+    private readonly ProtectedSessionStorage _protectedSessionStorage;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStorage"/> class.
     /// </summary>
     /// <param name="localStorageService">The local storage service.</param>
-    public LocalStorage(ILocalStorageService localStorageService)
+    public LocalStorage(ILocalStorageService localStorageService, ProtectedSessionStorage protectedSessionStorage)
     {
         _localStorageService = localStorageService;
+        _protectedSessionStorage = protectedSessionStorage;
     }
 
     /// <summary>

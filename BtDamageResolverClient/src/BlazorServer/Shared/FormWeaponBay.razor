@@ -9,40 +9,40 @@
 
 @if(_userStateController.IsConnectedToGame)
 {
-<table>
-    <tr style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
-        <td colspan="6" class="draggable" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
-            @if (UnitEntry.StaticDataHidden)
-            {
-                <b>@WeaponBay.Name</b>
-            }
-            else
-            {
-                <FormText SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
-            }
-        </td>
-        <td style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-            <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
-        </td>
-    </tr>
-    @foreach (var weaponEntry in WeaponBay.Weapons)
-    {
-        <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" WeaponBay="@WeaponBay" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnUpdate" OnDeleted="@OnWeaponDeleted" OnDragWeapon="@DragWeapon" OnDropWeapon="@DropWeapon" />
-    }
-    @if (!UnitEntry.StaticDataHidden)
-    {
-        <tr class="resolver_tr_weaponentry draggable" draggable="true" @ondrop="@(() => DropWeapon(-1))">
-            <td colspan="7" class="emptydragtarget">end of list</td>
+    <table>
+        <tr style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
+            <td colspan="6" class="draggable" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
+                @if (UnitEntry.StaticDataHidden)
+                {
+                    <b>@WeaponBay.Name</b>
+                }
+                else
+                {
+                    <FormText SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
+                }
+            </td>
+            <td style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
+                <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
+            </td>
         </tr>
-    }
-    <tr>
-        <td colspan="7">
-            <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-                <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
-            </span>
-        </td>
-    </tr>
-</table>
+        @foreach (var weaponEntry in WeaponBay.Weapons)
+        {
+            <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" WeaponBay="@WeaponBay" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnUpdate" OnDeleted="@OnWeaponDeleted" OnDragWeapon="@DragWeapon" OnDropWeapon="@DropWeapon" />
+        }
+        @if (!UnitEntry.StaticDataHidden)
+        {
+            <tr class="resolver_tr_weaponentry draggable" draggable="true" @ondrop="@(() => DropWeapon(-1))">
+                <td colspan="7" class="emptydragtarget">end of list</td>
+            </tr>
+        }
+        <tr>
+            <td colspan="7">
+                <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
+                    <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
+                </span>
+            </td>
+        </tr>
+    </table>
 }
 
 @code {

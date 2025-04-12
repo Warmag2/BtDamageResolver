@@ -59,7 +59,7 @@ public class Startup
         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
         services.Configure<CircuitOptions>(options =>
         {
-            options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromDays(1);
+            options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromHours(1);
         })
         .Configure<HttpConnectionDispatcherOptions>(options =>
         {

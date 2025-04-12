@@ -471,7 +471,7 @@ public class UserStateController
     {
         var newUnitList = new ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)>();
 
-        if (IsConnectedToGame)
+        if (GameState != null)
         {
             foreach (var player in GameState.Players.Values)
             {
