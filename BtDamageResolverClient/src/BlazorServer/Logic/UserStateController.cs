@@ -120,7 +120,7 @@ public class UserStateController
     /// <summary>
     /// Indicates whether the player is connected to a game.
     /// </summary>
-    public bool IsConnectedToGame => PlayerName != null && GameState?.GameId != null;
+    public bool IsConnectedToGame => PlayerState != null && GameState?.GameId != null;
 
     /// <summary>
     /// Indicates whether the player is connected to the server.
@@ -329,7 +329,7 @@ public class UserStateController
     {
         if (PlayerState != null)
         {
-            OnInvalidUnitListUpdated();
+            OnInvalidUnitListUpdated?.Invoke();
         }
     }
 
@@ -341,7 +341,7 @@ public class UserStateController
         if (PlayerState != null)
         {
             PlayerState.TimeStamp = DateTime.UtcNow;
-            OnPlayerStateUpdated();
+            OnPlayerStateUpdated?.Invoke();
         }
     }
 
@@ -352,7 +352,7 @@ public class UserStateController
     {
         if (PlayerState != null)
         {
-            OnPlayerUnitListUpdated();
+            OnPlayerUnitListUpdated?.Invoke();
         }
     }
 
