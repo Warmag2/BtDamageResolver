@@ -4,11 +4,12 @@ TODO: Damage tracking.
 	Open UI Issues
 
 [FEATURE] Table-based UI layout is very slow and frowned upon these days - move to the current millennium and change everything to well-mannered <div>s.
-[FEATURE] Move adding deleting buttons around so that they are not outside the visual components they need to delete and/or not in strange places.
+[FEATURE] Move adding/deleting buttons around so that they are not outside the visual components they need to delete and/or not in strange places.
 
 	Open Bugs
 
 [BUG] Experienced some issues with weather effects. Needs further investigation.
+[BUG] User needs to wait for import task to finish before using client, even if import task has finished at some point in the past.
 
 		Could not reproduce
 

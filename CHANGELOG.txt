@@ -1,5 +1,6 @@
 	Implemented
 
+[FEATURE] Spectator mode.
 [FEATURE] Units that violate of game rules have their whole background drawn in red.
 [FEATURE] Exporter for unit data.
 [FEATURE] Invalid target is now shown in red when editing units.
@@ -75,6 +76,9 @@
 [FEATURE] Capital ships.
 
 	Fixed
+
+[BUG] Units were not displayed correctly on first page refresh after overdraw fixes
+[BUG] Data display errors, especially for Weapons.
 
 [BUG] Burst/HeatConverted are visible on mechs etc. Fix by more carefully cleaning damage reports of invalid damage type per receiving unit type.
 
