@@ -59,22 +59,13 @@
 
 @code
 {
-    //@key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.GameState.TurnTimeStamp}")
-    //<FormGameState @key=@($"{_userStateController.GameState.TurnTimeStamp}") />
-    //@key=@($"{_userStateController.PlayerName}_{_userStateController.GameState?.TimeStamp}")
     private FormServer _formServer;
     private readonly List<string> _tabs = new() { "Data", "Dashboard", "AllUnits", "DamageReports", "Options" };
     private string _selectedTab = "Dashboard";
     private string _errorMessage;
-    //private HubConnection _hubConnection;
 
     protected override void OnInitialized()
     {
-        /*_hubConnection = new HubConnectionBuilder()
-            .WithAutomaticReconnect()
-            .WithUrl(_navigationManager.ToAbsoluteUri("/ClientHub"))
-            .Build();*/
-
         _hubConnection.On<byte[]>(EventNames.ConnectionResponse, async (connectionResponseData) =>
         {
             var connectionResponse = _dataHelper.Unpack<ConnectionResponse>(connectionResponseData);
