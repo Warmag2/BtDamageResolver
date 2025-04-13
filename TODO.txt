@@ -9,7 +9,10 @@ TODO: Damage tracking.
 	Open Bugs
 
 [BUG] Experienced some issues with weather effects. Needs further investigation.
+
 [BUG] User needs to wait for import task to finish before using client, even if import task has finished at some point in the past.
+
+[BUG] In multiplayer use, switching unit type with active invalid type properties puts the UI in a state where it is not obvious how one should proceed. Remote updates will reset the unit into the last known state, while user memory will still have the invalid state and user is unable to send updates.
 
 		Could not reproduce
 
