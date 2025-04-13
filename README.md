@@ -23,6 +23,8 @@ This will first create a compilation image with the Nuget files required by the 
 
 After the import data succeeds (should take a few seconds) the web client should be available and fully operational on port 8787 of localhost.
 
+Currently there is a bug where accessing the client before the data import task finishes will crash the client. This is related to Redis still being empty and the backend not being able to recover if it doesn't immediately find the data it needs. It would probably be easy to fix this, but I haven't bothered yet because it does so little harm.
+
 ### Troubleshooting
 
 > Unexpected characters in the .env file
@@ -32,7 +34,8 @@ This can be caused by Docker Desktop. Disabling "Docker Compose V2" from the set
 > You are toying with BtDamageResolverClient but can't find the NuGet files
 
 If you downloaded the NuGet packages from GitHub manually, be sure that you renamed them correctly. The name should also contain the version number.
-If you did not do this, you can run `build_producenugets.bat` (in Windows) to produce the nugets and copy them to a CustomNugets directory. Make sure to add this to your `NuGet.config`.
+
+As an easier option (in Windows), you can also run `build_producenugets.bat` to create the nugets yourself. After this, make sure that the `CustomNugets` directory in repository root is added to your `NuGet.config`.
 
 > Unhandled exception rendering component: Cannot assign requested address (localhost:8080)
 
@@ -66,8 +69,6 @@ To start the system at any later time, do the following:
 
 * Go to the `BtDamageResolverInfrastructure` folder in repository root
 * Type `docker-compose up -d`
-
-Currently there is a bug where accessing the client before the data import task finishes (after bringing the system up) fails. You must wait for the task to finish before starting to use the system. This is related to Redis not persisting properly and the backend not being able to recover if it doesn't immediately find the data it needs. It would probably be easy to fix but I haven't bothered yet because it does so little harm.
 
 ### Getting rid of all BtDamageResolver data
 
