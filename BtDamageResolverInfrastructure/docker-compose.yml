@@ -26,6 +26,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Release
       RESOLVER_ENVIRONMENT: Release
       CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+    volumes:
+      - ./dpkeys:/app/dpkeys
     ports:
       - 8787:8080
     networks:
