@@ -10,9 +10,9 @@ TODO: Damage tracking.
 
 [BUG] Experienced some issues with weather effects. Needs further investigation.
 
-[BUG] User needs to wait for import task to finish before using client, even if import task has finished at some point in the past.
+[BUG] When starting up, user needs to wait for the import task to finish before using client. A very minor inconvenience, so WONTFIX for now.
 
-[BUG] In multiplayer use, switching unit type with active invalid type properties puts the UI in a state where it is not obvious how one should proceed. Remote updates will reset the unit into the last known state, while user memory will still have the invalid state and user is unable to send updates.
+[BUG] In multiplayer use, switching unit type with active invalid type properties puts the UI in a state where it is not obvious how one should proceed. Remote updates will reset the unit visual state into the last known good state, while depending on event order, user memory may still end up with the invalid state and user is unable to send updates. Easy to fix badly, but very difficult to fix properly, as a whole feature where the backend is able to demands specific state changes from the frontend is necessary.
 
 		Could not reproduce
 
