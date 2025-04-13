@@ -98,7 +98,7 @@ services:
     ports:
       - 63790:6379
     volumes:
-      - redis-data:/data
+      - redis-data:/db
     networks:
       - resolvernet
     restart: on-failure
