@@ -67,7 +67,7 @@ public enum UnitFeature
     Ecm,
 
     /// <summary>
-    /// Anti-mech attacks are easier against this target (no effect yet).
+    /// Infantry/BattleArmor swarm attacks are more effective against the actuators of this unit (no effect yet).
     /// </summary>
     ExposedActuators,
 
@@ -85,6 +85,11 @@ public enum UnitFeature
     /// Unit is hard to pilot (no effect yet) PS: This quirk is EXACTLY THE SAME as Cramped Cockpit, so the latter is not included.
     /// </summary>
     HardToPilot,
+
+    /// <summary>
+    /// Arm weapon into rear arc even with lower arm and/or hand actuators present (no effect yet).
+    /// </summary>
+    HyperExtendingActuators,
 
     /// <summary>
     /// Unit has improved communications systems (no effect yet).
