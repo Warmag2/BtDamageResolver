@@ -47,6 +47,16 @@ public enum UnitFeature
     Cowl,
 
     /// <summary>
+    /// Torso mount that is a turret (no effect yet).
+    /// </summary>
+    DirectionalTorsoMount,
+
+    /// <summary>
+    /// Unit is easier to repair and maintain (no effect yet).
+    /// </summary>
+    EasyToMaintain,
+
+    /// <summary>
     /// Unit is easy to pilot (no effect yet).
     /// </summary>
     EasyToPilot,
@@ -57,9 +67,19 @@ public enum UnitFeature
     Ecm,
 
     /// <summary>
+    /// Anti-mech attacks are easier against this target (no effect yet).
+    /// </summary>
+    ExposedActuators,
+
+    /// <summary>
     /// Unit can torso twist one more hex side (no effect yet).
     /// </summary>
     ExtendedTorsoTwist,
+
+    /// <summary>
+    /// Weapon may break on hit to weapon location (2D6 10+, no effect yet).
+    /// </summary>
+    ExposedWeaponLinkage,
 
     /// <summary>
     /// Unit is hard to pilot (no effect yet) PS: This quirk is EXACTLY THE SAME as Cramped Cockpit, so the latter is not included.
@@ -122,6 +142,16 @@ public enum UnitFeature
     ReinforcedLegs,
 
     /// <summary>
+    /// Needs maintenance half as often (no effect yet).
+    /// </summary>
+    Rugged,
+
+    /// <summary>
+    /// Free searchlight component (no effect yet).
+    /// </summary>
+    Searchlight,
+
+    /// <summary>
     /// Running only gives -1 to hit.
     /// </summary>
     StabilizedWeapons,
@@ -160,6 +190,11 @@ public enum UnitFeature
     /// -1 to piloting when entering difficult terrain hexes (no effect yet).
     /// </summary>
     Unbalanced,
+
+    /// <summary>
+    /// Effective head armor is 1 less than assigned (no effect yet).
+    /// </summary>
+    WeakHeadArmor,
 
     /// <summary>
     /// Unit is liable to damage its own legs if it tries to kick/dfa.
