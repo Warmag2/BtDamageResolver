@@ -70,4 +70,5 @@
     },
     "UsesAmmo": true,
     "SpecialDamage": [ { "Data": "3d6", "Type": "Burst" } ]
+  }
 ]
