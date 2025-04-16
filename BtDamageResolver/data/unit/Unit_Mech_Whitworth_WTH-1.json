@@ -14,23 +14,28 @@
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "LRM-10"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "LRM-10"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Laser"
                 }
             ],

@@ -9,6 +9,9 @@
     "DamageAerospace": {
       "Short": 3
     },
+    "Heat": {
+      "Short": 1
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 1,
@@ -17,9 +20,10 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 1
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Medium Laser",
@@ -31,6 +35,9 @@
     "DamageAerospace": {
       "Short": 5
     },
+    "Heat": {
+      "Short": 3
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 3,
@@ -39,9 +46,10 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 3
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Large Laser",
@@ -53,6 +61,9 @@
     "DamageAerospace": {
       "Short": 8
     },
+    "Heat": {
+      "Short": 8
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 5,
@@ -61,9 +72,10 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": {
-      "Short": 8
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "ER Small Laser",
@@ -75,6 +87,9 @@
     "DamageAerospace": {
       "Short": 3
     },
+    "Heat": {
+      "Short": 2
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 2,
@@ -83,9 +98,10 @@
       "Extreme": 5
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 2
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "ER Medium Laser",
@@ -97,6 +113,9 @@
     "DamageAerospace": {
       "Short": 5
     },
+    "Heat": {
+      "Short": 5
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 4,
@@ -105,9 +124,10 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": {
-      "Short": 5
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "ER Large Laser",
@@ -119,6 +139,9 @@
     "DamageAerospace": {
       "Short": 8
     },
+    "Heat": {
+      "Short": 12
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 7,
@@ -127,9 +150,10 @@
       "Extreme": 19
     },
     "RangeAerospace": "Long",
-    "Heat": {
-      "Short": 12
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Small Pulse Laser",
@@ -141,6 +165,9 @@
     "DamageAerospace": {
       "Short": 3
     },
+    "Heat": {
+      "Short": 2
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 1,
@@ -149,13 +176,13 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 2
-    },
     "SpecialDamage": [
       { "Data": "2d6", "Type": "Burst" }
     ],
-    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "SpecialFeatures": [
+      { "Type": "Pulse" },
+      { "Type": "TargetingComputerValid" },
+    ],
     "HitModifier": -2
   },
   {
@@ -168,6 +195,9 @@
     "DamageAerospace": {
       "Short": 6
     },
+    "Heat": {
+      "Short": 4
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 2,
@@ -176,10 +206,10 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 4
-    },
-    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "SpecialFeatures": [
+      { "Type": "Pulse" },
+      { "Type": "TargetingComputerValid" },
+    ],
     "HitModifier": -2
   },
   {
@@ -192,6 +222,9 @@
     "DamageAerospace": {
       "Short": 9
     },
+    "Heat": {
+      "Short": 10
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 3,
@@ -200,10 +233,10 @@
       "Extreme": 10
     },
     "RangeAerospace": "Medium",
-    "Heat": {
-      "Short": 10
-    },
-    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "SpecialFeatures": [
+      { "Type": "Pulse" },
+      { "Type": "TargetingComputerValid" },
+    ],
     "HitModifier": -2
   },
   {
@@ -216,6 +249,9 @@
     "DamageAerospace": {
       "Short": 5
     },
+    "Heat": {
+      "Short": 2
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 2,
@@ -224,9 +260,10 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 2
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Clan ER Medium Laser",
@@ -238,6 +275,9 @@
     "DamageAerospace": {
       "Short": 7
     },
+    "Heat": {
+      "Short": 5
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 5,
@@ -246,9 +286,10 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": {
-      "Short": 5
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Clan ER Large Laser",
@@ -260,6 +301,9 @@
     "DamageAerospace": {
       "Short": 10
     },
+    "Heat": {
+      "Short": 12
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 8,
@@ -268,9 +312,10 @@
       "Extreme": 25
     },
     "RangeAerospace": "Extreme",
-    "Heat": {
-      "Short": 12
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Clan Micro Pulse Laser",
@@ -283,6 +328,9 @@
     "DamageAerospace": {
       "Short": 3
     },
+    "Heat": {
+      "Short": 1
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 1,
@@ -291,13 +339,13 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 1
-    },
     "SpecialDamage": [
       { "Data": "2d6", "Type": "Burst" }
     ],
-    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "SpecialFeatures": [
+      { "Type": "Pulse" },
+      { "Type": "TargetingComputerValid" },
+    ],
     "HitModifier": -2
   },
   {
@@ -310,6 +358,9 @@
     "DamageAerospace": {
       "Short": 3
     },
+    "Heat": {
+      "Short": 2
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 2,
@@ -318,13 +369,13 @@
       "Extreme": 6
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 2
-    },
     "SpecialDamage": [
       { "Data": "2d6", "Type": "Burst" }
     ],
-    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "SpecialFeatures": [
+      { "Type": "Pulse" },
+      { "Type": "TargetingComputerValid" },
+    ],
     "HitModifier": -2
   },
   {
@@ -337,6 +388,9 @@
     "DamageAerospace": {
       "Short": 7
     },
+    "Heat": {
+      "Short": 4
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 4,
@@ -345,10 +399,10 @@
       "Extreme": 12
     },
     "RangeAerospace": "Medium",
-    "Heat": {
-      "Short": 4
-    },
-    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "SpecialFeatures": [
+      { "Type": "Pulse" },
+      { "Type": "TargetingComputerValid" },
+    ],
     "HitModifier": -2
   },
   {
@@ -361,6 +415,9 @@
     "DamageAerospace": {
       "Short": 10
     },
+    "Heat": {
+      "Short": 10
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 6,
@@ -369,10 +426,10 @@
       "Extreme": 20
     },
     "RangeAerospace": "Long",
-    "Heat": {
-      "Short": 10
-    },
-    "SpecialFeatures": [ { "Type": "Pulse" } ],
+    "SpecialFeatures": [
+      { "Type": "Pulse" },
+      { "Type": "TargetingComputerValid" },
+    ],
     "HitModifier": -2
   },
   {
@@ -385,6 +442,9 @@
     "DamageAerospace": {
       "Short": 6
     },
+    "Heat": {
+      "Short": 3
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 1,
@@ -393,10 +453,11 @@
       "Extreme": 3
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 3
-    },
-    "HitModifier": 1
+    "HitModifier": 1,
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Clan Heavy Medium Laser",
@@ -408,6 +469,9 @@
     "DamageAerospace": {
       "Short": 10
     },
+    "Heat": {
+      "Short": 7
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 3,
@@ -416,10 +480,11 @@
       "Extreme": 9
     },
     "RangeAerospace": "Short",
-    "Heat": {
-      "Short": 7
-    },
-    "HitModifier": 1
+    "HitModifier": 1,
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Clan Heavy Large Laser",
@@ -431,6 +496,9 @@
     "DamageAerospace": {
       "Short": 16
     },
+    "Heat": {
+      "Short": 18
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 5,
@@ -439,9 +507,10 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": {
-      "Short": 18
-    },
-    "HitModifier": 1
+    "HitModifier": 1,
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   }
 ]

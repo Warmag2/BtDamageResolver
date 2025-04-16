@@ -5,7 +5,7 @@
     <RootNamespace>Faemiyah.BtDamageResolver.Api</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.Api</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.398</Version>
+    <Version>0.0.399</Version>
     <PackageProjectUrl>https://github.com/Warmag2/BtDamageResolver</PackageProjectUrl>
     <Authors>Warma</Authors>
     <Company>Faemiyah</Company>

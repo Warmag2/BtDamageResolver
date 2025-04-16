@@ -13,20 +13,24 @@
             "Weapons": [
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Clan Large Pulse Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Clan Large Pulse Laser"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Clan LRM-20"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Clan LRM-20"
                 }
             ],

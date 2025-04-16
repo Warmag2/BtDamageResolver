@@ -50,6 +50,10 @@
     },
     "SpecialDamage": [
       { "Data": "1", "Type": "Tag" }
+    ],
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
     ]
   }
 ]

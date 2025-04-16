@@ -1,57 +1,64 @@
 {
-    "Features": [],
+    "Features": [
+        "ActiveProbe",
+        "Ams",
+        "Ecm",
+        "Searchlight"
+    ],
     "JumpJets": 0,
-    "Sinks": 24,
-    "Speed": 4,
+    "Sinks": 26,
+    "Speed": 5,
     "Type": "Mech",
-    "Tonnage": 95,
+    "Tonnage": 65,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Large Pulse Laser"
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER PPC"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Large Pulse Laser"
+                    "WeaponName": "Clan ER Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
+                    "WeaponName": "Clan ER Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
+                    "WeaponName": "Clan ER Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
+                    "WeaponName": "Clan Streak SRM-6"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
+                    "WeaponName": "Machine Gun"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
+                    "WeaponName": "Machine Gun"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Banshee BNC-SB1"
+    "Name": "Loki Prime"
 }

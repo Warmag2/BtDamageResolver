@@ -1,12 +1,13 @@
 {
     "Features": [
-        "ImprovedSensors"
+        "ExposedActuators",
+        "NarrowLowProfile"
     ],
-    "JumpJets": 6,
-    "Sinks": 22,
+    "JumpJets": 0,
+    "Sinks": 10,
     "Speed": 6,
     "Type": "Mech",
-    "Tonnage": 45,
+    "Tonnage": 25,
     "Troopers": 1,
     "WeaponBays": [
         {
@@ -14,27 +15,22 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Large Pulse Laser"
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "ER Medium Laser"
-                },
-                {
-                    "Ammo": "AP Strike",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Melee Retractable Blade"
+                    "WeaponName": "Streak SRM-2"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Preta PRT-BN1"
+    "Name": "Commando COM-5S"
 }

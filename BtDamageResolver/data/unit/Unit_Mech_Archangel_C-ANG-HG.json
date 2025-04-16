@@ -18,31 +18,38 @@
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Clan ER PPC"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Clan ER PPC"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Melee Hatchet"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Melee Hatchet"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Tag"
                 }
             ],

@@ -14,6 +14,9 @@
     "DamageAerospace": {
       "Short": 10
     },
+    "Heat": {
+      "Short": 10
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 6,
@@ -23,9 +26,10 @@
     },
     "RangeMinimum": 3,
     "RangeAerospace": "Medium",
-    "Heat": {
-      "Short": 10
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "ER PPC",
@@ -42,6 +46,9 @@
     "DamageAerospace": {
       "Short": 10
     },
+    "Heat": {
+      "Short": 15
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 7,
@@ -50,9 +57,10 @@
       "Extreme": 23
     },
     "RangeAerospace": "Long",
-    "Heat": {
-      "Short": 15
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Light PPC",
@@ -69,6 +77,9 @@
     "DamageAerospace": {
       "Short": 5
     },
+    "Heat": {
+      "Short": 5
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 6,
@@ -77,10 +88,11 @@
       "Extreme": 18
     },
     "RangeMinimum": 3,
-    "Heat": {
-      "Short": 5
-    },
-    "RangeAerospace": "Medium"
+    "RangeAerospace": "Medium",
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Heavy PPC",
@@ -97,6 +109,9 @@
     "DamageAerospace": {
       "Short": 15
     },
+    "Heat": {
+      "Short": 15
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 6,
@@ -104,11 +119,12 @@
       "Long": 18,
       "Extreme": 18
     },
-    "Heat": {
-      "Short": 15
-    },
     "RangeMinimum": 3,
-    "RangeAerospace": "Medium"
+    "RangeAerospace": "Medium",
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Snub-Nose PPC",
@@ -128,6 +144,9 @@
       "Long": 8,
       "Extreme": 8
     },
+    "Heat": {
+      "Short": 10
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 9,
@@ -136,9 +155,10 @@
       "Extreme": 15
     },
     "RangeAerospace": "Medium",
-    "Heat": {
-      "Short": 10
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "Clan ER PPC",
@@ -155,6 +175,9 @@
     "DamageAerospace": {
       "Short": 15
     },
+    "Heat": {
+      "Short": 15
+    },
     "Range": {
       "PointBlank": 0,
       "Short": 7,
@@ -163,8 +186,9 @@
       "Extreme": 23
     },
     "RangeAerospace": "Long",
-    "Heat": {
-      "Short": 15
-    }
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   }
 ]

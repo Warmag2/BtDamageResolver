@@ -1,49 +1,55 @@
 {
-    "Features": [],
+    "Features": [
+        "Stable"
+    ],
     "JumpJets": 0,
     "Sinks": 20,
-    "Speed": 4,
+    "Speed": 6,
     "Type": "Mech",
-    "Tonnage": 80,
+    "Tonnage": 55,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
-                },
-                {
-                    "Ammo": "Single",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Ultra AC/10"
+                    "WeaponName": "Clan LRM-20"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Streak SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Streak SRM-6"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Zeus ZEU-SB1"
+    "Name": "Stormcrow A"
 }

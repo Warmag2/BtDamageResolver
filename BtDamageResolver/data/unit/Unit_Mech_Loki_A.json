@@ -1,49 +1,62 @@
 {
-    "Features": [],
+    "Features": [
+        "ActiveProbe",
+        "Searchlight"
+    ],
     "JumpJets": 0,
-    "Sinks": 20,
-    "Speed": 4,
+    "Sinks": 26,
+    "Speed": 5,
     "Type": "Mech",
-    "Tonnage": 80,
+    "Tonnage": 65,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "Clan LRM-20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Large Laser"
                 },
                 {
                     "Ammo": "Single",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Ultra AC/10"
+                    "WeaponName": "Clan Ultra AC/5"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan ER Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Machine Gun"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Machine Gun"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Narc"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Zeus ZEU-SB1"
+    "Name": "Loki A"
 }

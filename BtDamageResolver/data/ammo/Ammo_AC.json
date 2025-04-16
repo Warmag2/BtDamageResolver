@@ -2,28 +2,75 @@
   {
     "Name": "AC-AP2",
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Data": "-4", "Type": "ArmorPiercing" } ]
+    "SpecialFeatures": [
+      { "Data": "-4", "Type": "ArmorPiercing" },
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "AC-AP5",
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Data": "-3", "Type": "ArmorPiercing" } ]
+    "SpecialFeatures": [
+      { "Data": "-3", "Type": "ArmorPiercing" },
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "AC-AP10",
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Data": "-2", "Type": "ArmorPiercing" } ]
+    "SpecialFeatures": [
+      { "Data": "-2", "Type": "ArmorPiercing" },
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "AC-AP20",
     "HitModifier": 1,
-    "SpecialFeatures": [ { "Data": "-1", "Type": "ArmorPiercing" } ]
+    "SpecialFeatures": [
+      { "Data": "-1", "Type": "ArmorPiercing" },
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
   },
   {
     "Name": "AC-LBXCluster",
     "HitModifier": -1,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-2", "Type": "Flak" } ],
+    "SpecialFeatures": [
+      { "Type": "Cluster" },
+      { "Data": "-2", "Type": "Flak" }
+    ],
     "ClusterSize": 1,
     "ClusterDamage": 1
+  },
+  {
+    "Name": "AC-Single",
+    "SpecialFeatures": [
+     { "Type": "TargetingComputerValid" },
+     { "Type": "TargetingComputerValidAimed" }
+   ]
+  },
+  {
+    "Name": "AC-Rapid2",
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Data": "2", "Type": "Rapid" }
+    ]
+  },
+  {
+    "Name": "AC-Rapid3",
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Data": "3", "Type": "Rapid" }
+    ]
+  },
+  {
+    "Name": "AC-Rapid4",
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Data": "4", "Type": "Rapid" }
+    ]
   }
 ]

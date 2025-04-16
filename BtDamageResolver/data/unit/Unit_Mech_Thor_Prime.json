@@ -1,43 +1,37 @@
 {
     "Features": [
-        "CommandUnit"
+        "ImprovedCommunications"
     ],
-    "JumpJets": 3,
-    "Sinks": 26,
-    "Speed": 3,
+    "JumpJets": 5,
+    "Sinks": 28,
+    "Speed": 5,
     "Type": "Mech",
-    "Tonnage": 90,
+    "Tonnage": 70,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Slug",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LBX AC/10"
-                },
-                {
-                    "Ammo": "Slug",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "LBX AC/10"
+                    "WeaponName": "Clan LRM-15"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "PPC"
+                    "WeaponName": "Clan ER PPC"
                 },
                 {
-                    "Ammo": "Normal",
+                    "Ammo": "Slug",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "PPC"
+                    "WeaponName": "Clan LBX AC/10"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Emperor EMP-CP1"
+    "Name": "Thor Prime"
 }

@@ -1,49 +1,53 @@
 {
-    "Features": [],
+    "Features": [
+        "TargetingAntiAir"
+    ],
     "JumpJets": 0,
-    "Sinks": 20,
+    "Sinks": 10,
     "Speed": 4,
     "Type": "Mech",
-    "Tonnage": 80,
+    "Tonnage": 65,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Rapid",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "Ultra AC/5"
                 },
                 {
-                    "Ammo": "Single",
+                    "Ammo": "Rapid",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Ultra AC/10"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Ultra AC/5"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Medium Pulse Laser"
                 },
                 {
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "AC/2"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "AC/2"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Zeus ZEU-SB1"
+    "Name": "JagerMech JM6-DD"
 }

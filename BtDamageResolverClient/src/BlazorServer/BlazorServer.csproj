@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.398" />
-    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.398" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.399" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.399" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
   </ItemGroup>

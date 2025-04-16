@@ -15,22 +15,27 @@
                 {
                     "Ammo": "Cluster",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "LBX AC/5"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Plasma Rifle"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Plasma Rifle"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Laser"
                 }
             ],

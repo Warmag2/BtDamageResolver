@@ -11,14 +11,17 @@
             "Weapons": [
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Streak SRM-6"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "ER Medium Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "ER Medium Laser"
                 }
             ],

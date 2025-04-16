@@ -18,26 +18,31 @@
             "Weapons": [
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Large Pulse Laser"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "SRM-6"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "SRM-6"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "SRM-6"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "SRM-6"
                 }
             ],

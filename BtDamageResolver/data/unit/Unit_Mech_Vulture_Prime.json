@@ -1,49 +1,51 @@
 {
-    "Features": [],
+    "Features": [
+        "TargetingMediumRange"
+    ],
     "JumpJets": 0,
-    "Sinks": 20,
-    "Speed": 4,
+    "Sinks": 24,
+    "Speed": 5,
     "Type": "Mech",
-    "Tonnage": 80,
+    "Tonnage": 60,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "Clan LRM-20"
                 },
                 {
-                    "Ammo": "Single",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Ultra AC/10"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan LRM-20"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan Large Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan Large Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Medium Pulse Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Zeus ZEU-SB1"
+    "Name": "Vulture Prime"
 }

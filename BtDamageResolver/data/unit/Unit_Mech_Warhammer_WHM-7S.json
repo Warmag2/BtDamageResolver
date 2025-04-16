@@ -1,49 +1,58 @@
 {
-    "Features": [],
+    "Features": [
+        "Rugged",
+        "Searchlight",
+        "Stable"
+    ],
     "JumpJets": 0,
-    "Sinks": 20,
+    "Sinks": 36,
     "Speed": 4,
     "Type": "Mech",
-    "Tonnage": 80,
+    "Tonnage": 70,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "ER PPC"
                 },
                 {
-                    "Ammo": "Single",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Ultra AC/10"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "ER PPC"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Small Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-2"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-2"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Zeus ZEU-SB1"
+    "Name": "Warhammer WHM-7S"
 }

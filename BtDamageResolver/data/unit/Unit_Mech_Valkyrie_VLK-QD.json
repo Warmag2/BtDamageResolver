@@ -1,27 +1,31 @@
 {
-    "Features": [],
-    "JumpJets": 3,
+    "Features": [
+        "EasyToMaintain",
+        "ImprovedCommunications"
+    ],
+    "JumpJets": 5,
     "Sinks": 10,
-    "Speed": 2,
-    "Type": "BattleArmor",
-    "Tonnage": 1,
-    "Troopers": 6,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 30,
+    "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "BA Recoilless Rifle Medium"
+                    "WeaponName": "Medium Pulse Laser"
                 },
                 {
+                    "Ammo": "Artemis",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "BA Light Machine Gun"
+                    "WeaponName": "LRM-10"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "BA Knight Serpent"
+    "Name": "Valkyrie VLK-QD"
 }

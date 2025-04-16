@@ -172,6 +172,11 @@ public enum UnitFeature
     TargetingAntiAir,
 
     /// <summary>
+    /// Bonus of 1 to hit with direct-fire weapons.
+    /// </summary>
+    TargetingComputer,
+
+    /// <summary>
     /// Bonus of 1 to hit at extreme range.
     /// </summary>
     TargetingExtremeRange,

@@ -12,18 +12,22 @@
                 {
                     "Ammo": "Slug",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "LBX AC/10"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "ER Large Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Pulse Laser"
                 }
             ],

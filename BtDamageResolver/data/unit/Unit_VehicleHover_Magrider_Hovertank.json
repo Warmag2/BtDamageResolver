@@ -12,10 +12,12 @@
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "PPC"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Machine Gun"
                 }
             ],

@@ -1,10 +1,11 @@
 {
     "Features": [
+        "Ams",
         "ImprovedSensors"
     ],
-    "JumpJets": 6,
-    "Sinks": 22,
-    "Speed": 6,
+    "JumpJets": 0,
+    "Sinks": 24,
+    "Speed": 8,
     "Type": "Mech",
     "Tonnage": 45,
     "Troopers": 1,
@@ -14,32 +15,26 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Tag"
+                    "WeaponName": "Clan Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Large Pulse Laser"
+                    "WeaponName": "Clan Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "ER Medium Laser"
+                    "WeaponName": "Clan Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "ER Medium Laser"
-                },
-                {
-                    "Ammo": "AP Strike",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Melee Retractable Blade"
+                    "WeaponName": "Clan Medium Pulse Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Preta PRT-BN2"
+    "Name": "Fenris D"
 }

@@ -1,10 +1,11 @@
 {
     "Features": [
         "BattleFists",
-        "Ecm"
+        "JettisonableWeapon",
+        "Rugged"
     ],
     "JumpJets": 5,
-    "Sinks": 20,
+    "Sinks": 28,
     "Speed": 5,
     "Type": "Mech",
     "Tonnage": 55,
@@ -13,25 +14,19 @@
         {
             "Weapons": [
                 {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Large Pulse Laser"
+                },
+                {
                     "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "PPC"
-                },
-                {
-                    "Ammo": "Single",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Ultra AC/10"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Small Laser"
+                    "WeaponName": "LRM-20"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Shadow Hawk SHD-BN1"
+    "Name": "Griffin GRF-1DS"
 }

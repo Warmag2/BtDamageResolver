@@ -76,5 +76,15 @@ public enum WeaponFeature
     /// <summary>
     /// Streak weapon.
     /// </summary>
-    Streak
+    Streak,
+
+    /// <summary>
+    /// Targeting Computers may be used with this weapon.
+    /// </summary>
+    TargetingComputerValid,
+
+    /// <summary>
+    /// Targeting Computers help when performing aimed attacks with this weapon.
+    /// </summary>
+    TargetingComputerValidAimed,
 }

@@ -1,12 +1,14 @@
 {
     "Features": [
-        "ImprovedSensors"
+        "ActiveProbe",
+        "NoMinimalArms",
+        "WeakHeadArmor"
     ],
-    "JumpJets": 6,
-    "Sinks": 22,
-    "Speed": 6,
+    "JumpJets": 4,
+    "Sinks": 20,
+    "Speed": 4,
     "Type": "Mech",
-    "Tonnage": 45,
+    "Tonnage": 65,
     "Troopers": 1,
     "WeaponBays": [
         {
@@ -14,32 +16,28 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Tag"
+                    "WeaponName": "Large Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Large Pulse Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "ER Medium Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "ER Medium Laser"
-                },
-                {
-                    "Ammo": "AP Strike",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Melee Retractable Blade"
+                    "WeaponName": "Small Pulse Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Preta PRT-BN2"
+    "Name": "Catapult CPLT-C4C"
 }

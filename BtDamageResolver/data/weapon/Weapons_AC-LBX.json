@@ -3,7 +3,7 @@
     "Name": "LBX AC/2",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "Blank",
+      "Slug": "AC-Single",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
@@ -32,7 +32,7 @@
     "Name": "LBX AC/5",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "Blank",
+      "Slug": "AC-Single",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
@@ -61,7 +61,7 @@
     "Name": "LBX AC/10",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "Blank",
+      "Slug": "AC-Single",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
@@ -90,7 +90,7 @@
     "Name": "LBX AC/20",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "Blank",
+      "Slug": "AC-Single",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
@@ -119,7 +119,7 @@
     "Name": "Clan LBX AC/2",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "Blank",
+      "Slug": "AC-Single",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
@@ -148,7 +148,7 @@
     "Name": "Clan LBX AC/5",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "Blank",
+      "Slug": "AC-Single",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
@@ -177,7 +177,7 @@
     "Name": "Clan LBX AC/10",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "Blank",
+      "Slug": "AC-Single",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
@@ -206,7 +206,7 @@
     "Name": "Clan LBX AC/20",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "Blank",
+      "Slug": "AC-Single",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",

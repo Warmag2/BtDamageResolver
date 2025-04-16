@@ -1,10 +1,14 @@
 {
-    "Features": [],
+    "Features": [
+        "BattleFists",
+        "CommandUnit",
+        "Stable"
+    ],
     "JumpJets": 0,
-    "Sinks": 24,
+    "Sinks": 20,
     "Speed": 4,
     "Type": "Mech",
-    "Tonnage": 95,
+    "Tonnage": 70,
     "Troopers": 1,
     "WeaponBays": [
         {
@@ -12,16 +16,6 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Large Pulse Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Large Pulse Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
                     "WeaponName": "Medium Pulse Laser"
                 },
                 {
@@ -40,18 +34,35 @@
                     "WeaponName": "Medium Pulse Laser"
                 },
                 {
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
+                    "WeaponName": "LRM-15"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-15"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
+                    "WeaponName": "Streak SRM-2"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-2"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Narc"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Banshee BNC-SB1"
+    "Name": "Archer ARC-5S"
 }

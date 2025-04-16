@@ -1,6 +1,6 @@
 ﻿[
   {
-    "Name": "Blank"
+    "Name": "Blank",
   },
   {
     "Name": "Missile",
@@ -28,17 +28,5 @@
     "Name": "MissileHoming Indirect",
     "HitModifier": 1,
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" }, { "Type": "IndirectFire" } ]
-  },
-  {
-    "Name": "Rapid2",
-    "SpecialFeatures": [ { "Data": "2", "Type": "Rapid" } ]
-  },
-  {
-    "Name": "Rapid3",
-    "SpecialFeatures": [ { "Data": "3", "Type": "Rapid" } ]
-  },
-  {
-    "Name": "Rapid4",
-    "SpecialFeatures": [ { "Data": "4", "Type": "Rapid" } ]
   }
 ]

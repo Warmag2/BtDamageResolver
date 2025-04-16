@@ -1,27 +1,30 @@
 {
-    "Features": [],
-    "JumpJets": 3,
+    "Features": [
+        "HardToPilot",
+        "Rugged"
+    ],
+    "JumpJets": 6,
     "Sinks": 10,
-    "Speed": 2,
-    "Type": "BattleArmor",
-    "Tonnage": 1,
-    "Troopers": 6,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 20,
+    "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "BA Recoilless Rifle Medium"
+                    "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "BA Light Machine Gun"
+                    "WeaponName": "Medium Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "BA Knight Serpent"
+    "Name": "Stinger STG-3G"
 }

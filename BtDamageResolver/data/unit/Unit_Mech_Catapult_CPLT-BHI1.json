@@ -14,27 +14,33 @@
                 {
                     "Ammo": "Artemis",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "LRM-15"
                 },
                 {
                     "Ammo": "Artemis",
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "LRM-15"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
+                    "Modifier": 0,
                     "WeaponName": "Medium Laser"
                 }
             ],

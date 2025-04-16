@@ -1,12 +1,12 @@
 {
     "Features": [
-        "ImprovedSensors"
+        "ImprovedCommunications"
     ],
-    "JumpJets": 6,
-    "Sinks": 22,
-    "Speed": 6,
+    "JumpJets": 5,
+    "Sinks": 28,
+    "Speed": 5,
     "Type": "Mech",
-    "Tonnage": 45,
+    "Tonnage": 70,
     "Troopers": 1,
     "WeaponBays": [
         {
@@ -14,27 +14,21 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Large Pulse Laser"
+                    "WeaponName": "Clan Gauss Rifle"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Pulse Laser"
+                    "WeaponName": "Clan Large Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "ER Medium Laser"
-                },
-                {
-                    "Ammo": "AP Strike",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Melee Retractable Blade"
+                    "WeaponName": "Clan Streak SRM-6"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Preta PRT-BN1"
+    "Name": "Thor A"
 }

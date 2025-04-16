@@ -26,7 +26,11 @@
       "Short": 4
     },
     "UsesAmmo": true,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
+    "SpecialFeatures": [
+      { "Type": "Cluster" },
+      { "Data": "-3", "Type": "Flak" },
+      { "Type": "TargetingComputerValid" }
+    ],
     "ClusterBonus": {
       "PointBlank": 2,
       "Short": 2,
@@ -64,7 +68,11 @@
       "Short": 6
     },
     "UsesAmmo": true,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
+    "SpecialFeatures": [
+      { "Type": "Cluster" },
+      { "Data": "-3", "Type": "Flak" },
+      { "Type": "TargetingComputerValid" }
+    ],
     "ClusterBonus": {
       "PointBlank": 2,
       "Short": 2,
@@ -102,7 +110,11 @@
       "Short": 8
     },
     "UsesAmmo": true,
-    "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "-3", "Type": "Flak" } ],
+    "SpecialFeatures": [
+      { "Type": "Cluster" },
+      { "Data": "-3", "Type": "Flak" },
+      { "Type": "TargetingComputerValid" }
+    ],
     "ClusterBonus": {
       "PointBlank": 2,
       "Short": 2,

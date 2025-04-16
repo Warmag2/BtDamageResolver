@@ -61,6 +61,10 @@ public abstract partial class LogicUnit
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weapon entry properties", Type = AttackLogEntryType.Calculation, Number = weaponEntry.Modifier });
 
+        var modifierTargetingCompuer = GetTargetingComputerModifier(weapon);
+
+        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from unit targeting computer", Type = AttackLogEntryType.Calculation, Number = modifierTargetingCompuer });
+
         var modifierUnitType = target.GetUnitTypeModifier();
 
         attackLog.Append(new AttackLogEntry { Context = "Hit modifier from unit type", Type = AttackLogEntryType.Calculation, Number = modifierUnitType });
@@ -418,6 +422,16 @@ public abstract partial class LogicUnit
         return baseModifier;
     }
 
+    private int GetMovementClassModifierInternal()
+    {
+        if (Unit.MovementClass == MovementClass.Immobile)
+        {
+            return -4;
+        }
+
+        return 0;
+    }
+
     private int GetMultiTargetModifier(WeaponBay weaponBay, bool isPrimaryTarget)
     {
         if (isPrimaryTarget)
@@ -503,40 +517,6 @@ public abstract partial class LogicUnit
         return 0;
     }
 
-    private int GetWeatherModifier(Weapon weapon)
-    {
-        var penalty = GameOptions.PenaltyAll;
-
-        switch (weapon.Type)
-        {
-            case WeaponType.Ballistic:
-                penalty += GameOptions.PenaltyBallistic;
-                break;
-            case WeaponType.Energy:
-                penalty += GameOptions.PenaltyEnergy;
-                break;
-            case WeaponType.Melee:
-                break;
-            case WeaponType.Missile:
-                penalty += GameOptions.PenaltyMissile;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(weapon), "Invalid weapon type.");
-        }
-
-        return penalty;
-    }
-
-    private int GetMovementClassModifierInternal()
-    {
-        if (Unit.MovementClass == MovementClass.Immobile)
-        {
-            return -4;
-        }
-
-        return 0;
-    }
-
     private int GetRangeModifier(RangeBracket rangeBracket)
     {
         switch (rangeBracket)
@@ -576,5 +556,42 @@ public abstract partial class LogicUnit
             default:
                 throw new ArgumentOutOfRangeException(nameof(rangeBracket), rangeBracket, "Penalty for this range bracket could not be determined.");
         }
+    }
+
+    private int GetTargetingComputerModifier(Weapon weapon)
+    {
+        if (Unit.HasFeature(UnitFeature.TargetingComputer))
+        {
+            if (weapon.HasFeature(WeaponFeature.TargetingComputerValid, out var _))
+            {
+                return -1;
+            }
+        }
+
+        return 0;
+    }
+
+    private int GetWeatherModifier(Weapon weapon)
+    {
+        var penalty = GameOptions.PenaltyAll;
+
+        switch (weapon.Type)
+        {
+            case WeaponType.Ballistic:
+                penalty += GameOptions.PenaltyBallistic;
+                break;
+            case WeaponType.Energy:
+                penalty += GameOptions.PenaltyEnergy;
+                break;
+            case WeaponType.Melee:
+                break;
+            case WeaponType.Missile:
+                penalty += GameOptions.PenaltyMissile;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(weapon), "Invalid weapon type.");
+        }
+
+        return penalty;
     }
 }

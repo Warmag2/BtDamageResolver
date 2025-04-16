@@ -1,49 +1,61 @@
 {
-    "Features": [],
+    "Features": [
+        "TargetingLongRange"
+    ],
     "JumpJets": 0,
-    "Sinks": 20,
+    "Sinks": 40,
     "Speed": 4,
     "Type": "Mech",
-    "Tonnage": 80,
+    "Tonnage": 85,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
-                },
-                {
-                    "Ammo": "Single",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Ultra AC/10"
+                    "WeaponName": "Clan Gauss Rifle"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan ER Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan ER Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan ER Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Medium Laser"
+                    "WeaponName": "Clan ER Small Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Narc"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Zeus ZEU-SB1"
+    "Name": "Warhawk B"
 }

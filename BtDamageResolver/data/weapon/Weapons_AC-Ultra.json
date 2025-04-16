@@ -3,8 +3,8 @@
     "Name": "Ultra AC/2",
     "Type": "Ballistic",
     "Ammo": {
-      "Single": "Blank",
-      "Rapid": "Rapid4"
+      "Single": "AC-Single",
+      "Rapid": "AC-Rapid4"
     },
     "AmmoDefault": "Single",
     "AttackType": "Normal",
@@ -32,8 +32,8 @@
     "Name": "Ultra AC/5",
     "Type": "Ballistic",
     "Ammo": {
-      "Single": "Blank",
-      "Rapid": "Rapid3"
+      "Single": "AC-Single",
+      "Rapid": "AC-Rapid3"
     },
     "AmmoDefault": "Single",
     "AttackType": "Normal",
@@ -61,8 +61,8 @@
     "Name": "Ultra AC/10",
     "Type": "Ballistic",
     "Ammo": {
-      "Single": "Blank",
-      "Rapid": "Rapid2"
+      "Single": "AC-Single",
+      "Rapid": "AC-Rapid2"
     },
     "AmmoDefault": "Single",
     "AttackType": "Normal",
@@ -90,8 +90,8 @@
     "Name": "Ultra AC/20",
     "Type": "Ballistic",
     "Ammo": {
-      "Single": "Blank",
-      "Rapid": "Rapid2"
+      "Single": "AC-Single",
+      "Rapid": "AC-Rapid2"
     },
     "AmmoDefault": "Single",
     "AttackType": "Normal",
@@ -119,8 +119,8 @@
     "Name": "Clan Ultra AC/2",
     "Type": "Ballistic",
     "Ammo": {
-      "Single": "Blank",
-      "Rapid": "Rapid4"
+      "Single": "AC-Single",
+      "Rapid": "AC-Rapid4"
     },
     "AmmoDefault": "Single",
     "AttackType": "Normal",
@@ -148,8 +148,8 @@
     "Name": "Clan Ultra AC/5",
     "Type": "Ballistic",
     "Ammo": {
-      "Single": "Blank",
-      "Rapid": "Rapid3"
+      "Single": "AC-Single",
+      "Rapid": "AC-Rapid3"
     },
     "AmmoDefault": "Single",
     "AttackType": "Normal",
@@ -177,8 +177,8 @@
     "Name": "Clan Ultra AC/10",
     "Type": "Ballistic",
     "Ammo": {
-      "Single": "Blank",
-      "Rapid": "Rapid2"
+      "Single": "AC-Single",
+      "Rapid": "AC-Rapid2"
     },
     "AmmoDefault": "Single",
     "AttackType": "Normal",
@@ -206,8 +206,8 @@
     "Name": "Clan Ultra AC/20",
     "Type": "Ballistic",
     "Ammo": {
-      "Single": "Blank",
-      "Rapid": "Rapid2"
+      "Single": "AC-Single",
+      "Rapid": "AC-Rapid2"
     },
     "AmmoDefault": "Single",
     "AttackType": "Normal",
