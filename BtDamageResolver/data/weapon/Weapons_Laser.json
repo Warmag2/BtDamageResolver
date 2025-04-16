@@ -181,7 +181,7 @@
     ],
     "SpecialFeatures": [
       { "Type": "Pulse" },
-      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValid" }
     ],
     "HitModifier": -2
   },
@@ -208,7 +208,7 @@
     "RangeAerospace": "Short",
     "SpecialFeatures": [
       { "Type": "Pulse" },
-      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValid" }
     ],
     "HitModifier": -2
   },
@@ -235,7 +235,7 @@
     "RangeAerospace": "Medium",
     "SpecialFeatures": [
       { "Type": "Pulse" },
-      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValid" }
     ],
     "HitModifier": -2
   },
@@ -344,7 +344,7 @@
     ],
     "SpecialFeatures": [
       { "Type": "Pulse" },
-      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValid" }
     ],
     "HitModifier": -2
   },
@@ -374,7 +374,7 @@
     ],
     "SpecialFeatures": [
       { "Type": "Pulse" },
-      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValid" }
     ],
     "HitModifier": -2
   },
@@ -401,7 +401,7 @@
     "RangeAerospace": "Medium",
     "SpecialFeatures": [
       { "Type": "Pulse" },
-      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValid" }
     ],
     "HitModifier": -2
   },
@@ -428,7 +428,7 @@
     "RangeAerospace": "Long",
     "SpecialFeatures": [
       { "Type": "Pulse" },
-      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValid" }
     ],
     "HitModifier": -2
   },
