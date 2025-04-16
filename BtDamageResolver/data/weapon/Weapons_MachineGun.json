@@ -21,10 +21,7 @@
       "Short": 0
     },
     "UsesAmmo": true,
-    "SpecialDamage": [ { "Data": "2d6", "Type": "Burst" } ],
-    "SpecialFeatures": [
-      { "Type": "TargetingComputerValid" }
-    ]
+    "SpecialDamage": [ { "Data": "2d6", "Type": "Burst" } ]
   },
   {
     "Name": "Light Machine Gun",
@@ -48,10 +45,7 @@
       "Short": 0
     },
     "UsesAmmo": true,
-    "SpecialDamage": [ { "Data": "1d6", "Type": "Burst" } ],
-    "SpecialFeatures": [
-      { "Type": "TargetingComputerValid" }
-    ]
+    "SpecialDamage": [ { "Data": "1d6", "Type": "Burst" } ]
   },
   {
     "Name": "Heavy Machine Gun",
@@ -75,9 +69,5 @@
       "Short": 0
     },
     "UsesAmmo": true,
-    "SpecialDamage": [ { "Data": "3d6", "Type": "Burst" } ],
-    "SpecialFeatures": [
-      { "Type": "TargetingComputerValid" }
-    ]
-  }
+    "SpecialDamage": [ { "Data": "3d6", "Type": "Burst" } ]
 ]
