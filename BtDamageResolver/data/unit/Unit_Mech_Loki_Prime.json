@@ -3,7 +3,8 @@
         "ActiveProbe",
         "Ams",
         "Ecm",
-        "Searchlight"
+        "Searchlight",
+        "TargetingComputer"
     ],
     "JumpJets": 0,
     "Sinks": 26,
