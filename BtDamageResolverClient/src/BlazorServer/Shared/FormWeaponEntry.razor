@@ -108,6 +108,7 @@
         // Necessary to set this way, because otherwise disabling the controls may emit null or incorrect values upwards.
         _weaponAmmo = WeaponEntry.Ammo;
         _weaponAmount = WeaponEntry.Amount;
+        _weaponModifier = WeaponEntry.Modifier;
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
         _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
