@@ -123,6 +123,7 @@ public abstract partial class LogicUnit
             modifierArmor +
             modifierWeapon +
             weaponEntry.Modifier +
+            modifierTargetingCompuer +
             modifierUnitType +
             modifierCover +
             modifierStance +
