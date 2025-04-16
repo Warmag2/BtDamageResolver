@@ -30,7 +30,9 @@ public class WeaponEntry : WeaponEntryReference
     public WeaponEntry(WeaponEntryReference weaponReference)
     {
         Ammo = weaponReference.Ammo;
+        Amount = weaponReference.Amount;
         Id = Guid.NewGuid();
+        Modifier = weaponReference.Modifier;
         State = WeaponState.Active;
         TimeStamp = DateTime.UtcNow;
         WeaponName = weaponReference.WeaponName;
@@ -40,14 +42,6 @@ public class WeaponEntry : WeaponEntryReference
     /// The ID of this weapon entry.
     /// </summary>
     public Guid Id { get; set; }
-
-    /// <summary>
-    /// Static attack modifier for this specific weapon entry.
-    /// </summary>
-    /// <remarks>
-    /// Almost always 0. Exceptions are accurate/inaccurate weapon quirks and actuator damage.
-    /// </remarks>
-    public int Modifier { get; set; }
 
     /// <summary>
     /// The state of the weapon.
@@ -68,8 +62,10 @@ public class WeaponEntry : WeaponEntryReference
         return new WeaponEntry
         {
             Ammo = Ammo,
-            TimeStamp = DateTime.UtcNow,
+            Amount = Amount,
+            Modifier = Modifier,
             State = State,
+            TimeStamp = DateTime.UtcNow,
             WeaponName = WeaponName
         };
     }

@@ -22,6 +22,8 @@ public class WeaponEntryReference
     public WeaponEntryReference(WeaponEntry weaponEntry)
     {
         Ammo = weaponEntry.Ammo;
+        Amount = weaponEntry.Amount;
+        Modifier = weaponEntry.Modifier;
         WeaponName = weaponEntry.WeaponName;
     }
 
@@ -34,6 +36,14 @@ public class WeaponEntryReference
     /// The number of copies of this weapon1.
     /// </summary>
     public int Amount { get; set; } = 1;
+
+    /// <summary>
+    /// Static attack modifier for this specific weapon entry.
+    /// </summary>
+    /// <remarks>
+    /// Almost always 0. Exceptions are accurate/inaccurate weapon quirks and actuator damage.
+    /// </remarks>
+    public int Modifier { get; set; }
 
     /// <summary>
     /// The name of the weapon this weapon entry refers to.
@@ -49,6 +59,8 @@ public class WeaponEntryReference
         return new WeaponEntry
         {
             Ammo = Ammo,
+            Amount = Amount,
+            Modifier = Modifier,
             WeaponName = WeaponName
         };
     }
