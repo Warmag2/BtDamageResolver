@@ -345,13 +345,17 @@ public abstract partial class LogicUnit
 
     private static int GetMovementClassModifier(ILogicUnit target, Weapon weapon)
     {
+        var movementClassModifier = target.GetMovementClassModifierBasedOnUnitType();
+
         // Missile weapons ignore attacker movement modifier if the target is tagged and they have homing munitions
-        if (weapon.HasFeature(WeaponFeature.Homing, out _) && (target.Unit.Tagged || target.Unit.Narced))
+        if (movementClassModifier > 0 &&
+            weapon.HasFeature(WeaponFeature.Homing, out _) &&
+            (target.Unit.Tagged || target.Unit.Narced))
         {
             return 0;
         }
 
-        return target.GetMovementClassModifierBasedOnUnitType();
+        return movementClassModifier;
     }
 
     private static int GetMovementModifierBase(ILogicUnit target, Weapon weapon)
