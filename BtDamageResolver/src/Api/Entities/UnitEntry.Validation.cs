@@ -303,7 +303,10 @@ public partial class UnitEntry
                 case UnitFeature.BattleFists:
                 case UnitFeature.CommandUnit:
                 case UnitFeature.Cowl:
+                case UnitFeature.DirectionalTorsoMount:
+                case UnitFeature.ExposedActuators:
                 case UnitFeature.ExtendedTorsoTwist:
+                case UnitFeature.HyperExtendingActuators:
                 case UnitFeature.JettisonableWeapon:
                 case UnitFeature.Masc:
                 case UnitFeature.NoMinimalArms:
@@ -311,6 +314,7 @@ public partial class UnitEntry
                 case UnitFeature.ReinforcedLegs:
                 case UnitFeature.Stable:
                 case UnitFeature.Unbalanced:
+                case UnitFeature.WeakHeadArmor:
                 case UnitFeature.WeakLegs:
                     switch (Type)
                     {
@@ -339,6 +343,7 @@ public partial class UnitEntry
 
                     break;
                 case UnitFeature.MultiTarget:
+                case UnitFeature.TargetingComputer:
                     switch (Type)
                     {
                         case UnitType.AerospaceCapital:
@@ -370,9 +375,11 @@ public partial class UnitEntry
                     break;
                 case UnitFeature.Ams:
                 case UnitFeature.EasyToPilot:
+                case UnitFeature.ExposedWeaponLinkage:
+                case UnitFeature.FastReload:
                 case UnitFeature.HardToPilot:
-                case UnitFeature.PoorPerformance:
                 case UnitFeature.NarrowLowProfile:
+                case UnitFeature.PoorPerformance:
                 case UnitFeature.StabilizedWeapons:
                     switch (Type)
                     {

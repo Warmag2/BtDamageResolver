@@ -162,7 +162,7 @@ public enum UnitFeature
     Searchlight,
 
     /// <summary>
-    /// Running only gives -1 to hit.
+    /// Fast movement only gives -1 to hit.
     /// </summary>
     StabilizedWeapons,
 
