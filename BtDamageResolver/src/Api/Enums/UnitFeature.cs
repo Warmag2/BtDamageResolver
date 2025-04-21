@@ -82,12 +82,17 @@ public enum UnitFeature
     ExposedWeaponLinkage,
 
     /// <summary>
+    /// It is faster to reload the weapons of this unit (no effect yet).
+    /// </summary>
+    FastReload,
+
+    /// <summary>
     /// Unit is hard to pilot (no effect yet) PS: This quirk is EXACTLY THE SAME as Cramped Cockpit, so the latter is not included.
     /// </summary>
     HardToPilot,
 
     /// <summary>
-    /// Arm weapon into rear arc even with lower arm and/or hand actuators present (no effect yet).
+    /// Arm weapons can fire into rear arc even with lower arm and/or hand actuators present (no effect yet).
     /// </summary>
     HyperExtendingActuators,
 
