@@ -1,0 +1,45 @@
+{
+    "Features": [
+        "NarrowLowProfile"
+    ],
+    "JumpJets": 0,
+    "Sinks": 30,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 60,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-4"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Ostroc OSR-2D"
+}

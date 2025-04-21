@@ -1,13 +1,14 @@
 {
     "Features": [
-        "TargetingComputer",
-        "TargetingLongRange"
+        "ActiveProbe",
+        "ImprovedSensors",
+        "NarrowLowProfile"
     ],
-    "JumpJets": 0,
-    "Sinks": 40,
-    "Speed": 4,
+    "JumpJets": 7,
+    "Sinks": 20,
+    "Speed": 7,
     "Type": "Mech",
-    "Tonnage": 85,
+    "Tonnage": 25,
     "Troopers": 1,
     "WeaponBays": [
         {
@@ -15,11 +16,6 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan Gauss Rifle"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
                     "WeaponName": "Clan ER Medium Laser"
                 },
                 {
@@ -28,35 +24,25 @@
                     "WeaponName": "Clan ER Medium Laser"
                 },
                 {
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
                     "WeaponName": "Clan ER Small Laser"
-                },
-                {
-                    "Ammo": "Normal",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "SRM-6"
-                },
-                {
-                    "Ammo": "Normal",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "SRM-6"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Narc"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Warhawk B"
+    "Name": "Mist Lynx B"
 }

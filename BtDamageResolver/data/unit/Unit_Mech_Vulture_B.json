@@ -1,46 +1,31 @@
 {
     "Features": [
-        "ActiveProbe",
-        "Ams",
-        "Ecm",
-        "Searchlight",
-        "TargetingComputer"
+        "TargetingMediumRange"
     ],
     "JumpJets": 0,
-    "Sinks": 26,
+    "Sinks": 24,
     "Speed": 5,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 60,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER PPC"
+                    "WeaponName": "Clan ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Large Laser"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER PPC"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Clan LRM-20"
                 },
                 {
                     "Amount": 1,
@@ -50,16 +35,26 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Machine Gun"
+                    "WeaponName": "Clan Streak SRM-6"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Machine Gun"
+                    "WeaponName": "Clan Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Medium Pulse Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Loki Prime"
+    "Name": "Vulture B"
 }

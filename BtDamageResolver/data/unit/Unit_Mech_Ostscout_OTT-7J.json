@@ -1,0 +1,27 @@
+{
+    "Features": [
+        "ImprovedCommunications",
+        "ImprovedSensors",
+        "NarrowLowProfile",
+        "Rugged"
+    ],
+    "JumpJets": 8,
+    "Sinks": 10,
+    "Speed": 8,
+    "Type": "Mech",
+    "Tonnage": 35,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Ostscout OTT-7J"
+}

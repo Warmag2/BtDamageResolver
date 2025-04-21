@@ -1,0 +1,40 @@
+{
+    "Features": [
+        "NoMinimalArms"
+    ],
+    "JumpJets": 0,
+    "Sinks": 20,
+    "Speed": 8,
+    "Type": "Mech",
+    "Tonnage": 40,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Rapid",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Ultra AC/5"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Small Pulse Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Cicada CDA-3M"
+}

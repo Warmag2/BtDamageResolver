@@ -1,16 +1,14 @@
 {
     "Features": [
-        "ActiveProbe",
-        "Ams",
-        "Ecm",
+        "ImprovedCommunications",
         "Searchlight",
-        "TargetingComputer"
+        "TargetingAntiAir"
     ],
     "JumpJets": 0,
-    "Sinks": 26,
-    "Speed": 5,
+    "Sinks": 34,
+    "Speed": 4,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 60,
     "Troopers": 1,
     "WeaponBays": [
         {
@@ -19,47 +17,37 @@
                     "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER PPC"
+                    "WeaponName": "ER PPC"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER PPC"
+                    "WeaponName": "ER PPC"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Large Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Large Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan Streak SRM-6"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Machine Gun"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Machine Gun"
+                    "WeaponName": "Medium Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Loki Prime"
+    "Name": "Rifleman RFL-5D"
 }

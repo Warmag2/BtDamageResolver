@@ -1,14 +1,11 @@
 {
     "Features": [
-        "ActiveProbe",
-        "Ams",
-        "Ecm",
-        "Searchlight",
-        "TargetingComputer"
+        "MultiTarget",
+        "Rugged"
     ],
     "JumpJets": 0,
-    "Sinks": 26,
-    "Speed": 5,
+    "Sinks": 30,
+    "Speed": 4,
     "Type": "Mech",
     "Tonnage": 65,
     "Troopers": 1,
@@ -16,36 +13,35 @@
         {
             "Weapons": [
                 {
-                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER PPC"
+                    "WeaponName": "ER Large Laser"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER PPC"
+                    "WeaponName": "LRM-15"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan Streak SRM-6"
+                    "WeaponName": "Streak SRM-2"
                 },
                 {
                     "Amount": 1,
@@ -61,5 +57,5 @@
             "Name": "Default"
         }
     ],
-    "Name": "Loki Prime"
+    "Name": "Thunderbolt TDR-7M"
 }

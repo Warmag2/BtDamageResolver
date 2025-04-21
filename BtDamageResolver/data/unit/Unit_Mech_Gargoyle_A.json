@@ -1,16 +1,12 @@
 {
     "Features": [
-        "ActiveProbe",
-        "Ams",
-        "Ecm",
-        "Searchlight",
-        "TargetingComputer"
+        "StabilizedWeapons"
     ],
     "JumpJets": 0,
-    "Sinks": 26,
+    "Sinks": 32,
     "Speed": 5,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 80,
     "Troopers": 1,
     "WeaponBays": [
         {
@@ -30,7 +26,12 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Medium Pulse Laser"
                 },
                 {
                     "Amount": 1,
@@ -40,26 +41,11 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Clan Streak SRM-6"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Machine Gun"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Machine Gun"
+                    "WeaponName": "Clan ER Small Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Loki Prime"
+    "Name": "Gargoyle A"
 }

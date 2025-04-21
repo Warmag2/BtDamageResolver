@@ -1,0 +1,37 @@
+{
+    "Features": [
+        "ExposedActuators",
+        "NarrowLowProfile"
+    ],
+    "JumpJets": 0,
+    "Sinks": 10,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 25,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-4"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Commando CMD-2D"
+}

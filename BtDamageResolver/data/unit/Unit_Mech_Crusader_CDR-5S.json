@@ -1,14 +1,12 @@
 {
     "Features": [
-        "ActiveProbe",
-        "Ams",
-        "Ecm",
-        "Searchlight",
-        "TargetingComputer"
+        "EasyToMaintain",
+        "Rugged",
+        "StabilizedWeapons"
     ],
     "JumpJets": 0,
-    "Sinks": 26,
-    "Speed": 5,
+    "Sinks": 20,
+    "Speed": 4,
     "Type": "Mech",
     "Tonnage": 65,
     "Troopers": 1,
@@ -19,47 +17,44 @@
                     "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER PPC"
+                    "WeaponName": "LRM-15"
                 },
                 {
                     "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER PPC"
+                    "WeaponName": "LRM-15"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Clan Streak SRM-6"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Machine Gun"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Machine Gun"
+                    "WeaponName": "Flamer"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Loki Prime"
+    "Name": "Crusader CDR-5S"
 }

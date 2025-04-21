@@ -1,0 +1,35 @@
+{
+    "Features": [],
+    "JumpJets": 0,
+    "Sinks": 10,
+    "Speed": 3,
+    "Type": "VehicleTracked",
+    "Tonnage": 80,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "PPC"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Schreck PPC Carrier"
+}

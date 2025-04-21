@@ -1,0 +1,35 @@
+{
+    "Features": [
+        "Unbalanced"
+    ],
+    "JumpJets": 6,
+    "Sinks": 10,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 30,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-2"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-2"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Javelin JVN-10P"
+}

@@ -1,16 +1,13 @@
 {
     "Features": [
-        "ActiveProbe",
-        "Ams",
-        "Ecm",
-        "Searchlight",
-        "TargetingComputer"
+        "TargetingMediumRange",
+        "WeakHeadArmor"
     ],
     "JumpJets": 0,
-    "Sinks": 26,
+    "Sinks": 30,
     "Speed": 5,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 75,
     "Troopers": 1,
     "WeaponBays": [
         {
@@ -30,17 +27,7 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Clan ER Medium Laser"
+                    "WeaponName": "Clan Streak SRM-6"
                 },
                 {
                     "Amount": 1,
@@ -50,16 +37,16 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Machine Gun"
+                    "WeaponName": "Clan Streak SRM-6"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Machine Gun"
+                    "WeaponName": "Clan Streak SRM-6"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Loki Prime"
+    "Name": "Timber Wolf D"
 }
