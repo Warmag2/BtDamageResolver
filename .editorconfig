@@ -115,6 +115,9 @@ dotnet_diagnostic.S3358.severity = Warning
 # Please provide assembly versions
 dotnet_diagnostic.S3904.severity = Warning
 
+# Pascalcase in placeholders looks stupid
+dotnet_diagnostic.S6678.severity = None
+
 ##
 ## Orleans
 ##
