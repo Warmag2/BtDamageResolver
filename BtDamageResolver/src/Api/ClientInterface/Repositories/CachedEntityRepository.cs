@@ -41,11 +41,11 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         try
         {
             await _repository.AddAsync(entity);
-            _cache.Add(entity.GetId(), entity);
+            _cache.Add(entity.GetName(), entity);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add entity {EntityName} into the repository. Unknown failure.", entity.GetId());
+            _logger.LogError(ex, "Could not add entity {EntityName} into the repository. Unknown failure.", entity.GetName());
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -56,18 +56,18 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         try
         {
             await _repository.AddOrUpdateAsync(entity);
-            if (_cache.ContainsKey(entity.GetId()))
+            if (_cache.ContainsKey(entity.GetName()))
             {
-                _cache[entity.GetId()] = entity;
+                _cache[entity.GetName()] = entity;
             }
             else
             {
-                _cache.Add(entity.GetId(), entity);
+                _cache.Add(entity.GetName(), entity);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add or update entity {EntityName} in the repository. Unknown failure.", entity.GetId());
+            _logger.LogError(ex, "Could not add or update entity {EntityName} in the repository. Unknown failure.", entity.GetName());
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -127,7 +127,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
         {
             var item = _repository.Get(key);
-            _cache.Add(item.GetId(), item);
+            _cache.Add(item.GetName(), item);
         }
 
         return keys;
@@ -139,11 +139,11 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         try
         {
             await _repository.UpdateAsync(entity);
-            _cache[entity.GetId()] = entity;
+            _cache[entity.GetName()] = entity;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not update entity {EntityName} in repository. Unknown failure.", entity.GetId());
+            _logger.LogError(ex, "Could not update entity {EntityName} in repository. Unknown failure.", entity.GetName());
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -154,7 +154,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         var count = 0;
         foreach (var item in items)
         {
-            _cache.Add(item.GetId(), item);
+            _cache.Add(item.GetName(), item);
             count++;
         }
 

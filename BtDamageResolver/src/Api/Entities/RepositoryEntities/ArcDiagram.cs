@@ -22,10 +22,10 @@ public class ArcDiagram : IEntity<string>
     public UnitType UnitType { get; set; }
 
     /// <inheritdoc />
-    public string GetId() => UnitType.ToString();
+    public string GetName() => UnitType.ToString();
 
     /// <inheritdoc />
-    public void SetId(string id)
+    public void SetName(string name)
     {
         throw new InvalidOperationException("You should never have to set a Arc Diagram ID manually.");
     }

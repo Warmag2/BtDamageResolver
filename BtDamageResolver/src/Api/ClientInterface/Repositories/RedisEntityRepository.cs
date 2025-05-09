@@ -53,12 +53,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not add entity {EntityName} of type {EntityType} into redis database. Database failure with error code {Code}.", entity.GetId(), typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not add entity {EntityName} of type {EntityType} into redis database. Database failure with error code {Code}.", entity.GetName(), typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add entity {EntityName} of type {EntityType} into redis database. Unknown failure.", entity.GetId(), typeof(TEntity));
+            _logger.LogError(ex, "Could not add entity {EntityName} of type {EntityType} into redis database. Unknown failure.", entity.GetName(), typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -233,7 +233,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         try
         {
             var connection = GetConnection();
-            if (connection.KeyExists(GetKey(entity)))
+            if (await connection.KeyExistsAsync(GetKey(entity)))
             {
                 await AddAsync(entity).ConfigureAwait(false);
             }
@@ -248,12 +248,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Could not update entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", entity.GetId(), typeof(TEntity), ex.ErrorCode);
+            _logger.LogError(ex, "Could not update entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", entity.GetName(), typeof(TEntity), ex.ErrorCode);
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not update entity {EntityName} of type {EntityType}. Unknown failure.", entity.GetId(), typeof(TEntity));
+            _logger.LogError(ex, "Could not update entity {EntityName} of type {EntityType}. Unknown failure.", entity.GetName(), typeof(TEntity));
             throw new DataAccessException(DataAccessErrorCode.OperationFailure);
         }
     }
@@ -265,7 +265,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
 
     private string GetKey(TEntity entity)
     {
-        return $"{_keyPrefix}_{entity.GetId()}";
+        return $"{_keyPrefix}_{entity.GetName()}";
     }
 
     private string GetKey(string key)

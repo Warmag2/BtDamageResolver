@@ -13,7 +13,7 @@ namespace Faemiyah.BtDamageResolver.CompressionTesterApp;
 /// <summary>
 /// Main program class.
 /// </summary>
-public static class Program
+internal static class Program
 {
     /// <summary>
     /// Main program entrypoint.
@@ -41,17 +41,16 @@ acceleration and more efficient exhaust system designs.";
 
         // Compress it
         var compressed = dataHelper.Pack(originalText);
-        Console.WriteLine("Compressed data is {0} bytes", compressed.Length);
+        Console.WriteLine($"Compressed data is {compressed.Length} bytes");
 
         // Decompress it
         var decompressed = dataHelper.Unpack<string>(compressed);
-        Console.WriteLine("Decompressed data is {0} bytes", decompressed.Length);
+        Console.WriteLine($"Decompressed data is {decompressed.Length} bytes");
 
-        Console.WriteLine("Is the decompressed text the same as the original? {0}", decompressed == originalText);
+        Console.WriteLine($"Is the decompressed text the same as the original? {decompressed == originalText}");
 
         // Print it out
-        Console.WriteLine("And here is the decompressed text:");
-        Console.WriteLine(decompressed);
+        Console.WriteLine($"Decompressed text:\n{decompressed}");
 
         var originalComplexType = new ComplexType
         {
@@ -69,6 +68,6 @@ acceleration and more efficient exhaust system designs.";
         var uncompressedAsText = JsonSerializer.Serialize(originalComplexTypeUncompressed);
         Console.WriteLine(originalAsText);
         Console.WriteLine(uncompressedAsText);
-        Console.WriteLine(originalAsText.Equals(uncompressedAsText));
+        Console.WriteLine(originalAsText == uncompressedAsText);
     }
 }

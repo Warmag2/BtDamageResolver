@@ -32,7 +32,7 @@ public partial class LogicUnit
         var paperDollName = GetPaperDollNameFromAttackParameters(target, attackType, direction, GameOptions, weaponFeatures);
         var paperDoll = await GrainFactory.GetPaperDollRepository().Get(paperDollName);
 
-        return paperDoll.GetDamagePaperDoll();
+        return paperDoll.DamagePaperDoll;
     }
 
     /// <summary>

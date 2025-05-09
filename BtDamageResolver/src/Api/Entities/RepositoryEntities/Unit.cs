@@ -17,7 +17,7 @@ public class Unit : NamedEntity
     /// </summary>
     public Unit()
     {
-        WeaponBays = new List<WeaponBayReference>() { new() };
+        WeaponBays = [new()];
     }
 
     /// <summary>

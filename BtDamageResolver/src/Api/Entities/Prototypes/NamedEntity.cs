@@ -20,11 +20,11 @@ public abstract class NamedEntity : IEntity<string>
     public string Name { get; set; }
 
     /// <inheritdoc />
-    public string GetId() => Name;
+    public string GetName() => Name;
 
     /// <inheritdoc />
-    public void SetId(string id)
+    public void SetName(string name)
     {
-        Name = id;
+        Name = name;
     }
 }

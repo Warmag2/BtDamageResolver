@@ -47,13 +47,13 @@ public class CriticalDamageTable : IEntity<string>
     /// Needed because the id is concatenated from several properties in this critical damage table.
     /// </summary>
     /// <returns>The ID of this specific critical damage table.</returns>
-    public string GetId()
+    public string GetName()
     {
         return GetIdFromProperties(UnitType, Type, Location);
     }
 
     /// <inheritdoc />
-    public void SetId(string id)
+    public void SetName(string id)
     {
         throw new InvalidOperationException("You should never have to set a Critical Damage Table ID manually.");
     }

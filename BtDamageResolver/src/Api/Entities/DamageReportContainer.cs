@@ -8,16 +8,16 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 /// Helper class that contains a set of damage reports and the turns that they happened on.
 /// Also contains manipulation methods, which keep track of the timestamps of the damage reports.
 /// </summary>
-public class DamageReportCollection
+public class DamageReportContainer
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DamageReportCollection"/> class.
+    /// Initializes a new instance of the <see cref="DamageReportContainer"/> class.
     /// </summary>
-    public DamageReportCollection()
+    public DamageReportContainer()
     {
         TimeStamp = DateTime.UtcNow;
-        DamageReports = new SortedDictionary<int, List<DamageReport>>();
-        Visibility = new SortedDictionary<int, bool>();
+        DamageReports = [];
+        Visibility = [];
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class DamageReportCollection
     {
         if (!DamageReports.TryGetValue(damageReport.Turn, out var damageReportList))
         {
-            damageReportList = new List<DamageReport>();
+            damageReportList = [];
             DamageReports.Add(damageReport.Turn, damageReportList);
             Visibility.Add(damageReport.Turn, true);
         }
@@ -99,7 +99,7 @@ public class DamageReportCollection
     /// <returns>All the damage reports in this damage report collection for the specified turn, or an empty list, if none found.</returns>
     public List<DamageReport> GetReportsForTurn(int turn)
     {
-        return DamageReports.TryGetValue(turn, out var damageReportsForTurn) && damageReportsForTurn != null ? damageReportsForTurn : new List<DamageReport>();
+        return DamageReports.TryGetValue(turn, out var damageReportsForTurn) && damageReportsForTurn != null ? damageReportsForTurn : [];
     }
 
     /// <summary>
