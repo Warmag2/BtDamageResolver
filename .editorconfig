@@ -1,4 +1,25 @@
 ##
+## Actual settings
+##
+
+[*.cs]
+# File scoped namespaces reduce indentation are just a good practice
+csharp_style_namespace_declarations = file_scoped:warning
+
+# Using directive placement
+csharp_using_directive_placement = outside_namespace:error
+
+# Disallow multiple empty lines in a row
+dotnet_style_allow_multiple_blank_lines_experimental = false:warning
+
+# Tuple names are a good practice for clarity
+dotnet_style_explicit_tuple_names = true:warning
+
+# Conditionals for clarity, not enforced
+dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
+dotnet_style_prefer_conditional_expression_over_return = true:suggestion
+
+##
 ## Visual studio code analysis
 ##
 
@@ -494,39 +515,134 @@ dotnet_diagnostic.IDE0007.severity = Suggestion
 # Add missing cases to switch statement
 dotnet_diagnostic.IDE0010.severity = Warning
 
+# Add braces
+dotnet_diagnostic.IDE0011.severity = Warning
+
+# Use throw expression
+dotnet_diagnostic.IDE0016.severity = Suggestion
+
+# Use object initializers
+dotnet_diagnostic.IDE0017.severity = Suggestion
+
+# Inline variable declaration
+dotnet_diagnostic.IDE0018.severity = Suggestion
+
+# Pattern matching
+dotnet_diagnostic.IDE0019.severity = Suggestion
+
 # Collection initialization simplification needs not be suggested.
 dotnet_diagnostic.IDE0028.severity = Suggestion
 
-# Ternary operator suggestions are not needed, I'll use it when I want to
-dotnet_diagnostic.IDE0045.severity = None
+# Null check can be simplified
+dotnet_diagnostic.IDE0029.severity = Suggestion
 
-# Ternary operator suggestions are not needed, I'll use it when I want to
-dotnet_diagnostic.IDE0046.severity = None
+# Null check can be simplified
+dotnet_diagnostic.IDE0030.severity = Suggestion
 
-# Range operator is not clear coding in my opinion.
-dotnet_diagnostic.IDE0057.severity = None
+# Null propagation
+dotnet_diagnostic.IDE0031.severity = Suggestion
+
+# Require explicit tuple names
+dotnet_diagnostic.IDE0033.severity = Error
+
+# Remove unreachable code
+dotnet_diagnostic.IDE0035.severity = Suggestion
+
+# Order accessibility modifiers
+dotnet_diagnostic.IDE0036.severity = Warning
+
+# Require accessibility modifiers
+dotnet_diagnostic.IDE0040.severity = Error
+
+# Prefer is null
+dotnet_diagnostic.IDE0041.severity = Suggestion
+
+# Prefer variable deconstruction in declaration
+dotnet_diagnostic.IDE0042.severity = Suggestion
+
+# Prefer readonly
+dotnet_diagnostic.IDE0044.severity = Suggestion
+
+# Ternary operator suggestions are okay
+dotnet_diagnostic.IDE0045.severity = Suggestion
+
+# Ternary operator suggestions are okay
+dotnet_diagnostic.IDE0046.severity = Suggestion
+
+# Prefer tuple over anonymous type
+dotnet_diagnostic.IDE0050.severity = Warning
+
+# Remove unused private member
+dotnet_diagnostic.IDE0051.severity = Warning
+
+# Remove unread private member
+dotnet_diagnostic.IDE0052.severity = Warning
+
+# Prefer compound assignment
+dotnet_diagnostic.IDE0054.severity = Suggestion
+
+# Use index operator
+dotnet_diagnostic.IDE0056.severity = Suggestion
+
+# Use range operator
+dotnet_diagnostic.IDE0057.severity = Suggestion
+
+# Struct fields should be writable
+dotnet_diagnostic.IDE0064.severity = Warning
+
+# Usings outside namespace
+dotnet_diagnostic.IDE0065.severity = Error
 
 # Switch expression suggestions are fine.
 dotnet_diagnostic.IDE0066.severity = None
 
+# Add missing cases to switch expression
+dotnet_diagnostic.IDE0072.severity = Warning
+
+# Prefer compound assignment
+dotnet_diagnostic.IDE0074.severity = Suggestion
+
+# Use pattern matching
+dotnet_diagnostic.IDE0078.severity = Suggestion
+
+# Prefer nameof instead of typeof().Name
+dotnet_diagnostic.IDE0082.severity = Suggestion
+
+# Discard unnecessary equals operator
+dotnet_diagnostic.IDE0100.severity = Warning
+
+# Discard unnecessary discard operator
+dotnet_diagnostic.IDE0110.severity = Warning
+
+# Simplify LINQ
+dotnet_diagnostic.IDE0120.severity = Warning
+
+# Simplify LINQ
+dotnet_diagnostic.IDE0121.severity = Warning
+
+# Namespace must match folder structure
+dotnet_diagnostic.IDE0130.severity = Error
+
+# Namespaces should be per-file
+dotnet_diagnostic.IDE0161.severity = Error
+
+# Prefer readonly
+dotnet_diagnostic.IDE0250.severity = Suggestion
+
+# Prefer readonly
+dotnet_diagnostic.IDE0251.severity = Suggestion
+
+# Use pattern matching
+dotnet_diagnostic.IDE0260.severity = Suggestion
+
+# Null check can be simplified
+dotnet_diagnostic.IDE0270.severity = Suggestion
+
+# Use nameof()
+dotnet_diagnostic.IDE0280.severity = Suggestion
+
 # Disagree about clarity of primary constructor
 dotnet_diagnostic.IDE0290.severity = None
-
-# Collection initialization simplification needs not be suggested.
-dotnet_diagnostic.IDE0305.severity = None
-
-# Disallow multiple empty lines in a row
-dotnet_style_allow_multiple_blank_lines_experimental = false:warning
-
-# File scoped namespaces reduce indentation are just a good practice
-csharp_style_namespace_declarations = file_scoped:warning
-
-# Tuple names are a good practice for clarity
-dotnet_style_explicit_tuple_names = true:warning
-
-# Conditionals for clarity, not enforced
-dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
-dotnet_style_prefer_conditional_expression_over_return = true:suggestion
 
 ##
 ## StyleCop.Analyzers
