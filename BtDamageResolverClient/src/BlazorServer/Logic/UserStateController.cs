@@ -18,7 +18,7 @@ public class UserStateController
     private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers;
     private Dictionary<string, GameEntry> _gameEntries;
     private GameState _gameState;
-    private HashSet<Guid> _invalidUnitIds = new();
+    private HashSet<Guid> _invalidUnitIds = [];
     private ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> _unitList;
 
     /// <summary>
@@ -26,10 +26,10 @@ public class UserStateController
     /// </summary>
     public UserStateController()
     {
-        DamageReportCollection = new DamageReportCollection();
-        _gameEntries = new Dictionary<string, GameEntry>();
-        _unitList = new ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)>();
-        _targetNumbers = new ConcurrentDictionary<Guid, TargetNumberUpdate>();
+        DamageReportContainer = new DamageReportContainer();
+        _gameEntries = [];
+        _unitList = new();
+        _targetNumbers = new();
     }
 
     /// <summary>
@@ -203,7 +203,7 @@ public class UserStateController
     /// <summary>
     /// The damage reports.
     /// </summary>
-    public DamageReportCollection DamageReportCollection { get; }
+    public DamageReportContainer DamageReportContainer { get; }
 
     /// <summary>
     /// Ongoing games on the server.
