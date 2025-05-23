@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Extensions;
@@ -21,7 +20,7 @@ public static class CollectionExtensions
     {
         if (input == null)
         {
-            return new();
+            return [];
         }
 
         var returnValue = new HashSet<TType>();
@@ -45,7 +44,7 @@ public static class CollectionExtensions
     {
         if (input == null)
         {
-            return new();
+            return [];
         }
 
         var returnValue = new Dictionary<TKey, TValue>();
@@ -100,12 +99,7 @@ public static class CollectionExtensions
            return false;
         }
 
-        if (!input.TrueForAll(s => other.Exists(f => s.Equals(f))))
-        {
-           return false;
-        }
-
-        return true;
+        return input.TrueForAll(s => other.Exists(f => s.Equals(f)));
     }
 
     /// <summary>

@@ -21,8 +21,8 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     {
         TimeStamp = DateTime.UtcNow;
         Id = Guid.NewGuid();
-        Features = new HashSet<UnitFeature>();
-        WeaponBays = new List<WeaponBay>();
+        Features = [];
+        WeaponBays = [];
         Troopers = 1; // In practice, 0 is illegal in many situations and this is never bad.
     }
 

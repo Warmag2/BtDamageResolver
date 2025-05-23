@@ -27,7 +27,7 @@ public partial class LogicUnit
     /// <param name="target">The target unit logic.</param>
     /// <param name="combatAction">The combat action.</param>
     /// <returns>The cluster bonus.</returns>
-    protected int ResolveClusterBonus(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
+    protected static int ResolveClusterBonus(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
     {
         var clusterBonus = combatAction.Weapon.Type == WeaponType.Missile ?
             ResolveClusterBonusMissile(damageReport, target, combatAction) :
@@ -72,31 +72,7 @@ public partial class LogicUnit
         return clusterDamage;
     }
 
-    private static int ResolveClusterBonusNonMissile(DamageReport damageReport, CombatAction combatAction)
-    {
-        // Non-missile weapons do not care about AMS or ECM
-        var clusterBonus = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
-
-        if (clusterBonus != 0)
-        {
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster modifier for range bracket {combatAction.RangeBracket}", Number = clusterBonus });
-        }
-
-        return clusterBonus;
-    }
-
-    private static int TransformClusterRollBasedOnWeaponFeatures(DamageReport damageReport, CombatAction combatAction, int clusterRoll)
-    {
-        if (combatAction.Weapon.HasFeature(WeaponFeature.Streak, out _))
-        {
-            clusterRoll = 11;
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value by a streak weapon", Number = clusterRoll });
-        }
-
-        return clusterRoll;
-    }
-
-    private int ResolveClusterBonusMissile(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
+    private static int ResolveClusterBonusMissile(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
     {
         var clusterBonus = 0;
 
@@ -131,5 +107,29 @@ public partial class LogicUnit
         }
 
         return clusterBonus;
+    }
+
+    private static int ResolveClusterBonusNonMissile(DamageReport damageReport, CombatAction combatAction)
+    {
+        // Non-missile weapons do not care about AMS or ECM
+        var clusterBonus = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
+
+        if (clusterBonus != 0)
+        {
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster modifier for range bracket {combatAction.RangeBracket}", Number = clusterBonus });
+        }
+
+        return clusterBonus;
+    }
+
+    private static int TransformClusterRollBasedOnWeaponFeatures(DamageReport damageReport, CombatAction combatAction, int clusterRoll)
+    {
+        if (combatAction.Weapon.HasFeature(WeaponFeature.Streak, out _))
+        {
+            clusterRoll = 11;
+            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value by a streak weapon", Number = clusterRoll });
+        }
+
+        return clusterRoll;
     }
 }

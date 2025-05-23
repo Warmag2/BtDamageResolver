@@ -19,7 +19,7 @@ public class WeaponBay : WeaponBayReference
         FiringSolution = new FiringSolution();
         Id = Guid.NewGuid();
         Name = Arc.Default.ToString();
-        Weapons = new List<WeaponEntry>();
+        Weapons = [];
     }
 
     /// <summary>

@@ -37,7 +37,7 @@ public partial class LogicUnit
 
             var hitCalclulationDamageReport = new DamageReport
             {
-                Phase = weapon.GetUsePhase(),
+                Phase = weapon.UsePhase,
                 DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, weaponBay.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
                 FiringUnitId = Unit.Id,
                 FiringUnitName = Unit.Name,
@@ -52,7 +52,7 @@ public partial class LogicUnit
         }
 
         // Add damage resolution to damage reports based on combat actions
-        foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.CombatAction.Weapon.GetUsePhase()))
+        foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.CombatAction.Weapon.UsePhase))
         {
             var targetDamageReportsForPhase = new List<DamageReport>();
             var selfDamageReportsForPhase = new List<DamageReport>();

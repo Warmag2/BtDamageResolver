@@ -12,7 +12,7 @@ namespace Faemiyah.BtDamageResolver.Services.Database;
 /// <summary>
 /// The logging database access.
 /// </summary>
-public class LoggingRepository
+public class LoggingRepository : IDisposable
 {
     private readonly ILogger<LoggingRepository> _logger;
     private readonly FaemiyahClusterOptions _clusterOptions;
@@ -98,6 +98,26 @@ public class LoggingRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failure writing user log entry.");
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Disposes the connection to the database.
+    /// </summary>
+    /// <param name="dispose">Dispose managed resources.</param>
+    protected virtual void Dispose(bool dispose)
+    {
+        if (dispose)
+        {
+            _connection?.Dispose();
+            _connection = null;
         }
     }
 

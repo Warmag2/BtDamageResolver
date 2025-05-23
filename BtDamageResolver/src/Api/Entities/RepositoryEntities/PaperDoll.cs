@@ -43,6 +43,18 @@ public class PaperDoll : IEntity<string>
     public Dictionary<int, CriticalDamageTableType> CriticalDamageMapping { get; set; }
 
     /// <summary>
+    /// Gets a new damage paper doll based on this paper doll.
+    /// </summary>
+    /// <returns>A damage paper doll based on this paper doll.</returns>
+    public DamagePaperDoll DamagePaperDoll
+    {
+        get
+        {
+            return new DamagePaperDoll(this);
+        }
+    }
+
+    /// <summary>
     /// Gets the ID of the correct paper doll based on the given properties.
     /// </summary>
     /// <param name="paperDollType">The paper doll type.</param>
@@ -62,25 +74,16 @@ public class PaperDoll : IEntity<string>
     }
 
     /// <summary>
-    /// Gets a new damage paper doll based on this paper doll.
-    /// </summary>
-    /// <returns>A damage paper doll based on this paper doll.</returns>
-    public DamagePaperDoll GetDamagePaperDoll()
-    {
-        return new DamagePaperDoll(this);
-    }
-
-    /// <summary>
     /// Needed because the id is concatenated from several properties in this paperdoll.
     /// </summary>
     /// <returns>The ID of this paper doll.</returns>
-    public string GetId()
+    public string GetName()
     {
         return GetIdFromProperties(Type, AttackType, Direction, Rules);
     }
 
     /// <inheritdoc />
-    public void SetId(string id)
+    public void SetName(string id)
     {
         throw new InvalidOperationException("You should never have to set a PaperDoll Id manually.");
     }

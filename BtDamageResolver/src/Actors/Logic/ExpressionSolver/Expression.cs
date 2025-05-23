@@ -26,8 +26,8 @@ public class Expression
     {
         _outerFunction = functionType;
         _random = random;
-        _expressions = new List<Expression>();
-        _tokens = new List<Token>();
+        _expressions = [];
+        _tokens = [];
         Construct(input);
     }
 
@@ -133,7 +133,7 @@ public class Expression
         ExpressionFunction foundFunction = ExpressionFunction.None;
         string functionScope = null;
 
-        var functionName = Enum.GetNames(typeof(ExpressionFunction)).SingleOrDefault(input.StartsWith);
+        var functionName = Enum.GetNames<ExpressionFunction>().SingleOrDefault(input.StartsWith);
 
         if (functionName != null)
         {

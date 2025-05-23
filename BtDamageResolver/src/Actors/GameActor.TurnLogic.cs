@@ -138,7 +138,7 @@ public partial class GameActor
 
             // Apply all effects and heat from this turn's damage reports
             ClearUnitPenalties(true, false);
-            ModifyGameStateBasedOnDamageReports(tagDamageReports.Concat(damageReports).ToList());
+            ModifyGameStateBasedOnDamageReports([.. tagDamageReports, .. damageReports]);
 
             await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
 
@@ -225,9 +225,9 @@ public partial class GameActor
     {
         var targetNumberUpdate = new TargetNumberUpdate
         {
-            AmmoEstimate = new Dictionary<string, decimal>(),
-            AmmoWorstCase = new Dictionary<string, int>(),
-            TargetNumbers = new Dictionary<Guid, TargetNumberUpdateSingleWeapon>(),
+            AmmoEstimate = [],
+            AmmoWorstCase = [],
+            TargetNumbers = [],
             TimeStamp = DateTime.UtcNow,
             UnitId = unitEntry.Id
         };

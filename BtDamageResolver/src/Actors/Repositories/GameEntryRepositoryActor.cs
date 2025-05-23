@@ -87,7 +87,7 @@ public class GameEntryRepositoryActor : ExternalRepositoryActorBase<GameEntry, s
     {
         foreach (var entry in (await base.GetAll()).Where(gameEntry => gameEntry.TimeStamp < DateTime.UtcNow - _maxGameAge))
         {
-            await base.Delete(entry.GetId());
+            await base.Delete(entry.GetName());
         }
     }
 }
