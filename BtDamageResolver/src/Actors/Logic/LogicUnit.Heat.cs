@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -27,14 +26,9 @@ public partial class LogicUnit
 
         var weapon = await FormWeapon(weaponEntry);
 
-        if (weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
-        {
-            heatGenerated = MathExpression.Parse(rapidFeatureEntry.Data) * ResolveHeatForSingleHit(weapon, rangeBracket);
-        }
-        else
-        {
-            heatGenerated = ResolveHeatForSingleHit(weapon, rangeBracket);
-        }
+        heatGenerated = weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry)
+            ? MathExpression.Parse(rapidFeatureEntry.Data) * ResolveHeatForSingleHit(weapon, rangeBracket)
+            : ResolveHeatForSingleHit(weapon, rangeBracket);
 
         if (weapon.HasFeature(WeaponFeature.Streak, out var _))
         {
@@ -53,7 +47,7 @@ public partial class LogicUnit
         var nonWeaponDamageReport = new DamageReport
         {
             Phase = Phase.Movement,
-            DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, Direction.Front, new List<WeaponFeature>()),
+            DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, Direction.Front, []),
             FiringUnitId = Unit.Id,
             FiringUnitName = Unit.Name,
             TargetUnitId = Unit.Id,

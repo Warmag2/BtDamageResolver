@@ -27,14 +27,7 @@ public partial class LogicUnit
             return (0m, 0);
         }
 
-        if (weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
-        {
-            ammoUsed = MathExpression.Parse(rapidFeatureEntry.Data);
-        }
-        else
-        {
-            ammoUsed = 1;
-        }
+        ammoUsed = weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry) ? MathExpression.Parse(rapidFeatureEntry.Data) : 1;
 
         // If this is a multiplied weapon, multiply the ammo usage
         ammoUsed *= weaponEntry.Amount;

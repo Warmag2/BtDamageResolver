@@ -16,8 +16,8 @@ public class UnitList
     /// </summary>
     public UnitList()
     {
-        UnitIds = new List<Guid>();
-        UnitEntries = new Dictionary<Guid, UnitEntry>();
+        UnitIds = [];
+        UnitEntries = [];
     }
 
     /// <summary>

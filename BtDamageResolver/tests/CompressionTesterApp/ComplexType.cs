@@ -6,7 +6,7 @@ namespace Faemiyah.BtDamageResolver.CompressionTesterApp;
 /// <summary>
 /// Complex type for testing compression.
 /// </summary>
-public class ComplexType
+internal class ComplexType
 {
     /// <summary>
     /// Guid property.

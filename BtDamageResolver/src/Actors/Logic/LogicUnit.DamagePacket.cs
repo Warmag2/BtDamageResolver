@@ -77,10 +77,7 @@ public partial class LogicUnit
             // Only the first cluster hit applies the special damage entry, if any, so clustering does not multiply special damage
             var clusterSpecialDamageEntry = first
                 ? specialDamage.Select(s => new SpecialDamageEntry { Data = MathExpression.Parse(s.Data).ToString(), Type = s.Type }).ToList()
-                : new List<SpecialDamageEntry>
-                {
-                    new()
-                };
+                : [new()];
 
             damagePackets.Add(new DamagePacket(currentClusterSize, clusterSpecialDamageEntry));
             totalDamage -= currentClusterSize;

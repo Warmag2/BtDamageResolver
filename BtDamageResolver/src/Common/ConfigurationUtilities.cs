@@ -96,7 +96,7 @@ public static class ConfigurationUtilities
             var environmentName = GetEnvironmentName();
             var environmentOverrideFile = settingsFile.Replace(".json", $".{environmentName}.json");
 
-            ConfigurationBuilder config = new ConfigurationBuilder();
+            ConfigurationBuilder config = new();
             config.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(settingsFile);
 
             if (environmentName != null)

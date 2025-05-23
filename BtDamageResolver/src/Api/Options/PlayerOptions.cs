@@ -16,7 +16,7 @@ public class PlayerOptions
     /// </summary>
     public PlayerOptions()
     {
-        AttackLogEntryVisibility = Enum.GetValues(typeof(AttackLogEntryType)).Cast<AttackLogEntryType>().ToDictionary(a => a, a => true);
+        AttackLogEntryVisibility = Enum.GetValues<AttackLogEntryType>().ToDictionary(a => a, a => true);
     }
 
     /// <summary>

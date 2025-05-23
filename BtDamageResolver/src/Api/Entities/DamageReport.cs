@@ -16,9 +16,9 @@ public class DamageReport
     public DamageReport()
     {
         Id = Guid.NewGuid();
-        AmmoUsageAttacker = new Dictionary<string, int>();
-        AmmoUsageDefender = new Dictionary<string, int>();
-        AttackLog = new AttackLog();
+        AmmoUsageAttacker = [];
+        AmmoUsageDefender = [];
+        AttackLog = new();
         TimeStamp = DateTime.UtcNow;
     }
 

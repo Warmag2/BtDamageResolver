@@ -47,7 +47,7 @@ public class CommunicationService : GrainService, ICommunicationService
     /// <inheritdoc />
     public override Task Start()
     {
-        _logger.LogInformation("{Service} connected to redis successfully.", this.GetType());
+        _logger.LogInformation("{Service} connected to redis successfully.", GetType());
 
         return base.Start();
     }

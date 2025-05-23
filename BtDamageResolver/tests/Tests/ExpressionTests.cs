@@ -11,7 +11,7 @@ namespace Faemiyah.BtDamageResolver.Tests;
 /// Tests for math expression solver.
 /// </summary>
 [TestFixture]
-public class ExpressionTests
+internal class ExpressionTests
 {
     private const decimal Epsilon = 0.000000000001m;
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities;
@@ -8,7 +7,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 /// A special damage entry.
 /// </summary>
 [Serializable]
-[SuppressMessage("Design", "CA1067:Override Object.Equals(object) when implementing IEquatable<T>", Justification = "Never used for object comparison.")]
 public sealed class SpecialDamageEntry : IEquatable<SpecialDamageEntry>
 {
     /// <summary>
@@ -50,6 +48,12 @@ public sealed class SpecialDamageEntry : IEquatable<SpecialDamageEntry>
             Data = Data,
             Type = Type
         };
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as SpecialDamageEntry);
     }
 
     /// <inheritdoc />

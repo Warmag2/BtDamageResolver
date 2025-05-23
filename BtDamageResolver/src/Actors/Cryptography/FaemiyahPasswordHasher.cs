@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
 namespace Faemiyah.BtDamageResolver.Actors.Cryptography;
@@ -63,6 +62,6 @@ public class FaemiyahPasswordHasher : IHasher
 
     private static byte[] GetSaltedBytes(string password, byte[] salt)
     {
-        return Encoding.UTF8.GetBytes(password).Concat(salt).ToArray();
+        return [.. Encoding.UTF8.GetBytes(password), .. salt];
     }
 }

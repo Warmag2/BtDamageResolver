@@ -21,7 +21,7 @@ public partial class LogicUnit
         var damageReport = new DamageReport
         {
             Phase = phase,
-            DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, damageInstance.Direction, new List<WeaponFeature>()),
+            DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, damageInstance.Direction, []),
             FiringUnitId = selfDamage ? Unit.Id : Guid.Empty,
             FiringUnitName = selfDamage ? Unit.Name : null,
             TargetUnitId = Unit.Id,
@@ -35,7 +35,7 @@ public partial class LogicUnit
 
         var transformedDamage = TransformDamageBasedOnStance(damageReport, damageInstance.Damage);
 
-        var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, new List<SpecialDamageEntry> { new() { Type = SpecialDamageType.None } });
+        var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, [new() { Type = SpecialDamageType.None }]);
 
         await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, Target = damageInstance.UnitId }, 0);
 
@@ -142,7 +142,7 @@ public partial class LogicUnit
         var damageReport = new DamageReport
         {
             Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-            DamagePaperDoll = await GetDamagePaperDoll(this, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, new List<WeaponFeature>()),
+            DamagePaperDoll = await GetDamagePaperDoll(this, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, []),
             FiringUnitId = Unit.Id,
             FiringUnitName = Unit.Name,
             TargetUnitId = Unit.Id,
@@ -342,7 +342,7 @@ public partial class LogicUnit
                 }
 
                 // Handled earlier and transformed to regular damage, can be removed at this point.
-                if (entry.Type == SpecialDamageType.HeatConverted || entry.Type == SpecialDamageType.Burst)
+                if (entry.Type is SpecialDamageType.HeatConverted or SpecialDamageType.Burst)
                 {
                     entry.Clear();
                 }
@@ -376,7 +376,7 @@ public partial class LogicUnit
             var damageReport = new DamageReport
             {
                 Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-                DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Kick, Direction.Front, new List<WeaponFeature>()),
+                DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Kick, Direction.Front, []),
                 FiringUnitId = Unit.Id,
                 FiringUnitName = Unit.Name,
                 TargetUnitId = Unit.Id,
@@ -391,21 +391,7 @@ public partial class LogicUnit
             });
             await ApplyDamagePackets(
                 damageReport,
-                new List<DamagePacket>
-                {
-                    new()
-                    {
-                        Damage = 0,
-                        SpecialDamageEntries = new List<SpecialDamageEntry>
-                        {
-                            new()
-                            {
-                                Data = "0",
-                                Type = SpecialDamageType.Critical
-                            }
-                        }
-                    }
-                },
+                [new() { Damage = 0, SpecialDamageEntries = [new() { Data = "0", Type = SpecialDamageType.Critical }] }],
                 new FiringSolution
                 {
                     Cover = Cover.None, Direction = Direction.Front, Target = Unit.Id

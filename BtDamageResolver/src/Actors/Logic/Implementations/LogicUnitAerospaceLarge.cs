@@ -62,7 +62,7 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
         }
         else
         {
-            return new List<(Weapon, WeaponEntry)> { (weapon, new() { Modifier = weaponBay.Weapons[0].Modifier }) };
+            return [(weapon, new() { Modifier = weaponBay.Weapons[0].Modifier })];
         }
     }
 

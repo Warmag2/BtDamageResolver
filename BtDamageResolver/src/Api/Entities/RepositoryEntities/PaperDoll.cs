@@ -43,18 +43,6 @@ public class PaperDoll : IEntity<string>
     public Dictionary<int, CriticalDamageTableType> CriticalDamageMapping { get; set; }
 
     /// <summary>
-    /// Gets a new damage paper doll based on this paper doll.
-    /// </summary>
-    /// <returns>A damage paper doll based on this paper doll.</returns>
-    public DamagePaperDoll DamagePaperDoll
-    {
-        get
-        {
-            return new DamagePaperDoll(this);
-        }
-    }
-
-    /// <summary>
     /// Gets the ID of the correct paper doll based on the given properties.
     /// </summary>
     /// <param name="paperDollType">The paper doll type.</param>
@@ -71,6 +59,15 @@ public class PaperDoll : IEntity<string>
 
         // Ordered list of relevant rules as part of the ID.
         return $"{paperDollType}_{attackType}_{direction}_{string.Join('_', rules.Select(r => r.ToString()).OrderBy(r => r))}";
+    }
+
+    /// <summary>
+    /// Forms a new damage paper doll based on this paper doll.
+    /// </summary>
+    /// <returns>A damage paper doll based on this paper doll.</returns>
+    public DamagePaperDoll ToDamagePaperDoll()
+    {
+        return new DamagePaperDoll(this);
     }
 
     /// <summary>
