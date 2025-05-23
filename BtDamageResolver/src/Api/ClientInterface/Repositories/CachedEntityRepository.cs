@@ -31,7 +31,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     {
         _logger = logger;
         _repository = repository;
-        _cache = new Dictionary<TKey, TEntity>();
+        _cache = [];
         _logger.LogInformation("Filled entity cache for type {Type} with {Number} items.", typeof(TEntity).Name, FillCache().Result);
     }
 
@@ -109,7 +109,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     /// <inheritdoc />
     public List<TEntity> GetAll()
     {
-        return _cache.Values.ToList();
+        return [.. _cache.Values];
     }
 
     /// <inheritdoc />

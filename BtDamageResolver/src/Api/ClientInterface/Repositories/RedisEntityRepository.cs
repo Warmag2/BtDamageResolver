@@ -213,7 +213,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         {
             var server = GetServer();
             var keys = server.Keys(pattern: $"{_keyPrefix}*");
-            return keys.Select(k => k.ToString().Substring($"{_keyPrefix}_".Length)).ToList();
+            return keys.Select(k => k.ToString()[(_keyPrefix.Length + 1)..]).ToList();
         }
         catch (DbException ex)
         {
