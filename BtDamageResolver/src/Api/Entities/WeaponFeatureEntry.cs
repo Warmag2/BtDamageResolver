@@ -1,5 +1,6 @@
 ﻿using System;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities;
 
@@ -30,6 +31,12 @@ public sealed class WeaponFeatureEntry : IEquatable<WeaponFeatureEntry>
             Data = Data,
             Type = Type
         };
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return $"{Type}{Data}".Fnv1aHash32();
     }
 
     /// <inheritdoc />

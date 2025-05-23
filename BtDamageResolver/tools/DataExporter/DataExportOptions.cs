@@ -6,7 +6,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataExporter;
 /// Data exporting options.
 /// </summary>
 [Verb("export")]
-internal class DataExportOptions
+internal sealed class DataExportOptions
 {
     /// <summary>
     /// The folder to process.

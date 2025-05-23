@@ -14,7 +14,7 @@ public class GameActorDamageReportState
     /// </summary>
     public GameActorDamageReportState()
     {
-        DamageReports = new DamageReportContainer();
+        DamageReports = new();
     }
 
     /// <summary>
