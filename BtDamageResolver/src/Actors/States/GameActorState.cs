@@ -17,10 +17,10 @@ public class GameActorState
     public GameActorState()
     {
         TimeStamp = DateTime.UtcNow;
-        PlayerIds = new HashSet<string>();
-        Options = new GameOptions();
+        PlayerIds = [];
+        Options = new();
         Password = string.Empty;
-        PlayerStates = new SortedDictionary<string, PlayerState>();
+        PlayerStates = [];
     }
 
     /// <summary>

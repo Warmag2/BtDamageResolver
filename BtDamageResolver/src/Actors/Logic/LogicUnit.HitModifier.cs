@@ -565,12 +565,9 @@ public abstract partial class LogicUnit
 
     private int GetTargetingComputerModifier(Weapon weapon)
     {
-        if (Unit.HasFeature(UnitFeature.TargetingComputer))
+        if (Unit.HasFeature(UnitFeature.TargetingComputer) && weapon.HasFeature(WeaponFeature.TargetingComputerValid, out var _))
         {
-            if (weapon.HasFeature(WeaponFeature.TargetingComputerValid, out var _))
-            {
-                return -1;
-            }
+            return -1;
         }
 
         return 0;

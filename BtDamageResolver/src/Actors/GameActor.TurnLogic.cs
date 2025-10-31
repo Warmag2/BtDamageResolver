@@ -28,7 +28,7 @@ public partial class GameActor
     /// <returns>The primary target, or Guid.Empty if no target was found.</returns>
     private static Guid GetPrimaryTarget(UnitEntry unitEntry)
     {
-        Guid? primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.Arc == Arc.Front)?.FiringSolution.Target;
+        var primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.Arc == Arc.Front)?.FiringSolution.Target;
 
         if (primaryTargetCandidate == null)
         {
@@ -40,7 +40,7 @@ public partial class GameActor
         return primaryTargetCandidate.Value;
     }
 
-    private static void ProcessUnitHeat(List<DamageReport> damageReports, UnitEntry unit)
+    private static void ProcessUnitHeat(IReadOnlyCollection<DamageReport> damageReports, UnitEntry unit)
     {
         var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitId == unit.Id).Sum(damageReport => damageReport.AttackerHeat);
 
@@ -60,7 +60,7 @@ public partial class GameActor
         }
     }
 
-    private async Task CheckGameStateUpdateEvents(List<Guid> updatedUnits = null)
+    private async Task CheckGameStateUpdateEvents(IReadOnlyCollection<Guid> updatedUnits = null)
     {
         try
         {
@@ -138,7 +138,7 @@ public partial class GameActor
 
             // Apply all effects and heat from this turn's damage reports
             ClearUnitPenalties(true, false);
-            ModifyGameStateBasedOnDamageReports(tagDamageReports.Concat(damageReports).ToList());
+            ModifyGameStateBasedOnDamageReports([.. tagDamageReports, .. damageReports]);
 
             await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
 
@@ -225,9 +225,9 @@ public partial class GameActor
     {
         var targetNumberUpdate = new TargetNumberUpdate
         {
-            AmmoEstimate = new Dictionary<string, decimal>(),
-            AmmoWorstCase = new Dictionary<string, int>(),
-            TargetNumbers = new Dictionary<Guid, TargetNumberUpdateSingleWeapon>(),
+            AmmoEstimate = [],
+            AmmoWorstCase = [],
+            TargetNumbers = [],
             TimeStamp = DateTime.UtcNow,
             UnitId = unitEntry.Id
         };
@@ -325,7 +325,7 @@ public partial class GameActor
         return targetNumberUpdate;
     }
 
-    private void ModifyGameStateBasedOnNarcAndTag(List<DamageReport> damageReports)
+    private void ModifyGameStateBasedOnNarcAndTag(IReadOnlyCollection<DamageReport> damageReports)
     {
         // Comb through damage reports to find incoming heat damage and EMP damage effects
         foreach (var damageReport in damageReports)
@@ -347,7 +347,7 @@ public partial class GameActor
         }
     }
 
-    private void ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports)
+    private void ModifyGameStateBasedOnDamageReports(IReadOnlyCollection<DamageReport> damageReports)
     {
         // Comb through damage reports to find incoming heat damage and EMP damage effects
         foreach (var damageReport in damageReports)

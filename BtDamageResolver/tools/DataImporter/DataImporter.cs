@@ -25,7 +25,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
 /// <summary>
 /// The data importer.
 /// </summary>
-public class DataImporter
+internal sealed class DataImporter
 {
     private readonly ILogger _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -63,7 +63,7 @@ public class DataImporter
         {
             foreach (var dataObject in data)
             {
-                _logger.LogInformation("Importing Entity {Type} {Name}", dataObject.GetType(), (dataObject as IEntity<string>)?.GetId());
+                _logger.LogInformation("Importing Entity {Type} {Name}", dataObject.GetType(), (dataObject as IEntity<string>)?.GetName());
 
                 switch (dataObject)
                 {
@@ -92,8 +92,8 @@ public class DataImporter
                         var validationResult = weapon.Validate();
                         if (!validationResult.IsValid)
                         {
-                            _logger.LogError("Validation failed for weapon {Weapon}. Reason: {Reason}", weapon.GetId(), string.Join(' ', validationResult.Reasons));
-                            throw new InvalidOperationException($"Invalid data in weapon: {weapon.GetId()}");
+                            _logger.LogError("Validation failed for weapon {Weapon}. Reason: {Reason}", weapon.GetName(), string.Join(' ', validationResult.Reasons));
+                            throw new InvalidOperationException($"Invalid data in weapon: {weapon.GetName()}");
                         }
 
                         await client.GetWeaponRepository().AddOrUpdate(weapon);
@@ -174,10 +174,7 @@ public class DataImporter
                         options.Invariant = clusterOptions?.Invariant;
                         options.ConnectionString = clusterOptions?.ConnectionString;
                     })
-                    .Services.AddSerializer(serializerBuilder =>
-                    {
-                        serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
-                    })
+                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver")))
                     .ConfigureJsonSerializerOptions();
             }).Build();
 

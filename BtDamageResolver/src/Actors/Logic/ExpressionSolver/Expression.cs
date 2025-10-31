@@ -26,8 +26,8 @@ public class Expression
     {
         _outerFunction = functionType;
         _random = random;
-        _expressions = new List<Expression>();
-        _tokens = new List<Token>();
+        _expressions = [];
+        _tokens = [];
         Construct(input);
     }
 
@@ -60,7 +60,7 @@ public class Expression
 
             foreach (var token in new[] { Token.Dice, Token.Exponent, Token.Divide, Token.Multiply })
             {
-                for (int ii = 0; ii < _tokens.Count; ii++)
+                for (var ii = 0; ii < _tokens.Count; ii++)
                 {
                     if (_tokens[ii] == token)
                     {
@@ -114,8 +114,8 @@ public class Expression
 
             if (depth == 0)
             {
-                subExpression = input.Substring(1, ii - 1);
-                remaining = input.Substring(ii + 1);
+                subExpression = input[1..ii];
+                remaining = input[(ii + 1)..];
                 break;
             }
         }
@@ -130,16 +130,16 @@ public class Expression
 
     private static (string SubExpression, ExpressionFunction FunctionType, string Remaining) ExtractFunctionType(string input)
     {
-        ExpressionFunction foundFunction = ExpressionFunction.None;
+        var foundFunction = ExpressionFunction.None;
         string functionScope = null;
 
-        var functionName = Enum.GetNames(typeof(ExpressionFunction)).SingleOrDefault(input.StartsWith);
+        var functionName = Enum.GetNames<ExpressionFunction>().SingleOrDefault(input.StartsWith);
 
         if (functionName != null)
         {
             foundFunction = Enum.Parse<ExpressionFunction>(functionName);
             var index = input.IndexOf('(');
-            functionScope = input.Substring(index);
+            functionScope = input[index..];
         }
 
         if (string.IsNullOrWhiteSpace(functionScope))
@@ -211,7 +211,7 @@ public class Expression
         {
             _expressions.Add(new Expression(_random, "0"));
             _tokens.Add((Token)input[0]);
-            input = input.Substring(1);
+            input = input[1..];
         }
 
         while (input.Length > 0)
@@ -226,10 +226,10 @@ public class Expression
 
                     if (ii != 0)
                     {
-                        _expressions.Add(new Expression(decimal.Parse(input.Substring(0, ii))));
+                        _expressions.Add(new Expression(decimal.Parse(input[..ii])));
                     }
 
-                    input = input.Substring(ii + 1);
+                    input = input[(ii + 1)..];
                     nothingFound = false;
                     break;
                 }

@@ -20,35 +20,35 @@ public interface IPlayerActor : IGrainWithStringKey
     /// method returns a success.
     /// </remarks>
     /// <returns><b>True</b> if the connection request succeeded, <b>false</b> otherwise.</returns>
-    public Task<bool> Connect(string password);
+    Task<bool> Connect(string password);
 
     /// <summary>
     /// Connect to the selected player actor.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns><b>True</b> if the connection request succeeded, <b>false</b> otherwise.</returns>
-    public Task<bool> Connect(Guid authenticationToken);
+    Task<bool> Connect(Guid authenticationToken);
 
     /// <summary>
     /// Disconnect the selected player actor from all games and external data endpoints.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns><b>True</b> if the player actor was disconnected successfully, <b>false</b> otherwise or if the player actor did not exist previously.</returns>
-    public Task<bool> Disconnect(Guid authenticationToken);
+    Task<bool> Disconnect(Guid authenticationToken);
 
     /// <summary>
     /// Forces a ready state for all players in the same game as you, provided you have the authority.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns><b>True</b> if the state was successfully forced, <b>false</b> otherwise.</returns>
-    public Task<bool> ForceReady(Guid authenticationToken);
+    Task<bool> ForceReady(Guid authenticationToken);
 
     /// <summary>
     /// Gets the ID of the game this player is currently in.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns>The ID of the game this player is currently in, or null, if not connected to a game.</returns>
-    public Task<string> GetGameId(Guid authenticationToken);
+    Task<string> GetGameId(Guid authenticationToken);
 
     /// <summary>
     /// Join a game. If successful, the game ID and password are stored.
@@ -57,7 +57,7 @@ public interface IPlayerActor : IGrainWithStringKey
     /// <param name="gameId">The game id to connect to.</param>
     /// <param name="password">The password for the game.</param>
     /// <returns><b>True</b> if the client successfully connected to the game, <b>false</b> otherwise.</returns>
-    public Task<bool> JoinGame(Guid authenticationToken, string gameId, string password);
+    Task<bool> JoinGame(Guid authenticationToken, string gameId, string password);
 
     /// <summary>
     /// Kicks a player from the game you are currently in, provided you have the authority.
@@ -65,14 +65,14 @@ public interface IPlayerActor : IGrainWithStringKey
     /// <param name="authenticationToken">The authentication token.</param>
     /// <param name="playerId">The player id to kick.</param>
     /// <returns><b>True</b> if the player was successfully kicked, <b>false</b> otherwise.</returns>
-    public Task<bool> KickPlayer(Guid authenticationToken, string playerId);
+    Task<bool> KickPlayer(Guid authenticationToken, string playerId);
 
     /// <summary>
     /// Leave the current game.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns><b>True</b> if the client successfully left the game, <b>false</b> otherwise.</returns>
-    public Task<bool> LeaveGame(Guid authenticationToken);
+    Task<bool> LeaveGame(Guid authenticationToken);
 
     /// <summary>
     /// Leave the current game.
@@ -81,35 +81,35 @@ public interface IPlayerActor : IGrainWithStringKey
     /// Overload for game actors to use without authentication.
     /// </remarks>
     /// <returns><b>True</b> if the client successfully left the game, <b>false</b> otherwise.</returns>
-    public Task<bool> LeaveGame();
+    Task<bool> LeaveGame();
 
     /// <summary>
     /// Request a full list of damage reports from the game the player is currently connected to.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns><b>True</b> if the damage reports were successfully requested, <b>false</b> otherwise.</returns>
-    public Task<bool> RequestDamageReports(Guid authenticationToken);
+    Task<bool> RequestDamageReports(Guid authenticationToken);
 
     /// <summary>
     /// Request the options for the game this player is in.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns><b>True</b> if the game options were successfully requested, <b>false</b> otherwise.</returns>
-    public Task<bool> RequestGameOptions(Guid authenticationToken);
+    Task<bool> RequestGameOptions(Guid authenticationToken);
 
     /// <summary>
     /// Request a full game state from the game the player is currently connected to.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns><b>True</b> if the damage reports were successfully requested, <b>false</b> otherwise.</returns>
-    public Task<bool> RequestGameState(Guid authenticationToken);
+    Task<bool> RequestGameState(Guid authenticationToken);
 
     /// <summary>
     /// Request the options for this player.
     /// </summary>
     /// <param name="authenticationToken">The authentication token.</param>
     /// <returns><b>True</b> if the player options were successfully requested, <b>false</b> otherwise.</returns>
-    public Task<bool> RequestPlayerOptions(Guid authenticationToken);
+    Task<bool> RequestPlayerOptions(Guid authenticationToken);
 
     /// <summary>
     /// Process a damage instance.
@@ -117,7 +117,7 @@ public interface IPlayerActor : IGrainWithStringKey
     /// <param name="authenticationToken">The authentication token.</param>
     /// <param name="damageInstance">The damage request.</param>
     /// <returns><b>True</b> if the damage instance was successfully processed, <b>false</b> otherwise.</returns>
-    public Task<bool> SendDamageInstance(Guid authenticationToken, DamageInstance damageInstance);
+    Task<bool> SendDamageInstance(Guid authenticationToken, DamageInstance damageInstance);
 
     /// <summary>
     /// Update the options for the game this player is in.
@@ -125,7 +125,7 @@ public interface IPlayerActor : IGrainWithStringKey
     /// <param name="authenticationToken">The authentication token.</param>
     /// <param name="gameOptions">The game options.</param>
     /// <returns><b>True</b> if the options were successfully updated, <b>false</b> otherwise.</returns>
-    public Task<bool> SendGameOptions(Guid authenticationToken, GameOptions gameOptions);
+    Task<bool> SendGameOptions(Guid authenticationToken, GameOptions gameOptions);
 
     /// <summary>
     /// Update the options for this player.
@@ -133,7 +133,7 @@ public interface IPlayerActor : IGrainWithStringKey
     /// <param name="authenticationToken">The authentication token.</param>
     /// <param name="playerOptions">The player options.</param>
     /// <returns><b>True</b> if the options were successfully updated, <b>false</b> otherwise.</returns>
-    public Task<bool> SendPlayerOptions(Guid authenticationToken, PlayerOptions playerOptions);
+    Task<bool> SendPlayerOptions(Guid authenticationToken, PlayerOptions playerOptions);
 
     /// <summary>
     /// Update the state of this Player actor with data from the client.
@@ -141,5 +141,5 @@ public interface IPlayerActor : IGrainWithStringKey
     /// <param name="authenticationToken">The authentication token.</param>
     /// <param name="playerState">A <see cref="PlayerState"/> object containing the new state for this player.</param>
     /// <returns><b>True</b> if the player state was successfully updated and the game accepted it, <b>false</b> otherwise.</returns>
-    public Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState);
+    Task<bool> SendPlayerState(Guid authenticationToken, PlayerState playerState);
 }

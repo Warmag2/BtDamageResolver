@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
 namespace Faemiyah.BtDamageResolver.Actors.Cryptography;
@@ -45,7 +44,7 @@ public class FaemiyahPasswordHasher : IHasher
             return false;
         }
 
-        for (int ii = 0; ii < hash1.Length; ii++)
+        for (var ii = 0; ii < hash1.Length; ii++)
         {
             if (hash1[ii] != hash2[ii])
             {
@@ -63,6 +62,6 @@ public class FaemiyahPasswordHasher : IHasher
 
     private static byte[] GetSaltedBytes(string password, byte[] salt)
     {
-        return Encoding.UTF8.GetBytes(password).Concat(salt).ToArray();
+        return [.. Encoding.UTF8.GetBytes(password), .. salt];
     }
 }

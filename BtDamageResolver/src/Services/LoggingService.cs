@@ -57,7 +57,7 @@ public class LoggingService : GrainService, ILoggingService
     {
         _writerActive = true;
         Task.Run(LogWriteLoop);
-        _logger.LogInformation("{Service} running log writing loop.", this.GetType());
+        _logger.LogInformation("{Service} running log writing loop.", GetType());
 
         return base.Start();
     }

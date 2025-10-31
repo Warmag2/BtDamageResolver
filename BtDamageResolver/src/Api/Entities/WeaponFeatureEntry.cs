@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities;
 
@@ -8,7 +8,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 /// A weapon feature entry.
 /// </summary>
 [Serializable]
-[SuppressMessage("Design", "CA1067:Override Object.Equals(object) when implementing IEquatable<T>", Justification = "Never used for object comparison.")]
 public sealed class WeaponFeatureEntry : IEquatable<WeaponFeatureEntry>
 {
     /// <summary>
@@ -32,6 +31,18 @@ public sealed class WeaponFeatureEntry : IEquatable<WeaponFeatureEntry>
             Data = Data,
             Type = Type
         };
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return $"{Type}{Data}".Fnv1aHash32();
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as WeaponFeatureEntry);
     }
 
     /// <inheritdoc />

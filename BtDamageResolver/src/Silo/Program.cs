@@ -33,10 +33,10 @@ namespace Faemiyah.BtDamageResolver.Silo;
 /// <summary>
 /// Main program class.
 /// </summary>
-public static class Program
+internal static class Program
 {
     private static readonly ManualResetEvent SiloStopped = new(false);
-    private static readonly object SyncLock = new();
+    private static readonly Lock SyncLock = new();
     private static readonly CancellationTokenSource CancellationTokenSource = new();
     private static IHost _siloHost;
     private static bool _siloStopping;
@@ -44,7 +44,8 @@ public static class Program
     /// <summary>
     /// Main entry point.
     /// </summary>
-    public static void Main()
+    /// <returns>A task which finishes when the program finishes.</returns>
+    public static async Task Main()
     {
         SetupApplicationShutdown();
 
@@ -52,11 +53,11 @@ public static class Program
 
         try
         {
-            _siloHost.StartAsync(CancellationTokenSource.Token).Wait(CancellationTokenSource.Token);
+            await _siloHost.StartAsync(CancellationTokenSource.Token);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
-            Console.WriteLine("Thor Gateway RF silo startup interrupted. Shutting down.");
+            Console.WriteLine(ex);
         }
 
         // Wait for the silo to completely shutdown before exiting.
@@ -95,9 +96,9 @@ public static class Program
             // Allow 30 to finish up gracefully, otherwise shut down forcefully.
             await _siloHost.StopAsync(new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Console.WriteLine(e);
+            Console.WriteLine(ex);
 
             // If silo is in starting state, cancel the cancellation token to interrupt it.
             await CancellationTokenSource.CancelAsync();
@@ -113,21 +114,18 @@ public static class Program
         var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>();
 
         var siloHostBuilder = Host.CreateDefaultBuilder()
-            .ConfigureAppConfiguration((_, config) => { config.AddConfiguration(configuration); })
+            .ConfigureAppConfiguration((_, config) => config.AddConfiguration(configuration))
             .UseOrleans(siloBuilder =>
             {
                 siloBuilder
-                    .Services.AddSerializer(serializerBuilder =>
-                    {
-                        serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
-                    });
+                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver")));
                 siloBuilder
                     .Configure<ClusterOptions>(options =>
                     {
                         options.ClusterId = "faemiyah";
                         options.ServiceId = "Resolver";
                     })
-                    .Configure<GrainCollectionOptions>(options => { options.CollectionAge = TimeSpan.FromDays(1); })
+                    .Configure<GrainCollectionOptions>(options => options.CollectionAge = TimeSpan.FromDays(1))
                     .Configure<ClusterMembershipOptions>(options =>
                     {
                         options.DefunctSiloExpiration = TimeSpan.FromHours(1);

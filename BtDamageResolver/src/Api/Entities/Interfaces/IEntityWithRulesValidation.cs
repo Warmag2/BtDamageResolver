@@ -11,5 +11,5 @@ public interface IEntityWithRulesValidation
     /// Validate an object and return a rules validation result.
     /// </summary>
     /// <returns>The rules validation result.</returns>
-    public RulesValidationResult Validate();
+    RulesValidationResult Validate();
 }

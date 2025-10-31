@@ -10,14 +10,14 @@ public interface IEntity<TKey>
     where TKey : IComparable
 {
     /// <summary>
-    /// Gets the base identifier of the entity.
+    /// Gets the base database identifier of the entity.
     /// </summary>
-    /// <returns>The base identifier of the entity.</returns>
-    public TKey GetId();
+    /// <returns>The base database identifier of the entity.</returns>
+    TKey GetName();
 
     /// <summary>
-    /// Sets the base identifier of the IEntity.
+    /// Sets the base database identifier of the IEntity.
     /// </summary>
-    /// <param name="id">The id to set the base identifier to.</param>
-    public void SetId(TKey id);
+    /// <param name="name">The id to set the base identifier to.</param>
+    void SetName(TKey name);
 }

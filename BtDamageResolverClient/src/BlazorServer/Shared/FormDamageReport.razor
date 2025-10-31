@@ -150,7 +150,7 @@
 
     public void Delete()
     {
-        _userStateController.DamageReportCollection.Remove(DamageReport);
+        _userStateController.DamageReportContainer.Remove(DamageReport);
         _userStateController.NotifyDamageReportsChanged();
     }
 

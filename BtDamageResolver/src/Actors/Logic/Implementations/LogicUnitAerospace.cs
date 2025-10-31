@@ -78,7 +78,7 @@ public abstract class LogicUnitAerospace : LogicUnit
     /// <inheritdoc />
     protected override int GetOwnMovementModifier()
     {
-        return Unit.MovementClass == MovementClass.OutOfControl || Unit.MovementClass == MovementClass.Fast ? 2 : 0;
+        return Unit.MovementClass is MovementClass.OutOfControl or MovementClass.Fast ? 2 : 0;
     }
 
     /// <inheritdoc />
@@ -128,7 +128,7 @@ public abstract class LogicUnitAerospace : LogicUnit
         if (combatAction.Weapon.Type == WeaponType.Missile && damage == 0)
         {
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile weapon has been shot down and does no damage" });
-            return new List<DamagePacket>();
+            return [];
         }
 
         if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))

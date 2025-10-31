@@ -23,7 +23,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataExporter;
 /// <summary>
 /// The data exporter.
 /// </summary>
-public class DataExporter
+internal sealed class DataExporter
 {
     private readonly ILogger _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -73,7 +73,7 @@ public class DataExporter
 
             foreach (var dataObject in data)
             {
-                var dataName = (dataObject as IEntity<string>)?.GetId();
+                var dataName = (dataObject as IEntity<string>)?.GetName();
 
                 _logger.LogInformation("Exporting Entity {Type} {Name}", dataObject.GetType(), dataName);
 
@@ -124,10 +124,7 @@ public class DataExporter
                         options.Invariant = clusterOptions?.Invariant;
                         options.ConnectionString = clusterOptions?.ConnectionString;
                     })
-                    .Services.AddSerializer(serializerBuilder =>
-                    {
-                        serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
-                    })
+                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver")))
                     .ConfigureJsonSerializerOptions();
             }).Build();
 

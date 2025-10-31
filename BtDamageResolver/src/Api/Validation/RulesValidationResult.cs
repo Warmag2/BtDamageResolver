@@ -13,7 +13,7 @@ public class RulesValidationResult
     public RulesValidationResult()
     {
         IsValid = true;
-        Reasons = new List<string>();
+        Reasons = [];
     }
 
     /// <summary>

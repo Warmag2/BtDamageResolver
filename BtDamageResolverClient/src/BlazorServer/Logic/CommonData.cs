@@ -19,12 +19,11 @@ public class CommonData
     private const string InfantryWeaponPrefix = "Infantry ";
     private const string MeleeWeaponPrefix = "Melee ";
 
-    private static readonly int RangeShort = 6;
+    private const int RangeShort = 6;
+    private const int RangeShortCapital = 12;
     private static readonly int[] RangesMedium = [6, 12];
     private static readonly int[] RangesLong = [6, 12, 20];
     private static readonly int[] RangesExtreme = [6, 12, 20, 25];
-
-    private static readonly int RangeShortCapital = 12;
     private static readonly int[] RangesMediumCapital = [12, 24];
     private static readonly int[] RangesLongCapital = [12, 24, 40];
     private static readonly int[] RangesExtremeCapital = [12, 24, 40, 50];
@@ -83,13 +82,13 @@ public class CommonData
         DictionaryArc = arcRepository.GetAll().OrderBy(a => a.UnitType).ToDictionary(a => a.UnitType);
         DictionaryAmmo = ammoRepository.GetAll().OrderBy(a => a.Name).ToDictionary(a => a.Name);
         DictionaryClusterTable = clusterTableRepository.GetAll().OrderBy(w => w.Name).ToDictionary(w => w.Name);
-        DictionaryCriticalDamageTable = criticalDamageTableRepository.GetAll().OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
-        DictionaryPaperDoll = paperDollRepository.GetAll().OrderBy(w => w.GetId()).ToDictionary(w => w.GetId());
+        DictionaryCriticalDamageTable = criticalDamageTableRepository.GetAll().OrderBy(w => w.GetName()).ToDictionary(w => w.GetName());
+        DictionaryPaperDoll = paperDollRepository.GetAll().OrderBy(w => w.GetName()).ToDictionary(w => w.GetName());
         DictionaryFeature = new SortedDictionary<string, UnitFeature>(Enum.GetValues<UnitFeature>().ToDictionary(q => q.ToString()));
         DictionaryWeapon = weaponRepository.GetAll().OrderBy(w => w.Name).ToDictionary(w => w.Name);
         _mapWeaponNamesNormal = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix) && !w.StartsWith(MeleeWeaponPrefix)).ToDictionary(w => w));
-        _mapWeaponNamesBattleArmor = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(BattleArmorWeaponPrefix)).ToDictionary(w => w.Substring(BattleArmorWeaponPrefix.Length), w => w));
-        _mapWeaponNamesInfantry = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w.Substring(InfantryWeaponPrefix.Length), w => w));
+        _mapWeaponNamesBattleArmor = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(BattleArmorWeaponPrefix)).ToDictionary(w => w[BattleArmorWeaponPrefix.Length..], w => w));
+        _mapWeaponNamesInfantry = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w[InfantryWeaponPrefix.Length..], w => w));
         _mapWeaponNamesMech = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w));
         _mapWeaponNamesVehicle = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix) && !w.StartsWith(MeleeWeaponPrefix)).ToDictionary(w => w))
         {
@@ -211,7 +210,7 @@ public class CommonData
         {
             FiringSolution = new FiringSolution(),
             Name = "Default",
-            Weapons = new List<WeaponEntry> { GetDefaultWeapon(unitType) }
+            Weapons = [GetDefaultWeapon(unitType)]
         };
     }
 
@@ -244,12 +243,12 @@ public class CommonData
         switch (unit.Type)
         {
             case UnitType.Building:
-                return GenerateOptions(new List<MovementClass> { MovementClass.Immobile });
+                return GenerateOptions([MovementClass.Immobile]);
             case UnitType.AerospaceCapital:
             case UnitType.AerospaceDropshipAerodyne:
             case UnitType.AerospaceDropshipSpheroid:
             case UnitType.AerospaceFighter:
-                return GenerateOptions(new List<MovementClass> { MovementClass.Immobile, MovementClass.Normal, MovementClass.Fast, MovementClass.OutOfControl });
+                return GenerateOptions([MovementClass.Immobile, MovementClass.Normal, MovementClass.Fast, MovementClass.OutOfControl]);
             case UnitType.BattleArmor:
             case UnitType.Infantry:
                 var listOfModesInfantry = new List<MovementClass> { MovementClass.Normal };
@@ -676,14 +675,7 @@ public class CommonData
     {
         if (allChangeLocations.Count == 1 && allChangeLocations[0] == 0)
         {
-            return new List<PickBracket>
-            {
-                new()
-                {
-                    Begin = 0,
-                    End = 0
-                }
-            };
+            return [new() { Begin = 0, End = 0 }];
         }
 
         allChangeLocations = allChangeLocations.Distinct().ToList();

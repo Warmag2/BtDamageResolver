@@ -9,7 +9,7 @@
     var showMovement = _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false;
 }
 
-@if (_userStateController.DamageReportCollection.IsEmpty() || _userStateController.PlayerState == null)
+@if (_userStateController.DamageReportContainer.IsEmpty() || _userStateController.PlayerState == null)
 {
     <h3>
         No damagereports available
@@ -19,7 +19,7 @@ else
 {
     @if (OnlyNewest)
     {
-        @foreach (var damageReport in _userStateController.DamageReportCollection.DamageReports.Last().Value)
+        @foreach (var damageReport in _userStateController.DamageReportContainer.DamageReports.Last().Value)
         {
             if (_userStateController.PlayerState.IsSpectator || _userStateController.DamageReportConcernsPlayer(damageReport))
             {
@@ -34,10 +34,10 @@ else
     }
     else
     {
-        @foreach (var singleTurnDamageReports in _userStateController.DamageReportCollection.DamageReports.Reverse())
+        @foreach (var singleTurnDamageReports in _userStateController.DamageReportContainer.DamageReports.Reverse())
         {
-            <button class="resolver_button_accordion @VisualStyleController.GetActiveClass(_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))" @onclick="@(e => _userStateController.DamageReportCollection.ToggleVisible(singleTurnDamageReports.Key))"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Turn @singleTurnDamageReports.Key</button>
-            <div class="resolver_div_accordioncontent @VisualStyleController.GetActiveClass(_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))" style="@VisualStyleController.HideElement(!_userStateController.DamageReportCollection.Visible(singleTurnDamageReports.Key))">
+            <button class="resolver_button_accordion @VisualStyleController.GetActiveClass(_userStateController.DamageReportContainer.Visible(singleTurnDamageReports.Key))" @onclick="@(e => _userStateController.DamageReportContainer.ToggleVisible(singleTurnDamageReports.Key))"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>Turn @singleTurnDamageReports.Key</button>
+            <div class="resolver_div_accordioncontent @VisualStyleController.GetActiveClass(_userStateController.DamageReportContainer.Visible(singleTurnDamageReports.Key))" style="@VisualStyleController.HideElement(!_userStateController.DamageReportContainer.Visible(singleTurnDamageReports.Key))">
                @foreach (var damageReport in singleTurnDamageReports.Value)
                {
                    if (showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport))

@@ -116,7 +116,7 @@
         {
             var games = _commonData.GetGameEntries();
 
-            _userStateController.GameEntries = games.ToDictionary(s => s.GetId(), s => s);
+            _userStateController.GameEntries = games.ToDictionary(s => s.GetName(), s => s);
 
             InvokeStateChange();
         }

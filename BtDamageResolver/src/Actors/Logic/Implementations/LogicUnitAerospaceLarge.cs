@@ -45,7 +45,7 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
     }
 
     /// <inheritdoc />
-    protected override async Task<List<(Weapon Weapon, WeaponEntry WeaponEntry)>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
+    protected override async Task<IReadOnlyCollection<(Weapon Weapon, WeaponEntry WeaponEntry)>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
     {
         if (!weaponBay.Weapons.All(w => w.Modifier == weaponBay.Weapons[0].Modifier))
         {
@@ -62,7 +62,7 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
         }
         else
         {
-            return new List<(Weapon, WeaponEntry)> { (weapon, new() { Modifier = weaponBay.Weapons[0].Modifier }) };
+            return [(weapon, new() { Modifier = weaponBay.Weapons[0].Modifier })];
         }
     }
 

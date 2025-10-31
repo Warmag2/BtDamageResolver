@@ -48,7 +48,7 @@ public interface ILogicUnit
     /// <param name="criticalDamageTableType">The type of the critical damage table to use.</param>
     /// <param name="location">The location the attack struck.</param>
     /// <returns>The critical damage table for these attack parameters.</returns>
-    public Task<CriticalDamageTable> GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location);
+    Task<CriticalDamageTable> GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location);
 
     /// <summary>
     /// Gets the damage paper doll for a specific attack.
@@ -202,7 +202,7 @@ public interface ILogicUnit
     /// <param name="processOnlyTags">Only process weapons with tagging features.</param>
     /// <param name="isPrimaryTarget">Does this bay attack the primary target.</param>
     /// <returns>A set of damage reports caused by this unit attacking.</returns>
-    Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget);
+    Task<IReadOnlyCollection<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget);
 
     /// <summary>
     /// Resolve the given damage instance.

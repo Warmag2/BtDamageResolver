@@ -69,7 +69,7 @@ public class LogicUnitInfantry : LogicUnitTrooper
                 damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Troopers hit count with AP weapons against infantry", Number = hits });
 
                 var burstDamage = 0;
-                for (int ii = 0; ii < hits; ii++)
+                for (var ii = 0; ii < hits; ii++)
                 {
                     var addDamage = MathExpression.Parse(battleArmorBurstFeatureEntry.Data);
                     damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Bonus damage to infantry", Number = addDamage });

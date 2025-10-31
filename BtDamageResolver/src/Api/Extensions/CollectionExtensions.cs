@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Extensions;
@@ -21,7 +20,7 @@ public static class CollectionExtensions
     {
         if (input == null)
         {
-            return new();
+            return [];
         }
 
         var returnValue = new HashSet<TType>();
@@ -45,7 +44,7 @@ public static class CollectionExtensions
     {
         if (input == null)
         {
-            return new();
+            return [];
         }
 
         var returnValue = new Dictionary<TKey, TValue>();
@@ -76,7 +75,14 @@ public static class CollectionExtensions
 
         foreach (var key in input.Keys)
         {
-            if (input[key].CompareTo(other[key]) != 0)
+            if (other.TryGetValue(key, out var otherValue))
+            {
+                if (input[key].CompareTo(otherValue) != 0)
+                {
+                    return false;
+                }
+            }
+            else
             {
                 return false;
             }
@@ -100,12 +106,7 @@ public static class CollectionExtensions
            return false;
         }
 
-        if (!input.TrueForAll(s => other.Exists(f => s.Equals(f))))
-        {
-           return false;
-        }
-
-        return true;
+        return input.TrueForAll(s => other.Exists(f => s.Equals(f)));
     }
 
     /// <summary>
@@ -237,12 +238,12 @@ public static class CollectionExtensions
 
             var returnValue = new Dictionary<RangeBracket, int>();
 
-            for (int ii = 0; ii <= (int)fillUntil; ii++)
+            for (var ii = 0; ii <= (int)fillUntil; ii++)
             {
                 returnValue[(RangeBracket)ii] = valueToFillWith;
             }
 
-            for (int ii = (int)fillUntil + 1; ii <= (int)RangeBracket.OutOfRange; ii++)
+            for (var ii = (int)fillUntil + 1; ii <= (int)RangeBracket.OutOfRange; ii++)
             {
                 returnValue[(RangeBracket)ii] = 0;
             }
@@ -275,9 +276,7 @@ public static class CollectionExtensions
         {
             if (acceptNull)
             {
-#pragma warning disable S1168 // Empty arrays and collections should be returned instead of null
                 return null;
-#pragma warning restore S1168 // Empty arrays and collections should be returned instead of null
             }
 
             return Enum.GetValues(typeof(TKey)).Cast<TKey>().ToDictionary(k => k, k => valueToFillWith);

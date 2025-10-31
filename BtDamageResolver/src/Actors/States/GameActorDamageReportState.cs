@@ -14,13 +14,13 @@ public class GameActorDamageReportState
     /// </summary>
     public GameActorDamageReportState()
     {
-        DamageReports = new DamageReportCollection();
+        DamageReports = new();
     }
 
     /// <summary>
     /// The damage reports.
     /// </summary>
-    public DamageReportCollection DamageReports { get; set; }
+    public DamageReportContainer DamageReports { get; set; }
 
     /// <summary>
     /// Reset the state.

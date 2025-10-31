@@ -41,7 +41,7 @@ public class GameEntryRepositoryActor : ExternalRepositoryActorBase<GameEntry, s
     }
 
     /// <inheritdoc/>
-    public override async Task<List<GameEntry>> GetAll()
+    public override async Task<IReadOnlyCollection<GameEntry>> GetAll()
     {
         await CleanupOldEntries();
 
@@ -87,7 +87,7 @@ public class GameEntryRepositoryActor : ExternalRepositoryActorBase<GameEntry, s
     {
         foreach (var entry in (await base.GetAll()).Where(gameEntry => gameEntry.TimeStamp < DateTime.UtcNow - _maxGameAge))
         {
-            await base.Delete(entry.GetId());
+            await base.Delete(entry.GetName());
         }
     }
 }

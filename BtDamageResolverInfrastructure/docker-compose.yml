@@ -1,6 +1,4 @@
-version: "3"
-
-services:  
+services:
   # Battletech Damage Resolver (orleans silo)
   resolver:
     container_name: resolver
@@ -81,7 +79,7 @@ services:
     ports:
       - 65432:5432
     volumes:
-      - orleansdb-data:/var/lib/postgresql/data
+      - orleansdb-data:/var/lib/postgresql/18/docker
     restart: on-failure
     networks:
       - resolvernet

@@ -18,9 +18,7 @@ public partial class LogicUnit
     public async Task<CriticalDamageTable> GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location)
     {
         var transformedTargetType = GetPaperDollType();
-
-        Location transformedLocation = TransformLocation(location);
-
+        var transformedLocation = TransformLocation(location);
         var criticalDamageTableId = CriticalDamageTable.GetIdFromProperties(transformedTargetType, criticalDamageTableType, transformedLocation);
 
         return await GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
@@ -32,7 +30,7 @@ public partial class LogicUnit
         var paperDollName = GetPaperDollNameFromAttackParameters(target, attackType, direction, GameOptions, weaponFeatures);
         var paperDoll = await GrainFactory.GetPaperDollRepository().Get(paperDollName);
 
-        return paperDoll.GetDamagePaperDoll();
+        return paperDoll.ToDamagePaperDoll();
     }
 
     /// <summary>
@@ -78,7 +76,7 @@ public partial class LogicUnit
             case UnitType.MechTripod:
             case UnitType.MechQuad:
                 // Punches and kicks to prone or crouched mechs can hit anywhere
-                if (target.Unit.Stance == Stance.Prone || target.Unit.Stance == Stance.Crouch)
+                if (target.Unit.Stance is Stance.Prone or Stance.Crouch)
                 {
                     transformedAttackType = AttackType.Normal;
                 }
@@ -122,16 +120,7 @@ public partial class LogicUnit
 
         var transformedAttackType = TransformAttackType(target, attackType, weaponFeatures);
 
-        Direction transformedDirection;
-
-        if (target.Unit.Type == UnitType.Infantry || target.Unit.Type == UnitType.BattleArmor || target.Unit.Type == UnitType.Building)
-        {
-            transformedDirection = Direction.Front;
-        }
-        else
-        {
-            transformedDirection = direction;
-        }
+        var transformedDirection = target.Unit.Type is UnitType.Infantry or UnitType.BattleArmor or UnitType.Building ? Direction.Front : direction;
 
         // Get alterative paperdolls based on rules
         var transformedRules = new List<Rule>();

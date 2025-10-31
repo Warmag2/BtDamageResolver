@@ -16,7 +16,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc />
-    public virtual async Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget)
+    public virtual async Task<IReadOnlyCollection<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget)
     {
         var allDamageReports = new List<DamageReport>();
         var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
@@ -37,7 +37,7 @@ public partial class LogicUnit
 
             var hitCalclulationDamageReport = new DamageReport
             {
-                Phase = weapon.GetUsePhase(),
+                Phase = weapon.UsePhase,
                 DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, weaponBay.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
                 FiringUnitId = Unit.Id,
                 FiringUnitName = Unit.Name,
@@ -52,7 +52,7 @@ public partial class LogicUnit
         }
 
         // Add damage resolution to damage reports based on combat actions
-        foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.CombatAction.Weapon.GetUsePhase()))
+        foreach (var damageReportCombatActionPairsByPhase in damageReportCombatActionPairs.GroupBy(d => d.CombatAction.Weapon.UsePhase))
         {
             var targetDamageReportsForPhase = new List<DamageReport>();
             var selfDamageReportsForPhase = new List<DamageReport>();
@@ -93,7 +93,7 @@ public partial class LogicUnit
     /// </summary>
     /// <param name="weaponBay">The bay to form the weapon list from.</param>
     /// <returns>The weapon list formed from weapons in the bay.</returns>
-    protected virtual async Task<List<(Weapon Weapon, WeaponEntry WeaponEntry)>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
+    protected virtual async Task<IReadOnlyCollection<(Weapon Weapon, WeaponEntry WeaponEntry)>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
     {
         var weapons = new List<(Weapon, WeaponEntry)>();
 

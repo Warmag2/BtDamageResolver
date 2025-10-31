@@ -6,7 +6,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
 /// Data importing options.
 /// </summary>
 [Verb("import")]
-public class DataImportOptions
+internal sealed class DataImportOptions
 {
     /// <summary>
     /// The folder to process.

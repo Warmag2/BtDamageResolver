@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -27,10 +26,10 @@ public partial class GameActor
     /// Receives a set of damage reports and sends them to players.
     /// </summary>
     /// <param name="damageReports">A list of <see cref="DamageReport"/>s that are to be distributed to players.</param>
-    private async Task DistributeDamageReportsToPlayers(List<DamageReport> damageReports)
+    private async Task DistributeDamageReportsToPlayers(IReadOnlyCollection<DamageReport> damageReports)
     {
         _logger.LogInformation("Game {GameId} is sending a damage report update to all players ({PlayerIds}).", this.GetPrimaryKeyString(), string.Join(", ", _gameActorState.State.PlayerIds));
-        await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.DamageReports, damageReports);
+        await _communicationServiceClient.SendToMany([.. _gameActorState.State.PlayerIds], EventNames.DamageReports, damageReports);
     }
 
     /// <summary>
@@ -52,7 +51,7 @@ public partial class GameActor
         _logger.LogInformation("Game {GameId} is sending a game state update to all players ({PlayerIds}).", this.GetPrimaryKeyString(), string.Join(", ", _gameActorState.State.PlayerIds));
         var gameState = GetGameState(markStateAsNew);
 
-        await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.GameState, gameState);
+        await _communicationServiceClient.SendToMany([.. _gameActorState.State.PlayerIds], EventNames.GameState, gameState);
     }
 
     /// <summary>
@@ -71,7 +70,7 @@ public partial class GameActor
     private async Task DistributeGameOptionsToPlayers()
     {
         _logger.LogInformation("Game {GameId} is sending an options update to all players ({PlayerIds}).", this.GetPrimaryKeyString(), string.Join(", ", _gameActorState.State.PlayerIds));
-        await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.GameOptions, _gameActorState.State.Options);
+        await _communicationServiceClient.SendToMany([.. _gameActorState.State.PlayerIds], EventNames.GameOptions, _gameActorState.State.Options);
     }
 
     /// <summary>
@@ -89,6 +88,6 @@ public partial class GameActor
     private async Task DistributeTargetNumberUpdatesToPlayers(List<TargetNumberUpdate> targetNumberUpdates)
     {
         _logger.LogInformation("Game {GameId} is sending target number updates to all players ({PlayerIds}).", this.GetPrimaryKeyString(), string.Join(", ", _gameActorState.State.PlayerIds));
-        await _communicationServiceClient.SendToMany(_gameActorState.State.PlayerIds.ToList(), EventNames.TargetNumbers, targetNumberUpdates);
+        await _communicationServiceClient.SendToMany([.. _gameActorState.State.PlayerIds], EventNames.TargetNumbers, targetNumberUpdates);
     }
 }

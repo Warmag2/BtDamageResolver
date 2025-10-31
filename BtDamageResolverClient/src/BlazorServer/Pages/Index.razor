@@ -47,7 +47,7 @@
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="DamageReports" TabSelection="@_selectedTab">
-    <FormDamageReports @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.DamageReportCollection?.TimeStamp}") OnlyNewest="false" />
+    <FormDamageReports @key=@($"{_userStateController.IsConnectedToGame}_{_userStateController.DamageReportContainer?.TimeStamp}") OnlyNewest="false" />
 </ContainerTab>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Options" TabSelection="@_selectedTab">
@@ -75,7 +75,7 @@
             // Server will send a gamestate update that will set our game state later.
             if (connectionResponse.GameId == null)
             {
-                _userStateController.DamageReportCollection.Clear();
+                _userStateController.DamageReportContainer.Clear();
                 _userStateController.NotifyDamageReportsChanged();
             }
 
@@ -103,7 +103,7 @@
 
         _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
         {
-            _userStateController.DamageReportCollection.AddRange(_dataHelper.Unpack<List<DamageReport>>(damageReportData));
+            _userStateController.DamageReportContainer.AddRange(_dataHelper.Unpack<List<DamageReport>>(damageReportData));
             _userStateController.NotifyDamageReportsChanged();
         });
 
@@ -117,7 +117,7 @@
 
         _hubConnection.On<byte[]>(EventNames.GameEntries, gameEntries =>
         {
-            _userStateController.GameEntries = _dataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetId(), g => g);
+            _userStateController.GameEntries = _dataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetName(), g => g);
             InvokeStateChange();
         });
 

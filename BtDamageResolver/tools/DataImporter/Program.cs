@@ -16,7 +16,7 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
 /// Data importer main program class.
 /// </summary>
 [ExcludeFromCodeCoverage]
-public static class Program
+internal static class Program
 {
     private const string LogoText = @"Faemiyah";
 

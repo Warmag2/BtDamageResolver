@@ -20,7 +20,7 @@ public interface IServerToClientCommunicator
     /// <remarks>
     /// Envelope type is a processing hint for the recipient.
     /// </remarks>
-    public void Send<TType>(string clientName, string envelopeType, TType data)
+    void Send<TType>(string clientName, string envelopeType, TType data)
         where TType : class;
 
     /// <summary>
@@ -32,7 +32,7 @@ public interface IServerToClientCommunicator
     /// <remarks>
     /// Envelope type is a processing hint for the recipient.
     /// </remarks>
-    public void SendToAll<TType>(string envelopeType, TType data)
+    void SendToAll<TType>(string envelopeType, TType data)
         where TType : class;
 
     /// <summary>
@@ -45,7 +45,7 @@ public interface IServerToClientCommunicator
     /// <remarks>
     /// Envelope type is a processing hint for the recipient.
     /// </remarks>
-    public void SendToMany<TType>(List<string> clientNames, string envelopeType, TType data)
+    void SendToMany<TType>(List<string> clientNames, string envelopeType, TType data)
         where TType : class;
 
     /// <summary>
@@ -54,7 +54,7 @@ public interface IServerToClientCommunicator
     /// <param name="connectRequest">The connect request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the connect request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleConnectRequest(byte[] connectRequest, Guid correlationId);
+    Task<bool> HandleConnectRequest(byte[] connectRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="DisconnectRequest"/>.
@@ -62,7 +62,7 @@ public interface IServerToClientCommunicator
     /// <param name="disconnectRequest">The connect request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the connect request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleDisconnectRequest(byte[] disconnectRequest, Guid correlationId);
+    Task<bool> HandleDisconnectRequest(byte[] disconnectRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="GetDamageReportsRequest"/>.
@@ -70,7 +70,7 @@ public interface IServerToClientCommunicator
     /// <param name="getDamageReportsRequest">The get damage reports request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the get damage reports request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleGetDamageReportsRequest(byte[] getDamageReportsRequest, Guid correlationId);
+    Task<bool> HandleGetDamageReportsRequest(byte[] getDamageReportsRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="GetGameOptionsRequest"/>.
@@ -78,7 +78,7 @@ public interface IServerToClientCommunicator
     /// <param name="getGameOptionsRequest">The get game options request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the get game options request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleGetGameOptionsRequest(byte[] getGameOptionsRequest, Guid correlationId);
+    Task<bool> HandleGetGameOptionsRequest(byte[] getGameOptionsRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="GetGameStateRequest"/>.
@@ -86,7 +86,7 @@ public interface IServerToClientCommunicator
     /// <param name="getGameStateRequest">The get game state request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the get game state request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleGetGameStateRequest(byte[] getGameStateRequest, Guid correlationId);
+    Task<bool> HandleGetGameStateRequest(byte[] getGameStateRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="GetPlayerOptionsRequest"/>.
@@ -94,7 +94,7 @@ public interface IServerToClientCommunicator
     /// <param name="getPlayerOptionsRequest">The get player options request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the get player options request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleGetPlayerOptionsRequest(byte[] getPlayerOptionsRequest, Guid correlationId);
+    Task<bool> HandleGetPlayerOptionsRequest(byte[] getPlayerOptionsRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="ForceReadyRequest"/>.
@@ -102,7 +102,7 @@ public interface IServerToClientCommunicator
     /// <param name="forceReadyRequest">The force ready request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the force ready request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleForceReadyRequest(byte[] forceReadyRequest, Guid correlationId);
+    Task<bool> HandleForceReadyRequest(byte[] forceReadyRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="JoinGameRequest"/>.
@@ -110,7 +110,7 @@ public interface IServerToClientCommunicator
     /// <param name="joinGameRequest">The join game request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the join game request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleJoinGameRequest(byte[] joinGameRequest, Guid correlationId);
+    Task<bool> HandleJoinGameRequest(byte[] joinGameRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="KickPlayerRequest"/>.
@@ -118,7 +118,7 @@ public interface IServerToClientCommunicator
     /// <param name="kickPlayerRequest">The kick player request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the kick player request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleKickPlayerRequest(byte[] kickPlayerRequest, Guid correlationId);
+    Task<bool> HandleKickPlayerRequest(byte[] kickPlayerRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="LeaveGameRequest"/>.
@@ -126,7 +126,7 @@ public interface IServerToClientCommunicator
     /// <param name="leaveGameRequest">The leave game request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the leave game request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleLeaveGameRequest(byte[] leaveGameRequest, Guid correlationId);
+    Task<bool> HandleLeaveGameRequest(byte[] leaveGameRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="MoveUnitRequest"/>.
@@ -134,7 +134,7 @@ public interface IServerToClientCommunicator
     /// <param name="moveUnitRequest">The move unit request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the move unit request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleMoveUnitRequest(byte[] moveUnitRequest, Guid correlationId);
+    Task<bool> HandleMoveUnitRequest(byte[] moveUnitRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="SendDamageInstanceRequest"/>.
@@ -142,7 +142,7 @@ public interface IServerToClientCommunicator
     /// <param name="sendDamageInstanceRequest">The send damage request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the send damage request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleSendDamageRequest(byte[] sendDamageInstanceRequest, Guid correlationId);
+    Task<bool> HandleSendDamageRequest(byte[] sendDamageInstanceRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="SendGameOptionsRequest"/>.
@@ -150,7 +150,7 @@ public interface IServerToClientCommunicator
     /// <param name="sendGameOptionsRequest">The send game options request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the send game options request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleSendGameOptionsRequest(byte[] sendGameOptionsRequest, Guid correlationId);
+    Task<bool> HandleSendGameOptionsRequest(byte[] sendGameOptionsRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="SendPlayerOptionsRequest"/>.
@@ -158,7 +158,7 @@ public interface IServerToClientCommunicator
     /// <param name="sendPlayerOptionsRequest">The send player options request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the send player options request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleSendPlayerOptionsRequest(byte[] sendPlayerOptionsRequest, Guid correlationId);
+    Task<bool> HandleSendPlayerOptionsRequest(byte[] sendPlayerOptionsRequest, Guid correlationId);
 
     /// <summary>
     /// Handle an incoming <see cref="SendPlayerStateRequest"/>.
@@ -166,5 +166,5 @@ public interface IServerToClientCommunicator
     /// <param name="sendPlayerStateRequest">The send player state request.</param>
     /// <param name="correlationId">The correlation ID.</param>
     /// <returns><b>True</b> if the send player state request was successfully handled, <b>false</b> otherwise.</returns>
-    public Task<bool> HandleSendPlayerStateRequest(byte[] sendPlayerStateRequest, Guid correlationId);
+    Task<bool> HandleSendPlayerStateRequest(byte[] sendPlayerStateRequest, Guid correlationId);
 }

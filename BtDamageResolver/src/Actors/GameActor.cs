@@ -59,7 +59,7 @@ public partial class GameActor : Grain, IGameActor
     }
 
     /// <inheritdoc />
-    public async Task<bool> SendPlayerState(string sendingPlayerId, PlayerState playerState, List<Guid> unitIds)
+    public async Task<bool> SendPlayerState(string sendingPlayerId, PlayerState playerState, IReadOnlyCollection<Guid> unitIds)
     {
         // Do not accept player states from players who are not in the game.
         if (!_gameActorState.State.PlayerIds.Contains(sendingPlayerId))
@@ -113,7 +113,7 @@ public partial class GameActor : Grain, IGameActor
         var damageReport = await ProcessDamageInstance(damageInstance);
         damageReport.Turn = _gameActorState.State.Turn;
 
-        await DistributeDamageReportsToPlayers(new List<DamageReport> { damageReport });
+        await DistributeDamageReportsToPlayers([damageReport]);
 
         return true;
     }
@@ -128,7 +128,7 @@ public partial class GameActor : Grain, IGameActor
         }
 
         // Accept any password if the game does not yet exist
-        if (string.IsNullOrWhiteSpace(_gameActorState.State.Password) || string.Equals(_gameActorState.State.Password, password))
+        if (string.IsNullOrWhiteSpace(_gameActorState.State.Password) || string.Equals(_gameActorState.State.Password, password, StringComparison.Ordinal))
         {
             _gameActorState.State.Password = password;
             _gameActorState.State.PlayerIds.Add(playerId);

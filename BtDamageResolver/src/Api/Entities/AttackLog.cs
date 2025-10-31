@@ -14,7 +14,7 @@ public class AttackLog
     /// </summary>
     public AttackLog()
     {
-        Log = new List<AttackLogEntry>();
+        Log = [];
     }
 
     /// <summary>

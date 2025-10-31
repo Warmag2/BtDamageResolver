@@ -69,7 +69,7 @@ public partial class PlayerActor
 
         // Validate unit entries and do not proceed if they contain data that would compromise the rules engine.
         // This player state is not updated with invalid state.
-        string errorMessage = string.Empty;
+        var errorMessage = string.Empty;
         var unitsWithErrors = new HashSet<Guid>();
 
         foreach (var unit in playerState.UnitEntries)

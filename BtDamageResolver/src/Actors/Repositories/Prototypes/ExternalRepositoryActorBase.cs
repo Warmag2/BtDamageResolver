@@ -45,14 +45,14 @@ public abstract class ExternalRepositoryActorBase<TEntity, TKey> : Grain, IExter
     public virtual async Task Add(TEntity entity)
     {
         await Repository.AddAsync(entity);
-        Logger.LogDebug("{EntityType} with key {EntityId} added to {RepositoryType}.", typeof(TEntity), entity.GetId(), GetType());
+        Logger.LogDebug("{EntityType} with key {EntityId} added to {RepositoryType}.", typeof(TEntity), entity.GetName(), GetType());
     }
 
     /// <inheritdoc />
     public virtual async Task AddOrUpdate(TEntity entity)
     {
         await Repository.AddOrUpdateAsync(entity);
-        Logger.LogDebug("{EntityType} with key {EntityId} added to or updated in {RepositoryType}.", typeof(TEntity), entity.GetId(), GetType());
+        Logger.LogDebug("{EntityType} with key {EntityId} added to or updated in {RepositoryType}.", typeof(TEntity), entity.GetName(), GetType());
     }
 
     /// <inheritdoc />
@@ -70,7 +70,7 @@ public abstract class ExternalRepositoryActorBase<TEntity, TKey> : Grain, IExter
     }
 
     /// <inheritdoc />
-    public virtual async Task<List<TEntity>> GetAll()
+    public virtual async Task<IReadOnlyCollection<TEntity>> GetAll()
     {
         return await Repository.GetAllAsync();
     }
@@ -79,6 +79,6 @@ public abstract class ExternalRepositoryActorBase<TEntity, TKey> : Grain, IExter
     public virtual async Task Update(TEntity entity)
     {
         await Repository.UpdateAsync(entity);
-        Logger.LogDebug("{EntityType} with key {EntityId} updated in {RepositoryType}.", typeof(TEntity), entity.GetId(), GetType());
+        Logger.LogDebug("{EntityType} with key {EntityId} updated in {RepositoryType}.", typeof(TEntity), entity.GetName(), GetType());
     }
 }

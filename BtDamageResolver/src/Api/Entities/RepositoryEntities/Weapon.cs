@@ -132,6 +132,28 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     public bool UsesAmmo { get; set; }
 
     /// <summary>
+    /// Informs what phase this weapon is used in.
+    /// </summary>
+    /// <returns>The phase where this weapon is used in.</returns>
+    public Phase UsePhase
+    {
+        get
+        {
+            switch (AttackType)
+            {
+                case AttackType.Normal:
+                    return Phase.Weapon;
+                case AttackType.Melee:
+                case AttackType.Kick:
+                case AttackType.Punch:
+                    return Phase.Melee;
+                default:
+                    throw new NotImplementedException("Unknown weapon attack type encountered when trying to determine weapon use phase.");
+            }
+        }
+    }
+
+    /// <summary>
     /// Create a single weapon from a weapon bay.
     /// </summary>
     /// <param name="weapons">The weapons to list.</param>
@@ -140,7 +162,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     {
         var weaponBayWeapon = weapons[0].Copy();
 
-        for (int ii = 1; ii < weapons.Count; ii++)
+        for (var ii = 1; ii < weapons.Count; ii++)
         {
             if (!weaponBayWeapon.MergeIntoBay(weapons[ii]))
             {
@@ -236,42 +258,23 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     /// </summary>
     public void FillMissingFields()
     {
-        Ammo ??= new();
+        Ammo ??= [];
 
         ClusterBonus = ClusterBonus.Fill();
 
         ClusterTable ??= Constants.Names.DefaultClusterTableName;
 
-        Damage ??= new();
-        DamageAerospace ??= new();
-        Heat ??= new();
+        Damage ??= [];
+        DamageAerospace ??= [];
+        Heat ??= [];
 
         Damage = Damage.Fill();
         DamageAerospace = DamageAerospace.Fill(RangeAerospace);
         Heat = Heat.Fill(RangeAerospace);
 
-        SpecialDamage ??= new();
+        SpecialDamage ??= [];
 
-        SpecialFeatures ??= new();
-    }
-
-    /// <summary>
-    /// Informs what phase this weapon is used in.
-    /// </summary>
-    /// <returns>The phase where this weapon is used in.</returns>
-    public Phase GetUsePhase()
-    {
-        switch (AttackType)
-        {
-            case AttackType.Normal:
-                return Phase.Weapon;
-            case AttackType.Melee:
-            case AttackType.Kick:
-            case AttackType.Punch:
-                return Phase.Melee;
-            default:
-                throw new NotImplementedException("Unknown weapon attack type encountered when trying to determine weapon use phase.");
-        }
+        SpecialFeatures ??= [];
     }
 
     /// <summary>
@@ -425,7 +428,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
         {
             var oneInstance = specialDamageEntry.Data;
 
-            for (int ii = 2; ii <= amount; ii++)
+            for (var ii = 2; ii <= amount; ii++)
             {
                 // Quite horrible, but the only way to preserve all data
                 specialDamageEntry.Data = $"{specialDamageEntry.Data} + {oneInstance}";
@@ -451,7 +454,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
 
     private void MergeSpecialDamageEntries(List<SpecialDamageEntry> input)
     {
-        foreach (SpecialDamageEntry entry in SpecialDamage)
+        foreach (var entry in SpecialDamage)
         {
             var similarType = input.SingleOrDefault(i => i.Type == entry.Type);
 

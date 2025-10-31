@@ -62,10 +62,10 @@ public class PaperDoll : IEntity<string>
     }
 
     /// <summary>
-    /// Gets a new damage paper doll based on this paper doll.
+    /// Forms a new damage paper doll based on this paper doll.
     /// </summary>
     /// <returns>A damage paper doll based on this paper doll.</returns>
-    public DamagePaperDoll GetDamagePaperDoll()
+    public DamagePaperDoll ToDamagePaperDoll()
     {
         return new DamagePaperDoll(this);
     }
@@ -74,13 +74,13 @@ public class PaperDoll : IEntity<string>
     /// Needed because the id is concatenated from several properties in this paperdoll.
     /// </summary>
     /// <returns>The ID of this paper doll.</returns>
-    public string GetId()
+    public string GetName()
     {
         return GetIdFromProperties(Type, AttackType, Direction, Rules);
     }
 
     /// <inheritdoc />
-    public void SetId(string id)
+    public void SetName(string id)
     {
         throw new InvalidOperationException("You should never have to set a PaperDoll Id manually.");
     }

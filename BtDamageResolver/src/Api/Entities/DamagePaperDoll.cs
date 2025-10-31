@@ -20,9 +20,9 @@ public class DamagePaperDoll
     /// </remarks>
     public DamagePaperDoll()
     {
-        DamageCollection = new Dictionary<Location, List<int>>();
-        DamageCollectionSpecial = new Dictionary<Location, List<SpecialDamageEntry>>();
-        DamageCollectionCritical = new Dictionary<Location, List<CriticalDamageEntry>>();
+        DamageCollection = [];
+        DamageCollectionSpecial = [];
+        DamageCollectionCritical = [];
     }
 
     /// <summary>
@@ -31,9 +31,9 @@ public class DamagePaperDoll
     /// <param name="basePaperDoll">The base paper doll to generate from.</param>
     public DamagePaperDoll(PaperDoll basePaperDoll)
     {
-        DamageCollection = new Dictionary<Location, List<int>>();
-        DamageCollectionSpecial = new Dictionary<Location, List<SpecialDamageEntry>>();
-        DamageCollectionCritical = new Dictionary<Location, List<CriticalDamageEntry>>();
+        DamageCollection = [];
+        DamageCollectionSpecial = [];
+        DamageCollectionCritical = [];
         PaperDoll = basePaperDoll;
     }
 
@@ -66,10 +66,7 @@ public class DamagePaperDoll
     /// Get all locations for this damage report.
     /// </summary>
     /// <returns>The locations for this damage report.</returns>
-    public List<Location> GetLocations()
-    {
-        return DamageCollection.Keys.ToList();
-    }
+    public List<Location> Locations => [.. DamageCollection.Keys];
 
     /// <summary>
     /// Gets the total damage of a specific special damage type.
@@ -78,7 +75,7 @@ public class DamagePaperDoll
     /// <returns>The total damage of a specific special damage type.</returns>
     public int GetTotalDamageOfType(SpecialDamageType type)
     {
-        int result = 0;
+        var result = 0;
 
         foreach (var (_, value) in DamageCollectionSpecial)
         {
@@ -170,7 +167,7 @@ public class DamagePaperDoll
     /// <param name="entry">The critical damage entry to insert.</param>
     private void InsertCriticalDamage(Location location, CriticalDamageEntry entry)
     {
-        InsertCriticalDamage(location, new List<CriticalDamageEntry> { entry });
+        InsertCriticalDamage(location, [entry]);
     }
 
     /// <summary>
@@ -197,7 +194,7 @@ public class DamagePaperDoll
     /// <param name="amount">The amount of damage to insert.</param>
     private void InsertDamage(Location location, int amount)
     {
-        InsertDamage(location, new List<int> { amount });
+        InsertDamage(location, [amount]);
     }
 
     /// <summary>
@@ -224,7 +221,7 @@ public class DamagePaperDoll
     /// <param name="entry">The special damage entry to insert.</param>
     private void InsertSpecialDamage(Location location, SpecialDamageEntry entry)
     {
-        InsertSpecialDamage(location, new List<SpecialDamageEntry> { entry });
+        InsertSpecialDamage(location, [entry]);
     }
 
     /// <summary>
