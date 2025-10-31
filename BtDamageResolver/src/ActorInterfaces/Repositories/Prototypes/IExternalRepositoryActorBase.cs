@@ -54,7 +54,7 @@ public interface IExternalRepositoryActorBase<TEntity, TKey>
     /// </summary>
     /// <returns>A list of <see cref="TEntity"/> containing all entities from the database, or an empty list, if none could be found.</returns>
     /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
-    Task<List<TEntity>> GetAll();
+    Task<IReadOnlyCollection<TEntity>> GetAll();
 
     /// <summary>
     /// Updates a <see cref="TEntity"/> in the repository governed by this repository actor.

@@ -206,7 +206,7 @@ public partial class UnitEntry
             case UnitType.Building:
                 if (MovementClass != MovementClass.Immobile)
                 {
-                    validationResult.Fail("Unit is a building, but its movement is not Immobile-0.");
+                    validationResult.Fail("Buildings cannot have a movement class other than Immobile.");
                 }
 
                 break;
@@ -218,7 +218,7 @@ public partial class UnitEntry
                 {
                     case MovementClass.Masc:
                     case MovementClass.Jump:
-                        validationResult.Fail("Masc/Jump are invalid movement modes for aerospace units.");
+                        validationResult.Fail("Aerospace units cannot have a momvement class of Masc or Jump.");
                         break;
                 }
 
@@ -229,7 +229,7 @@ public partial class UnitEntry
                         case MovementClass.Immobile:
                         case MovementClass.Stationary:
                         case MovementClass.OutOfControl:
-                            validationResult.Fail("Immobile, Stationary or OutOfControl units cannot evade.");
+                            validationResult.Fail("Immobile, Stationary or OutOfControl aerospace units cannot evade.");
                             break;
                     }
                 }
@@ -244,7 +244,7 @@ public partial class UnitEntry
                     case MovementClass.Masc:
                     case MovementClass.Fast:
                     case MovementClass.OutOfControl:
-                        validationResult.Fail("Immobile/Stationary/Fast/Masc/OutOfControl are invalid movement modes for battle armor and infantry units.");
+                        validationResult.Fail("Battlearmor and Infantry units cannot have a movement class of Immobile, Stationary, Fast, Masc, or OutOfControl.");
                         break;
                 }
 
@@ -255,7 +255,7 @@ public partial class UnitEntry
                 switch (MovementClass)
                 {
                     case MovementClass.OutOfControl:
-                        validationResult.Fail("OutOfControl is an invalid movement mode for a mech unit.");
+                        validationResult.Fail("Mech units cannot have movement class OutOfControl.");
                         break;
                 }
 
@@ -269,7 +269,7 @@ public partial class UnitEntry
                     case MovementClass.Masc:
                     case MovementClass.Jump:
                     case MovementClass.OutOfControl:
-                        validationResult.Fail("Masc/Jump/OutOfControl are invalid movement modes for vehicles.");
+                        validationResult.Fail("Vehicles cannot have a movement class of Masc, Jump or OutOfControl.");
                         break;
                 }
 

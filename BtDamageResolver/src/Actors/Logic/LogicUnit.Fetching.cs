@@ -18,9 +18,7 @@ public partial class LogicUnit
     public async Task<CriticalDamageTable> GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location)
     {
         var transformedTargetType = GetPaperDollType();
-
-        Location transformedLocation = TransformLocation(location);
-
+        var transformedLocation = TransformLocation(location);
         var criticalDamageTableId = CriticalDamageTable.GetIdFromProperties(transformedTargetType, criticalDamageTableType, transformedLocation);
 
         return await GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);

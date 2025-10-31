@@ -59,7 +59,7 @@ public partial class GameActor : Grain, IGameActor
     }
 
     /// <inheritdoc />
-    public async Task<bool> SendPlayerState(string sendingPlayerId, PlayerState playerState, List<Guid> unitIds)
+    public async Task<bool> SendPlayerState(string sendingPlayerId, PlayerState playerState, IReadOnlyCollection<Guid> unitIds)
     {
         // Do not accept player states from players who are not in the game.
         if (!_gameActorState.State.PlayerIds.Contains(sendingPlayerId))

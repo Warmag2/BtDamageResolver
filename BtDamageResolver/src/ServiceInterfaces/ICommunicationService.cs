@@ -19,7 +19,7 @@ public interface ICommunicationService : IGrainService
     /// The envelope type is a hint for the recipient on how to process the data.
     /// </remarks>
     /// <returns>A task which finishes when the envelope has been sent.</returns>
-    public Task Send(string playerId, string envelopeType, object data);
+    Task Send(string playerId, string envelopeType, object data);
 
     /// <summary>
     /// Send data to multiple clients.
@@ -31,7 +31,7 @@ public interface ICommunicationService : IGrainService
     /// The envelope type is a hint for the recipient on how to process the data.
     /// </remarks>
     /// <returns>A task which finishes when the envelope has been sent to all recipients.</returns>
-    public Task SendToMany(List<string> playerIds, string envelopeType, object data);
+    Task SendToMany(List<string> playerIds, string envelopeType, object data);
 
     /// <summary>
     /// Send data to all clients.
@@ -42,5 +42,5 @@ public interface ICommunicationService : IGrainService
     /// The envelope type is a hint for the recipient on how to process the data.
     /// </remarks>
     /// <returns>A task which finishes when the envelope has been sent to all clients.</returns>
-    public Task SendToAllClients(string envelopeType, object data);
+    Task SendToAllClients(string envelopeType, object data);
 }

@@ -100,7 +100,7 @@ public class LogicUnitBattleArmor : LogicUnitTrooper
             // The cluster damage reference value is the cluster value of all the troopers combined
             var clusterDamage = combatAction.Weapon.Damage[combatAction.RangeBracket] * Unit.Troopers;
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total cluster value from all troopers", Number = clusterDamage });
-            return combatAction.Weapon.ClusterDamage * (await ResolveClusterValue(damageReport, target, combatAction, clusterDamage, clusterBonus));
+            return combatAction.Weapon.ClusterDamage * await ResolveClusterValue(damageReport, target, combatAction, clusterDamage, clusterBonus);
         }
 
         // Default damage calculation path if we did not have a cluster weapon

@@ -10,5 +10,5 @@ public interface IMathExpression
     /// </summary>
     /// <param name="expression">The expression to parse.</param>
     /// <returns>The result of the expression.</returns>
-    public int Parse(string expression);
+    int Parse(string expression);
 }

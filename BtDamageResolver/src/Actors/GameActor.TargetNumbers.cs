@@ -20,13 +20,13 @@ public partial class GameActor
     /// <returns>A list of unit IDs which target this unit.</returns>
     private List<Guid> GetAllUnitsWhichTargetUnit(Guid unitId)
     {
-        var targetingUnits = new List<Guid>();
+        List<Guid> targetingUnits = [];
 
         // Loop through all players
         foreach (var player in _gameActorState.State.PlayerStates.Select(p => p.Value))
         {
             // Select all units from this player which have the chosen unit as their target
-            targetingUnits.AddRange(player.UnitEntries.Where(u => u.WeaponBays.Exists(w => w.FiringSolution.Target == unitId)).Select(u => u.Id).ToList());
+            targetingUnits.AddRange(player.UnitEntries.Where(u => u.WeaponBays.Exists(w => w.FiringSolution.Target == unitId)).Select(u => u.Id));
         }
 
         return targetingUnits;
@@ -53,7 +53,7 @@ public partial class GameActor
         return targetNumberUpdates;
     }
 
-    private async Task<List<TargetNumberUpdate>> ProcessTargetNumberUpdatesForUnits(List<Guid> unitIds = null)
+    private async Task<List<TargetNumberUpdate>> ProcessTargetNumberUpdatesForUnits(IReadOnlyCollection<Guid> unitIds = null)
     {
         var targetNumberUpdates = new List<TargetNumberUpdate>();
         var unitIdsToUpdate = new List<Guid>();

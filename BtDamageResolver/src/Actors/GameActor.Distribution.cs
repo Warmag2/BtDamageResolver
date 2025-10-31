@@ -26,7 +26,7 @@ public partial class GameActor
     /// Receives a set of damage reports and sends them to players.
     /// </summary>
     /// <param name="damageReports">A list of <see cref="DamageReport"/>s that are to be distributed to players.</param>
-    private async Task DistributeDamageReportsToPlayers(List<DamageReport> damageReports)
+    private async Task DistributeDamageReportsToPlayers(IReadOnlyCollection<DamageReport> damageReports)
     {
         _logger.LogInformation("Game {GameId} is sending a damage report update to all players ({PlayerIds}).", this.GetPrimaryKeyString(), string.Join(", ", _gameActorState.State.PlayerIds));
         await _communicationServiceClient.SendToMany([.. _gameActorState.State.PlayerIds], EventNames.DamageReports, damageReports);

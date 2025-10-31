@@ -13,11 +13,11 @@ public interface IEntity<TKey>
     /// Gets the base database identifier of the entity.
     /// </summary>
     /// <returns>The base database identifier of the entity.</returns>
-    public TKey GetName();
+    TKey GetName();
 
     /// <summary>
     /// Sets the base database identifier of the IEntity.
     /// </summary>
     /// <param name="name">The id to set the base identifier to.</param>
-    public void SetName(TKey name);
+    void SetName(TKey name);
 }

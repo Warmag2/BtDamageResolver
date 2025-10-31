@@ -174,10 +174,7 @@ internal sealed class DataImporter
                         options.Invariant = clusterOptions?.Invariant;
                         options.ConnectionString = clusterOptions?.ConnectionString;
                     })
-                    .Services.AddSerializer(serializerBuilder =>
-                    {
-                        serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
-                    })
+                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver")))
                     .ConfigureJsonSerializerOptions();
             }).Build();
 

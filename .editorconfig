@@ -35,7 +35,7 @@ dotnet_style_namespace_match_folder = true
 dotnet_style_null_propagation = true
 dotnet_style_object_initializer = true
 dotnet_style_prefer_auto_properties = true
-dotnet_style_prefer_collection_expression = when_types_loosely_match
+dotnet_style_prefer_collection_expression = when_types_exactly_match
 dotnet_style_prefer_compound_assignment = true
 dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
 dotnet_style_prefer_conditional_expression_over_return = true:suggestion
@@ -268,14 +268,8 @@ dotnet_diagnostic.CA2101.severity = error
 # Avoid excessive inheritance
 dotnet_diagnostic.CA1501.severity = warning
 
-# Avoid excessive complexity
-dotnet_diagnostic.CA1502.severity = warning
-
 # Avoid unmaintainable code
 dotnet_diagnostic.CA1505.severity = warning
-
-# Avoid excessive class coupling
-dotnet_diagnostic.CA1506.severity = warning
 
 # Use nameof in place of string
 dotnet_diagnostic.CA1507.severity = warning
@@ -360,9 +354,6 @@ dotnet_diagnostic.CA1806.severity = warning
 
 # Initialize reference type static fields inline
 dotnet_diagnostic.CA1810.severity = warning
-
-# Avoid uninstantiated internal classes
-dotnet_diagnostic.CA1812.severity = warning
 
 # Avoid unsealed attributes
 dotnet_diagnostic.CA1813.severity = warning
@@ -468,9 +459,6 @@ dotnet_diagnostic.CA1850.severity = warning
 
 # Possible multiple enumerations of IEnumerable collection
 dotnet_diagnostic.CA1851.severity = warning
-
-# Seal internal types
-dotnet_diagnostic.CA1852.severity = warning
 
 # Unnecessary call to 'Dictionary.ContainsKey(key)'
 dotnet_diagnostic.CA1853.severity = warning
@@ -737,6 +725,9 @@ dotnet_diagnostic.SA1200.severity = none
 # Static members should come before non-static members
 dotnet_diagnostic.SA1204.severity = warning
 
+# Analytics suggests a wrong operator order
+dotnet_diagnostic.SA1206.severity = none
+
 # Fields should begin with a lowercase letter
 dotnet_diagnostic.SA1306.severity = none
     
@@ -774,10 +765,13 @@ dotnet_diagnostic.S125.severity = suggestion
 # There should be no need to always merge nested ifs
 dotnet_diagnostic.S1066.severity = suggestion
 
+# I don't understand this
+dotnet_diagnostic.S1168.severity = none
+
 # There should be no need to always merge nested ifs
 dotnet_diagnostic.S1643.severity = none
 
-# LINQ suggester is quite aggressive, but for a reason
+# LINQ suggester is too aggressive, but for a reason
 dotnet_diagnostic.S3267.severity = warning
 
 # LINQ suggester is too aggressive, but for a reason

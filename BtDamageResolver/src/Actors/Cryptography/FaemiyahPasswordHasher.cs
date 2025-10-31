@@ -44,7 +44,7 @@ public class FaemiyahPasswordHasher : IHasher
             return false;
         }
 
-        for (int ii = 0; ii < hash1.Length; ii++)
+        for (var ii = 0; ii < hash1.Length; ii++)
         {
             if (hash1[ii] != hash2[ii])
             {

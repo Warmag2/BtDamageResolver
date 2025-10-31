@@ -16,7 +16,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc />
-    public virtual async Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget)
+    public virtual async Task<IReadOnlyCollection<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget)
     {
         var allDamageReports = new List<DamageReport>();
         var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
@@ -93,7 +93,7 @@ public partial class LogicUnit
     /// </summary>
     /// <param name="weaponBay">The bay to form the weapon list from.</param>
     /// <returns>The weapon list formed from weapons in the bay.</returns>
-    protected virtual async Task<List<(Weapon Weapon, WeaponEntry WeaponEntry)>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
+    protected virtual async Task<IReadOnlyCollection<(Weapon Weapon, WeaponEntry WeaponEntry)>> GetActiveWeaponsFromBay(WeaponBay weaponBay)
     {
         var weapons = new List<(Weapon, WeaponEntry)>();
 

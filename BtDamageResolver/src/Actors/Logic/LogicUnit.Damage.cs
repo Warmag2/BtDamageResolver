@@ -412,7 +412,7 @@ public partial class LogicUnit
 
             damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total cluster modifier", Number = clusterBonus });
 
-            return combatAction.Weapon.ClusterDamage * (await ResolveClusterValue(damageReport, target, combatAction, combatAction.Weapon.Damage[combatAction.RangeBracket], clusterBonus));
+            return combatAction.Weapon.ClusterDamage * await ResolveClusterValue(damageReport, target, combatAction, combatAction.Weapon.Damage[combatAction.RangeBracket], clusterBonus);
         }
 
         var damage = combatAction.Weapon.Damage[combatAction.RangeBracket];

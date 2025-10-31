@@ -41,7 +41,7 @@ public class GameEntryRepositoryActor : ExternalRepositoryActorBase<GameEntry, s
     }
 
     /// <inheritdoc/>
-    public override async Task<List<GameEntry>> GetAll()
+    public override async Task<IReadOnlyCollection<GameEntry>> GetAll()
     {
         await CleanupOldEntries();
 

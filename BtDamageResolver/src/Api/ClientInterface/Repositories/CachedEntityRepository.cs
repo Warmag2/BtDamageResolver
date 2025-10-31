@@ -107,19 +107,19 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     }
 
     /// <inheritdoc />
-    public List<TEntity> GetAll()
+    public IReadOnlyCollection<TEntity> GetAll()
     {
         return [.. _cache.Values];
     }
 
     /// <inheritdoc />
-    public Task<List<TEntity>> GetAllAsync()
+    public Task<IReadOnlyCollection<TEntity>> GetAllAsync()
     {
-        return Task.FromResult(_cache.Values.ToList());
+        return Task.FromResult<IReadOnlyCollection<TEntity>>(_cache.Values.ToArray());
     }
 
     /// <inheritdoc />
-    public List<TKey> GetAllKeys()
+    public IReadOnlyCollection<TKey> GetAllKeys()
     {
         var keys = _repository.GetAllKeys();
 

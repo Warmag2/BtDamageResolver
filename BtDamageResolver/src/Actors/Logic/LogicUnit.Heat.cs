@@ -111,7 +111,7 @@ public partial class LogicUnit
             return;
         }
 
-        int calculatedSingleHitheat = ResolveHeatForSingleHit(combatAction.Weapon, combatAction.RangeBracket);
+        var calculatedSingleHitheat = ResolveHeatForSingleHit(combatAction.Weapon, combatAction.RangeBracket);
         int heat;
 
         if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))

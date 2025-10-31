@@ -114,21 +114,18 @@ internal static class Program
         var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>();
 
         var siloHostBuilder = Host.CreateDefaultBuilder()
-            .ConfigureAppConfiguration((_, config) => { config.AddConfiguration(configuration); })
+            .ConfigureAppConfiguration((_, config) => config.AddConfiguration(configuration))
             .UseOrleans(siloBuilder =>
             {
                 siloBuilder
-                    .Services.AddSerializer(serializerBuilder =>
-                    {
-                        serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver"));
-                    });
+                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver")));
                 siloBuilder
                     .Configure<ClusterOptions>(options =>
                     {
                         options.ClusterId = "faemiyah";
                         options.ServiceId = "Resolver";
                     })
-                    .Configure<GrainCollectionOptions>(options => { options.CollectionAge = TimeSpan.FromDays(1); })
+                    .Configure<GrainCollectionOptions>(options => options.CollectionAge = TimeSpan.FromDays(1))
                     .Configure<ClusterMembershipOptions>(options =>
                     {
                         options.DefunctSiloExpiration = TimeSpan.FromHours(1);

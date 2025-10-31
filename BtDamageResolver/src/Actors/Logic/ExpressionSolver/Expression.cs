@@ -60,7 +60,7 @@ public class Expression
 
             foreach (var token in new[] { Token.Dice, Token.Exponent, Token.Divide, Token.Multiply })
             {
-                for (int ii = 0; ii < _tokens.Count; ii++)
+                for (var ii = 0; ii < _tokens.Count; ii++)
                 {
                     if (_tokens[ii] == token)
                     {
@@ -130,7 +130,7 @@ public class Expression
 
     private static (string SubExpression, ExpressionFunction FunctionType, string Remaining) ExtractFunctionType(string input)
     {
-        ExpressionFunction foundFunction = ExpressionFunction.None;
+        var foundFunction = ExpressionFunction.None;
         string functionScope = null;
 
         var functionName = Enum.GetNames<ExpressionFunction>().SingleOrDefault(input.StartsWith);

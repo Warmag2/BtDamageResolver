@@ -75,7 +75,7 @@ public class DamagePaperDoll
     /// <returns>The total damage of a specific special damage type.</returns>
     public int GetTotalDamageOfType(SpecialDamageType type)
     {
-        int result = 0;
+        var result = 0;
 
         foreach (var (_, value) in DamageCollectionSpecial)
         {

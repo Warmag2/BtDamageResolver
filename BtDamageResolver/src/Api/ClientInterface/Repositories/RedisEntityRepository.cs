@@ -147,7 +147,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     }
 
     /// <inheritdoc />
-    public List<TEntity> GetAll()
+    public IReadOnlyCollection<TEntity> GetAll()
     {
         try
         {
@@ -177,7 +177,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     }
 
     /// <inheritdoc />
-    public async Task<List<TEntity>> GetAllAsync()
+    public async Task<IReadOnlyCollection<TEntity>> GetAllAsync()
     {
         try
         {
@@ -207,7 +207,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     }
 
     /// <inheritdoc />
-    public List<string> GetAllKeys()
+    public IReadOnlyCollection<string> GetAllKeys()
     {
         try
         {

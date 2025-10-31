@@ -54,7 +54,7 @@ public partial class LogicUnit
     /// <returns>Result of the cluster calculation.</returns>
     protected async Task<int> ResolveClusterValue(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageValue, int clusterBonus)
     {
-        int clusterRoll = Random.D26();
+        var clusterRoll = Random.D26();
 
         clusterRoll = TransformClusterRollBasedOnWeaponFeatures(damageReport, combatAction, clusterRoll);
         clusterRoll = target.TransformClusterRollBasedOnUnitType(damageReport, clusterRoll);

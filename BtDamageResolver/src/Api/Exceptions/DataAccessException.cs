@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Exceptions;
@@ -42,28 +40,7 @@ public class DataAccessException : Exception
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DataAccessException"/> class.
-    /// </summary>
-    /// <param name="serializationInfo">The serialization info.</param>
-    /// <param name="streamingContext">The streaming context.</param>
-    [Obsolete("This overload of ISerializable constructor is no longer in use.")]
-    [SuppressMessage("Info Code Smell", "S1133:Deprecated code should be removed", Justification = "This is the only way to extend an Exception at the moment.")]
-    protected DataAccessException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
-    {
-        ErrorCode = Enum.Parse<DataAccessErrorCode>(serializationInfo.GetString(nameof(ErrorCode)));
-    }
-
-    /// <summary>
     /// The error code associated with this exception.
     /// </summary>
     public DataAccessErrorCode ErrorCode { get; set; }
-
-    /// <inheritdoc/>
-    [Obsolete("This implementation of ISerializable is no longer in use.")]
-    [SuppressMessage("Info Code Smell", "S1133:Deprecated code should be removed", Justification = "This is the only way to extend an Exception at the moment.")]
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        base.GetObjectData(info, context);
-        info.AddValue(nameof(ErrorCode), ErrorCode);
-    }
 }

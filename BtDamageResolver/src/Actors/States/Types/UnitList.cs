@@ -45,7 +45,7 @@ public class UnitList
     /// </summary>
     /// <param name="units">The units to check.</param>
     /// <returns>List of IDs which are new or have been updated.</returns>
-    public List<Guid> AreNewOrNewer(List<UnitEntry> units)
+    public IReadOnlyCollection<Guid> AreNewOrNewer(List<UnitEntry> units)
     {
         return (from unit in units where IsNewOrNewer(unit) select unit.Id).ToList();
     }
@@ -73,38 +73,4 @@ public class UnitList
 
         return value.TimeStamp < unit.TimeStamp;
     }
-
-    /*/// <summary>
-/// Adds an unit to the list.
-/// </summary>
-/// <param name="unitEntry">The unit to add.</param>
-public void Add(UnitEntry unitEntry)
-{
-    _unitEntries.Add(unitEntry.Id, unitEntry);
-    UnitIds.Add(unitEntry.Id);
-}
-
-/// <summary>
-/// Check whether the unit list contains a specific unit.
-/// </summary>
-/// <param name="unitId">The unit ID.</param>
-/// <returns><b>True</b> if the unit list contains the unit, <b>false</b> otherwise.</returns>
-public bool Contains(Guid unitId)
-{
-    return _unitEntries.ContainsKey(unitId);
-}
-
-/// <summary>
-/// Removes an unit from the list.
-/// </summary>
-/// <param name="unitId">The ID of the unit to remove.</param>
-public void Remove(Guid unitId)
-{
-    if (!_unitEntries.Remove(unitId))
-    {
-        throw new InvalidOperationException("Could not find the unit with ID {unitId} in this unit list.");
-    }
-
-    UnitIds.Remove(unitId);
-}*/
 }

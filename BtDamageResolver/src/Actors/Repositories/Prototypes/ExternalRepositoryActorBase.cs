@@ -70,7 +70,7 @@ public abstract class ExternalRepositoryActorBase<TEntity, TKey> : Grain, IExter
     }
 
     /// <inheritdoc />
-    public virtual async Task<List<TEntity>> GetAll()
+    public virtual async Task<IReadOnlyCollection<TEntity>> GetAll()
     {
         return await Repository.GetAllAsync();
     }

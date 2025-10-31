@@ -87,7 +87,7 @@ public class DamageReportContainer
     /// Gets all damage reports in this damage report collection.
     /// </summary>
     /// <returns>All the damage reports in this damage report collection.</returns>
-    public List<DamageReport> GetAll()
+    public IReadOnlyCollection<DamageReport> GetAll()
     {
         return DamageReports.SelectMany(d => d.Value).ToList();
     }
