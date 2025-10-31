@@ -408,8 +408,13 @@ public class CommonData
     /// <returns>The list of all unit names.</returns>
     public SortedDictionary<string, string> GetSavedUnitNames()
     {
-        var sortedUnitList = new SortedDictionary<string, string>();
-        _unitRepository.GetAllKeys().ForEach(u => sortedUnitList.Add(u, u));
+        SortedDictionary<string, string> sortedUnitList = [];
+        
+        foreach (var key in _unitRepository.GetAllKeys())
+        {
+            sortedUnitList.Add(key, key);
+        }
+
         return sortedUnitList;
     }
 
@@ -417,7 +422,7 @@ public class CommonData
     /// Gets all game entries.
     /// </summary>
     /// <returns>A list of all ongoing games.</returns>
-    public List<GameEntry> GetGameEntries()
+    public IReadOnlyCollection<GameEntry> GetGameEntries()
     {
         return _gameEntryRepository.GetAll();
     }
@@ -588,7 +593,7 @@ public class CommonData
                     allRangeChanges.AddRange(weapon.Range.Values);
                     if (weapon.RangeMinimum != -1)
                     {
-                        for (int ii = 0; ii <= weapon.RangeMinimum; ii++)
+                        for (var ii = 0; ii <= weapon.RangeMinimum; ii++)
                         {
                             allRangeChanges.Add(ii);
                         }
@@ -642,7 +647,7 @@ public class CommonData
     {
         var pickBrackets = new List<PickBracket>();
 
-        for (int ii = begin; ii <= end; ii += interval)
+        for (var ii = begin; ii <= end; ii += interval)
         {
             pickBrackets.Add(new PickBracket
             {
@@ -663,7 +668,7 @@ public class CommonData
 
         pickBrackets.Add(new PickBracket { Begin = 0, End = allChangeLocations[0] });
 
-        for (int ii = 1; ii < allChangeLocations.Count; ii++)
+        for (var ii = 1; ii < allChangeLocations.Count; ii++)
         {
             pickBrackets.Add(new PickBracket { Begin = allChangeLocations[ii - 1] + 1, End = allChangeLocations[ii] });
         }
@@ -683,7 +688,7 @@ public class CommonData
 
         var pickBrackets = new List<PickBracket>();
 
-        for (int ii = 1; ii < allChangeLocations.Count; ii += 2)
+        for (var ii = 1; ii < allChangeLocations.Count; ii += 2)
         {
             pickBrackets.Add(new PickBracket { Begin = allChangeLocations[ii - 1], End = allChangeLocations[ii] });
         }

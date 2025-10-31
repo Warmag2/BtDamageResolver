@@ -1,7 +1,7 @@
 ﻿using System;
+using AwesomeAssertions;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
-using FluentAssertions;
 using NUnit.Framework;
 using static Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver.ExpressionExtensions;
 
