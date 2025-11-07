@@ -77,11 +77,13 @@ Normal docker prune methods should work once the system has been shut down. If y
 * Go to the `BtDamageResolverInfrastructure` folder in repository root
 * Run `prune.sh`
 
-**Do note that the above will delete absolutely all dangling content in your docker environment.** All dangling images, networks, volumes etc. Only use it if you have nothing in your docker you want to spare. It is included only because I want this to be usable by someone who doesn't know shit about docker and has only installed it to run BtDamageResolver.
+**Do note that the above will delete absolutely all dangling content in your docker environment.** All dangling images, networks, volumes etc. Only use it if you have nothing in your docker you want to spare. It is included only because I want this to be usable by someone who doesn't know anything about docker and has only installed it to run BtDamageResolver.
 
 ### Using the GitHub Nuget Feed
 
-The easiest way is to develop a client would be to use the nuget feed provided by Github to build the project and not worry about anything else. To accomplish this, one can add the following source to your Nuget.config:
+Building the project from the docker files creates a build container with the newest nugets and builds the client in that container, so as a regular user, it is not necessary to care about this.
+
+In other words, the nuget feed is really only relevant if you want to make your own client or work on the existing client without touching the API or compiling the nugets yourself. To access it, you can add the following source to your Nuget.config:
 
     <add key="githubWarma" value="https://nuget.pkg.github.com/Warmag2/index.json" />
 
