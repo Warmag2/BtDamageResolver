@@ -100,7 +100,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
 
             if (value != RedisValue.Null)
             {
-                var entity = JsonSerializer.Deserialize<TEntity>(value, _jsonSerializerOptions);
+                var entity = JsonSerializer.Deserialize<TEntity>(value.ToString(), _jsonSerializerOptions);
                 return entity;
             }
 
@@ -128,7 +128,7 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
 
             if (value != RedisValue.Null)
             {
-                var entity = JsonSerializer.Deserialize<TEntity>(value, _jsonSerializerOptions);
+                var entity = JsonSerializer.Deserialize<TEntity>(value.ToString(), _jsonSerializerOptions);
                 return entity;
             }
 
