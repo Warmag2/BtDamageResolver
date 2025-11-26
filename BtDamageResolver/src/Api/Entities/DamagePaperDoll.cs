@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities;
 
@@ -40,17 +41,17 @@ public class DamagePaperDoll
     /// <summary>
     /// The collection of normal damage entries.
     /// </summary>
-    public Dictionary<Location, List<int>> DamageCollection { get; set; }
+    public Dictionary<Location, Dictionary<Guid, List<int>>> DamageCollection { get; set; }
 
     /// <summary>
     /// The collection of critical damage entries.
     /// </summary>
-    public Dictionary<Location, List<CriticalDamageEntry>> DamageCollectionCritical { get; set; }
+    public Dictionary<Location, Dictionary<Guid, List<CriticalDamageEntry>>> DamageCollectionCritical { get; set; }
 
     /// <summary>
     /// The collection of special damage entries.
     /// </summary>
-    public Dictionary<Location, List<SpecialDamageEntry>> DamageCollectionSpecial { get; set; }
+    public Dictionary<Location, Dictionary<Guid, List<SpecialDamageEntry>>> DamageCollectionSpecial { get; set; }
 
     /// <summary>
     /// The paperdoll.
@@ -79,7 +80,7 @@ public class DamagePaperDoll
 
         foreach (var (_, value) in DamageCollectionSpecial)
         {
-            result += value.Where(l => l.Type == type).Sum(d => int.Parse(d.Data));
+            result += value.SelectMany(r => r.Value).Where(l => l.Type == type).Sum(d => int.Parse(d.Data));
         }
 
         return result;
@@ -97,20 +98,9 @@ public class DamagePaperDoll
             throw new InvalidOperationException("Cannot merge two DamagePaperDolls of different types.");
         }
 
-        foreach (var entry in damagePaperDoll.DamageCollection)
-        {
-            InsertDamage(entry.Key, entry.Value);
-        }
-
-        foreach (var entry in damagePaperDoll.DamageCollectionSpecial)
-        {
-            InsertSpecialDamage(entry.Key, entry.Value);
-        }
-
-        foreach (var entry in damagePaperDoll.DamageCollectionCritical)
-        {
-            InsertCriticalDamage(entry.Key, entry.Value);
-        }
+        DamageCollection.Merge(damagePaperDoll.DamageCollection);
+        DamageCollectionCritical.Merge(damagePaperDoll.DamageCollectionCritical);
+        DamageCollectionSpecial.Merge(damagePaperDoll.DamageCollectionSpecial);
     }
 
     /// <summary>
@@ -118,35 +108,37 @@ public class DamagePaperDoll
     /// </summary>
     /// <param name="location">The location to record to.</param>
     /// <param name="amount">The amount of damage to record.</param>
-    public void RecordDamage(Location location, int amount)
+    public void RecordDamage(Location location, Guid creatorId, int amount)
     {
-        InsertDamage(location, amount);
+        InsertDamage(location, creatorId, amount);
     }
 
     /// <summary>
     /// Record critical damage to this damage report.
     /// </summary>
     /// <param name="location">The location to record to.</param>
+    /// <param name="creatorId">The creator of the critical damage entry.</param>
     /// <param name="damage">The damage amount to record.</param>
     /// <param name="threatType">The type of the critical damage threat.</param>
     /// <param name="criticalDamageType">The type of the critical damage to record.</param>
-    public void RecordCriticalDamage(Location location, int damage, CriticalThreatType threatType, CriticalDamageType criticalDamageType)
+    public void RecordCriticalDamage(Location location, Guid creatorId, int damage, CriticalThreatType threatType, CriticalDamageType criticalDamageType)
     {
-        InsertCriticalDamage(location, new CriticalDamageEntry(damage, threatType, criticalDamageType));
+        InsertCriticalDamage(location, creatorId, new CriticalDamageEntry(damage, threatType, criticalDamageType));
     }
 
     /// <summary>
     /// Record critical damage to this damage report.
     /// </summary>
     /// <param name="location">The location to record to.</param>
+    /// <param name="creatorId">The creator of the critical damage entry.</param>
     /// <param name="damage">The damage amount to record.</param>
     /// <param name="threatType">The type of the critical damage threat.</param>
     /// <param name="criticalDamageTypes">The list of critical damage types to record.</param>
-    public void RecordCriticalDamage(Location location, int damage, CriticalThreatType threatType, List<CriticalDamageType> criticalDamageTypes)
+    public void RecordCriticalDamage(Location location, Guid creatorId, int damage, CriticalThreatType threatType, List<CriticalDamageType> criticalDamageTypes)
     {
         foreach (var criticalDamageType in criticalDamageTypes)
         {
-            InsertCriticalDamage(location, new CriticalDamageEntry(damage, threatType, criticalDamageType));
+            InsertCriticalDamage(location, creatorId, new CriticalDamageEntry(damage, threatType, criticalDamageType));
         }
     }
 
@@ -155,89 +147,74 @@ public class DamagePaperDoll
     /// </summary>
     /// <param name="location">The location to record to.</param>
     /// <param name="specialDamageEntry">The special damage to record.</param>
-    public void RecordSpecialDamage(Location location, SpecialDamageEntry specialDamageEntry)
+    public void RecordSpecialDamage(Location location, Guid creatorId, SpecialDamageEntry specialDamageEntry)
     {
-        InsertSpecialDamage(location, specialDamageEntry);
+        InsertSpecialDamage(location, creatorId, specialDamageEntry);
     }
 
     /// <summary>
     /// Insert critical damage to location.
     /// </summary>
     /// <param name="location">The location to insert to.</param>
+    /// <param name="creatorId">The creator of the critical damage entry.</param>
     /// <param name="entry">The critical damage entry to insert.</param>
-    private void InsertCriticalDamage(Location location, CriticalDamageEntry entry)
+    private void InsertCriticalDamage(Location location, Guid creatorId, CriticalDamageEntry entry)
     {
-        InsertCriticalDamage(location, [entry]);
+        DamageCollectionCritical.Insert(location, creatorId, [entry]);
     }
 
     /// <summary>
     /// Insert critical damage to location.
     /// </summary>
     /// <param name="location">The location to insert to.</param>
+    /// <param name="creatorId">The creator of the critical damage entries.</param>
     /// <param name="entries">The critical damage entries to insert.</param>
-    private void InsertCriticalDamage(Location location, List<CriticalDamageEntry> entries)
+    private void InsertCriticalDamage(Location location, Guid creatorId, List<CriticalDamageEntry> entries)
     {
-        if (DamageCollectionCritical.TryGetValue(location, out var value))
-        {
-            value.AddRange(entries);
-        }
-        else
-        {
-            DamageCollectionCritical.Add(location, entries);
-        }
+        DamageCollectionCritical.Insert(location, creatorId, entries);
     }
 
     /// <summary>
     /// Insert damage to location.
     /// </summary>
     /// <param name="location">The location to insert to.</param>
+    /// <param name="creatorId">The creator of the damage entry.</param>
     /// <param name="amount">The amount of damage to insert.</param>
-    private void InsertDamage(Location location, int amount)
+    private void InsertDamage(Location location, Guid creatorId, int amount)
     {
-        InsertDamage(location, [amount]);
+        DamageCollection.Insert(location, creatorId, [amount]);
     }
 
     /// <summary>
     /// Insert damage to location.
     /// </summary>
     /// <param name="location">The location to insert to.</param>
+    /// <param name="creatorId">The creator of the damage entries.</param>
     /// <param name="amounts">A list of damage amounts to insert.</param>
-    private void InsertDamage(Location location, List<int> amounts)
+    private void InsertDamage(Location location, Guid creatorId, List<int> amounts)
     {
-        if (DamageCollection.TryGetValue(location, out var value))
-        {
-            value.AddRange(amounts);
-        }
-        else
-        {
-            DamageCollection.Add(location, amounts);
-        }
+        DamageCollection.Insert(location, creatorId, amounts);
     }
 
     /// <summary>
     /// Insert special damage to location.
     /// </summary>
     /// <param name="location">The location to insert to.</param>
+    /// <param name="creatorId">The creator of the special damage entry.</param>'
     /// <param name="entry">The special damage entry to insert.</param>
-    private void InsertSpecialDamage(Location location, SpecialDamageEntry entry)
+    private void InsertSpecialDamage(Location location, Guid creatorId, SpecialDamageEntry entry)
     {
-        InsertSpecialDamage(location, [entry]);
+        DamageCollectionSpecial.Insert(location, creatorId, [entry]);
     }
 
     /// <summary>
     /// Insert special damage to location.
     /// </summary>
     /// <param name="location">The location to insert to.</param>
+    /// <param name="creatorId">The creator of the special damage entries.</param>
     /// <param name="entries">The special damage entries to insert.</param>
-    private void InsertSpecialDamage(Location location, List<SpecialDamageEntry> entries)
+    private void InsertSpecialDamage(Location location, Guid creatorId, List<SpecialDamageEntry> entries)
     {
-        if (DamageCollectionSpecial.TryGetValue(location, out var value))
-        {
-            value.AddRange(entries);
-        }
-        else
-        {
-            DamageCollectionSpecial.Add(location, entries);
-        }
+        DamageCollectionSpecial.Insert(location, creatorId, entries);
     }
 }

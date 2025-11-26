@@ -39,8 +39,8 @@ public partial class LogicUnit
             {
                 Phase = weapon.UsePhase,
                 DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, weaponBay.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
-                FiringUnitId = Unit.Id,
-                FiringUnitName = Unit.Name,
+                FiringUnitIds = [Unit.Id],
+                FiringUnitNames = new() { { Unit.Id, Unit.Name } },
                 TargetUnitId = target.Unit.Id,
                 TargetUnitName = target.Unit.Name,
                 InitialTroopers = target.Unit.Troopers

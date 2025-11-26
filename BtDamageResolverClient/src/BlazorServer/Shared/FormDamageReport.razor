@@ -5,27 +5,35 @@
 @inject UserStateController _userStateController
 
 @{
-    var attackingUnitOwnedByYou = _userStateController.PlayerState.UnitEntries.Any(u => u.Id == DamageReport.FiringUnitId);
-    var defendingUnitOwnedByYou = _userStateController.PlayerState.UnitEntries.Any(u => u.Id == DamageReport.TargetUnitId);
+    var attackingUnitOwnedByYou = _userStateController.PlayerState.UnitEntries.Exists(u => DamageReport.FiringUnitIds.Contains(u.Id));
+    var defendingUnitOwnedByYou = _userStateController.PlayerState.UnitEntries.Exists(u => u.Id == DamageReport.TargetUnitId);
 
-    string unitAttackString;
+    string unitAttackString = null;
     string unitDefenseString;
 
-    if (DamageReport.FiringUnitId == Guid.Empty)
+    if (DamageReport.FiringUnitIds.Count <= 1 && DamageReport.FiringUnitIds.SingleOrDefault() == Guid.Empty)
     {
         unitAttackString = "N/A";
     }
     else 
     {
-        if (_userStateController.UnitList.ContainsKey(DamageReport.FiringUnitId))
+        foreach (var attackingUnitId in DamageReport.FiringUnitIds)
         {
-            unitAttackString = attackingUnitOwnedByYou ?
-                $"{DamageReport.FiringUnitName}" :
-                $"{DamageReport.FiringUnitName} ({_userStateController.UnitList[DamageReport.FiringUnitId].PlayerId})";
-        }
-        else
-        {
-            unitAttackString = "Unknown unit";
+            if (!string.IsNullOrEmpty(unitAttackString))
+            {
+                unitAttackString += "<br>";
+            }
+
+            if (_userStateController.UnitList.ContainsKey(attackingUnitId))
+            {
+                unitAttackString = attackingUnitOwnedByYou ?
+                    $"{DamageReport.FiringUnitNames[attackingUnitId]}" :
+                    $"{DamageReport.FiringUnitNames[attackingUnitId]} ({_userStateController.UnitList[attackingUnitId].PlayerId})";
+            }
+            else
+            {
+                unitAttackString = "Unknown unit";
+            }
         }
     }
 
@@ -68,42 +76,63 @@
         
         <div class="resolver_div_componentrow">
             <div class="resolver_div_totaldamage">
-                Total damage to target: @DamageReport.DamagePaperDoll.DamageCollection.Sum(d => d.Value.Sum())
+                Total damage to target: @DamageReport.DamagePaperDoll.DamageCollection.Sum(d => d.Value.SelectMany(l => l.Value).Sum())
             </div>
         </div>
 
         <FormPaperDoll DamagePaperDoll="@DamageReport.DamagePaperDoll" DamageReport="@DamageReport"></FormPaperDoll>
         
-        @switch (_userStateController.GetUnitType(DamageReport.FiringUnitId))
+        @foreach (var firingUnitId in DamageReport.FiringUnitIds)
         {
-            case UnitType.AerospaceFighter:
-            case UnitType.Mech:
-            case UnitType.MechTripod:
-            case UnitType.MechQuad:
+            @switch (_userStateController.GetUnitType(firingUnitId))
+            {
+                case UnitType.AerospaceFighter:
+                case UnitType.Mech:
+                case UnitType.MechTripod:
+                case UnitType.MechQuad:
+                    <div class="resolver_div_componentrow">
+                        <div class="resolver_div_attackerheat">
+                            @if (DamageReport.FiringUnitIds.Count > 1)
+                            {
+                                <b>Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):</b> @DamageReport.ConsumablesAttackers.Values.First().Heat
+                            }
+                            else
+                            {
+                                <b>Attacker heat:</b> 
+                                @DamageReport.ConsumablesAttackers.Values.First().Heat
+                            }
+                        </div>
+                    </div>
+                    break;
+            }
+        }
+        
+        @foreach (var firingUnitId in DamageReport.FiringUnitIds)
+        {
+            @if (DamageReport.ConsumablesAttackers.TryGetValue(firingUnitId, out var attackerConsumables) && attackerConsumables.AmmoUsage.Any())
+            {
                 <div class="resolver_div_componentrow">
-                    <div class="resolver_div_attackerheat">
-                        <b>Attacker heat:</b> @DamageReport.AttackerHeat
-                    </div>
+                    @foreach (var ammoExpenditureItem in attackerConsumables.AmmoUsage)
+                    {
+                        <div class="resolver_div_ammo">
+                            @if (DamageReport.FiringUnitIds.Count > 1)
+                            {
+                                <b>Attacker @ammoExpenditureItem.Key ammo spent (@DamageReport.FiringUnitNames[firingUnitId]):</b> @ammoExpenditureItem.Value
+                            }
+                            else
+                            {
+                                <b>Attacker @ammoExpenditureItem.Key ammo spent:</b> @ammoExpenditureItem.Value
+                            }
+                        </div>
+                    }
                 </div>
-                break;
+            }
         }
         
-        @if (DamageReport.AmmoUsageAttacker.Any())
+        @if (DamageReport.ConsumablesDefender.AmmoUsage.Any())
         {
             <div class="resolver_div_componentrow">
-                @foreach (var ammoExpenditureItem in DamageReport.AmmoUsageAttacker)
-                {
-                    <div class="resolver_div_ammo">
-                        Attacker <b>@ammoExpenditureItem.Key</b> ammo spent: <b>@ammoExpenditureItem.Value</b>
-                    </div>
-                }
-            </div>
-        }
-        
-        @if (DamageReport.AmmoUsageDefender.Any())
-        {
-            <div class="resolver_div_componentrow">
-                @foreach (var ammoExpenditureItem in DamageReport.AmmoUsageDefender)
+                @foreach (var ammoExpenditureItem in DamageReport.ConsumablesDefender.AmmoUsage)
                 {
                     <div class="resolver_div_ammo">
                         Defender <b>@ammoExpenditureItem.Key</b> ammo spent: <b>@ammoExpenditureItem.Value</b>

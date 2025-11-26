@@ -154,7 +154,7 @@ public abstract class LogicUnitMechBase : LogicUnit
             (location == Location.LeftArm || location == Location.LeftLeg ||
              location == Location.RightArm || location == Location.RightLeg))
         {
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
+            damageReport.DamagePaperDoll.RecordCriticalDamage(location, Unit.Id, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
             damageReport.Log(new AttackLogEntry
             {
                 Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
@@ -165,7 +165,7 @@ public abstract class LogicUnitMechBase : LogicUnit
         }
         else if (criticalDamageTable.Mapping[criticalThreatRoll].Exists(c => c != CriticalDamageType.None))
         {
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
+            damageReport.DamagePaperDoll.RecordCriticalDamage(location, Unit.Id, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
             damageReport.Log(new AttackLogEntry
             {
                 Number = transformedDamage,

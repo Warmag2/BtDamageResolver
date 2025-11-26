@@ -50,54 +50,63 @@
         <div class="damageentry">
             <b>@location.Key</b>
             <br />
-            @location.Value.Sum()
+            @location.Value.SelectMany(l => l.Value).Sum()
 
             @if (DamagePaperDoll.DamageCollectionCritical.ContainsKey(location.Key))
             {
-                foreach (var criticalDamageEntry in DamagePaperDoll.DamageCollectionCritical[location.Key])
+                foreach (var criticalDamageEntryList in DamagePaperDoll.DamageCollectionCritical[location.Key])
                 {
-                    <br />
-                    switch (criticalDamageEntry.Type)
+                    foreach (var criticalDamageEntry in criticalDamageEntryList.Value)
                     {
-                        case CriticalDamageType.Critical:
-                            @("Critical hit")
-                            break;
-                        case CriticalDamageType.Immobilized:
-                            @("Immobilized")
-                            break;
-                        case CriticalDamageType.HeavyMotive:
-                            @("Heavy motive damage")
-                            break;
-                        case CriticalDamageType.LightMotive:
-                            @("Light motive damage")
-                            break;
-                        case CriticalDamageType.ModerateMotive:
-                            @("Moderate motive damage")
-                            break;
-                        case CriticalDamageType.LimbBlownOff:
-                            @("Limb blown off")
-                            break;
-                        default:
-                            switch(criticalDamageEntry.ThreatType)
-                            {
-                                case CriticalThreatType.DamageThreshold:
-                                    @($"Critical threat to: {criticalDamageEntry.Type} (Threshold {criticalDamageEntry.InducingDamage})")
-                                    break;
-                                case CriticalThreatType.Normal:
-                                    @($"Critical damage to: {criticalDamageEntry.Type} ({criticalDamageEntry.InducingDamage})")
-                                    break;
-                                default:
-                                        throw new NotImplementedException($"Critical damage description for threat type {criticalDamageEntry.ThreatType} not implemented.");
-                            }
+                        <br />
 
-                            break;
+                        if (DamageReport.FiringUnitIds.Count > 1)
+                        {
+                            @(DamageReport.FiringUnitNames[criticalDamageEntryList.Key])
+                        }
+
+                        switch (criticalDamageEntry.Type)
+                        {
+                            case CriticalDamageType.Critical:
+                                @("Critical hit")
+                                break;
+                            case CriticalDamageType.Immobilized:
+                                @("Immobilized")
+                                break;
+                            case CriticalDamageType.HeavyMotive:
+                                @("Heavy motive damage")
+                                break;
+                            case CriticalDamageType.LightMotive:
+                                @("Light motive damage")
+                                break;
+                            case CriticalDamageType.ModerateMotive:
+                                @("Moderate motive damage")
+                                break;
+                            case CriticalDamageType.LimbBlownOff:
+                                @("Limb blown off")
+                                break;
+                            default:
+                                switch (criticalDamageEntry.ThreatType)
+                                {
+                                    case CriticalThreatType.DamageThreshold:
+                                        @($"Critical threat to: {criticalDamageEntry.Type} (Threshold {criticalDamageEntry.InducingDamage})")
+                                        break;
+                                    case CriticalThreatType.Normal:
+                                        @($"Critical damage to: {criticalDamageEntry.Type} ({criticalDamageEntry.InducingDamage})")
+                                        break;
+                                    default:
+                                        throw new NotImplementedException($"Critical damage description for threat type {criticalDamageEntry.ThreatType} not implemented.");
+                                }
+
+                                break;
+                        }
                     }
                 }
             }
         </div>
         }
 
-        @foreach (var specialDamageEntryGroup in DamagePaperDoll.DamageCollectionSpecial.SelectMany(p => p.Value).GroupBy(s => s.Type))
+        @foreach (var specialDamageEntryGroup in DamagePaperDoll.DamageCollectionSpecial.SelectMany(p => p.Value).SelectMany(p => p.Value).GroupBy(s => s.Type))
         {
             <div class="damageentry">
                 <b>
@@ -139,7 +148,7 @@
     {
         if (DamagePaperDoll.DamageCollection.ContainsKey(location))
         {
-            var damage = DamagePaperDoll.DamageCollection[location].Sum();
+            var damage = DamagePaperDoll.DamageCollection[location].SelectMany(l => l.Value).Sum();
 
             if (damage > 0)
             {

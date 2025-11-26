@@ -102,7 +102,7 @@ public abstract class LogicUnitAerospace : LogicUnit
                 Type = AttackLogEntryType.DiceRoll
             });
 
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
+            damageReport.DamagePaperDoll.RecordCriticalDamage(location, Unit.Id, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
             damageReport.Log(new AttackLogEntry
             {
                 Context = string.Join(", ", criticalDamageTable.Mapping[aerospaceCriticalHitRoll].Select(c => c.ToString())),

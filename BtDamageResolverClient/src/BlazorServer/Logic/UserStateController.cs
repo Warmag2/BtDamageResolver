@@ -422,8 +422,8 @@ public class UserStateController
     /// <returns><b>True</b> if the damage report concerns the given player, <b>false</b> otherwise. </returns>
     public bool DamageReportConcernsPlayer(DamageReport damageReport)
     {
-        return damageReport.FiringUnitId == Guid.Empty ||
-               PlayerState.UnitEntries.Exists(u => u.Id == damageReport.FiringUnitId) ||
+        return damageReport.FiringUnitIds.Contains(Guid.Empty) ||
+               PlayerState.UnitEntries.Exists(u => damageReport.FiringUnitIds.Contains(u.Id)) ||
                PlayerState.UnitEntries.Exists(u => u.Id == damageReport.TargetUnitId);
     }
 

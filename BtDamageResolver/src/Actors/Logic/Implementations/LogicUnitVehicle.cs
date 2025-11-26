@@ -87,7 +87,7 @@ public abstract class LogicUnitVehicle : LogicUnit
 
         if (criticalDamageTable.Mapping[criticalThreatRoll].Exists(c => c != CriticalDamageType.None))
         {
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
+            damageReport.DamagePaperDoll.RecordCriticalDamage(location, Unit.Id, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
             damageReport.Log(new AttackLogEntry
             {
                 Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
