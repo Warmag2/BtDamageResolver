@@ -21,9 +21,6 @@ public class DamagePaperDoll
     /// </remarks>
     public DamagePaperDoll()
     {
-        DamageCollection = [];
-        DamageCollectionSpecial = [];
-        DamageCollectionCritical = [];
     }
 
     /// <summary>
@@ -32,26 +29,23 @@ public class DamagePaperDoll
     /// <param name="basePaperDoll">The base paper doll to generate from.</param>
     public DamagePaperDoll(PaperDoll basePaperDoll)
     {
-        DamageCollection = [];
-        DamageCollectionSpecial = [];
-        DamageCollectionCritical = [];
         PaperDoll = basePaperDoll;
     }
 
     /// <summary>
     /// The collection of normal damage entries.
     /// </summary>
-    public Dictionary<Location, Dictionary<Guid, List<int>>> DamageCollection { get; set; }
+    public Dictionary<Location, Dictionary<Guid, List<int>>> DamageCollection { get; set; } = [];
 
     /// <summary>
     /// The collection of critical damage entries.
     /// </summary>
-    public Dictionary<Location, Dictionary<Guid, List<CriticalDamageEntry>>> DamageCollectionCritical { get; set; }
+    public Dictionary<Location, Dictionary<Guid, List<CriticalDamageEntry>>> DamageCollectionCritical { get; set; } = [];
 
     /// <summary>
     /// The collection of special damage entries.
     /// </summary>
-    public Dictionary<Location, Dictionary<Guid, List<SpecialDamageEntry>>> DamageCollectionSpecial { get; set; }
+    public Dictionary<Location, Dictionary<Guid, List<SpecialDamageEntry>>> DamageCollectionSpecial { get; set; } = [];
 
     /// <summary>
     /// The paperdoll.

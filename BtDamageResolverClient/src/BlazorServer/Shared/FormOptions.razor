@@ -32,8 +32,9 @@
 
         <div class="resolver_div_options">
             <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Attack logs</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowMovementDamageReports" OnChanged="@OnMovementDamageReportVisibilityChanged">Unit movement damage reports</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReports" OnChanged="@OnOtherPlayerDamageReportVisibilityChanged">Other players' damage reports</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowCombinedDamageReports" OnChanged="@OnCombinedDamageReportsVisibilityChanged">Other players' damage reports</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowMovementDamageReports" OnChanged="@OnMovementDamageReportsVisibilityChanged">Unit movement damage reports</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReports" OnChanged="@OnOtherPlayerDamageReportsVisibilityChanged">Other players' damage reports</FormCheckbox>
         </div>
 
         <h3 class="resolver_header">
@@ -131,6 +132,15 @@
         }
     }
 
+    private void OnCombinedDamageReportsVisibilityChanged(bool combinedDamageReportsVisibility)
+    {
+        if (_userStateController.PlayerOptions.ShowCombinedDamageReports != combinedDamageReportsVisibility)
+        {
+            _userStateController.PlayerOptions.ShowCombinedDamageReports = combinedDamageReportsVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
     private void OnToolVisibilityChanged(bool toolVisibility)
     {
         if (_userStateController.PlayerOptions.DashboardShowToolsByDefault != toolVisibility)
@@ -158,7 +168,7 @@
         }
     }
 
-    private void OnMovementDamageReportVisibilityChanged(bool damageReportVisibility)
+    private void OnMovementDamageReportsVisibilityChanged(bool damageReportVisibility)
     {
         if (_userStateController.PlayerOptions.ShowMovementDamageReports != damageReportVisibility)
         {
@@ -167,7 +177,7 @@
         }
     }
 
-    private void OnOtherPlayerDamageReportVisibilityChanged(bool damageReportVisibility)
+    private void OnOtherPlayerDamageReportsVisibilityChanged(bool damageReportVisibility)
     {
         if (_userStateController.PlayerOptions.ShowOtherPlayersDamageReports != damageReportVisibility)
         {

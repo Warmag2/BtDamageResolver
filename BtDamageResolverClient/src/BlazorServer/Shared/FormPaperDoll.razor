@@ -60,7 +60,7 @@
                     {
                         <br />
 
-                        if (DamageReport.FiringUnitIds.Count > 1)
+                        if (DamageReport.FiringUnitIds.Count > 1 && DamageReport.FiringUnitNames.ContainsKey(criticalDamageEntryList.Key))
                         {
                             @(DamageReport.FiringUnitNames[criticalDamageEntryList.Key])
                         }
@@ -138,7 +138,7 @@
     {
         if(DamagePaperDoll.DamageCollection.ContainsKey(location))
         {
-            return $"'<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location])}'";
+            return $"'<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location].SelectMany(dc => dc.Value))}'";
         }
 
         return $"'<b>{location}</b><br>0'";

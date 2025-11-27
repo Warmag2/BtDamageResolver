@@ -59,22 +59,22 @@ public partial class LogicUnit
         {
             case MovementClass.Immobile:
             case MovementClass.Stationary:
-                nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat += 0;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 0);
                 break;
             case MovementClass.Normal:
-                nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat += 1;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 1);
                 break;
             case MovementClass.Fast:
-                nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat += 2;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 2);
                 break;
             case MovementClass.Masc:
-                nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat += 5;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 5);
                 break;
             case MovementClass.OutOfControl:
-                nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat += 2;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 2);
                 break;
             case MovementClass.Jump:
-                nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat += Math.Max(3, Unit.Movement);
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, Math.Max(3, Unit.Movement));
                 break;
             default:
                 throw new ArgumentOutOfRangeException($"The movement class {Unit.MovementClass} is not handled.");
@@ -86,7 +86,7 @@ public partial class LogicUnit
         if (Unit.HasFeature(UnitFeature.CombatComputer))
         {
             nonWeaponDamageReport.Log(new AttackLogEntry { Context = $"Combat computer", Number = -4, Type = AttackLogEntryType.Heat });
-            nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat -= 4;
+            nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, -4);
         }
 
         return nonWeaponDamageReport;
@@ -126,7 +126,7 @@ public partial class LogicUnit
         }
 
         hitCalculationDamageReport.Log(new AttackLogEntry { Context = combatAction.Weapon.Name, Type = AttackLogEntryType.Heat, Number = heat });
-        hitCalculationDamageReport.ConsumablesAttackers[Unit.Id].Heat += heat;
+        hitCalculationDamageReport.SpendAttackerHeat(Unit.Id, heat);
     }
 
     /// <summary>

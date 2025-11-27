@@ -23,46 +23,6 @@ public class DamageReport
     }
 
     /// <summary>
-    /// The ID of this damage report.
-    /// </summary>
-    public Guid Id { get; set; }
-
-    /// <summary>
-    /// The phase this damage report occurred in.
-    /// </summary>
-    public Phase Phase { get; set; }
-
-    /// <summary>
-    /// Troopers before attack event.
-    /// </summary>
-    public int InitialTroopers { get; set; }
-
-    /// <summary>
-    /// Firing unit ID.
-    /// </summary>
-    public HashSet<Guid> FiringUnitIds { get; set; }
-
-    /// <summary>
-    /// Firing unit name.
-    /// </summary>
-    public Dictionary<Guid, string> FiringUnitNames { get; set; }
-
-    /// <summary>
-    /// Target unit ID.
-    /// </summary>
-    public Guid TargetUnitId { get; set; }
-
-    /// <summary>
-    /// Target unit name.
-    /// </summary>
-    public string TargetUnitName { get; set; }
-
-    /// <summary>
-    /// The game turn for this damage report.
-    /// </summary>
-    public int Turn { get; set; }
-
-    /// <summary>
     /// The attack log.
     /// </summary>
     public AttackLog AttackLog { get; set; }
@@ -83,9 +43,67 @@ public class DamageReport
     public DamagePaperDoll DamagePaperDoll { get; set; }
 
     /// <summary>
+    /// Firing unit ID.
+    /// </summary>
+    public HashSet<Guid> FiringUnitIds { get; set; }
+
+    /// <summary>
+    /// Firing unit name.
+    /// </summary>
+    public Dictionary<Guid, string> FiringUnitNames { get; set; }
+
+    /// <summary>
+    /// The ID of this damage report.
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Troopers before attack event.
+    /// </summary>
+    public int InitialTroopers { get; set; }
+
+    /// <summary>
+    /// The phase this damage report occurred in.
+    /// </summary>
+    public Phase Phase { get; set; }
+
+    /// <summary>
+    /// Target unit ID.
+    /// </summary>
+    public Guid TargetUnitId { get; set; }
+
+    /// <summary>
+    /// Target unit name.
+    /// </summary>
+    public string TargetUnitName { get; set; }
+
+    /// <summary>
+    /// The game turn for this damage report.
+    /// </summary>
+    public int Turn { get; set; }
+
+    /// <summary>
     /// The update timestamp.
     /// </summary>
     public DateTime TimeStamp { get; set; }
+
+    /// <summary>
+    /// Create a blank copy of this <see cref="DamageReport"/>.
+    /// </summary>
+    /// <returns>A blank copy of this <see cref="DamageReport"/>.</returns>
+    public DamageReport BlankCopy()
+    {
+        var returnedDamageReport = new DamageReport();
+        returnedDamageReport.DamagePaperDoll = new(DamagePaperDoll.PaperDoll);
+        returnedDamageReport.FiringUnitIds = [];
+        returnedDamageReport.FiringUnitNames = [];
+        returnedDamageReport.Phase = Phase;
+        returnedDamageReport.TargetUnitId = TargetUnitId;
+        returnedDamageReport.TargetUnitName = TargetUnitName;
+        returnedDamageReport.Turn = Turn;
+
+        return returnedDamageReport;
+    }
 
     /// <summary>
     /// Append an attack log entry to the attack log of this damage report.
@@ -113,7 +131,16 @@ public class DamageReport
             throw new InvalidOperationException("Target unit does not match. Trying to merge damage reports from different targets.");
         }
 
+        if (Phase != damageReport.Phase)
+        {
+            throw new InvalidOperationException("Phase does not match. Trying to merge damage reports from different phases.");
+        }
+
         FiringUnitIds.UnionWith(damageReport.FiringUnitIds);
+        foreach(var firingUnitName in damageReport.FiringUnitNames)
+        {
+            FiringUnitNames.TryAdd(firingUnitName.Key, firingUnitName.Value);
+        }
 
         AttackLog.Append(damageReport.AttackLog);
 
@@ -135,6 +162,7 @@ public class DamageReport
     /// <summary>
     /// Spend attacker ammo.
     /// </summary>
+    /// <param name="attackerId">The ID of the attacker.</param>
     /// <param name="ammoType">The ammo type to spend.</param>
     /// <param name="ammoAmount">The amount to spend.</param>
     public void SpendAmmoAttacker(Guid attackerId, string ammoType, int ammoAmount)
@@ -159,5 +187,22 @@ public class DamageReport
     public void SpendAmmoDefender(string ammoType, int ammoAmount)
     {
         ConsumablesDefender.SpendAmmo(ammoType, ammoAmount);
+    }
+
+    /// <summary>
+    /// Spend attacker heat.
+    /// </summary>
+    /// <param name="attackerId">The ID of the attacker.</param>
+    /// <param name="heat">The heat to spend.</param>
+    public void SpendAttackerHeat(Guid attackerId, int heat)
+    {
+        if (ConsumablesAttackers.TryGetValue(attackerId, out var consumables))
+        {
+            consumables.Heat += heat;
+        }
+        else
+        {
+            ConsumablesAttackers.Add(attackerId, new() { Heat = heat });
+        }
     }
 }

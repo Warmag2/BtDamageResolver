@@ -307,12 +307,12 @@ public static class CollectionExtensions
             }
             else
             {
-                ownerList.Add(ownerId, objects);
+                ownerList.Add(ownerId, [.. objects]);
             }
         }
         else
         {
-            input.Add(location, new Dictionary<Guid, List<TEntity>> { { ownerId, objects } });
+            input.Add(location, new Dictionary<Guid, List<TEntity>> { { ownerId, [.. objects] } });
         }
     }
 

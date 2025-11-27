@@ -1,0 +1,41 @@
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Enums;
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject UserStateController _userStateController
+
+@{
+    var showCombinedReports = _userStateController.PlayerOptions?.ShowCombinedDamageReports ?? false;
+    var combinedDamageReport = DamageReports[0].BlankCopy();
+
+    foreach (var damageReport in DamageReports)
+    {
+        combinedDamageReport.Merge(damageReport);
+    }
+}
+
+<ContainerExpander Enabled="showCombinedReports">
+    <ChildContentEnabled>
+        <FormDamageReport DamageReport=@combinedDamageReport></FormDamageReport>
+    </ChildContentEnabled>
+    <ChildContentDisabled>
+        @foreach (var damageReport in DamageReports)
+        {
+            <FormDamageReport DamageReport=@damageReport></FormDamageReport>
+        }
+    </ChildContentDisabled>
+</ContainerExpander>
+
+
+@code
+{
+    bool _combineReports;
+
+    [Parameter]
+    public List<DamageReport> DamageReports { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _combineReports = _userStateController.PlayerOptions?.ShowCombinedDamageReports ?? false;
+    }
+}

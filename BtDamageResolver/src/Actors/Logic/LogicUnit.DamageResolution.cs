@@ -14,7 +14,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc />
-    public async Task ApplyDamagePackets(DamageReport damageReport, List<DamagePacket> damagePackets, FiringSolution firingSolution, int marginOfSuccess)
+    public async Task ApplyDamagePackets(DamageReport damageReport, Guid damageOwnerId, List<DamagePacket> damagePackets, FiringSolution firingSolution, int marginOfSuccess)
     {
         foreach (var damagePacket in damagePackets)
         {
@@ -30,7 +30,7 @@ public partial class LogicUnit
             // Unfortunately we still have to do transformations at this point, as certain locations and armor types receive damage differently
             var transformedDamage = TransformDamageAmountBasedOnLocation(damageReport, location, damagePacket.Damage);
 
-            damageReport.DamagePaperDoll.RecordDamage(location, Unit.Id, transformedDamage);
+            damageReport.DamagePaperDoll.RecordDamage(location, damageOwnerId, transformedDamage);
             damageReport.Log(new AttackLogEntry { Location = location, Number = transformedDamage, Type = AttackLogEntryType.Damage });
 
             foreach (var specialDamageEntry in damagePacket.SpecialDamageEntries)
@@ -64,7 +64,7 @@ public partial class LogicUnit
                                 // Critical damage threats coming from special damage (AP Ammo, Retractable Blade) never do multiple critical effects. Take the first.
                                 // Direct critical damage threats should always succeed, regardless of damage threshold. Give a very high damage amount.
                                 var criticalDamageType = criticalDamageTable.Mapping[specialDamageEntryCriticalThreatRoll][0];
-                                damageReport.DamagePaperDoll.RecordCriticalDamage(location, Unit.Id, damagePacket.Damage, CriticalThreatType.Normal, criticalDamageType);
+                                damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, damagePacket.Damage, CriticalThreatType.Normal, criticalDamageType);
                                 damageReport.Log(new AttackLogEntry { Context = criticalDamageType.ToString(), Number = 0, Location = location, Type = AttackLogEntryType.Critical });
                             }
                             else
@@ -78,7 +78,7 @@ public partial class LogicUnit
 
                             break;
                         default:
-                            damageReport.DamagePaperDoll.RecordSpecialDamage(location, Unit.Id, specialDamageEntry);
+                            damageReport.DamagePaperDoll.RecordSpecialDamage(location, damageOwnerId, specialDamageEntry);
                             damageReport.Log(new AttackLogEntry { Context = specialDamageEntry.Type.ToString(), Location = location, Number = int.Parse(specialDamageEntry.Data), Type = AttackLogEntryType.SpecialDamage });
                             break;
                     }

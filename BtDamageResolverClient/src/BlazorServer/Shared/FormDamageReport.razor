@@ -11,30 +11,29 @@
     string unitAttackString = null;
     string unitDefenseString;
 
-    if (DamageReport.FiringUnitIds.Count <= 1 && DamageReport.FiringUnitIds.SingleOrDefault() == Guid.Empty)
+    if (DamageReport.FiringUnitIds.Count <= 1)
     {
-        unitAttackString = "N/A";
-    }
-    else 
-    {
-        foreach (var attackingUnitId in DamageReport.FiringUnitIds)
+        if (DamageReport.FiringUnitIds.SingleOrDefault() == Guid.Empty)
         {
-            if (!string.IsNullOrEmpty(unitAttackString))
+            unitAttackString = "N/A";
+        }
+        else
+        {
+            if (!_userStateController.UnitList.ContainsKey(DamageReport.TargetUnitId))
             {
-                unitAttackString += "<br>";
-            }
-
-            if (_userStateController.UnitList.ContainsKey(attackingUnitId))
-            {
-                unitAttackString = attackingUnitOwnedByYou ?
-                    $"{DamageReport.FiringUnitNames[attackingUnitId]}" :
-                    $"{DamageReport.FiringUnitNames[attackingUnitId]} ({_userStateController.UnitList[attackingUnitId].PlayerId})";
+                unitAttackString = "Unknown unit (Unknown player)";
             }
             else
             {
-                unitAttackString = "Unknown unit";
+                unitAttackString = attackingUnitOwnedByYou ?
+                    $"{DamageReport.FiringUnitNames[DamageReport.FiringUnitIds.Single()]}" :
+                    $"{DamageReport.FiringUnitNames[DamageReport.FiringUnitIds.Single()]} ({_userStateController.UnitList[DamageReport.FiringUnitIds.Single()].PlayerId})";
             }
         }
+    }
+    else 
+    {
+        unitAttackString = "Multiple attackers";
     }
 
     if (!_userStateController.UnitList.ContainsKey(DamageReport.TargetUnitId))
@@ -76,7 +75,7 @@
         
         <div class="resolver_div_componentrow">
             <div class="resolver_div_totaldamage">
-                Total damage to target: @DamageReport.DamagePaperDoll.DamageCollection.Sum(d => d.Value.SelectMany(l => l.Value).Sum())
+                Total damage to target: @DamageReport.DamagePaperDoll.DamageCollection.SelectMany(dc => dc.Value.SelectMany(l => l.Value)).Sum()
             </div>
         </div>
 
@@ -117,11 +116,11 @@
                         <div class="resolver_div_ammo">
                             @if (DamageReport.FiringUnitIds.Count > 1)
                             {
-                                <b>Attacker @ammoExpenditureItem.Key ammo spent (@DamageReport.FiringUnitNames[firingUnitId]):</b> @ammoExpenditureItem.Value
+                                <b>Attacker (@DamageReport.FiringUnitNames[firingUnitId]) spent @ammoExpenditureItem.Key:</b> @ammoExpenditureItem.Value
                             }
                             else
                             {
-                                <b>Attacker @ammoExpenditureItem.Key ammo spent:</b> @ammoExpenditureItem.Value
+                                <b>Attacker spent @ammoExpenditureItem.Key:</b> @ammoExpenditureItem.Value
                             }
                         </div>
                     }
