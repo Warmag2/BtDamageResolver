@@ -502,9 +502,7 @@
     font-size: 18px;
     font-weight: bolder;
     text-align: left;
-    position: absolute;
-    top: 0px;
-    left: 0px;
+    position: relative;
 }
 
     .resolver_button_expander:hover {
