@@ -37,7 +37,7 @@ public partial class LogicUnit
 
         var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, [new() { Type = SpecialDamageType.None }]);
 
-        await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, Target = damageInstance.UnitId }, 0);
+        await ApplyDamagePackets(damageReport, Guid.Empty, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, Target = damageInstance.UnitId }, 0);
 
         return damageReport;
     }
@@ -126,7 +126,7 @@ public partial class LogicUnit
         damagePackets = TransformDamagePacketsBasedOnTargetType(damageReport, damagePackets, target);
 
         // Finally, apply damage packets
-        await target.ApplyDamagePackets(damageReport, damagePackets, combatAction.WeaponBay.FiringSolution, combatAction.MarginOfSuccess);
+        await target.ApplyDamagePackets(damageReport, Unit.Id, damagePackets, combatAction.WeaponBay.FiringSolution, combatAction.MarginOfSuccess);
 
         return damageReport;
     }
@@ -391,6 +391,7 @@ public partial class LogicUnit
             });
             await ApplyDamagePackets(
                 damageReport,
+                Unit.Id,
                 [new() { Damage = 0, SpecialDamageEntries = [new() { Data = "0", Type = SpecialDamageType.Critical }] }],
                 new FiringSolution
                 {
