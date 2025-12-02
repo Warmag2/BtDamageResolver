@@ -54,9 +54,7 @@ else
         <ContainerAccordion Enabled=@_userStateController.DamageReportContainer.Visible(singleTurnDamageReports.Key) Title=@($"Turn {singleTurnDamageReports.Key}")>
             @foreach (var damageReports in singleTurnDamageReports.Value.GroupBy(dr => $"{dr.TargetUnitId}-{dr.Phase}"))
             {
-                <div class="resolver_div_componentlistcontainer alternatingcolors">
-                    <FormDamageReportContainer DamageReports=@damageReports.ToList()></FormDamageReportContainer>
-                </div>
+                <FormDamageReportContainer DamageReports=@damageReports.ToList()></FormDamageReportContainer>
             }
         </ContainerAccordion>
     }

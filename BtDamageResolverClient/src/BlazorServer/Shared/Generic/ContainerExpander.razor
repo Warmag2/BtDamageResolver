@@ -1,10 +1,6 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
-<div class="resolver_div_expandercontent @VisualStyleController.GetActiveClass(_enabled)">
-    <button class="resolver_button_expander @VisualStyleController.GetActiveClass(_enabled)" @onclick="@(e => _enabled = !_enabled)">
-        @(_enabled ? "&darr;" : "&rarr;")
-    </button>
-
+<div class="resolver_div_componentcontainer">
     @if(_enabled)
     {
         @ChildContentEnabled
@@ -13,6 +9,20 @@
     {
         @ChildContentDisabled
     }
+    <button class="resolver_button_expander @VisualStyleController.GetActiveClass(!_enabled)" @onclick="@(e => _enabled = !_enabled)">
+            @if(_enabled)
+            {
+                <span>
+                    &#9654;
+                </span>
+            }
+            else
+            {
+                <span>
+                    &#x25BC;
+                </span>
+            }
+    </button>
 </div>
 
 @code

@@ -14,18 +14,24 @@
     }
 }
 
-<ContainerExpander Enabled="showCombinedReports">
-    <ChildContentEnabled>
-        <FormDamageReport DamageReport=@combinedDamageReport></FormDamageReport>
-    </ChildContentEnabled>
-    <ChildContentDisabled>
-        @foreach (var damageReport in DamageReports)
-        {
-            <FormDamageReport DamageReport=@damageReport></FormDamageReport>
-        }
-    </ChildContentDisabled>
-</ContainerExpander>
-
+@if (DamageReports.Count > 1)
+{
+    <ContainerExpander Enabled="showCombinedReports">
+        <ChildContentEnabled>
+            <FormDamageReport DamageReport=@combinedDamageReport></FormDamageReport>
+        </ChildContentEnabled>
+        <ChildContentDisabled>
+            @foreach (var damageReport in DamageReports)
+            {
+                <FormDamageReport DamageReport=@damageReport></FormDamageReport>
+            }
+        </ChildContentDisabled>
+    </ContainerExpander>
+}
+else
+{
+    <FormDamageReport DamageReport=@DamageReports[0]></FormDamageReport>
+}
 
 @code
 {

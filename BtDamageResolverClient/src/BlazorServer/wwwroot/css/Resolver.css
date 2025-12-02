@@ -494,15 +494,14 @@
 .resolver_button_expander {
     background-color: var(--color_bg_unselected);
     color: var(--color_text_unselected);
-    border: none;
-    outline: none;
     cursor: pointer;
-    padding: 10px 14px;
-    position: relative;
+    padding: 2px 8px;
     font-size: 18px;
     font-weight: bolder;
     text-align: left;
-    position: relative;
+    position: absolute;
+    top: 0px;
+    left: 0px;
 }
 
     .resolver_button_expander:hover {
@@ -520,7 +519,10 @@
             color: var(--color_text_hover_selected);
         }
 
-.resolver_div_expandercontent { padding: 0; }
+.resolver_div_expandercontent {
+    position: relative;
+    float: left;
+}
 
 /*******************************************************************************
     Modal
@@ -789,7 +791,7 @@
 
 .resolver_div_damagereportheader {
     font-size: 24px;
-    padding-left: 1rem;
+    padding-left: 4rem;
 }
 
 .resolver_div_phase {

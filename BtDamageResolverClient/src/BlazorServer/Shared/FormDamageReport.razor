@@ -48,10 +48,8 @@
     }
 }
 
-<div class="resolver_div_componentcontainer">
+<div class="resolver_div_componentcontainer resolver_div_damagereportcontainer @(defendingUnitOwnedByYou ? "incomingdamage" : "outgoingdamage")">
     
-    <div class="resolver_div_damagereportcontainer @(defendingUnitOwnedByYou ? "incomingdamage" : "outgoingdamage")">
-        
         <div class="resolver_div_componentrow">
             <div class="resolver_div_componentcell resolver_div_damagereportheader">
                 <b>
@@ -140,8 +138,6 @@
             </div>
         }
 
-    </div>
-    
     <div class="resolver_div_componentrow">
         <ContainerAccordion Enabled="@_attackLogVisible" Title="Attack log">
             <div class="resolver_div_options">
