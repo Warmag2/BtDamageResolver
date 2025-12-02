@@ -104,7 +104,7 @@ public class DamagePaperDoll
     /// <param name="amount">The amount of damage to record.</param>
     public void RecordDamage(Location location, Guid creatorId, int amount)
     {
-        InsertDamage(location, creatorId, amount);
+        DamageCollection.Insert(location, creatorId, [amount]);
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public class DamagePaperDoll
     /// <param name="criticalDamageType">The type of the critical damage to record.</param>
     public void RecordCriticalDamage(Location location, Guid creatorId, int damage, CriticalThreatType threatType, CriticalDamageType criticalDamageType)
     {
-        InsertCriticalDamage(location, creatorId, new CriticalDamageEntry(damage, threatType, criticalDamageType));
+        DamageCollectionCritical.Insert(location, creatorId, [new CriticalDamageEntry(damage, threatType, criticalDamageType)]);
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public class DamagePaperDoll
     {
         foreach (var criticalDamageType in criticalDamageTypes)
         {
-            InsertCriticalDamage(location, creatorId, new CriticalDamageEntry(damage, threatType, criticalDamageType));
+            DamageCollectionCritical.Insert(location, creatorId, [new CriticalDamageEntry(damage, threatType, criticalDamageType)]);
         }
     }
 
@@ -143,72 +143,6 @@ public class DamagePaperDoll
     /// <param name="specialDamageEntry">The special damage to record.</param>
     public void RecordSpecialDamage(Location location, Guid creatorId, SpecialDamageEntry specialDamageEntry)
     {
-        InsertSpecialDamage(location, creatorId, specialDamageEntry);
-    }
-
-    /// <summary>
-    /// Insert critical damage to location.
-    /// </summary>
-    /// <param name="location">The location to insert to.</param>
-    /// <param name="creatorId">The creator of the critical damage entry.</param>
-    /// <param name="entry">The critical damage entry to insert.</param>
-    private void InsertCriticalDamage(Location location, Guid creatorId, CriticalDamageEntry entry)
-    {
-        DamageCollectionCritical.Insert(location, creatorId, [entry]);
-    }
-
-    /// <summary>
-    /// Insert critical damage to location.
-    /// </summary>
-    /// <param name="location">The location to insert to.</param>
-    /// <param name="creatorId">The creator of the critical damage entries.</param>
-    /// <param name="entries">The critical damage entries to insert.</param>
-    private void InsertCriticalDamage(Location location, Guid creatorId, List<CriticalDamageEntry> entries)
-    {
-        DamageCollectionCritical.Insert(location, creatorId, entries);
-    }
-
-    /// <summary>
-    /// Insert damage to location.
-    /// </summary>
-    /// <param name="location">The location to insert to.</param>
-    /// <param name="creatorId">The creator of the damage entry.</param>
-    /// <param name="amount">The amount of damage to insert.</param>
-    private void InsertDamage(Location location, Guid creatorId, int amount)
-    {
-        DamageCollection.Insert(location, creatorId, [amount]);
-    }
-
-    /// <summary>
-    /// Insert damage to location.
-    /// </summary>
-    /// <param name="location">The location to insert to.</param>
-    /// <param name="creatorId">The creator of the damage entries.</param>
-    /// <param name="amounts">A list of damage amounts to insert.</param>
-    private void InsertDamage(Location location, Guid creatorId, List<int> amounts)
-    {
-        DamageCollection.Insert(location, creatorId, amounts);
-    }
-
-    /// <summary>
-    /// Insert special damage to location.
-    /// </summary>
-    /// <param name="location">The location to insert to.</param>
-    /// <param name="creatorId">The creator of the special damage entry.</param>'
-    /// <param name="entry">The special damage entry to insert.</param>
-    private void InsertSpecialDamage(Location location, Guid creatorId, SpecialDamageEntry entry)
-    {
-        DamageCollectionSpecial.Insert(location, creatorId, [entry]);
-    }
-
-    /// <summary>
-    /// Insert special damage to location.
-    /// </summary>
-    /// <param name="location">The location to insert to.</param>
-    /// <param name="creatorId">The creator of the special damage entries.</param>
-    /// <param name="entries">The special damage entries to insert.</param>
-    private void InsertSpecialDamage(Location location, Guid creatorId, List<SpecialDamageEntry> entries)
-    {
-        DamageCollectionSpecial.Insert(location, creatorId, entries);
+        DamageCollectionSpecial.Insert(location, creatorId, [specialDamageEntry]);
     }
 }

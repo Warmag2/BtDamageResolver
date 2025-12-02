@@ -88,7 +88,7 @@ public abstract class LogicUnitAerospace : LogicUnit
     }
 
     /// <inheritdoc />
-    protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
+    protected override async Task ResolveCriticalHit(DamageReport damageReport, Guid damageOwnerId, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
     {
         var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
 
@@ -102,7 +102,7 @@ public abstract class LogicUnitAerospace : LogicUnit
                 Type = AttackLogEntryType.DiceRoll
             });
 
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, Unit.Id, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
+            damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
             damageReport.Log(new AttackLogEntry
             {
                 Context = string.Join(", ", criticalDamageTable.Mapping[aerospaceCriticalHitRoll].Select(c => c.ToString())),
