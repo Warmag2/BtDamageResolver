@@ -62,7 +62,7 @@
 
                             if (DamageReport.FiringUnitIds.Count > 1 && DamageReport.FiringUnitNames.ContainsKey(criticalDamageEntryList.Key))
                             {
-                                @(DamageReport.FiringUnitNames[criticalDamageEntryList.Key] + " &mdash; ")
+                                @(DamageReport.FiringUnitNames[criticalDamageEntryList.Key] + " — ")
                             }
 
                             switch (criticalDamageEntry.Type)
@@ -140,7 +140,13 @@
         {
             if (DamageReport.FiringUnitIds.Count > 1)
             {
-                return $"'<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location].SelectMany(dc => $"{DamageReport.FiringUnitNames[dc.Key]} &mdash; {dc.Value}"))}'";
+                var damageOwnerPairs =
+                    DamagePaperDoll.DamageCollection[location]
+                        .SelectMany(kvp => kvp.Value.Select(Damage => (kvp.Key, Damage)))
+                        .ToList();
+
+
+                return $"'<b>{location}</b><br>{string.Join("<br>", damageOwnerPairs.Select(dop => $"{DamageReport.FiringUnitNames[dop.Key]} — {dop.Damage}"))}'";
             }
             else
             {
