@@ -289,4 +289,66 @@ public static class CollectionExtensions
 
         return dictionary;
     }
+
+    /// <summary>
+    /// Insert objects to a location-guid -separated list.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the entity in the location-owner separated list.</typeparam>
+    /// <param name="ownerId">The owner of the special damage entries.</param>
+    /// <param name="location">The location to insert to.</param>
+    /// <param name="entries">The special damage entries to insert.</param>
+    public static void Insert<TEntity>(this Dictionary<Location, Dictionary<Guid, List<TEntity>>> input, Location location, Guid ownerId, List<TEntity> objects)
+    {
+        if (input.TryGetValue(location, out var ownerList))
+        {
+            if (ownerList.TryGetValue(ownerId, out var damageList))
+            {
+                damageList.AddRange(objects);
+            }
+            else
+            {
+                ownerList.Add(ownerId, [.. objects]);
+            }
+        }
+        else
+        {
+            input.Add(location, new Dictionary<Guid, List<TEntity>> { { ownerId, [.. objects] } });
+        }
+    }
+
+    /// <summary>
+    /// Insert objects to a location-guid -separated list.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the entity in the location-owner separated list.</typeparam>
+    /// <param name="ownerId">The owner of the special damage entries.</param>
+    /// <param name="location">The location to insert to.</param>
+    /// <param name="entries">The special damage entries to insert.</param>
+    public static void Insert<TKey>(this Dictionary<TKey, int> input, TKey key, int value)
+    {
+        if (input.TryGetValue(key, out var existingValue))
+        {
+            input[key] = existingValue + value;
+        }
+        else
+        {
+            input.Add(key, value);
+        }
+    }
+
+    /// <summary>
+    /// Merge objects in location-guid separated lists.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the entity in the location-owner separated list.</typeparam>
+    /// <param name="input"></param>
+    /// <param name="target"></param>
+    public static void Merge<TEntity>(this Dictionary<Location, Dictionary<Guid, List<TEntity>>> input, Dictionary<Location, Dictionary<Guid, List<TEntity>>> target)
+    {
+        foreach (var locationEntry in target)
+        {
+            foreach (var ownerEntry in locationEntry.Value)
+            {
+                input.Insert(locationEntry.Key, ownerEntry.Key, ownerEntry.Value);
+            }
+        }
+    }
 }

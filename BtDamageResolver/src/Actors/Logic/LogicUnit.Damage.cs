@@ -22,8 +22,8 @@ public partial class LogicUnit
         {
             Phase = phase,
             DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, damageInstance.Direction, []),
-            FiringUnitId = selfDamage ? Unit.Id : Guid.Empty,
-            FiringUnitName = selfDamage ? Unit.Name : null,
+            FiringUnitIds = selfDamage ? [Unit.Id] : [Guid.Empty],
+            FiringUnitNames = selfDamage ? new() { { Unit.Id, Unit.Name } } : new() { { Guid.Empty, null } },
             TargetUnitId = Unit.Id,
             TargetUnitName = Unit.Name,
             InitialTroopers = Unit.Troopers
@@ -37,7 +37,7 @@ public partial class LogicUnit
 
         var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, [new() { Type = SpecialDamageType.None }]);
 
-        await ApplyDamagePackets(damageReport, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, Target = damageInstance.UnitId }, 0);
+        await ApplyDamagePackets(damageReport, Guid.Empty, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, Target = damageInstance.UnitId }, 0);
 
         return damageReport;
     }
@@ -97,8 +97,8 @@ public partial class LogicUnit
         {
             Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
             DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, combatAction.Weapon.SpecialFeatures.Select(w => w.Type).ToList()),
-            FiringUnitId = Unit.Id,
-            FiringUnitName = Unit.Name,
+            FiringUnitIds = [Unit.Id],
+            FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = target.Unit.Id,
             TargetUnitName = target.Unit.Name,
             InitialTroopers = target.Unit.Troopers
@@ -126,7 +126,7 @@ public partial class LogicUnit
         damagePackets = TransformDamagePacketsBasedOnTargetType(damageReport, damagePackets, target);
 
         // Finally, apply damage packets
-        await target.ApplyDamagePackets(damageReport, damagePackets, combatAction.WeaponBay.FiringSolution, combatAction.MarginOfSuccess);
+        await target.ApplyDamagePackets(damageReport, Unit.Id, damagePackets, combatAction.WeaponBay.FiringSolution, combatAction.MarginOfSuccess);
 
         return damageReport;
     }
@@ -143,8 +143,8 @@ public partial class LogicUnit
         {
             Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
             DamagePaperDoll = await GetDamagePaperDoll(this, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, []),
-            FiringUnitId = Unit.Id,
-            FiringUnitName = Unit.Name,
+            FiringUnitIds = [Unit.Id],
+            FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = Unit.Id,
             TargetUnitName = Unit.Name,
             InitialTroopers = Unit.Troopers
@@ -377,8 +377,8 @@ public partial class LogicUnit
             {
                 Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
                 DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Kick, Direction.Front, []),
-                FiringUnitId = Unit.Id,
-                FiringUnitName = Unit.Name,
+                FiringUnitIds = [Unit.Id],
+                FiringUnitNames = new() { { Unit.Id, Unit.Name } },
                 TargetUnitId = Unit.Id,
                 TargetUnitName = Unit.Name,
                 InitialTroopers = Unit.Troopers
@@ -391,6 +391,7 @@ public partial class LogicUnit
             });
             await ApplyDamagePackets(
                 damageReport,
+                Unit.Id,
                 [new() { Damage = 0, SpecialDamageEntries = [new() { Data = "0", Type = SpecialDamageType.Critical }] }],
                 new FiringSolution
                 {

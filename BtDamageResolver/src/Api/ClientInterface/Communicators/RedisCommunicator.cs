@@ -161,7 +161,7 @@ public abstract class RedisCommunicator
     {
         RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
         _listenedMessageQueue = RedisSubscriber.Subscribe(_listenTarget);
-        _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonSerializer.Deserialize<Envelope>(channelMessage.Message, JsonSerializerOptions)).ConfigureAwait(false));
+        _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonSerializer.Deserialize<Envelope>(channelMessage.Message.ToString(), JsonSerializerOptions)).ConfigureAwait(false));
         SubscribeAdditional();
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
@@ -145,7 +146,7 @@ public abstract class LogicUnitMechBase : LogicUnit
     }
 
     /// <inheritdoc />
-    protected override async Task ResolveCriticalHit(DamageReport damageReport, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
+    protected override async Task ResolveCriticalHit(DamageReport damageReport, Guid damageOwnerId, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
     {
         var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
 
@@ -154,7 +155,7 @@ public abstract class LogicUnitMechBase : LogicUnit
             (location == Location.LeftArm || location == Location.LeftLeg ||
              location == Location.RightArm || location == Location.RightLeg))
         {
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
+            damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
             damageReport.Log(new AttackLogEntry
             {
                 Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
@@ -165,7 +166,7 @@ public abstract class LogicUnitMechBase : LogicUnit
         }
         else if (criticalDamageTable.Mapping[criticalThreatRoll].Exists(c => c != CriticalDamageType.None))
         {
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
+            damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
             damageReport.Log(new AttackLogEntry
             {
                 Number = transformedDamage,

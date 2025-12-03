@@ -56,6 +56,11 @@ public class PlayerOptions
     public bool ShowAttackLogByDefault { get; set; }
 
     /// <summary>
+    /// Should the attack log be visible by default.
+    /// </summary>
+    public bool ShowCombinedDamageReports { get; set; }
+
+    /// <summary>
     /// Should also damage reports concerning the unit's own movement be shown.
     /// </summary>
     /// <remarks>

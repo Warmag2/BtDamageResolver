@@ -42,7 +42,7 @@ public partial class GameActor
 
     private static void ProcessUnitHeat(IReadOnlyCollection<DamageReport> damageReports, UnitEntry unit)
     {
-        var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitId == unit.Id).Sum(damageReport => damageReport.AttackerHeat);
+        var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitIds.Contains(unit.Id)).Sum(damageReport => damageReport.ConsumablesAttackers[unit.Id].Heat);
 
         // Only apply heat if the generation is positive and the unit tracks heat.
         // However, combat computer and other heat generation reductions never take the heat generated below 0.
@@ -316,8 +316,10 @@ public partial class GameActor
         {
             var nonWeaponHeatDamageReport = await logicUnitAttacker.ResolveNonWeaponHeat();
 
-            targetNumberUpdate.HeatEstimate += nonWeaponHeatDamageReport.AttackerHeat;
-            targetNumberUpdate.HeatWorstCase += nonWeaponHeatDamageReport.AttackerHeat;
+            var attackerHeat = nonWeaponHeatDamageReport.ConsumablesAttackers[logicUnitAttacker.Unit.Id].Heat;
+
+            targetNumberUpdate.HeatEstimate += attackerHeat;
+            targetNumberUpdate.HeatWorstCase += attackerHeat;
         }
 
         _logger.LogInformation("GameActor {GameId} finished calculating new target number values for unit {UnitId}.", this.GetPrimaryKeyString(), unitEntry.Id);

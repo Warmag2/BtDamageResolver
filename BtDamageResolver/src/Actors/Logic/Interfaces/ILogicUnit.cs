@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -188,11 +189,12 @@ public interface ILogicUnit
     /// Apply given damage packets to this unit logic.
     /// </summary>
     /// <param name="damageReport">The damage report to apply the damage into.</param>
+    /// <param name="damageOwnerId">The ID of the creator of the damage packets.</param>
     /// <param name="damagePackets">The damage packets.</param>
     /// <param name="firingSolution">The firing solution.</param>
     /// <param name="marginOfSuccess">The margin of success of the action which generated the damage.</param>
     /// <returns>Nothing.</returns>
-    Task ApplyDamagePackets(DamageReport damageReport, List<DamagePacket> damagePackets, FiringSolution firingSolution, int marginOfSuccess);
+    Task ApplyDamagePackets(DamageReport damageReport, Guid damageOwnerId, List<DamagePacket> damagePackets, FiringSolution firingSolution, int marginOfSuccess);
 
     /// <summary>
     /// Resolves combat for this unit logic and a specific weapon bay.

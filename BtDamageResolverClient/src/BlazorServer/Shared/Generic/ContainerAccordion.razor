@@ -1,6 +1,11 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 
-<button class="resolver_button_accordion @VisualStyleController.GetActiveClass(_enabled)" @onclick="@(e => _enabled = !_enabled)"><div class="resolver_accordion_indicator active">-</div><div class="resolver_accordion_indicator inactive">+</div>@Title</button>
+<button class="resolver_button_accordion @VisualStyleController.GetActiveClass(_enabled)" @onclick="@(e => _enabled = !_enabled)">
+    <span class="resolver_accordion_indicator">
+        @(_enabled ? "-" : "+")
+    </span>
+    @Title
+</button>
 <div class="resolver_div_accordioncontent @VisualStyleController.GetActiveClass(_enabled)" style="@VisualStyleController.HideElement(!_enabled)">
     @ChildContent
 </div>

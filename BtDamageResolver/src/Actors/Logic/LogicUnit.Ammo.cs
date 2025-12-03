@@ -91,6 +91,6 @@ public partial class LogicUnit
         }
 
         damageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} number of rounds of ammunition expended", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
-        damageReport.SpendAmmoAttacker(ammoName, ammoUsed);
+        damageReport.SpendAmmoAttacker(Unit.Id, ammoName, ammoUsed);
     }
 }

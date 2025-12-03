@@ -48,8 +48,8 @@ public partial class LogicUnit
         {
             Phase = Phase.Movement,
             DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, Direction.Front, []),
-            FiringUnitId = Unit.Id,
-            FiringUnitName = Unit.Name,
+            FiringUnitIds = [Unit.Id],
+            FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = Unit.Id,
             TargetUnitName = Unit.Name,
             InitialTroopers = Unit.Troopers
@@ -59,34 +59,34 @@ public partial class LogicUnit
         {
             case MovementClass.Immobile:
             case MovementClass.Stationary:
-                nonWeaponDamageReport.AttackerHeat += 0;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 0);
                 break;
             case MovementClass.Normal:
-                nonWeaponDamageReport.AttackerHeat += 1;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 1);
                 break;
             case MovementClass.Fast:
-                nonWeaponDamageReport.AttackerHeat += 2;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 2);
                 break;
             case MovementClass.Masc:
-                nonWeaponDamageReport.AttackerHeat += 5;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 5);
                 break;
             case MovementClass.OutOfControl:
-                nonWeaponDamageReport.AttackerHeat += 2;
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, 2);
                 break;
             case MovementClass.Jump:
-                nonWeaponDamageReport.AttackerHeat += Math.Max(3, Unit.Movement);
+                nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, Math.Max(3, Unit.Movement));
                 break;
             default:
                 throw new ArgumentOutOfRangeException($"The movement class {Unit.MovementClass} is not handled.");
         }
 
-        nonWeaponDamageReport.Log(new AttackLogEntry { Context = $"Unit movement class {Unit.MovementClass}", Number = nonWeaponDamageReport.AttackerHeat, Type = AttackLogEntryType.Heat });
+        nonWeaponDamageReport.Log(new AttackLogEntry { Context = $"Unit movement class {Unit.MovementClass}", Number = nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat, Type = AttackLogEntryType.Heat });
 
         // Combat computer sinks 4 heat by itself
         if (Unit.HasFeature(UnitFeature.CombatComputer))
         {
             nonWeaponDamageReport.Log(new AttackLogEntry { Context = $"Combat computer", Number = -4, Type = AttackLogEntryType.Heat });
-            nonWeaponDamageReport.AttackerHeat -= 4;
+            nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, -4);
         }
 
         return nonWeaponDamageReport;
@@ -126,7 +126,7 @@ public partial class LogicUnit
         }
 
         hitCalculationDamageReport.Log(new AttackLogEntry { Context = combatAction.Weapon.Name, Type = AttackLogEntryType.Heat, Number = heat });
-        hitCalculationDamageReport.AttackerHeat += heat;
+        hitCalculationDamageReport.SpendAttackerHeat(Unit.Id, heat);
     }
 
     /// <summary>

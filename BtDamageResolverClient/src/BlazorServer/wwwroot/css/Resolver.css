@@ -457,7 +457,7 @@
     outline: none;
     cursor: pointer;
     padding: 10px 14px;
-    font-size: 17px;
+    font-size: 18px;
     text-align: left;
     width: 100%;
 }
@@ -485,12 +485,43 @@
     padding-right: 0.5em;
 }
 
-.resolver_button_accordion.active .resolver_accordion_indicator.inactive {
-    display: none;
+/*******************************************************************************
+    Expander
+*******************************************************************************/
+
+/* Style the buttons that are used to open and close the expander panel */
+
+.resolver_button_expander {
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+    cursor: pointer;
+    padding: 2px 8px;
+    font-size: 18px;
+    font-weight: bolder;
+    text-align: left;
+    position: absolute;
+    top: 0px;
+    left: 0px;
 }
 
-.resolver_button_accordion.inactive .resolver_accordion_indicator.active {
-    display: none;
+    .resolver_button_expander:hover {
+        background-color: var(--color_bg_hover);
+        color: var(--color_text_hover);
+    }
+
+    .resolver_button_expander.active {
+        background-color: var(--color_bg_selected);
+        color: var(--color_text_selected);
+    }
+
+        .resolver_button_expander.active:hover {
+            background-color: var(--color_bg_hover_selected);
+            color: var(--color_text_hover_selected);
+        }
+
+.resolver_div_expandercontent {
+    position: relative;
+    float: left;
 }
 
 /*******************************************************************************
@@ -760,7 +791,7 @@
 
 .resolver_div_damagereportheader {
     font-size: 24px;
-    padding-left: 1rem;
+    padding-left: 4rem;
 }
 
 .resolver_div_phase {
