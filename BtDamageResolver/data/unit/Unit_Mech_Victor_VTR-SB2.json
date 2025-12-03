@@ -1,0 +1,45 @@
+{
+    "Features": [],
+    "JumpJets": 4,
+    "Sinks": 20,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 80,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Ultra AC/20"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Victor VTR-SB2"
+}

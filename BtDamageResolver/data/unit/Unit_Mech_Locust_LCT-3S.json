@@ -1,0 +1,36 @@
+{
+    "Features": [
+        "NarrowLowProfile",
+        "NoMinimalArms",
+        "WeakLegs"
+    ],
+    "JumpJets": 0,
+    "Sinks": 10,
+    "Speed": 8,
+    "Type": "Mech",
+    "Tonnage": 20,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-2"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Locust LCT-3S"
+}

@@ -1,0 +1,32 @@
+{
+    "Features": [
+        "Ams",
+        "HardToPilot",
+        "JettisonableWeapon",
+        "Rugged"
+    ],
+    "JumpJets": 6,
+    "Sinks": 10,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 20,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Flamer"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Stinger STG-5M"
+}

@@ -1,0 +1,43 @@
+{
+    "Features": [
+        "EasyToMaintain",
+        "Rugged",
+        "StabilizedWeapons"
+    ],
+    "JumpJets": 4,
+    "Sinks": 20,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 65,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
+                },
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-4"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-4"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Crusader CRD-FIN1"
+}

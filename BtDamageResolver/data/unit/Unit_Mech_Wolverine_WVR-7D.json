@@ -1,0 +1,46 @@
+{
+    "Features": [
+        "CommandUnit",
+        "ExtendedTorsoTwist",
+        "ImprovedCommunications",
+        "JettisonableWeapon",
+        "ProtectedActuators"
+    ],
+    "JumpJets": 5,
+    "Sinks": 13,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 55,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Ultra AC/5"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Wolverine WVR-7D"
+}

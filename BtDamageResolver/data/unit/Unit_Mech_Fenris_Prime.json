@@ -1,0 +1,37 @@
+{
+    "Features": [
+        "ActiveProbe",
+        "Ams",
+        "ImprovedSensors"
+    ],
+    "JumpJets": 0,
+    "Sinks": 24,
+    "Speed": 8,
+    "Type": "Mech",
+    "Tonnage": 45,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Streak SRM-2"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Small Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Fenris Prime"
+}

@@ -1,0 +1,36 @@
+{
+    "Features": [
+        "ExposedActuators",
+        "NarrowLowProfile"
+    ],
+    "JumpJets": 0,
+    "Sinks": 10,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 25,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-2"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Commando COM-1B"
+}

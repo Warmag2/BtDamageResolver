@@ -1,0 +1,50 @@
+{
+    "Features": [
+        "Rugged"
+    ],
+    "JumpJets": 4,
+    "Sinks": 22,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 70,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-5"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Grasshopper GHR-5H"
+}

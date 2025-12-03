@@ -1,0 +1,48 @@
+{
+    "Features": [
+        "CommandUnit",
+        "Ecm",
+        "ExtendedTorsoTwist",
+        "ImprovedCommunications",
+        "JettisonableWeapon"
+    ],
+    "JumpJets": 5,
+    "Sinks": 20,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 80,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Wolverine WVR-FIN1"
+}

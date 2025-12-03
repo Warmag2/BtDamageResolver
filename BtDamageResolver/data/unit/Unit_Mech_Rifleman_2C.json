@@ -1,0 +1,46 @@
+{
+    "Features": [
+        "ActiveProbe",
+        "ImprovedCommunications",
+        "TargetingAntiAir"
+    ],
+    "JumpJets": 3,
+    "Sinks": 38,
+    "Speed": 3,
+    "Type": "Mech",
+    "Tonnage": 80,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Small Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Rifleman 2C"
+}

@@ -1,0 +1,40 @@
+{
+    "Features": [
+        "BattleFists"
+    ],
+    "JumpJets": 0,
+    "Sinks": 13,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 50,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "AC/20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Small Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Huncchback HBK-4G"
+}
