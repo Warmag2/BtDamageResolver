@@ -47,63 +47,63 @@
     <div class="resolver_div_damagereport">
         @foreach (var location in DamagePaperDoll.DamageCollection)
         {
-        <div class="damageentry">
-            <b>@location.Key</b>
-            <br />
-            @location.Value.SelectMany(l => l.Value).Sum()
+            <div class="damageentry">
+                <b>@location.Key</b>
+                <br />
+                @location.Value.SelectMany(l => l.Value).Sum()
 
-            @if (DamagePaperDoll.DamageCollectionCritical.ContainsKey(location.Key))
-            {
-                foreach (var criticalDamageEntryList in DamagePaperDoll.DamageCollectionCritical[location.Key])
+                @if (DamagePaperDoll.DamageCollectionCritical.ContainsKey(location.Key))
                 {
-                    foreach (var criticalDamageEntry in criticalDamageEntryList.Value)
+                    foreach (var criticalDamageEntryList in DamagePaperDoll.DamageCollectionCritical[location.Key])
                     {
-                        <br />
-
-                        if (DamageReport.FiringUnitIds.Count > 1 && DamageReport.FiringUnitNames.ContainsKey(criticalDamageEntryList.Key))
+                        foreach (var criticalDamageEntry in criticalDamageEntryList.Value)
                         {
-                            @(DamageReport.FiringUnitNames[criticalDamageEntryList.Key])
-                        }
+                            <br />
 
-                        switch (criticalDamageEntry.Type)
-                        {
-                            case CriticalDamageType.Critical:
-                                @("Critical hit")
-                                break;
-                            case CriticalDamageType.Immobilized:
-                                @("Immobilized")
-                                break;
-                            case CriticalDamageType.HeavyMotive:
-                                @("Heavy motive damage")
-                                break;
-                            case CriticalDamageType.LightMotive:
-                                @("Light motive damage")
-                                break;
-                            case CriticalDamageType.ModerateMotive:
-                                @("Moderate motive damage")
-                                break;
-                            case CriticalDamageType.LimbBlownOff:
-                                @("Limb blown off")
-                                break;
-                            default:
-                                switch (criticalDamageEntry.ThreatType)
-                                {
-                                    case CriticalThreatType.DamageThreshold:
-                                        @($"Critical threat to: {criticalDamageEntry.Type} (Threshold {criticalDamageEntry.InducingDamage})")
-                                        break;
-                                    case CriticalThreatType.Normal:
-                                        @($"Critical damage to: {criticalDamageEntry.Type} ({criticalDamageEntry.InducingDamage})")
-                                        break;
-                                    default:
-                                        throw new NotImplementedException($"Critical damage description for threat type {criticalDamageEntry.ThreatType} not implemented.");
-                                }
+                            if (DamageReport.FiringUnitIds.Count > 1 && DamageReport.FiringUnitNames.ContainsKey(criticalDamageEntryList.Key))
+                            {
+                                @(DamageReport.FiringUnitNames[criticalDamageEntryList.Key] + " &mdash; ")
+                            }
 
-                                break;
+                            switch (criticalDamageEntry.Type)
+                            {
+                                case CriticalDamageType.Critical:
+                                    @("Critical hit")
+                                    break;
+                                case CriticalDamageType.Immobilized:
+                                    @("Immobilized")
+                                    break;
+                                case CriticalDamageType.HeavyMotive:
+                                    @("Heavy motive damage")
+                                    break;
+                                case CriticalDamageType.LightMotive:
+                                    @("Light motive damage")
+                                    break;
+                                case CriticalDamageType.ModerateMotive:
+                                    @("Moderate motive damage")
+                                    break;
+                                case CriticalDamageType.LimbBlownOff:
+                                    @("Limb blown off")
+                                    break;
+                                default:
+                                    switch (criticalDamageEntry.ThreatType)
+                                    {
+                                        case CriticalThreatType.DamageThreshold:
+                                            @($"Critical threat to: {criticalDamageEntry.Type} (Threshold {criticalDamageEntry.InducingDamage})")
+                                            break;
+                                        case CriticalThreatType.Normal:
+                                            @($"Critical damage to: {criticalDamageEntry.Type} ({criticalDamageEntry.InducingDamage})")
+                                            break;
+                                        default:
+                                            throw new NotImplementedException($"Critical damage description for threat type {criticalDamageEntry.ThreatType} not implemented.");
+                                    }
+
+                                    break;
+                            }
                         }
                     }
                 }
-            }
-        </div>
+            </div>
         }
 
         @foreach (var specialDamageEntryGroup in DamagePaperDoll.DamageCollectionSpecial.SelectMany(p => p.Value).SelectMany(p => p.Value).GroupBy(s => s.Type))
@@ -138,7 +138,14 @@
     {
         if(DamagePaperDoll.DamageCollection.ContainsKey(location))
         {
-            return $"'<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location].SelectMany(dc => dc.Value))}'";
+            if (DamageReport.FiringUnitIds.Count > 1)
+            {
+                return $"'<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location].SelectMany(dc => $"{DamageReport.FiringUnitNames[dc.Key]} &mdash; {dc.Value}"))}'";
+            }
+            else
+            {
+                return $"'<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location].SelectMany(dc => dc.Value))}'";
+            }
         }
 
         return $"'<b>{location}</b><br>0'";
