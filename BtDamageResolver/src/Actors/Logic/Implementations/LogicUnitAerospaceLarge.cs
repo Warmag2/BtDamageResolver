@@ -39,9 +39,9 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
     }
 
     /// <inheritdoc />
-    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
+    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, Guid damageOwnerId, CombatAction combatAction, int damage)
     {
-        return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
+        return Task.FromResult(ResolveHeatExtraDamage(damageReport, damageOwnerId, combatAction, damage));
     }
 
     /// <inheritdoc />
@@ -71,7 +71,7 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
     {
         if (!combatAction.ActionHappened)
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"Combat action was canceled for {combatAction.Weapon.Name} and no ammo will be expended", Type = AttackLogEntryType.Information });
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"Combat action was canceled for {combatAction.Weapon.Name} and no ammo will be expended"));
             return;
         }
 

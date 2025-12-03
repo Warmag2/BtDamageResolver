@@ -46,7 +46,7 @@ public abstract class LogicUnitTrooper : LogicUnit
     }
 
     /// <inheritdoc />
-    public override int TransformDamageBasedOnStance(DamageReport damageReport, int damageAmount)
+    public override int TransformDamageBasedOnStance(DamageReport damageReport, Guid damageOwnerId, int damageAmount)
     {
         int transformedDamage;
 
@@ -54,11 +54,11 @@ public abstract class LogicUnitTrooper : LogicUnit
         {
             case Stance.Hardened:
                 transformedDamage = (int)Math.Ceiling(damageAmount / 2.0m);
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Damage transformed by hardened cover", Number = transformedDamage });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Damage transformed by hardened cover", transformedDamage));
                 return (int)Math.Ceiling(damageAmount / 2.0m);
             case Stance.Heavy:
                 transformedDamage = (int)Math.Ceiling(damageAmount / 4.0m);
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Damage transformed by heavy cover", Number = transformedDamage });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Damage transformed by heavy cover", transformedDamage));
                 return (int)Math.Ceiling(damageAmount / 4.0m);
             default:
                 return damageAmount;

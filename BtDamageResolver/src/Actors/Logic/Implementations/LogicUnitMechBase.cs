@@ -57,6 +57,24 @@ public abstract class LogicUnitMechBase : LogicUnit
     }
 
     /// <inheritdoc />
+    public override int GetStanceModifier(int distance)
+    {
+        switch (Unit.Stance)
+        {
+            // Prone mechs are easier to hit at point-blank range and harder to hit at any other range
+            case Stance.Prone:
+                if (distance <= 1)
+                {
+                    return -1;
+                }
+
+                return 1;
+            default:
+                return 0;
+        }
+    }
+
+    /// <inheritdoc />
     public override bool IsBlockedByCover(Cover cover, Location location)
     {
         switch (cover)
@@ -156,31 +174,16 @@ public abstract class LogicUnitMechBase : LogicUnit
              location == Location.RightArm || location == Location.RightLeg))
         {
             damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
-            damageReport.Log(new AttackLogEntry
-            {
-                Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
-                Number = transformedDamage,
-                Location = location,
-                Type = AttackLogEntryType.Critical
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())), transformedDamage, location));
         }
         else if (criticalDamageTable.Mapping[criticalThreatRoll].Exists(c => c != CriticalDamageType.None))
         {
             damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
-            damageReport.Log(new AttackLogEntry
-            {
-                Number = transformedDamage,
-                Location = location,
-                Type = AttackLogEntryType.Critical
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, transformedDamage, location));
         }
         else
         {
-            damageReport.Log(new AttackLogEntry
-            {
-                Context = "Threat roll does not result in a critical hit",
-                Type = AttackLogEntryType.Information
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Threat roll does not result in a critical hit"));
         }
     }
 }

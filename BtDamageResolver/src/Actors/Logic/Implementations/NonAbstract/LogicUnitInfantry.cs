@@ -39,7 +39,7 @@ public class LogicUnitInfantry : LogicUnitTrooper
     }
 
     /// <inheritdoc />
-    public override int GetStanceModifier()
+    public override int GetStanceModifier(int distance)
     {
         switch (Unit.Stance)
         {
@@ -56,7 +56,7 @@ public class LogicUnitInfantry : LogicUnitTrooper
     }
 
     /// <inheritdoc />
-    public override async Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
+    public override async Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, Guid damageOwnerId, CombatAction combatAction, int damage)
     {
         // Battle armor units have special rules when damaging infantry.
         // Typically infantry damage does not care about the number of hits a weapon does, but battle armor unit attacks are resolved individually.
@@ -64,19 +64,19 @@ public class LogicUnitInfantry : LogicUnitTrooper
         {
             if (combatAction.Weapon.HasSpecialDamage(SpecialDamageType.Burst, out var battleArmorBurstFeatureEntry))
             {
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Troopers with burst weapons attack infantry individually" });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Troopers with burst weapons attack infantry individually"));
                 var hits = await ResolveClusterValue(damageReport, this, combatAction, combatAction.Troopers, 0);
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Troopers hit count with AP weapons against infantry", Number = hits });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Troopers hit count with AP weapons against infantry", hits));
 
                 var burstDamage = 0;
                 for (var ii = 0; ii < hits; ii++)
                 {
                     var addDamage = MathExpression.Parse(battleArmorBurstFeatureEntry.Data);
-                    damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Bonus damage to infantry", Number = addDamage });
+                    damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Bonus damage to infantry", addDamage));
                     burstDamage += addDamage;
                 }
 
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total bonus damage to infantry", Number = burstDamage });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Total bonus damage to infantry", burstDamage));
 
                 return burstDamage;
             }
@@ -90,7 +90,7 @@ public class LogicUnitInfantry : LogicUnitTrooper
             if (combatAction.Weapon.HasSpecialDamage(SpecialDamageType.Burst, out var infantryBurstFeatureEntry))
             {
                 var burstDamage = MathExpression.Parse(infantryBurstFeatureEntry.Data);
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Burst weapon bonus damage to infantry", Number = burstDamage });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Burst weapon bonus damage to infantry", burstDamage));
 
                 return damage + burstDamage;
             }
@@ -100,35 +100,35 @@ public class LogicUnitInfantry : LogicUnitTrooper
 
         if (combatAction.Weapon.HasSpecialDamage(SpecialDamageType.Burst, out var burstFeatureEntry))
         {
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Burst fire weapon overrides infantry damage.", });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Burst fire weapon overrides infantry damage."));
             var burstDamage = MathExpression.Parse(burstFeatureEntry.Data);
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Burst fire weapon damage to infantry", Number = burstDamage });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Burst fire weapon damage to infantry", burstDamage));
             return burstDamage;
         }
 
         if (combatAction.Weapon.Type == WeaponType.Missile)
         {
             var missileDamage = (int)Math.Ceiling(damage / 5m);
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Transformed Missile damage to infantry", Number = missileDamage });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Transformed Missile damage to infantry", missileDamage));
             return missileDamage;
         }
 
         if (combatAction.Weapon.HasFeature(WeaponFeature.Pulse, out _))
         {
             var pulseDamage = (int)Math.Ceiling(damage / 10m) + 2;
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Transformed Pulse weapon damage to infantry", Number = pulseDamage });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Transformed Pulse weapon damage to infantry", pulseDamage));
             return pulseDamage;
         }
 
         if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))
         {
             var clusterDamage = (int)Math.Ceiling(damage / 10m) + 1;
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Transformed Cluster weapon damage to infantry", Number = clusterDamage });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Transformed Cluster weapon damage to infantry", clusterDamage));
             return clusterDamage;
         }
 
         var transformedDamage = (int)Math.Ceiling(damage / 10m);
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Transformed regular weapon damage to infantry", Number = transformedDamage });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Transformed regular weapon damage to infantry", transformedDamage));
 
         return transformedDamage;
     }
@@ -140,7 +140,7 @@ public class LogicUnitInfantry : LogicUnitTrooper
     }
 
     /// <inheritdoc />
-    protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
+    protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, Guid damageOwnerId, ILogicUnit target, CombatAction combatAction, int damage)
     {
         return Clusterize(2, damage, combatAction.Weapon.SpecialDamage);
     }
@@ -155,13 +155,13 @@ public class LogicUnitInfantry : LogicUnitTrooper
     {
         var clusterTable = await GrainFactory.GetClusterTableRepository().Get(combatAction.Weapon.ClusterTable);
         var damage = clusterTable.GetDamage(Unit.Troopers);
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster table reference for {Unit.Troopers} troopers", Number = damage });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, $"Cluster table reference for {Unit.Troopers} troopers", damage));
 
         if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))
         {
-            var clusterBonus = ResolveClusterBonus(damageReport, target, combatAction);
+            var clusterBonus = ResolveClusterBonus(damageReport, Unit.Id, target, combatAction);
 
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total cluster modifier", Number = clusterBonus });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Total cluster modifier", clusterBonus));
             return await ResolveClusterValue(damageReport, target, combatAction, damage, clusterBonus);
         }
 

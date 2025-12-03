@@ -103,37 +103,49 @@
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetTroopersHidden(UnitEntry.Type)))">
                         <td>Troopers</td>
                         <td>
-                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsTroopers" SelectedOption="@UnitEntry.Troopers" Min="1" Max="30" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnTroopersChanged"></FormNumberPicker>
+                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsTroopers" SelectedOption="@UnitEntry.Troopers" Min="1" Max="30" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.#nullable restore
+#line (106,238)-(106,278) "C:\Temp\BtDamageResolver\BtDamageResolverClient\src\BlazorServer\Shared\FormUnitEntry.razor"
+ComparisonTime" OnChanged="@OnTroopersChanged"></FormNumberPicker>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
                         <td>Dissipation</td>
                         <td>
-                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" SelectedOption="@UnitEntry.Sinks" Min="1" Max="100" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnSinksChanged"></FormNumberPicker>
+                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" SelectedOption="@UnitEntry.Sinks" Min="1" Max="100" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.#nullable restore
+#line (112,233)-(112,273) "C:\Temp\BtDamageResolver\BtDamageResolverClient\src\BlazorServer\Shared\FormUnitEntry.razor"
+ComparisonTime" OnChanged="@OnSinksChanged"></FormNumberPicker>
                         </td>
                     </tr>
                     <tr>
                         <td>Movement</td>
                         <td>
-                            <FormRadio Options="@CommonData.FormMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
+                            <FormRadio Options="@CommonData.FormMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.#nullable restore
+#line (118,211)-(118,251) "C:\Temp\BtDamageResolver\BtDamageResolverClient\src\BlazorServer\Shared\FormUnitEntry.razor"
+ComparisonTime" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetEvasionHidden(UnitEntry.Type)))">
                         <td>Evasion</td>
                         <td>
-                            <FormToggle Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnEvasionChanged">Evading</FormToggle>
+                            <FormToggle Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.#nullable restore
+#line (124,145)-(124,185) "C:\Temp\BtDamageResolver\BtDamageResolverClient\src\BlazorServer\Shared\FormUnitEntry.razor"
+ComparisonTime" OnChanged="@OnEvasionChanged">Evading</FormToggle>
                         </td>
                     </tr>
                     <tr>
                         <td>Hexes moved</td>
                         <td>
-                            <FormRadio Options="@_commonData.FormMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
+                            <FormRadio Options="@_commonData.FormMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.#nullable restore
+#line (130,208)-(130,248) "C:\Temp\BtDamageResolver\BtDamageResolverClient\src\BlazorServer\Shared\FormUnitEntry.razor"
+ComparisonTime" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetStanceHidden(UnitEntry.Type)))">
                         <td>Stance</td>
                         <td>
-                            <FormRadio Options="@CommonData.FormMapStance(UnitEntry.Type)" SelectedOption="@UnitEntry.Stance" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(Stance stance) => OnStanceChanged(stance)"></FormRadio>
+                            <FormRadio Options="@CommonData.FormMapStance(UnitEntry.Type)" SelectedOption="@UnitEntry.Stance" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.#nullable restore
+#line (136,202)-(136,242) "C:\Temp\BtDamageResolver\BtDamageResolverClient\src\BlazorServer\Shared\FormUnitEntry.razor"
+ComparisonTime" OnChanged="(Stance stance) => OnStanceChanged(stance)"></FormRadio>
                         </td>
                     </tr>
                     <tr>
@@ -142,8 +154,12 @@
                         </td>
                         <td>
                             <div>
-                                <FormToggle @key="@($"narc_{_userStateController.GetComparisonTime()}")" Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnNarcedChanged">Narced</FormToggle>
-                                <FormToggle @key="@($"tag_{_userStateController.GetComparisonTime()}")" Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
+                                <FormToggle @key="@($"narc_{_userStateController.ComparisonTime}")" Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.#nullable restore
+#line (145,209)-(145,249) "C:\Temp\BtDamageResolver\BtDamageResolverClient\src\BlazorServer\Shared\FormUnitEntry.razor"
+ComparisonTime" OnChanged="@OnNarcedChanged">Narced</FormToggle>
+                                <FormToggle @key="@($"tag_{_userStateController.ComparisonTime}")" Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.#nullable restore
+#line (146,208)-(146,248) "C:\Temp\BtDamageResolver\BtDamageResolverClient\src\BlazorServer\Shared\FormUnitEntry.razor"
+ComparisonTime" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
                             </div>
                         </td>
                     </tr>

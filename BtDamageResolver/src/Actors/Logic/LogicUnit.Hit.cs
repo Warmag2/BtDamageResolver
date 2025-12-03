@@ -18,11 +18,11 @@ public partial class LogicUnit
         if (combatAction.Weapon.HasFeature(WeaponFeature.Streak, out _) && !combatAction.HitHappened)
         {
             combatAction.ActionHappened = false;
-            targetDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} does not obtain lock and does not fire", Type = AttackLogEntryType.Information });
+            targetDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"{combatAction.Weapon.Name} does not obtain lock and does not fire"));
         }
         else
         {
-            targetDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Fire, Context = $"{combatAction.Weapon.Name}" });
+            targetDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Fire, Unit.Id, $"{combatAction.Weapon.Name}"));
         }
 
         // Single missile handling. If AMS destroys the only missile, this causes a total miss.
@@ -31,20 +31,20 @@ public partial class LogicUnit
         {
             if (combatAction.Weapon.HasFeature(WeaponFeature.AmsImmune, out _))
             {
-                targetDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is immune to AMS defenses" });
+                targetDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, "Missile is immune to AMS defenses"));
             }
             else
             {
                 var singleMissileDefenseRoll = Random.NextPlusOne(6);
-                targetDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Ams defense roll against single missile", Number = singleMissileDefenseRoll });
+                targetDamageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Ams defense roll against single missile", singleMissileDefenseRoll));
                 if (singleMissileDefenseRoll >= 4)
                 {
                     combatAction.HitHappened = false;
-                    targetDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is destroyed by AMS" });
+                    targetDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, "Missile is destroyed by AMS"));
                 }
                 else
                 {
-                    targetDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is not destroyed by AMS" });
+                    targetDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, "Missile is not destroyed by AMS"));
                 }
 
                 targetDamageReport.SpendAmmoDefender("AMS", 1);
@@ -82,14 +82,14 @@ public partial class LogicUnit
 
     private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget)
     {
-        hitCalculationDamageReport.Log(new AttackLogEntry { Context = weapon.Name, Type = AttackLogEntryType.FiringSolution });
+        hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.FiringSolution, Unit.Id, weapon.Name));
 
         var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weapon, weaponBay, weaponEntry, isPrimaryTarget);
 
         // Weapons with target numbers above 12 cannot hit
         if (targetNumber > 12)
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = $"{weapon.Name} cannot hit and will not fire" });
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"{weapon.Name} cannot hit and will not fire"));
 
             return new CombatAction
             {
@@ -105,7 +105,7 @@ public partial class LogicUnit
         }
 
         var hitRoll = Random.D26();
-        hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "To-hit roll", Number = hitRoll });
+        hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "To-hit roll", hitRoll));
 
         var hitHappened = hitRoll >= targetNumber;
 
@@ -126,11 +126,11 @@ public partial class LogicUnit
 
         if (hitHappened)
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Hit, Context = weapon.Name });
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Hit, Unit.Id, weapon.Name));
         }
         else
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Miss, Context = weapon.Name });
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Miss, Unit.Id, weapon.Name));
         }
 
         // Calculate heat based on whether action happened / hit happened

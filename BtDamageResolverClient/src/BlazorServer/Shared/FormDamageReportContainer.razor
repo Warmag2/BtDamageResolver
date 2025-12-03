@@ -1,6 +1,5 @@
 ﻿@inherits BaseFaemiyahComponent
 @using Faemiyah.BtDamageResolver.Api.Entities
-@using Faemiyah.BtDamageResolver.Api.Enums;
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 
@@ -35,13 +34,6 @@ else
 
 @code
 {
-    bool _combineReports;
-
     [Parameter]
     public List<DamageReport> DamageReports { get; set; }
-
-    protected override void OnInitialized()
-    {
-        _combineReports = _userStateController.PlayerOptions?.ShowCombinedDamageReports ?? false;
-    }
 }

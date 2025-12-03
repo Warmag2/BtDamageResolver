@@ -37,9 +37,9 @@ public abstract class LogicUnitVehicle : LogicUnit
     }
 
     /// <inheritdoc />
-    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
+    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, Guid damageOwnerId, CombatAction combatAction, int damage)
     {
-        return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
+        return Task.FromResult(ResolveHeatExtraDamage(damageReport, damageOwnerId, combatAction, damage));
     }
 
     /// <summary>
@@ -78,42 +78,23 @@ public abstract class LogicUnitVehicle : LogicUnit
                 criticalThreatRoll = 12;
             }
 
-            damageReport.Log(new AttackLogEntry
-            {
-                Context = "Motive Hit threat roll modified by unit type",
-                Number = criticalThreatRoll,
-                Type = AttackLogEntryType.Calculation
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Motive Hit threat roll modified by unit type", criticalThreatRoll));
         }
 
         if (criticalDamageTable.Mapping[criticalThreatRoll].Exists(c => c != CriticalDamageType.None))
         {
             damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
-            damageReport.Log(new AttackLogEntry
-            {
-                Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
-                Number = transformedDamage,
-                Location = location,
-                Type = AttackLogEntryType.Critical
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())), transformedDamage, location));
         }
         else
         {
             if (criticalDamageTableType == CriticalDamageTableType.Motive)
             {
-                damageReport.Log(new AttackLogEntry
-                {
-                    Context = "Threat roll does not result in a motive hit",
-                    Type = AttackLogEntryType.Information
-                });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Threat roll does not result in a motive hit"));
             }
             else
             {
-                damageReport.Log(new AttackLogEntry
-                {
-                    Context = "Threat roll does not result in a critical hit",
-                    Type = AttackLogEntryType.Information
-                });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Threat roll does not result in a critical hit"));
             }
         }
     }

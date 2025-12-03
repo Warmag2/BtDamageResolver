@@ -15,7 +15,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc />
-    public virtual int TransformClusterRollBasedOnUnitType(DamageReport damageReport, int clusterRoll)
+    public virtual int TransformClusterRollBasedOnUnitType(DamageReport damageReport, Guid damageOwnerId, int clusterRoll)
     {
         return clusterRoll;
     }
@@ -27,16 +27,16 @@ public partial class LogicUnit
     /// <param name="target">The target unit logic.</param>
     /// <param name="combatAction">The combat action.</param>
     /// <returns>The cluster bonus.</returns>
-    protected static int ResolveClusterBonus(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
+    protected static int ResolveClusterBonus(DamageReport damageReport, Guid damageOwnerId, ILogicUnit target, CombatAction combatAction)
     {
         var clusterBonus = combatAction.Weapon.Type == WeaponType.Missile ?
-            ResolveClusterBonusMissile(damageReport, target, combatAction) :
-            ResolveClusterBonusNonMissile(damageReport, combatAction);
+            ResolveClusterBonusMissile(damageReport, damageOwnerId, target, combatAction) :
+            ResolveClusterBonusNonMissile(damageReport, damageOwnerId, combatAction);
 
         if (target.IsGlancingBlow(combatAction.MarginOfSuccess))
         {
             var clusterBonusGlancing = -4;
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Unit feature {UnitFeature.NarrowLowProfile} modifies cluster bonus calculation. New bonus", Number = clusterBonusGlancing });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, $"Unit feature {UnitFeature.NarrowLowProfile} modifies cluster bonus calculation. New bonus", clusterBonusGlancing));
             clusterBonus += clusterBonusGlancing;
         }
 
@@ -56,38 +56,38 @@ public partial class LogicUnit
     {
         var clusterRoll = Random.D26();
 
-        clusterRoll = TransformClusterRollBasedOnWeaponFeatures(damageReport, combatAction, clusterRoll);
-        clusterRoll = target.TransformClusterRollBasedOnUnitType(damageReport, clusterRoll);
+        clusterRoll = TransformClusterRollBasedOnWeaponFeatures(damageReport, Unit.Id, combatAction, clusterRoll);
+        clusterRoll = target.TransformClusterRollBasedOnUnitType(damageReport, Unit.Id, clusterRoll);
 
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Cluster", Number = clusterRoll });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Cluster", clusterRoll));
 
         clusterRoll = Math.Clamp(clusterRoll + clusterBonus, 2, 12);
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Modified cluster", Number = clusterRoll });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Modified cluster", clusterRoll));
 
         var damageTable = await GrainFactory.GetClusterTableRepository().Get(Names.DefaultClusterTableName);
 
         var clusterDamage = damageTable.GetDamage(damageValue, clusterRoll);
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster result", Number = clusterDamage });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Cluster damage", clusterDamage));
 
         return clusterDamage;
     }
 
-    private static int ResolveClusterBonusMissile(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
+    private static int ResolveClusterBonusMissile(DamageReport damageReport, Guid damageOwnerId, ILogicUnit target, CombatAction combatAction)
     {
         var clusterBonus = 0;
 
         clusterBonus += combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from weapon", Number = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket] });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Cluster modifier from weapon", combatAction.Weapon.ClusterBonus[combatAction.RangeBracket]));
 
         if (target.Unit.HasFeature(UnitFeature.Ams))
         {
             if (combatAction.Weapon.HasFeature(WeaponFeature.AmsImmune, out _))
             {
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is immune to AMS defenses" });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Missile is immune to AMS defenses"));
             }
             else
             {
-                damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender AMS", Number = -4 });
+                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Cluster modifier from defender AMS", -4));
                 clusterBonus -= 4;
 
                 damageReport.SpendAmmoDefender("AMS", 1);
@@ -96,38 +96,38 @@ public partial class LogicUnit
 
         if (target.Unit.HasFeature(UnitFeature.Ecm))
         {
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender ECM", Number = -2 });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Cluster modifier from defender ECM", -2));
             clusterBonus -= 2;
         }
 
         if (target.Unit.Narced)
         {
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Cluster modifier from defender being NARCed", Number = 2 });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Cluster modifier from defender being NARCed", 2));
             clusterBonus += 2;
         }
 
         return clusterBonus;
     }
 
-    private static int ResolveClusterBonusNonMissile(DamageReport damageReport, CombatAction combatAction)
+    private static int ResolveClusterBonusNonMissile(DamageReport damageReport, Guid damageOwnerId, CombatAction combatAction)
     {
         // Non-missile weapons do not care about AMS or ECM
         var clusterBonus = combatAction.Weapon.ClusterBonus[combatAction.RangeBracket];
 
         if (clusterBonus != 0)
         {
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = $"Cluster modifier for range bracket {combatAction.RangeBracket}", Number = clusterBonus });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, $"Cluster modifier for range bracket {combatAction.RangeBracket}", clusterBonus));
         }
 
         return clusterBonus;
     }
 
-    private static int TransformClusterRollBasedOnWeaponFeatures(DamageReport damageReport, CombatAction combatAction, int clusterRoll)
+    private static int TransformClusterRollBasedOnWeaponFeatures(DamageReport damageReport, Guid damageOwnerId, CombatAction combatAction, int clusterRoll)
     {
         if (combatAction.Weapon.HasFeature(WeaponFeature.Streak, out _))
         {
             clusterRoll = 11;
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value by a streak weapon", Number = clusterRoll });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Static cluster roll value by a streak weapon", clusterRoll));
         }
 
         return clusterRoll;

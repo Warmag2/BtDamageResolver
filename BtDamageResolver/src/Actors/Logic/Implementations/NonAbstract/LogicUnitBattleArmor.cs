@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
@@ -37,7 +38,7 @@ public class LogicUnitBattleArmor : LogicUnitTrooper
     }
 
     /// <inheritdoc />
-    public override int GetStanceModifier()
+    public override int GetStanceModifier(int distance)
     {
         switch (Unit.Stance)
         {
@@ -51,15 +52,15 @@ public class LogicUnitBattleArmor : LogicUnitTrooper
     }
 
     /// <inheritdoc />
-    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
+    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, Guid damageOwnerId, CombatAction combatAction, int damage)
     {
         if (Unit.HasFeature(UnitFeature.ArmorHeatResistant))
         {
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Heat-inflicting weapon bonus damage negated by heat-resistant armor" });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Heat-inflicting weapon bonus damage negated by heat-resistant armor"));
             return Task.FromResult(damage);
         }
 
-        return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
+        return Task.FromResult(ResolveHeatExtraDamage(damageReport, damageOwnerId, combatAction, damage));
     }
 
     /// <inheritdoc />
@@ -69,12 +70,12 @@ public class LogicUnitBattleArmor : LogicUnitTrooper
     }
 
     /// <inheritdoc />
-    protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
+    protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, Guid damageOwnerId, ILogicUnit target, CombatAction combatAction, int damage)
     {
         if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))
         {
             // The total missile or clusterized damage accounting for trooper amount has been calculated earlier
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total damage value modified by BA trooper amount", Number = damage });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Total damage value modified by BA trooper amount", damage));
             return Clusterize(combatAction.Weapon.ClusterSize, damage, combatAction.Weapon.SpecialDamage);
         }
 
@@ -93,22 +94,22 @@ public class LogicUnitBattleArmor : LogicUnitTrooper
     {
         if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _))
         {
-            var clusterBonus = ResolveClusterBonus(damageReport, target, combatAction);
+            var clusterBonus = ResolveClusterBonus(damageReport, Unit.Id, target, combatAction);
 
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total cluster modifier", Number = clusterBonus });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Total cluster modifier", clusterBonus));
 
             // The cluster damage reference value is the cluster value of all the troopers combined
             var clusterDamage = combatAction.Weapon.Damage[combatAction.RangeBracket] * Unit.Troopers;
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total cluster value from all troopers", Number = clusterDamage });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Total cluster value from all troopers", clusterDamage));
             return combatAction.Weapon.ClusterDamage * await ResolveClusterValue(damageReport, target, combatAction, clusterDamage, clusterBonus);
         }
 
         // Default damage calculation path if we did not have a cluster weapon
         // Calculate the number of hits because not all troopers necessarily hit when the squad hits
         var hits = await ResolveClusterValue(damageReport, target, combatAction, Unit.Troopers, 0);
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Troopers hit count", Number = hits });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Troopers hit count", hits));
         var damage = combatAction.Weapon.Damage[combatAction.RangeBracket] * hits;
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total attack damage value", Number = damage });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Total attack damage value", damage));
         return damage;
     }
 }

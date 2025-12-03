@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
@@ -41,17 +42,17 @@ public class LogicUnitBuilding : LogicUnit
     }
 
     /// <inheritdoc />
-    public override int TransformClusterRollBasedOnUnitType(DamageReport damageReport, int clusterRoll)
+    public override int TransformClusterRollBasedOnUnitType(DamageReport damageReport, Guid damageOwnerId, int clusterRoll)
     {
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Static cluster roll value against a building", Number = 12 });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Static cluster roll value against a building", 12));
 
         return 12;
     }
 
     /// <inheritdoc />
-    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage)
+    public override Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, Guid damageOwnerId, CombatAction combatAction, int damage)
     {
-        return Task.FromResult(ResolveHeatExtraDamage(damageReport, combatAction, damage));
+        return Task.FromResult(ResolveHeatExtraDamage(damageReport, damageOwnerId, combatAction, damage));
     }
 
     /// <inheritdoc />

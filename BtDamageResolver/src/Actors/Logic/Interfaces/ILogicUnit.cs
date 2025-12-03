@@ -102,8 +102,9 @@ public interface ILogicUnit
     /// <summary>
     /// Gets the modifier to hit resolution from unit stance.
     /// </summary>
+    /// <param name="distance">The distance to target.</param>
     /// <returns>The modifier to hit resolution from unit stance.</returns>
-    int GetStanceModifier();
+    int GetStanceModifier(int distance);
 
     /// <summary>
     /// Gets the modifier to hit resolution from unit type.
@@ -154,9 +155,10 @@ public interface ILogicUnit
     /// Transforms a cluster roll based on unit type and possible other properties.
     /// </summary>
     /// <param name="damageReport">The damage report to append to.</param>
+    /// <param name="damageOwnerId">The ID of the instigator of the damage.</param>
     /// <param name="clusterRoll">The cluster roll to transform.</param>
     /// <returns>The transformed cluster roll.</returns>
-    int TransformClusterRollBasedOnUnitType(DamageReport damageReport, int clusterRoll);
+    int TransformClusterRollBasedOnUnitType(DamageReport damageReport, Guid damageOwnerId, int clusterRoll);
 
     /// <summary>
     /// Does any transformations for the combat action.
@@ -172,18 +174,20 @@ public interface ILogicUnit
     /// Does any transformations for damage based on cover.
     /// </summary>
     /// <param name="damageReport">The damage report.</param>
+    /// <param name="damageOwnerId">The ID of the instigator of the damage.</param>
     /// <param name="damageAmount">The amount of damage before transformation.</param>
     /// <returns>The transformed damage.</returns>
-    int TransformDamageBasedOnStance(DamageReport damageReport, int damageAmount);
+    int TransformDamageBasedOnStance(DamageReport damageReport, Guid damageOwnerId, int damageAmount);
 
     /// <summary>
     /// Does any transformations for damage based on the attack.
     /// </summary>
     /// <param name="damageReport">The damage report.</param>
+    /// <param name="damageOwnerId">The ID of the instigator of the damage.</param>
     /// <param name="combatAction">The combat action to transform.</param>
     /// <param name="damage">The amount of damage before transformation.</param>
     /// <returns>The transformed damage.</returns>
-    Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, CombatAction combatAction, int damage);
+    Task<int> TransformDamageBasedOnUnitType(DamageReport damageReport, Guid damageOwnerId, CombatAction combatAction, int damage);
 
     /// <summary>
     /// Apply given damage packets to this unit logic.

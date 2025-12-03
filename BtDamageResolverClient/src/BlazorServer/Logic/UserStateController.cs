@@ -135,16 +135,9 @@ public class UserStateController
         get => _gameState;
         set
         {
-            if (_gameState == null || value == null)
+            if (_gameState == null || value == null || _gameState.TimeStamp < value.TimeStamp)
             {
                 _gameState = value;
-            }
-            else
-            {
-                if (_gameState.TimeStamp < value.TimeStamp)
-                {
-                    _gameState = value;
-                }
             }
 
             // The below method checks whether it is actually necessary to invoke UI refresh.
@@ -248,13 +241,10 @@ public class UserStateController
     }
 
     /// <summary>
-    /// Get comparison time for field highlighting.
+    /// The comparison time for field highlighting.
     /// </summary>
     /// <returns>The comparison time for field highlighting.</returns>
-    public DateTime GetComparisonTime()
-    {
-        return PlayerOptions.HighlightUnalteredFields ? GameState.TurnTimeStamp : DateTime.MinValue;
-    }
+    public DateTime ComparisonTime => PlayerOptions.HighlightUnalteredFields ? GameState.TurnTimeStamp : DateTime.MinValue;
 
     /// <summary>
     /// Gets the type of the given unit.

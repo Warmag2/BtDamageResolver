@@ -95,39 +95,23 @@ public abstract class LogicUnitAerospace : LogicUnit
         if (criticalThreatRoll > 7)
         {
             var aerospaceCriticalHitRoll = Random.D26();
-            damageReport.Log(new AttackLogEntry
-            {
-                Context = "Aerospace critical hit roll",
-                Number = aerospaceCriticalHitRoll,
-                Type = AttackLogEntryType.DiceRoll
-            });
-
             damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
-            damageReport.Log(new AttackLogEntry
-            {
-                Context = string.Join(", ", criticalDamageTable.Mapping[aerospaceCriticalHitRoll].Select(c => c.ToString())),
-                Number = transformedDamage,
-                Location = location,
-                Type = AttackLogEntryType.Critical
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, damageOwnerId, "Aerospace critical hit roll", aerospaceCriticalHitRoll));
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, string.Join(", ", criticalDamageTable.Mapping[aerospaceCriticalHitRoll].Select(c => c.ToString())), transformedDamage, location));
         }
         else
         {
-            damageReport.Log(new AttackLogEntry
-            {
-                Context = "Threat roll does not result in a critical hit",
-                Type = AttackLogEntryType.Information
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Threat roll does not result in a critical hit"));
         }
     }
 
     /// <inheritdoc />
-    protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damage)
+    protected override List<DamagePacket> ResolveDamagePackets(DamageReport damageReport, Guid damageOwnerId, ILogicUnit target, CombatAction combatAction, int damage)
     {
         // Missile weapons which do 0 damage have been shot down. Return an empty list.
         if (combatAction.Weapon.Type == WeaponType.Missile && damage == 0)
         {
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile weapon has been shot down and does no damage" });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Missile weapon has been shot down and does no damage"));
             return [];
         }
 
@@ -170,12 +154,12 @@ public abstract class LogicUnitAerospace : LogicUnit
                 {
                     if (combatAction.Weapon.HasFeature(WeaponFeature.AmsImmune, out _))
                     {
-                        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Information, Context = "Missile is immune to AMS defenses" });
+                        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, "Missile is immune to AMS defenses"));
                     }
                     else
                     {
                         var amsPenalty = Random.Next(6);
-                        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender AMS roll for cluster damage reduction", Number = amsPenalty });
+                        damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Defender AMS roll for cluster damage reduction", amsPenalty));
                         damageValue -= amsPenalty;
 
                         damageReport.SpendAmmoDefender("AMS", 1);
@@ -185,7 +169,7 @@ public abstract class LogicUnitAerospace : LogicUnit
                 if (target.Unit.HasFeature(UnitFeature.Ecm))
                 {
                     var ecmPenalty = Random.Next(3);
-                    damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender ECM roll for cluster damage reduction", Number = ecmPenalty });
+                    damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Defender ECM roll for cluster damage reduction", ecmPenalty));
                     damageValue -= ecmPenalty;
                 }
 
@@ -196,12 +180,12 @@ public abstract class LogicUnitAerospace : LogicUnit
         if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
         {
             var glancingBlowPenalty = Random.Next(6);
-            damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.DiceRoll, Context = "Defender roll for cluster damage reduction from glancing blow", Number = glancingBlowPenalty });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Defender roll for cluster damage reduction from glancing blow", glancingBlowPenalty));
             damageValue -= glancingBlowPenalty;
         }
 
         damageValue += Math.Clamp(combatAction.Weapon.DamageAerospace[combatAction.RangeBracket], 0, int.MaxValue);
-        damageReport.Log(new AttackLogEntry { Type = AttackLogEntryType.Calculation, Context = "Total damage value", Number = damageValue });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Total damage value", damageValue));
 
         return Task.FromResult(damageValue);
     }

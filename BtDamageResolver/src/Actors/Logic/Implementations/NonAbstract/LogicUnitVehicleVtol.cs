@@ -58,13 +58,13 @@ public class LogicUnitVehicleVtol : LogicUnitVehicle
     }
 
     /// <inheritdoc />
-    protected override int TransformDamageAmountBasedOnLocation(DamageReport damageReport, Location location, int damage)
+    protected override int TransformDamageAmountBasedOnLocation(DamageReport damageReport, Guid damageOwnerId, Location location, int damage)
     {
         // Only one case for now
         if (location == Location.Propulsion)
         {
             var returndedDamage = decimal.ToInt32(Math.Ceiling(damage / 10m));
-            damageReport.Log(new AttackLogEntry { Context = "Damage after transformation into VTOL propulsion damage", Number = returndedDamage, Type = AttackLogEntryType.Calculation });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Damage after transformation into VTOL propulsion damage", returndedDamage));
             return returndedDamage;
         }
 

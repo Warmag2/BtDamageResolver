@@ -151,7 +151,14 @@
             @foreach (var logLine in DamageReport.AttackLog.Log)
             {
                 <div class="@($"resolver_div_attacklog_{logLine.Type.ToString().ToLowerInvariant()}")" style="@VisualStyleController.HideElement(!_logLineVisibility[logLine.Type])">
-                    @logLine.ToString()
+                    @if(DamageReport.FiringUnitIds.Count > 1)
+                    {
+                        @logLine.ToString(true, DamageReport.FiringUnitNames)                        
+                    }
+                    else
+                    {
+                        @logLine.ToString(false, DamageReport.FiringUnitNames)
+                    }
                 </div>
             }
         </ContainerAccordion>

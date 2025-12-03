@@ -27,91 +27,91 @@ public abstract partial class LogicUnit
         var modifierBase = weapon.AttackType == AttackType.Normal ? Unit.Gunnery : Unit.Piloting;
 
         // NOTE: In this method, the damageReport may be null, as the target number calculation does not need a damage log. Everywhere else, it must exist.
-        attackLog.Append(new AttackLogEntry { Context = "Base hit modifier", Type = AttackLogEntryType.Calculation, Number = modifierBase });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Base hit modifier", modifierBase));
 
         var modifierMultiTarget = GetMultiTargetModifier(weaponBay, isPrimaryTarget);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from multiple targets", Type = AttackLogEntryType.Calculation, Number = modifierMultiTarget });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from multiple targets", modifierMultiTarget));
 
         var modifierHeat = Unit.GetHeatAttackPenalty();
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from heat effects", Type = AttackLogEntryType.Calculation, Number = modifierHeat });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from heat effects", modifierHeat));
 
         var modifierPenalty = GetPenaltyModifier();
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from EMP effects", Type = AttackLogEntryType.Calculation, Number = modifierPenalty });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from EMP effects", modifierPenalty));
 
         var modifierFiringSolution = GetFiringSolutionModifier(weaponBay.FiringSolution);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from firing solution", Type = AttackLogEntryType.Calculation, Number = modifierFiringSolution });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from firing solution", modifierFiringSolution));
 
         var rangeBracket = GetRangeBracket(weapon, weaponBay);
         var modifierRange = GetRangeModifier(rangeBracket);
         modifierRange += GetMinimumRangeModifier(weapon, weaponBay);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from range", Type = AttackLogEntryType.Calculation, Number = modifierRange });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from range", modifierRange));
 
         var modifierArmor = GetArmorModifier(rangeBracket, target);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target armor", Type = AttackLogEntryType.Calculation, Number = modifierArmor });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target armor", modifierArmor));
 
         var modifierWeapon = GetWeaponModifier(weapon);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weapon properties", Type = AttackLogEntryType.Calculation, Number = modifierWeapon });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from weapon properties", modifierWeapon));
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weapon entry properties", Type = AttackLogEntryType.Calculation, Number = weaponEntry.Modifier });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from weapon entry properties", weaponEntry.Modifier));
 
-        var modifierTargetingCompuer = GetTargetingComputerModifier(weapon);
+        var modifierTargetingComputer = GetTargetingComputerModifier(weapon);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from unit targeting computer", Type = AttackLogEntryType.Calculation, Number = modifierTargetingCompuer });
+        attackLog.Append(new AttackLogEntry (AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from unit targeting computer", modifierTargetingComputer));
 
         var modifierUnitType = target.GetUnitTypeModifier();
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from unit type", Type = AttackLogEntryType.Calculation, Number = modifierUnitType });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from unit type", modifierUnitType));
 
         var modifierCover = target.GetCoverModifier(weaponBay.FiringSolution.Cover);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from cover", Type = AttackLogEntryType.Calculation, Number = modifierCover });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from cover", modifierCover));
 
-        var modifierStance = target.GetStanceModifier();
+        var modifierStance = target.GetStanceModifier(weaponBay.FiringSolution.Distance);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target stance", Type = AttackLogEntryType.Calculation, Number = modifierStance });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target stance", modifierStance));
 
         var modifierMovementDirection = target.GetMovementDirectionModifier(weaponBay.FiringSolution.Direction);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from movement direction", Type = AttackLogEntryType.Calculation, Number = modifierMovementDirection });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from movement direction", modifierMovementDirection));
 
         var modifierMovementClass = GetMovementClassModifier(target, weapon);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target movement class", Type = AttackLogEntryType.Calculation, Number = modifierMovementClass });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target movement class", modifierMovementClass));
 
         var modifierMovement = GetMovementModifierBase(target, weapon);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target movement amount", Type = AttackLogEntryType.Calculation, Number = modifierMovement });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target movement amount", modifierMovement));
 
         var modifierEvasion = GetEvasionModifier(target);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from target evasion", Type = AttackLogEntryType.Calculation, Number = modifierEvasion });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target evasion", modifierEvasion));
 
         var modifierOwnMovement = GetOwnMovementModifier();
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from own movement", Type = AttackLogEntryType.Calculation, Number = modifierOwnMovement });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from own movement", modifierOwnMovement));
 
         var modifierOwnEvasion = GetOwnEvasionModifier(weapon);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from own evasion", Type = AttackLogEntryType.Calculation, Number = modifierOwnEvasion });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from own evasion", modifierOwnEvasion));
 
         var modifierFeatures = target.GetFeatureModifier(weapon);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weapon features", Type = AttackLogEntryType.Calculation, Number = modifierFeatures });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from weapon features", modifierFeatures));
 
         var modifierWeather = GetWeatherModifier(weapon);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from weather effects", Type = AttackLogEntryType.Calculation, Number = modifierWeather });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from weather effects", modifierWeather));
 
         var modifierQuirks = GetQuirkModifier(target, weapon);
 
-        attackLog.Append(new AttackLogEntry { Context = "Hit modifier from unit quirks", Type = AttackLogEntryType.Calculation, Number = modifierQuirks });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from unit quirks", modifierQuirks));
 
         var modifierTotal =
             modifierBase +
@@ -123,7 +123,7 @@ public abstract partial class LogicUnit
             modifierArmor +
             modifierWeapon +
             weaponEntry.Modifier +
-            modifierTargetingCompuer +
+            modifierTargetingComputer +
             modifierUnitType +
             modifierCover +
             modifierStance +
@@ -137,7 +137,7 @@ public abstract partial class LogicUnit
             modifierWeather +
             modifierQuirks;
 
-        attackLog.Append(new AttackLogEntry { Context = "Target number", Type = AttackLogEntryType.Calculation, Number = modifierTotal });
+        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Target number", modifierTotal));
 
         return (modifierTotal, rangeBracket);
     }
@@ -179,7 +179,7 @@ public abstract partial class LogicUnit
     }
 
     /// <inheritdoc />
-    public virtual int GetStanceModifier()
+    public virtual int GetStanceModifier(int distance)
     {
         return 0;
     }
