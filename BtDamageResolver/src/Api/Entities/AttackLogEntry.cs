@@ -11,6 +11,13 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 public class AttackLogEntry
 {
     /// <summary>
+    /// Parameterless constructor for serialization.
+    /// </summary>
+    public AttackLogEntry()
+    {
+    }
+
+    /// <summary>
     /// Parameterized constructor for attack log entry.
     /// </summary>
     /// <param name="type">The attack log entry type.</param>
