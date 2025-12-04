@@ -79,6 +79,17 @@ public class AttackLogEntry
     /// </summary>
     /// <returns>The string representation of this attack log entry.</returns>
     /// <exception cref="NotImplementedException">Thrown when unknown attack log type is encountered.</exception>
+
+    public override string ToString()
+    {
+        return ToString(false, null);
+    }
+
+    /// <summary>
+    /// The parametrized string conversion for attack log entries.
+    /// </summary>
+    /// <returns>The string representation of this attack log entry.</returns>
+    /// <exception cref="NotImplementedException">Thrown when unknown attack log type is encountered.</exception>
     public string ToString(bool printUnitNames, Dictionary<Guid, string> unitNames)
     {
         var stringWithoutUnitName = Type switch
@@ -97,7 +108,7 @@ public class AttackLogEntry
             _ => throw new NotImplementedException($"Explanation for event type {Type} has not yet been implemented."),
         };
 
-        if (printUnitNames && unitNames.TryGetValue(OwnerId, out var ownerName))
+        if (printUnitNames && unitNames != null && unitNames.TryGetValue(OwnerId, out var ownerName))
         {
             return $"{ownerName} — {stringWithoutUnitName}";
         }
