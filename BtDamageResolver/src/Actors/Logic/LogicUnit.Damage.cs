@@ -36,7 +36,7 @@ public partial class LogicUnit
 
         var transformedDamage = TransformDamageBasedOnStance(damageReport, Guid.Empty, damageInstance.Damage);
 
-        var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, [new() { Type = SpecialDamageType.None }]);
+        var damagePackets = Clusterize(damageInstance.ClusterSize, transformedDamage, [damageInstance.SpecialDamage]);
 
         await ApplyDamagePackets(damageReport, Guid.Empty, damagePackets, new FiringSolution { Cover = damageInstance.Cover, Direction = damageInstance.Direction, Target = damageInstance.UnitId }, 0);
 
@@ -154,28 +154,16 @@ public partial class LogicUnit
         // Only certain melee weapons have this for now, go through them one by one
         if (combatAction.Weapon.HasFeature(WeaponFeature.MeleeCharge, out _))
         {
-            if (!combatAction.HitHappened)
-            {
-                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, "Attacker must make a piloting skill roll because of a missed charge attack"));
-                damageReport.DamagePaperDoll.RecordSpecialDamage(
-                    Faemiyah.BtDamageResolver.Api.Enums.Location.Front,
-                    Unit.Id,
-                    new SpecialDamageEntry
-                    {
-                        Data = "2",
-                        Type = SpecialDamageType.PilotingSkillRoll
-                    });
-            }
-            else
+            if (combatAction.HitHappened)
             {
                 damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, "Attacker is damaged by its charge attack"));
                 var attackerDamageStringCharge = target.Unit.Type switch
                 {
-                    UnitType.Building or
-                    UnitType.BattleArmor or
                     UnitType.AerospaceCapital or
                     UnitType.AerospaceDropshipAerodyne or
                     UnitType.AerospaceDropshipSpheroid or
+                    UnitType.BattleArmor or
+                    UnitType.Building or
                     UnitType.Infantry
                     => $"{Unit.Tonnage}/10",
                     _ => $"{target.Unit.Tonnage}/10",
@@ -191,6 +179,11 @@ public partial class LogicUnit
                             Cover = Cover.None,
                             Damage = attackerDamageCharge,
                             Direction = Direction.Front,
+                            SpecialDamage = new SpecialDamageEntry
+                            {
+                                Data = "2",
+                                Type = SpecialDamageType.PilotingSkillRoll
+                            },
                             TimeStamp = DateTime.UtcNow,
                             UnitId = Unit.Id
                         },
@@ -218,6 +211,11 @@ public partial class LogicUnit
                             Cover = Cover.None,
                             Damage = attackerDamageDfa,
                             Direction = Direction.Front,
+                            SpecialDamage = new SpecialDamageEntry
+                            {
+                                Data = "4",
+                                Type = SpecialDamageType.PilotingSkillRoll
+                            },
                             TimeStamp = DateTime.UtcNow,
                             UnitId = Unit.Id
                         },
@@ -227,7 +225,7 @@ public partial class LogicUnit
             else
             {
                 damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, "Attacker falls onto its back due to a failed DFA attack"));
-                var attackerDamageDfa = MathExpression.Parse($"2*{Unit.Tonnage}/5");
+                var attackerDamageDfa = MathExpression.Parse($"2*Ceil({Unit.Tonnage}/10)");
                 damageReport.Merge(
                     await ResolveDamageInstance(
                         new DamageInstance
@@ -256,14 +254,25 @@ public partial class LogicUnit
             if (!combatAction.HitHappened)
             {
                 damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, "Attacker must make a piloting skill roll because of a missed kick attack"));
-                damageReport.DamagePaperDoll.RecordSpecialDamage(
-                    Api.Enums.Location.Front,
-                    Unit.Id,
-                    new SpecialDamageEntry
+                damageReport.Merge(
+                await ResolveDamageInstance(
+                    new DamageInstance
                     {
-                        Data = "0",
-                        Type = SpecialDamageType.PilotingSkillRoll
-                    });
+                        AttackType = AttackType.Normal,
+                        ClusterSize = 1,
+                        Cover = Cover.None,
+                        Damage = 0,
+                        Direction = Direction.Front,
+                        SpecialDamage = new SpecialDamageEntry
+                        {
+                            Data = "0",
+                            Type = SpecialDamageType.PilotingSkillRoll
+                        },
+                        TimeStamp = DateTime.UtcNow,
+                        UnitId = Unit.Id
+                    },
+                    Phase.Melee,
+                    true));
             }
 
             return damageReport;
