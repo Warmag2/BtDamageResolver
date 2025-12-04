@@ -1,6 +1,7 @@
 ﻿@inherits BaseFaemiyahComponent
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Extensions
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
@@ -39,7 +40,7 @@
     <td class="resolver_td_weaponentry" style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0)">
         @if (UnitEntry.StaticDataHidden)
         {
-            <b>@($"{(WeaponEntry.Modifier >= 0 ? "+" : string.Empty)}{WeaponEntry.Modifier}")</b>
+            <b>@(WeaponEntry.Modifier.ToStringExplicit())</b>
         }
         else
         {

@@ -42,7 +42,15 @@ public partial class GameActor
 
     private static void ProcessUnitHeat(IReadOnlyCollection<DamageReport> damageReports, UnitEntry unit)
     {
-        var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitIds.Contains(unit.Id)).Sum(damageReport => damageReport.ConsumablesAttackers[unit.Id].Heat);
+        var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitIds.Contains(unit.Id)).Sum(damageReport =>
+            {
+                if (damageReport.ConsumablesAttackers.TryGetValue(unit.Id, out var consumablesForAttacker))
+                {
+                    return consumablesForAttacker.Heat;
+                }
+
+                return 0;
+            });
 
         // Only apply heat if the generation is positive and the unit tracks heat.
         // However, combat computer and other heat generation reductions never take the heat generated below 0.

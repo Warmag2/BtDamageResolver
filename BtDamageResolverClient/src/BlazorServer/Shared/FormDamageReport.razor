@@ -81,26 +81,30 @@
         
         @foreach (var firingUnitId in DamageReport.FiringUnitIds)
         {
-            @switch (_userStateController.GetUnitType(firingUnitId))
+            @if (DamageReport.ConsumablesAttackers.TryGetValue(firingUnitId, out var attackerConsumables) && attackerConsumables.Heat > 0)
             {
-                case UnitType.AerospaceFighter:
-                case UnitType.Mech:
-                case UnitType.MechTripod:
-                case UnitType.MechQuad:
-                    <div class="resolver_div_componentrow">
-                        <div class="resolver_div_attackerheat">
-                            @if (DamageReport.FiringUnitIds.Count > 1)
-                            {
-                                <b>Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):</b>
-                            }
-                            else
-                            {
-                                <b>Attacker heat:</b> 
-                            }
-                            @DamageReport.ConsumablesAttackers[firingUnitId].Heat
+                @switch (_userStateController.GetUnitType(firingUnitId))
+                {
+                    case UnitType.AerospaceFighter:
+                    case UnitType.Mech:
+                    case UnitType.MechTripod:
+                    case UnitType.MechQuad:
+                        <div class="resolver_div_componentrow">
+                            <div class="resolver_div_attackerheat">
+                                @if (DamageReport.FiringUnitIds.Count > 1)
+                                {
+                                    <b>Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):</b>
+                                }
+                                else
+                                {
+                                    <b>Attacker heat:</b> 
+                                }
+
+                                @(attackerConsumables.Heat)
+                            </div>
                         </div>
-                    </div>
                     break;
+                }
             }
         }
         
