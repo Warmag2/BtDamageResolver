@@ -791,7 +791,8 @@
 
 .resolver_div_damagereportheader {
     font-size: 24px;
-    padding-left: 4rem;
+    padding-left: 2.5rem;
+    padding-Right: 2rem;
 }
 
 .resolver_div_phase {
