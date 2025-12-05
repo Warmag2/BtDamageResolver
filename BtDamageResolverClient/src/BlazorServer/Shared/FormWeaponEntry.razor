@@ -20,7 +20,7 @@
     }
 }
 
-<tr class="resolver_tr_weaponentry draggable @(WeaponEntry.State == WeaponState.Active ? "active" : string.Empty)" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
+<tr class="resolver_tr_weaponentry draggable @(WeaponEntry.State == WeaponState.Active ? "active" : "inactive")" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
     <td class="resolver_td_targetnumber" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', @calculationLog);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
         <b>@(targetNumber)</b>
     </td>
@@ -34,7 +34,7 @@
         }
         else
         {
-            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_normal")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
         }
     </td>
     <td class="resolver_td_weaponentry" style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0)">
@@ -44,7 +44,7 @@
         }
         else
         {
-            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_normal")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
+            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
         }
     </td>
     <td class="resolver_td_weaponentry">

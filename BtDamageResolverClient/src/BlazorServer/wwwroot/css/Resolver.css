@@ -903,6 +903,11 @@
     Status effect colors
 *******************************************************************************/
 
+.resolver_status_transparent {
+    background-color: none;
+    color: var(--color_text_status_normal);
+}
+
 .resolver_status_normal {
     background-color: var(--color_bg_status_normal);
     color: var(--color_text_status_normal);
