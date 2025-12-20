@@ -25,9 +25,11 @@
             }
             else
             {
+                var firingUnitId = DamageReport.FiringUnitIds.Single();
+                var firingUnitPlayerId = _userStateController.UnitList.ContainsKey(firingUnitId) ? _userStateController.UnitList[firingUnitId].PlayerId : "Unknown player";
                 unitAttackString = attackingUnitOwnedByYou ?
-                    $"{DamageReport.FiringUnitNames[DamageReport.FiringUnitIds.Single()]}" :
-                    $"{DamageReport.FiringUnitNames[DamageReport.FiringUnitIds.Single()]} ({_userStateController.UnitList[DamageReport.FiringUnitIds.Single()].PlayerId})";
+                    $"{DamageReport.FiringUnitNames[firingUnitId]}" :
+                    $"{DamageReport.FiringUnitNames[firingUnitId]} ({firingUnitPlayerId})";
             }
         }
     }
