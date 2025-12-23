@@ -109,5 +109,5 @@ public interface IGameActor : IGrainWithStringKey
     /// <param name="playerState">A <see cref="PlayerState"/> object containing the player state to be distributed.</param>
     /// <param name="unitIds">List of unit IDs which were actually updated in this update request.</param>
     /// <returns>A task which finishes when the player state was processed.</returns>
-    Task<bool> SendPlayerState(string sendingPlayerId, PlayerState playerState, IReadOnlyCollection<Guid> unitIds);
+    Task<bool> SendPlayerState(string sendingPlayerId, PlayerState playerState, List<Guid> unitIds);
 }

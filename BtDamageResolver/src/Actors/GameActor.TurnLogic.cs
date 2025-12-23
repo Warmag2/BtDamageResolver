@@ -40,7 +40,7 @@ public partial class GameActor
         return primaryTargetCandidate.Value;
     }
 
-    private static void ProcessUnitHeat(IReadOnlyCollection<DamageReport> damageReports, UnitEntry unit)
+    private static void ProcessUnitHeat(List<DamageReport> damageReports, UnitEntry unit)
     {
         var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitIds.Contains(unit.Id)).Sum(damageReport =>
             {
@@ -68,7 +68,7 @@ public partial class GameActor
         }
     }
 
-    private async Task CheckGameStateUpdateEvents(IReadOnlyCollection<Guid> updatedUnits = null)
+    private async Task CheckGameStateUpdateEvents(List<Guid> updatedUnits = null)
     {
         try
         {
@@ -335,7 +335,7 @@ public partial class GameActor
         return targetNumberUpdate;
     }
 
-    private void ModifyGameStateBasedOnNarcAndTag(IReadOnlyCollection<DamageReport> damageReports)
+    private void ModifyGameStateBasedOnNarcAndTag(List<DamageReport> damageReports)
     {
         // Comb through damage reports to find incoming heat damage and EMP damage effects
         foreach (var damageReport in damageReports)
@@ -357,7 +357,7 @@ public partial class GameActor
         }
     }
 
-    private void ModifyGameStateBasedOnDamageReports(IReadOnlyCollection<DamageReport> damageReports)
+    private void ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports)
     {
         // Comb through damage reports to find incoming heat damage and EMP damage effects
         foreach (var damageReport in damageReports)

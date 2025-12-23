@@ -208,7 +208,7 @@ public interface ILogicUnit
     /// <param name="processOnlyTags">Only process weapons with tagging features.</param>
     /// <param name="isPrimaryTarget">Does this bay attack the primary target.</param>
     /// <returns>A set of damage reports caused by this unit attacking.</returns>
-    Task<IReadOnlyCollection<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget);
+    Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget);
 
     /// <summary>
     /// Resolve the given damage instance.

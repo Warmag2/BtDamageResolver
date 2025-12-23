@@ -53,7 +53,7 @@ public partial class GameActor
         return targetNumberUpdates;
     }
 
-    private async Task<List<TargetNumberUpdate>> ProcessTargetNumberUpdatesForUnits(IReadOnlyCollection<Guid> unitIds = null)
+    private async Task<List<TargetNumberUpdate>> ProcessTargetNumberUpdatesForUnits(List<Guid> unitIds = null)
     {
         var targetNumberUpdates = new List<TargetNumberUpdate>();
         var unitIdsToUpdate = new List<Guid>();

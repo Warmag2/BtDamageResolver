@@ -45,7 +45,7 @@ public class UnitList
     /// </summary>
     /// <param name="units">The units to check.</param>
     /// <returns>List of IDs which are new or have been updated.</returns>
-    public IReadOnlyCollection<Guid> AreNewOrNewer(List<UnitEntry> units)
+    public List<Guid> AreNewOrNewer(List<UnitEntry> units)
     {
         return (from unit in units where IsNewOrNewer(unit) select unit.Id).ToList();
     }
