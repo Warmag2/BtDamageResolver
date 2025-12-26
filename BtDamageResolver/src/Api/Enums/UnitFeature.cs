@@ -27,6 +27,16 @@ public enum UnitFeature
     ActiveProbe,
 
     /// <summary>
+    /// Unit has a bad reputation.
+    /// </summary>
+    BadReputation,
+
+    /// <summary>
+    /// Unit may make melee punch attacks normally in the absence of hand actuators (no effect yet).
+    /// </summary>
+    BarrelFist,
+
+    /// <summary>
     /// Bonus of 1 to hit in melee.
     /// </summary>
     BattleFists,
@@ -42,12 +52,12 @@ public enum UnitFeature
     CommandUnit,
 
     /// <summary>
-    /// Better initiative rolls (no effect yet).
+    /// More head armor from the sides and back, less directly from the front (no effect yet).
     /// </summary>
     Cowl,
 
     /// <summary>
-    /// Torso mount that is a turret (no effect yet).
+    /// Torso mount that is actually a turret (no effect yet).
     /// </summary>
     DirectionalTorsoMount,
 
@@ -57,7 +67,7 @@ public enum UnitFeature
     EasyToMaintain,
 
     /// <summary>
-    /// Unit is easy to pilot (no effect yet).
+    /// Unit is easier to pilot (no effect yet).
     /// </summary>
     EasyToPilot,
 
@@ -87,7 +97,7 @@ public enum UnitFeature
     FastReload,
 
     /// <summary>
-    /// Unit is hard to pilot (no effect yet) PS: This quirk is EXACTLY THE SAME as Cramped Cockpit, so the latter is not included.
+    /// Unit is harder to pilot (no effect yet) PS: This quirk is EXACTLY THE SAME as Cramped Cockpit, so the latter is not included.
     /// </summary>
     HardToPilot,
 
@@ -100,6 +110,16 @@ public enum UnitFeature
     /// Unit has improved communications systems (no effect yet).
     /// </summary>
     ImprovedCommunications,
+
+    /// <summary>
+    /// Unit has an improved cooling jacket for its autocannons.
+    /// </summary>
+    ImprovedCoolingAutoCannon,
+
+    /// <summary>
+    /// Unit has an improved cooling jacket for its large energy weapons.
+    /// </summary>
+    ImprovedCoolingLargeEnergy,
 
     /// <summary>
     /// Unit has a more capable sensor system.
@@ -152,9 +172,19 @@ public enum UnitFeature
     ReinforcedLegs,
 
     /// <summary>
-    /// Needs maintenance half as often (no effect yet).
+    /// Needs maintenance half as often as a regular unit (no effect yet).
     /// </summary>
     Rugged,
+
+    /// <summary>
+    /// Needs maintenance three times less often than a regular unit (no effect yet).
+    /// </summary>
+    Rugged2,
+
+    /// <summary>
+    /// Needs maintenance four times less often than a regular unit (no effect yet).
+    /// </summary>
+    Rugged3,
 
     /// <summary>
     /// Free searchlight component (no effect yet).
@@ -200,6 +230,11 @@ public enum UnitFeature
     /// Bonus of 1 to hit at short range.
     /// </summary>
     TargetingShortRange,
+
+    /// <summary>
+    /// A very common and easily available unit (no effect yet).
+    /// </summary>
+    Ubiquitous,
 
     /// <summary>
     /// -1 to piloting when entering difficult terrain hexes (no effect yet).
