@@ -187,7 +187,8 @@
                             @foreach(var ammoUsage in UnitEntry.Consumables.AmmoUsage)
                             {
                                 <div class="resolver_div_ammo">
-                                    @ammoUsage.Key: <b>@ammoUsage.Value</b>
+                                    @ammoUsage.Key:
+                                    <FormNumberPickerDisplayOnly @key="@(ammoUsage.Value)" BracketCreatorDelegate="@CommonData.FormPickBracketsAmmo" StyleSelectorDelegate="@VisualStyleController.GetStyleForAmmo" NumberToDisplay="@ammoUsage.Value" Disabled="@_userStateController.PlayerState.IsReady" Hint="@ammoUsage.Key" OnChangedWithHint="@OnAmmoChanged"></FormNumberPickerDisplayOnly>
                                 </div>
                             }
                         </td>
@@ -333,13 +334,19 @@
 
     #region Property changing delegates
 
-    private void OnNameChanged(string name)
+    private void OnAmmoChanged((string AmmoName, int Amount) ammoTuple)
     {
-        if (UnitEntry.Name != name)
+        if (UnitEntry.Consumables.AmmoUsage.ContainsKey(ammoTuple.AmmoName))
         {
-            UnitEntry.Name = name;
+            UnitEntry.Consumables.AmmoUsage[ammoTuple.AmmoName] = ammoTuple.Amount;
             SendUpdate();
         }
+    }
+
+    private void OnFeaturesChanged(HashSet<UnitFeature> features)
+    {
+        UnitEntry.Features = features;
+        SendUpdate();
     }
 
     private void OnGunneryChanged(int gunnery)
@@ -369,6 +376,15 @@
         }
     }
 
+    private void OnNameChanged(string name)
+    {
+        if (UnitEntry.Name != name)
+        {
+            UnitEntry.Name = name;
+            SendUpdate();
+        }
+    }
+
     private void OnPenaltyChanged(int penalty)
     {
         if (UnitEntry.Consumables.Penalty != penalty)
@@ -385,12 +401,6 @@
             UnitEntry.Piloting = piloting;
             SendUpdate();
         }
-    }
-
-    private void OnFeaturesChanged(HashSet<UnitFeature> features)
-    {
-        UnitEntry.Features = features;
-        SendUpdate();
     }
 
     private void OnSpeedChanged(int speed)

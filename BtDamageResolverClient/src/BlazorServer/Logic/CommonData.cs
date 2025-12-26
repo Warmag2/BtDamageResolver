@@ -312,6 +312,15 @@ public class CommonData
     }
 
     /// <summary>
+    /// Form pick brackets for valid ammo.
+    /// </summary>
+    /// <returns>Pick brackets for selecting valid ammo amounts.</returns>
+    public static List<PickBracket> FormPickBracketsAmmo()
+    {
+        return MakeSimplePickBrackets(0, 1, 100);
+    }
+
+    /// <summary>
     /// Form pick brackets for valid unit speeds.
     /// </summary>
     /// <returns>Pick brackets for selecting valid speeds.</returns>

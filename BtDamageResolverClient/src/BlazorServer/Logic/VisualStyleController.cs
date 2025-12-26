@@ -272,6 +272,17 @@ public static class VisualStyleController
     }
 
     /// <summary>
+    /// Gets the correct style for a given ammo level.
+    /// </summary>
+    /// <param name="ammo">The amount of ammo that has been spent.</param>
+    /// <returns>The correct style for the given ammo level.</returns>
+    public static string GetStyleForAmmo(int ammo)
+    {
+        // no logic yet
+        return "resolver_status_normal";
+    }
+
+    /// <summary>
     /// Gets the correct style for a given heat level.
     /// </summary>
     /// <param name="heat">The heat level.</param>

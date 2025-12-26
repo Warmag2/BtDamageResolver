@@ -787,6 +787,7 @@
     color: var(--color_text_ammo);
     font-size: 16px;
     padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .resolver_div_damagereportheader {
