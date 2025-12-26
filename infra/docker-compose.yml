@@ -1,3 +1,4 @@
+name: btdamageresolver
 services:
   # Battletech Damage Resolver (orleans silo)
   resolver:
