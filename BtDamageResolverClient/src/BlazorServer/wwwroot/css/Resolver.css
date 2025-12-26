@@ -46,6 +46,8 @@
     --color_text_status_warning: #000000;
     --color_bg_status_critical: #FFB0B0;
     --color_text_status_critical: #000000;
+    --color_bg_status_ammo_normal: #F0E0B0;
+    --color_text_status_ammo_normal: #403020;
 }
 
 .resolver_content { width: 100%; }
@@ -922,4 +924,9 @@
 .resolver_status_critical {
     background-color: var(--color_bg_status_critical);
     color: var(--color_text_status_critical);
+}
+
+.resolver_status_ammo_normal {
+    background-color: var(--color_bg_status_ammo_normal);
+    color: var(--color_text_status_ammo_normal);
 }

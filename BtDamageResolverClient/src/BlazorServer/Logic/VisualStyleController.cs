@@ -279,7 +279,7 @@ public static class VisualStyleController
     public static string GetStyleForAmmo(int ammo)
     {
         // no logic yet
-        return "resolver_status_normal";
+        return "resolver_status_ammo_normal";
     }
 
     /// <summary>
