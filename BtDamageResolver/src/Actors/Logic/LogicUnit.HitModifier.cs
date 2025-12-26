@@ -496,7 +496,7 @@ public abstract partial class LogicUnit
 
     private int GetPenaltyModifier()
     {
-        return Math.Max(0, Math.Min(Unit.Penalty, 2));
+        return Math.Max(0, Math.Min(Unit.Consumables.Penalty, 2));
     }
 
     private int GetQuirkModifier(ILogicUnit target, Weapon weapon)

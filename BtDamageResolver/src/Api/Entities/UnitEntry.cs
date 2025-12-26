@@ -21,10 +21,16 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     {
         TimeStamp = DateTime.UtcNow;
         Id = Guid.NewGuid();
+        Consumables = new();
         Features = [];
         WeaponBays = [];
         Troopers = 1; // In practice, 0 is illegal in many situations and this is never bad.
     }
+
+    /// <summary>
+    /// All the resources this unit entry has currently spent.
+    /// </summary>
+    public Consumables Consumables { get; set; }
 
     /// <summary>
     /// Is the unit currently evading.
@@ -40,11 +46,6 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public int Gunnery { get; set; } = 4;
 
     /// <summary>
-    /// The amount of heat this unit currently has.
-    /// </summary>
-    public int Heat { get; set; }
-
-    /// <summary>
     /// The ID of this unit.
     /// </summary>
     public Guid Id { get; set; }
@@ -53,11 +54,6 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     /// Is this unit currently narced.
     /// </summary>
     public bool Narced { get; set; }
-
-    /// <summary>
-    /// Current amount of targeting difficulty -inducing effects for this unit (for now, only EMP).
-    /// </summary>
-    public int Penalty { get; set; }
 
     /// <summary>
     /// The piloting skill of this unit.
@@ -117,7 +113,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             return 0;
         }
 
-        return Heat switch
+        return Consumables.Heat switch
         {
             >= 24 => 4,
             >= 17 => 3,
@@ -138,7 +134,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             return 0;
         }
 
-        return Heat switch
+        return Consumables.Heat switch
         {
             >= 25 => 5,
             >= 20 => 4,
@@ -160,7 +156,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             return 0;
         }
 
-        return Heat switch
+        return Consumables.Heat switch
         {
             >= 28 => 8,
             >= 23 => 6,
@@ -180,7 +176,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             return 0;
         }
 
-        return Heat switch
+        return Consumables.Heat switch
         {
             >= 30 => 13,
             >= 26 => 10,
@@ -234,16 +230,15 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
 
         return new UnitEntry
         {
+            Consumables = Consumables.Copy(),
             Features = Features.Copy(),
             Gunnery = Gunnery,
-            Heat = Heat,
             Id = id,
             JumpJets = JumpJets,
             Movement = Movement,
             MovementClass = MovementClass,
             Name = GenerateName(Name),
             Narced = Narced,
-            Penalty = Penalty,
             Piloting = Piloting,
             Sinks = Sinks,
             Speed = Speed,

@@ -200,6 +200,22 @@ public static class VisualStyleController
     }
 
     /// <summary>
+    /// Indicates whether unit ammo indicators should be hidden for this unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type.</param>
+    /// <returns><b>True</b> if unit ammo indicators should be hidden, <b>false</b> otherwise.</returns>
+    public static bool GetUnitAmmoHidden(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.Infantry:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
     /// Indicates whether unit state indicators should be hidden for this unit type.
     /// </summary>
     /// <param name="unitType">The unit type.</param>

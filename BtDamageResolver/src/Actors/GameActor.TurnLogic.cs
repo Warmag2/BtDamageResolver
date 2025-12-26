@@ -40,6 +40,19 @@ public partial class GameActor
         return primaryTargetCandidate.Value;
     }
 
+    private static void ProcessUnitAmmo(List<DamageReport> damageReports, UnitEntry unit)
+    {
+        foreach (var consumables in damageReports
+            .Where(
+                d => d.FiringUnitIds.Contains(unit.Id) &&
+                d.ConsumablesAttackers.ContainsKey(unit.Id) &&
+                d.ConsumablesAttackers[unit.Id].AmmoUsage.Count != 0)
+            .SelectMany(d => d.ConsumablesAttackers[unit.Id].AmmoUsage))
+        {
+            unit.Consumables.SpendAmmo(consumables.Key, consumables.Value);
+        }
+    }
+
     private static void ProcessUnitHeat(List<DamageReport> damageReports, UnitEntry unit)
     {
         var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitIds.Contains(unit.Id)).Sum(damageReport =>
@@ -56,15 +69,15 @@ public partial class GameActor
         // However, combat computer and other heat generation reductions never take the heat generated below 0.
         if (heatGeneratedByThisUnit > 0)
         {
-            unit.Heat += heatGeneratedByThisUnit;
+            unit.Consumables.Heat += heatGeneratedByThisUnit;
         }
 
-        unit.Heat -= unit.Sinks;
+        unit.Consumables.Heat -= unit.Sinks;
 
         // Sinks won't take the heat to negative levels
-        if (unit.Heat < 0)
+        if (unit.Consumables.Heat < 0)
         {
-            unit.Heat = 0;
+            unit.Consumables.Heat = 0;
         }
     }
 
@@ -367,8 +380,8 @@ public partial class GameActor
 
             var unitEntry = GetUnit(damageReport.TargetUnitId);
 
-            unitEntry.Heat += heatToTarget;
-            unitEntry.Penalty += empToTarget;
+            unitEntry.Consumables.Heat += heatToTarget;
+            unitEntry.Consumables.Penalty += empToTarget;
         }
 
         // Heat sinks for all units operate after damage resolution
@@ -376,13 +389,18 @@ public partial class GameActor
         {
             foreach (var unitEntry in playerState.UnitEntries)
             {
+                if (unitEntry.IsAmmoTracking())
+                {
+                    ProcessUnitAmmo(damageReports, unitEntry);
+                }
+
                 if (unitEntry.IsHeatTracking())
                 {
                     ProcessUnitHeat(damageReports, unitEntry);
                 }
                 else
                 {
-                    unitEntry.Heat = 0;
+                    unitEntry.Consumables.Heat = 0;
                 }
 
                 unitEntry.TimeStamp = _gameActorState.State.TurnTimeStamp;
@@ -396,9 +414,9 @@ public partial class GameActor
         {
             foreach (var unitEntry in playerState.UnitEntries)
             {
-                if (clearPenalty && unitEntry.Penalty != 0)
+                if (clearPenalty && unitEntry.Consumables.Penalty != 0)
                 {
-                    unitEntry.Penalty = 0;
+                    unitEntry.Consumables.Penalty = 0;
                 }
 
                 if (clearTag && unitEntry.Tagged)

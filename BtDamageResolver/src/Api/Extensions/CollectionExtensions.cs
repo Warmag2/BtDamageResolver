@@ -47,14 +47,7 @@ public static class CollectionExtensions
             return [];
         }
 
-        var returnValue = new Dictionary<TKey, TValue>();
-
-        foreach (var item in input)
-        {
-            returnValue.Add(item.Key, item.Value);
-        }
-
-        return returnValue;
+        return new Dictionary<TKey, TValue>(input);
     }
 
     /// <summary>

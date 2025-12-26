@@ -160,11 +160,11 @@
                     <tr>
                         <td style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">Heat</td>
                         <td class="resolver_td_weaponentry" style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
-                            <FormNumberPickerDisplayOnly @key="@UnitEntry.Heat" BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" StyleSelectorDelegate="@VisualStyleController.GetStyleForHeat" NumberToDisplay="@UnitEntry.Heat" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnHeatChanged"></FormNumberPickerDisplayOnly>
+                            <FormNumberPickerDisplayOnly @key="@UnitEntry.Consumables.Heat" BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" StyleSelectorDelegate="@VisualStyleController.GetStyleForHeat" NumberToDisplay="@UnitEntry.Consumables.Heat" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnHeatChanged"></FormNumberPickerDisplayOnly>
                         </td>
                         <td style="@(VisualStyleController.HideElement(VisualStyleController.GetPenaltyHidden(UnitEntry.Type)))">Penalty</td>
                         <td class="resolver_td_weaponentry" style="@(VisualStyleController.HideElement(VisualStyleController.GetPenaltyHidden(UnitEntry.Type)))">
-                            <FormNumberPickerDisplayOnly @key="@UnitEntry.Penalty" BracketCreatorDelegate="@CommonData.FormPickBracketsPenalty" StyleSelectorDelegate="@VisualStyleController.GetStyleForPenalty" NumberToDisplay="@UnitEntry.Penalty" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnPenaltyChanged"></FormNumberPickerDisplayOnly>
+                            <FormNumberPickerDisplayOnly @key="@UnitEntry.Consumables.Penalty" BracketCreatorDelegate="@CommonData.FormPickBracketsPenalty" StyleSelectorDelegate="@VisualStyleController.GetStyleForPenalty" NumberToDisplay="@UnitEntry.Consumables.Penalty" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnPenaltyChanged"></FormNumberPickerDisplayOnly>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(UnitEntry.GetHeatSpeedPenalty() == 0 || !UnitEntry.IsHeatTracking()))">
@@ -173,6 +173,23 @@
                             <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAttackPenalty() == 0))">Attack penalty: <b>@($"{UnitEntry.GetHeatAttackPenalty()}")</b></div>
                             <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatShutdownDifficulty() == 0))">Avoid shutdown: <b>@($"{UnitEntry.GetHeatShutdownDifficulty()}")</b>+</div>
                             <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAmmoExplosionDifficulty() == 0))">Avoid ammo explosion: <b>@($"{UnitEntry.GetHeatAmmoExplosionDifficulty()}")</b>+</div>
+                        </td>
+                    </tr>
+                </table>
+                <table style="@(VisualStyleController.HideElement(VisualStyleController.GetUnitAmmoHidden(UnitEntry.Type) && UnitEntry.Consumables.AmmoUsage.Count != 0))">
+                    <tr>
+                        <th>
+                            Ammo spent
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @foreach(var ammoUsage in UnitEntry.Consumables.AmmoUsage)
+                            {
+                                <div class="resolver_div_ammo">
+                                    @ammoUsage.Key: <b>@ammoUsage.Value</b>
+                                </div>
+                            }
                         </td>
                     </tr>
                 </table>
@@ -336,9 +353,9 @@
 
     private void OnHeatChanged(int heat)
     {
-        if (UnitEntry.Heat != heat)
+        if (UnitEntry.Consumables.Heat != heat)
         {
-            UnitEntry.Heat = heat;
+            UnitEntry.Consumables.Heat = heat;
             SendUpdate();
         }
     }
@@ -354,9 +371,9 @@
 
     private void OnPenaltyChanged(int penalty)
     {
-        if (UnitEntry.Penalty != penalty)
+        if (UnitEntry.Consumables.Penalty != penalty)
         {
-            UnitEntry.Penalty = penalty;
+            UnitEntry.Consumables.Penalty = penalty;
             SendUpdate();
         }
     }
@@ -419,11 +436,11 @@
             // Automatically alter heat by a corresponding amount if number of sinks is changed.
             // The rationalization is that if the unit took damage last turn before sinking and the player adjusts
             // the number of sinks after turn resolution, the calculated value was made with too many sinks.
-            UnitEntry.Heat += UnitEntry.Sinks - sinks;
+            UnitEntry.Consumables.Heat += UnitEntry.Sinks - sinks;
             UnitEntry.Sinks = sinks;
-            if (UnitEntry.Heat < 0)
+            if (UnitEntry.Consumables.Heat < 0)
             {
-                UnitEntry.Heat = 0;
+                UnitEntry.Consumables.Heat = 0;
             }
             SendUpdate();
         }

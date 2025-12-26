@@ -79,6 +79,19 @@ public class Unit : NamedEntity
     }
 
     /// <summary>
+    /// Does this unit track ammo.
+    /// </summary>
+    /// <returns>Is the unit an ammo-tracking unit.</returns>
+    public bool IsAmmoTracking()
+    {
+        return Type switch
+        {
+            UnitType.Infantry => false,
+            _ => true,
+        };
+    }
+
+    /// <summary>
     /// Does this unit track heat.
     /// </summary>
     /// <returns>Is the unit a heat-tracking unit.</returns>
