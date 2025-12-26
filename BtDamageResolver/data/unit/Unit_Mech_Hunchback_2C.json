@@ -1,43 +1,39 @@
 {
-    "Features": [
-        "EasyToMaintain",
-        "Rugged",
-        "StabilizedWeapons"
-    ],
-    "JumpJets": 4,
-    "Sinks": 20,
+    "Features": [],
+    "JumpJets": 0,
+    "Sinks": 24,
     "Speed": 4,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 50,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Single",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "Clan Ultra AC/20"
                 },
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Rapid",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Clan Ultra AC/20"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Crusader CRD-FIN1"
+    "Name": "Hunchback 2C"
 }

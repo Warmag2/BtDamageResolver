@@ -1,43 +1,41 @@
 {
     "Features": [
-        "EasyToMaintain",
-        "Rugged",
-        "StabilizedWeapons"
+        "Rugged"
     ],
     "JumpJets": 4,
-    "Sinks": 20,
+    "Sinks": 15,
     "Speed": 4,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 80,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
-                },
-                {
-                    "Ammo": "Artemis",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "AC/20"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-4"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Crusader CRD-FIN1"
+    "Name": "Victor VTR-9B"
 }

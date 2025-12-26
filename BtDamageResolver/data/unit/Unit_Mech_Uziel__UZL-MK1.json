@@ -1,10 +1,11 @@
 {
     "Features": [
-        "FastReload"
+        "Cowl",
+        "ExposedActuators"
     ],
-    "JumpJets": 5,
-    "Sinks": 13,
-    "Speed": 5,
+    "JumpJets": 6,
+    "Sinks": 22,
+    "Speed": 6,
     "Type": "Mech",
     "Tonnage": 50,
     "Troopers": 1,
@@ -12,29 +13,26 @@
         {
             "Weapons": [
                 {
-                    "Ammo": "Slug",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LBX AC/10"
+                    "WeaponName": "PPC"
                 },
                 {
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "ER Large Laser"
+                    "WeaponName": "PPC"
                 },
                 {
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Small Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Melee Punch"
+                    "WeaponName": "SRM-6"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Enforcer ENF-5D"
+    "Name": "Uziel  UZL-MK1"
 }

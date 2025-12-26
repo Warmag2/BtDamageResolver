@@ -1,0 +1,47 @@
+{
+    "Features": [],
+    "JumpJets": 0,
+    "Sinks": 23,
+    "Speed": 7,
+    "Type": "AerospaceFighter",
+    "Tonnage": 50,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Plasma Rifle"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Plasma Rifle"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Samurai OMIL-2"
+}

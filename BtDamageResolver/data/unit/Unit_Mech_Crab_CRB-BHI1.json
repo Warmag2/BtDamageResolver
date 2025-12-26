@@ -1,9 +1,9 @@
 {
     "Features": [
-        "FastReload"
+        "EasyToMaintain"
     ],
     "JumpJets": 5,
-    "Sinks": 13,
+    "Sinks": 28,
     "Speed": 5,
     "Type": "Mech",
     "Tonnage": 50,
@@ -12,10 +12,9 @@
         {
             "Weapons": [
                 {
-                    "Ammo": "Slug",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LBX AC/10"
+                    "WeaponName": "ER Large Laser"
                 },
                 {
                     "Amount": 1,
@@ -25,16 +24,11 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Small Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Melee Punch"
+                    "WeaponName": "Medium Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Enforcer ENF-5D"
+    "Name": "Crab CRB-BHI1"
 }

@@ -1,21 +1,21 @@
 {
     "Features": [
-        "FastReload"
+        "EasyToMaintain"
     ],
-    "JumpJets": 5,
-    "Sinks": 13,
-    "Speed": 5,
+    "JumpJets": 0,
+    "Sinks": 34,
+    "Speed": 4,
     "Type": "Mech",
-    "Tonnage": 50,
+    "Tonnage": 80,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Slug",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LBX AC/10"
+                    "WeaponName": "ER PPC"
                 },
                 {
                     "Amount": 1,
@@ -25,7 +25,18 @@
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Small Laser"
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-15"
                 },
                 {
                     "Amount": 1,
@@ -36,5 +47,5 @@
             "Name": "Default"
         }
     ],
-    "Name": "Enforcer ENF-5D"
+    "Name": "Zeus ZEU-9S"
 }

@@ -1,43 +1,43 @@
 {
     "Features": [
-        "EasyToMaintain",
-        "Rugged",
         "StabilizedWeapons"
     ],
-    "JumpJets": 4,
+    "JumpJets": 3,
     "Sinks": 20,
-    "Speed": 4,
+    "Speed": 3,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 90,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "LRM-15"
                 },
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "LRM-15"
                 },
                 {
+                    "Ammo": "Single",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Ultra AC/10"
                 },
                 {
+                    "Ammo": "Rapid",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Ultra AC/10"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Crusader CRD-FIN1"
+    "Name": "Mauler MAL-TDHI2"
 }

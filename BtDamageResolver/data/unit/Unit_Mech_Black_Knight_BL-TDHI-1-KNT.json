@@ -1,43 +1,44 @@
 {
     "Features": [
-        "EasyToMaintain",
-        "Rugged",
-        "StabilizedWeapons"
+        "CommandUnit"
     ],
-    "JumpJets": 4,
-    "Sinks": 20,
-    "Speed": 4,
+    "JumpJets": 5,
+    "Sinks": 32,
+    "Speed": 5,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 75,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
-                },
-                {
-                    "Ammo": "Artemis",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "Large Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Large Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Crusader CRD-FIN1"
+    "Name": "Black Knight BL-TDHI-1-KNT"
 }

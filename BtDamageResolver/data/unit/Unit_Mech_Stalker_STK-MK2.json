@@ -1,0 +1,62 @@
+{
+    "Features": [
+        "CombatComputer",
+        "NoMinimalArms"
+    ],
+    "JumpJets": 0,
+    "Sinks": 28,
+    "Speed": 3,
+    "Type": "Mech",
+    "Tonnage": 85,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
+                },
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Stalker STK-MK2"
+}

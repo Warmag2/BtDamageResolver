@@ -1,43 +1,47 @@
 {
     "Features": [
-        "EasyToMaintain",
-        "Rugged",
-        "StabilizedWeapons"
+        "BattleFists"
     ],
-    "JumpJets": 4,
-    "Sinks": 20,
-    "Speed": 4,
+    "JumpJets": 0,
+    "Sinks": 28,
+    "Speed": 3,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 80,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "PPC"
                 },
                 {
-                    "Ammo": "Artemis",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "PPC"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Small Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Melee Punch"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Crusader CRD-FIN1"
+    "Name": "Awesome AWS-8Q"
 }

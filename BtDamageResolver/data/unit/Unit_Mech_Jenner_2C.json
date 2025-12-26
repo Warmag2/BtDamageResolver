@@ -1,40 +1,36 @@
 {
     "Features": [
-        "FastReload"
+        "NoMinimalArms"
     ],
-    "JumpJets": 5,
-    "Sinks": 13,
-    "Speed": 5,
+    "JumpJets": 7,
+    "Sinks": 20,
+    "Speed": 9,
     "Type": "Mech",
-    "Tonnage": 50,
+    "Tonnage": 35,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Slug",
+                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LBX AC/10"
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "ER Large Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Small Laser"
-                },
-                {
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "Melee Punch"
+                    "WeaponName": "Clan Streak SRM-4"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Enforcer ENF-5D"
+    "Name": "Jenner 2C"
 }

@@ -1,0 +1,53 @@
+{
+    "Features": [
+        "CommandUnit",
+        "JettisonableWeapon",
+        "WeakHeadArmor"
+    ],
+    "JumpJets": 0,
+    "Sinks": 22,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 85,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Battlemaster BLR-3S"
+}

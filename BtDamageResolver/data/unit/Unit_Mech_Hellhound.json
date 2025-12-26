@@ -1,43 +1,45 @@
 {
     "Features": [
-        "EasyToMaintain",
-        "Rugged",
-        "StabilizedWeapons"
+        "ExtendedTorsoTwist",
+        "JettisonableWeapon"
     ],
-    "JumpJets": 4,
+    "JumpJets": 6,
     "Sinks": 20,
-    "Speed": 4,
+    "Speed": 6,
     "Type": "Mech",
-    "Tonnage": 65,
+    "Tonnage": 50,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Weapons": [
                 {
-                    "Ammo": "Artemis",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "LRM-20"
-                },
-                {
-                    "Ammo": "Artemis",
-                    "Amount": 1,
-                    "Modifier": 0,
-                    "WeaponName": "LRM-20"
+                    "WeaponName": "Clan Large Pulse Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Clan ER Medium Laser"
                 },
                 {
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "Streak SRM-4"
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Streak SRM-2"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Streak SRM-2"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Crusader CRD-FIN1"
+    "Name": "Hellhound"
 }
