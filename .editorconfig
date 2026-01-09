@@ -765,7 +765,7 @@ dotnet_diagnostic.S125.severity = suggestion
 # There should be no need to always merge nested ifs
 dotnet_diagnostic.S1066.severity = suggestion
 
-# Covered by MSCS
+# Covered by MSVS
 dotnet_diagnostic.S1144.severity = none
 
 # I don't understand this
