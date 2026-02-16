@@ -10,6 +10,6 @@ docker build --tag resolver -f ../BtDamageResolver/src/Silo/Dockerfile ../BtDama
 docker build --tag resolverdataimporter -f ../BtDamageResolver/tools/DataImporter/Dockerfile ../BtDamageResolver/
 docker build --tag resolverclient -f ../BtDamageResolverClient/src/BlazorServer/Dockerfile ../BtDamageResolverClient/
 
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 cd ..
