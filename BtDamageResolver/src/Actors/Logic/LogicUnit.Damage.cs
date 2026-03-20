@@ -97,7 +97,7 @@ public partial class LogicUnit
         var damageReport = new DamageReport
         {
             Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-            DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, combatAction.Weapon.SpecialFeatures.Select(w => w.Type).ToList()),
+            DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, [.. combatAction.Weapon.SpecialFeatures.Select(w => w.Type)]),
             FiringUnitIds = [Unit.Id],
             FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = target.Unit.Id,
@@ -305,7 +305,7 @@ public partial class LogicUnit
     /// <summary>
     /// Resolve total outgoing damage.
     /// </summary>
-    /// <param name="damageReport">The damagereport to append to.</param>
+    /// <param name="damageReport">The damage report to append to.</param>
     /// <param name="target">The target unit logic.</param>
     /// <param name="combatAction">The combat action.</param>
     /// <returns>The total outgoing damage.</returns>
@@ -388,9 +388,9 @@ public partial class LogicUnit
 
     private List<DamagePacket> TransformDamagePacketsBasedOnWeaponFeatures(DamageReport damageReport, List<DamagePacket> damagePackets, ILogicUnit target, CombatAction combatAction)
     {
-        if (combatAction.Weapon.HasFeature(WeaponFeature.ArmorPiercing, out var armorPiercingEntry) && target.CanTakeCriticalHits())
+        if (combatAction.Weapon.HasFeature(WeaponFeature.ArmorPiercing, out var armourPiercingEntry) && target.CanTakeCriticalHits())
         {
-            damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = armorPiercingEntry.Data, Type = SpecialDamageType.Critical });
+            damagePackets[0].SpecialDamageEntries.Add(new SpecialDamageEntry { Data = armourPiercingEntry.Data, Type = SpecialDamageType.Critical });
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, "Armor Piercing weapon feature adds a potential critical hit"));
         }
 

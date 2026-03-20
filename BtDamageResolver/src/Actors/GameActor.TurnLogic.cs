@@ -22,7 +22,7 @@ public partial class GameActor
 {
     /// <summary>
     /// Gets the primary target of the unit.
-    /// Primary target is the target of the first weapon bay firing into the front arc, or the first weaponbay to have a target, if no weapon bays target front arc.
+    /// Primary target is the target of the first weapon bay firing into the front arc, or the first weapon bay to have a target, if no weapon bays target front arc.
     /// </summary>
     /// <param name="unitEntry">The unit entry to find primary target for.</param>
     /// <returns>The primary target, or Guid.Empty if no target was found.</returns>
