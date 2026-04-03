@@ -10,7 +10,7 @@
 @implements IDisposable
 
 @{
-    var targetingText = UnitEntry.WeaponBays.Count > 1 ? $"({WeaponBay.GetFormalName()})" : string.Empty;
+    var targetingText = UnitEntry.WeaponBays.Count > 1 ? WeaponBay.GetFormalName() : string.Empty;
 }
 
 @if(_userStateController.IsConnectedToGame)

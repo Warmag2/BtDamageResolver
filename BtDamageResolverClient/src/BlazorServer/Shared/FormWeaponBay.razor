@@ -15,7 +15,7 @@
             <td colspan="6" class="draggable" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
                 @if (UnitEntry.StaticDataHidden)
                 {
-                    <b>@WeaponBay.Name</b>
+                    <b>@WeaponBay.GetFormalName()</b>
                 }
                 else
                 {
