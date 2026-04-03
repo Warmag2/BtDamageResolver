@@ -49,7 +49,7 @@ public interface ILogicUnit
     /// <param name="criticalDamageTableType">The type of the critical damage table to use.</param>
     /// <param name="location">The location the attack struck.</param>
     /// <returns>The critical damage table for these attack parameters.</returns>
-    Task<CriticalDamageTable> GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location);
+    CriticalDamageTable GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location);
 
     /// <summary>
     /// Gets the damage paper doll for a specific attack.
@@ -59,7 +59,7 @@ public interface ILogicUnit
     /// <param name="direction">Attack direction.</param>
     /// <param name="weaponFeatures">The weapon features, if any.</param>
     /// <returns>The damage paper doll for the attack type and direction given.</returns>
-    Task<DamagePaperDoll> GetDamagePaperDoll(ILogicUnit target, AttackType attackType, Direction direction, List<WeaponFeature> weaponFeatures);
+    DamagePaperDoll GetDamagePaperDoll(ILogicUnit target, AttackType attackType, Direction direction, List<WeaponFeature> weaponFeatures);
 
     /// <summary>
     /// Gets the modifier to hit resolution from weapon features against this unit type.

@@ -68,7 +68,7 @@ public abstract class LogicUnitVehicle : LogicUnit
     /// <inheritdoc />
     protected override async Task ResolveCriticalHit(DamageReport damageReport, Guid damageOwnerId, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
     {
-        var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
+        var criticalDamageTable = GetCriticalDamageTable(criticalDamageTableType, location);
 
         if (criticalDamageTableType == CriticalDamageTableType.Motive)
         {

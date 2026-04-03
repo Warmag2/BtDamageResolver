@@ -685,7 +685,7 @@
     private async Task ModalLoad()
     {
         ModalClose();
-        UnitEntry.FromUnit(await _commonData.GetUnit(_modalUnitName));
+        UnitEntry.FromUnit(_commonData.GetUnit(_modalUnitName));
         UnitEntry.Id = Guid.NewGuid(); // Reset unit identity. Also forces redraw
         await OnLoad.InvokeAsync(UnitEntry);
     }

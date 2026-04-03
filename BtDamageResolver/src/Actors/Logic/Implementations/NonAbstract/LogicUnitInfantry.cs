@@ -154,7 +154,7 @@ public class LogicUnitInfantry : LogicUnitTrooper
 
     private async Task<int> ResolveTotalOutgoingDamageInternalInfantry(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
     {
-        var clusterTable = await RepositoryProvider.ClusterTableRepository.GetAsync(combatAction.Weapon.ClusterTable);
+        var clusterTable = RepositoryProvider.ClusterTableRepository.Get(combatAction.Weapon.ClusterTable);
         var damage = clusterTable.GetDamage(Unit.Troopers);
         damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, $"Cluster table reference for {Unit.Troopers} troopers", damage));
 

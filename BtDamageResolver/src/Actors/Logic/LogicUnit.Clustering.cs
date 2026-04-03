@@ -63,7 +63,7 @@ public partial class LogicUnit
         clusterRoll = Math.Clamp(clusterRoll + clusterBonus, 2, 12);
         damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Modified cluster", clusterRoll));
 
-        var damageTable = await RepositoryProvider.ClusterTableRepository.GetAsync(Names.DefaultClusterTableName);
+        var damageTable = RepositoryProvider.ClusterTableRepository.Get(Names.DefaultClusterTableName);
 
         var clusterDamage = damageTable.GetDamage(damageValue, clusterRoll);
         damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Cluster damage", clusterDamage));

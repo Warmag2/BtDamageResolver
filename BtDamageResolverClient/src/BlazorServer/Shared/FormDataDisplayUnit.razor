@@ -133,7 +133,7 @@
     {
         if (!string.IsNullOrEmpty(UnitName))
         {
-            _unit = await _commonData.GetUnit(UnitName);
+            _unit = _commonData.GetUnit(UnitName);
         }
     }
 

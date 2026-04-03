@@ -47,21 +47,21 @@ public interface IEntityRepository<TEntity, TKey>
     /// <param name="key">The key of the entity to get.</param>
     /// <returns>The entity, or null, if none could be found.</returns>
     /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
-    Task<TEntity> GetAsync(TKey key);
+    TEntity Get(TKey key);
 
     /// <summary>
     /// Get all entities from the repository.
     /// </summary>
     /// <returns>A list of <see cref="TEntity"/> containing all entities from the database, or an empty list, if none could be found.</returns>
     /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
-    Task<IReadOnlyCollection<TEntity>> GetAllAsync();
+    IReadOnlyCollection<TEntity> GetAll();
 
     /// <summary>
     /// Get keys for all entities from the repository.
     /// </summary>
     /// <returns>A list of <see cref="TKey"/> containing all keys from the database, or an empty list, if none could be found.</returns>
     /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
-    Task<IReadOnlyCollection<TKey>> GetAllKeysAsync();
+    IReadOnlyCollection<TKey> GetAllKeys();
 
     /// <summary>
     /// Updates a <see cref="TEntity"/> in the repository.

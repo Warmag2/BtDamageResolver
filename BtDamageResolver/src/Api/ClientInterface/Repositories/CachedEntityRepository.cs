@@ -95,26 +95,26 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     }
 
     /// <inheritdoc />
-    public Task<TEntity> GetAsync(TKey key)
+    public TEntity Get(TKey key)
     {
-        return _cache.TryGetValue(key, out var entity) ? Task.FromResult(entity) : Task.FromResult((TEntity)null);
+        return _cache.TryGetValue(key, out var entity) ? entity : null;
     }
 
     /// <inheritdoc />
-    public Task<IReadOnlyCollection<TEntity>> GetAllAsync()
+    public IReadOnlyCollection<TEntity> GetAll()
     {
-        return Task.FromResult<IReadOnlyCollection<TEntity>>(_cache.Values.ToArray());
+        return _cache.Values.ToArray();
     }
 
     /// <inheritdoc />
-    public async Task<IReadOnlyCollection<TKey>> GetAllKeysAsync()
+    public IReadOnlyCollection<TKey> GetAllKeys()
     {
-        var keys = await _repository.GetAllKeysAsync();
+        var keys = _repository.GetAllKeys();
 
         // Update local cache in this situation
         foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
         {
-            var item = await _repository.GetAsync(key);
+            var item = _repository.Get(key);
             _cache.Add(item.GetName(), item);
         }
 
@@ -138,7 +138,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
 
     private async Task<int> FillCache()
     {
-        var items = await _repository.GetAllAsync();
+        var items = _repository.GetAll();
         var count = 0;
         foreach (var item in items)
         {

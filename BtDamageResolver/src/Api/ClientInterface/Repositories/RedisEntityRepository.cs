@@ -9,6 +9,7 @@ using Faemiyah.BtDamageResolver.Api.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
+using System.Linq;
 
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 
@@ -90,12 +91,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     }
 
     /// <inheritdoc />
-    public async Task<TEntity> GetAsync(string key)
+    public TEntity Get(string key)
     {
         try
         {
             var connection = GetConnection();
-            var value = await connection.StringGetAsync(GetKey(key)).ConfigureAwait(false);
+            var value = connection.StringGet(GetKey(key));
 
             if (value != RedisValue.Null)
             {
@@ -118,15 +119,15 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     }
 
     /// <inheritdoc />
-    public async Task<IReadOnlyCollection<TEntity>> GetAllAsync()
+    public IReadOnlyCollection<TEntity> GetAll()
     {
         try
         {
             var entities = new List<TEntity>();
 
-            foreach (var key in await GetAllKeysAsync())
+            foreach (var key in GetAllKeys())
             {
-                entities.Add(await GetAsync(key).ConfigureAwait(false));
+                entities.Add(Get(key));
             }
 
             return entities;
@@ -148,19 +149,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     }
 
     /// <inheritdoc />
-    public async Task<IReadOnlyCollection<string>> GetAllKeysAsync()
+    public IReadOnlyCollection<string> GetAllKeys()
     {
         try
         {
             var server = GetServer();
-            var keys = new List<string>();
-
-            await foreach(var key in server.KeysAsync(pattern: $"{_keyPrefix}*"))
-            {
-                keys.Add(key.ToString()[(_keyPrefix.Length + 1)..]);
-            }
-
-            return keys;
+            return server.Keys(pattern: $"{_keyPrefix}*").Select(key => key.ToString()[(_keyPrefix.Length + 1)..]).ToList();
         }
         catch (DbException ex)
         {

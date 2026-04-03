@@ -10,6 +10,7 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
@@ -197,6 +198,18 @@ internal static class Program
                         services.AddSingleton<CachedEntityRepository<PaperDoll, string>, CachedEntityRepository<PaperDoll, string>>();
                         services.AddSingleton<CachedEntityRepository<Unit, string>, CachedEntityRepository<Unit, string>>();
                         services.AddSingleton<CachedEntityRepository<Weapon, string>, CachedEntityRepository<Weapon, string>>();
+                        services.AddSingleton(serviceProvider =>
+                        {
+                            return new RepositoryProvider(
+                                serviceProvider.GetService<CachedEntityRepository<Ammo, string>>(),
+                                serviceProvider.GetService<CachedEntityRepository<ArcDiagram, string>>(),
+                                serviceProvider.GetService<CachedEntityRepository<ClusterTable, string>>(),
+                                serviceProvider.GetService<CachedEntityRepository<CriticalDamageTable, string>>(),
+                                serviceProvider.GetService<CachedEntityRepository<PaperDoll, string>>(),
+                                serviceProvider.GetService<CachedEntityRepository<Unit, string>>(),
+                                serviceProvider.GetService<CachedEntityRepository<Weapon, string>>()
+                            );
+                        });
                         services.AddSingleton<DataHelper>();
                     });
             });

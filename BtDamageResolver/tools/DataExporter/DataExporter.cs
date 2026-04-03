@@ -62,7 +62,7 @@ internal sealed class DataExporter
     /// <returns>A task which finishes when data exporting is completed.</returns>
     public async Task Work(DataExportOptions options)
     {
-        var data = await FetchData();
+        var data = FetchData();
         _logger.LogInformation("{Count} data objects matched the filter(s)", data.Count);
 
         foreach (var dataObject in data)
@@ -98,11 +98,11 @@ internal sealed class DataExporter
         _logger.LogInformation("Finished exporting.");
     }
 
-    private async Task<List<object>> FetchData()
+    private List<object> FetchData()
     {
         var exportedDataObjects = new List<object>();
 
-        exportedDataObjects.AddRange(await _repositoryProvider.UnitRepository.GetAllAsync());
+        exportedDataObjects.AddRange(_repositoryProvider.UnitRepository.GetAll());
 
         return exportedDataObjects;
     }

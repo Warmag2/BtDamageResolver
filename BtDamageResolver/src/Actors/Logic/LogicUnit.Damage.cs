@@ -22,7 +22,7 @@ public partial class LogicUnit
         var damageReport = new DamageReport
         {
             Phase = phase,
-            DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, damageInstance.Direction, []),
+            DamagePaperDoll = GetDamagePaperDoll(this, AttackType.Normal, damageInstance.Direction, []),
             FiringUnitIds = selfDamage ? [Unit.Id] : [Guid.Empty],
             FiringUnitNames = selfDamage ? new() { { Unit.Id, Unit.Name } } : new() { { Guid.Empty, null } },
             TargetUnitId = Unit.Id,
@@ -97,7 +97,7 @@ public partial class LogicUnit
         var damageReport = new DamageReport
         {
             Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-            DamagePaperDoll = await GetDamagePaperDoll(target, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, [.. combatAction.Weapon.SpecialFeatures.Select(w => w.Type)]),
+            DamagePaperDoll = GetDamagePaperDoll(target, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, [.. combatAction.Weapon.SpecialFeatures.Select(w => w.Type)]),
             FiringUnitIds = [Unit.Id],
             FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = target.Unit.Id,
@@ -143,7 +143,7 @@ public partial class LogicUnit
         var damageReport = new DamageReport
         {
             Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-            DamagePaperDoll = await GetDamagePaperDoll(this, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, []),
+            DamagePaperDoll = GetDamagePaperDoll(this, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, []),
             FiringUnitIds = [Unit.Id],
             FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = Unit.Id,
@@ -410,7 +410,7 @@ public partial class LogicUnit
             var damageReport = new DamageReport
             {
                 Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-                DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Kick, Direction.Front, []),
+                DamagePaperDoll = GetDamagePaperDoll(this, AttackType.Kick, Direction.Front, []),
                 FiringUnitIds = [Unit.Id],
                 FiringUnitNames = new() { { Unit.Id, Unit.Name } },
                 TargetUnitId = Unit.Id,

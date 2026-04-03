@@ -45,7 +45,7 @@ public partial class LogicUnit
 
                             var criticalTableType = specialDamageEntry.Type == SpecialDamageType.Critical ? CriticalDamageTableType.Critical : CriticalDamageTableType.Motive;
 
-                            var criticalDamageTable = await GetCriticalDamageTable(criticalTableType, location);
+                            var criticalDamageTable = GetCriticalDamageTable(criticalTableType, location);
 
                             // Critical rolls from damage may have a modifier.
                             var specialDamageThreatModifier = MathExpression.Parse(specialDamageEntry.Data);

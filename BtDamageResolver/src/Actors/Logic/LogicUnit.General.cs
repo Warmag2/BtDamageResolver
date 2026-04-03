@@ -38,7 +38,7 @@ public partial class LogicUnit
             var hitCalclulationDamageReport = new DamageReport
             {
                 Phase = weapon.UsePhase,
-                DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, weaponBay.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
+                DamagePaperDoll = GetDamagePaperDoll(target, AttackType.Normal, weaponBay.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
                 FiringUnitIds = [Unit.Id],
                 FiringUnitNames = new() { { Unit.Id, Unit.Name } },
                 TargetUnitId = target.Unit.Id,

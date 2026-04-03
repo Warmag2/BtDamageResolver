@@ -79,13 +79,13 @@ public class CommonData
         {
             { "Front", Direction.Front }, { "Left", Direction.Left }, { "Right", Direction.Right }, { "Rear", Direction.Rear }, { "Up/Down", Direction.Top }
         };
-        DictionaryArc = arcRepository.GetAllAsync().Result.OrderBy(a => a.UnitType).ToDictionary(a => a.UnitType);
-        DictionaryAmmo = ammoRepository.GetAllAsync().Result.OrderBy(a => a.Name).ToDictionary(a => a.Name);
-        DictionaryClusterTable = clusterTableRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
-        DictionaryCriticalDamageTable = criticalDamageTableRepository.GetAllAsync().Result.OrderBy(w => w.GetName()).ToDictionary(w => w.GetName());
-        DictionaryPaperDoll = paperDollRepository.GetAllAsync().Result.OrderBy(w => w.GetName()).ToDictionary(w => w.GetName());
+        DictionaryArc = arcRepository.GetAll().OrderBy(a => a.UnitType).ToDictionary(a => a.UnitType);
+        DictionaryAmmo = ammoRepository.GetAll().OrderBy(a => a.Name).ToDictionary(a => a.Name);
+        DictionaryClusterTable = clusterTableRepository.GetAll().OrderBy(w => w.Name).ToDictionary(w => w.Name);
+        DictionaryCriticalDamageTable = criticalDamageTableRepository.GetAll().OrderBy(w => w.GetName()).ToDictionary(w => w.GetName());
+        DictionaryPaperDoll = paperDollRepository.GetAll().OrderBy(w => w.GetName()).ToDictionary(w => w.GetName());
         DictionaryFeature = new SortedDictionary<string, UnitFeature>(Enum.GetValues<UnitFeature>().ToDictionary(q => q.ToString()));
-        DictionaryWeapon = weaponRepository.GetAllAsync().Result.OrderBy(w => w.Name).ToDictionary(w => w.Name);
+        DictionaryWeapon = weaponRepository.GetAll().OrderBy(w => w.Name).ToDictionary(w => w.Name);
         _mapWeaponNamesNormal = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => !w.StartsWith(BattleArmorWeaponPrefix) && !w.StartsWith(InfantryWeaponPrefix) && !w.StartsWith(MeleeWeaponPrefix)).ToDictionary(w => w));
         _mapWeaponNamesBattleArmor = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(BattleArmorWeaponPrefix)).ToDictionary(w => w[BattleArmorWeaponPrefix.Length..], w => w));
         _mapWeaponNamesInfantry = new SortedDictionary<string, string>(DictionaryWeapon.Values.Select(w => w.Name).Where(w => w.StartsWith(InfantryWeaponPrefix)).ToDictionary(w => w[InfantryWeaponPrefix.Length..], w => w));
@@ -419,7 +419,7 @@ public class CommonData
     {
         SortedDictionary<string, string> sortedUnitList = [];
         
-        foreach (var key in _unitRepository.GetAllKeysAsync().Result)
+        foreach (var key in _unitRepository.GetAllKeys())
         {
             sortedUnitList.Add(key, key);
         }
@@ -433,7 +433,7 @@ public class CommonData
     /// <returns>A list of all ongoing games.</returns>
     public IReadOnlyCollection<GameEntry> GetGameEntries()
     {
-        return _gameEntryRepository.GetAllAsync().Result;
+        return _gameEntryRepository.GetAll();
     }
 
     /// <summary>
@@ -441,9 +441,9 @@ public class CommonData
     /// </summary>
     /// <param name="unitName">The name of the unit to get.</param>
     /// <returns>The unit, if found, and null otherwise.</returns>
-    public async Task<Unit> GetUnit(string unitName)
+    public Unit GetUnit(string unitName)
     {
-        return await _unitRepository.GetAsync(unitName);
+        return _unitRepository.Get(unitName);
     }
 
     /// <summary>
