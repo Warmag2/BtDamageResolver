@@ -1,3 +1,3 @@
-cd tools\DataImporter\bin\Debug\net5.0
+cd tools\DataImporter\bin\Debug\net10.0
 DataImporter.exe import -s *.json -f ..\..\..\..\..\data
 cd ..\..\..\..\..
