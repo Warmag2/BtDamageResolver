@@ -10,11 +10,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 public class FiringSolution
 {
     /// <summary>
-    /// The arc the target is in.
-    /// </summary>
-    public Arc Arc { get; set; }
-
-    /// <summary>
     /// The attack modifier.
     /// </summary>
     public int AttackModifier { get; set; }

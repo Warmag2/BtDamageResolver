@@ -34,7 +34,7 @@
         }
         else
         {
-            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+            <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Amount") BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
         }
     </td>
     <td class="resolver_td_weaponentry" style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0)">
@@ -44,7 +44,7 @@
         }
         else
         {
-            <FormNumberPickerDisplayOnly BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
+            <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Modifier") BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
         }
     </td>
     <td class="resolver_td_weaponentry">
@@ -54,13 +54,13 @@
         }
         else
         {
-            <FormComboBox Options="@_commonData.FormMapWeaponName(UnitEntry.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
+            <FormComboBox @key=@($"{WeaponEntry.Id}_WeaponName") Options="@_commonData.FormMapWeaponName(UnitEntry.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
         }
     </td>
     <td>
         @if (_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))
         {
-            <FormSelect Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
+            <FormSelect @key=@($"{WeaponEntry.Id}_Ammo") Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
         }
     </td>
     <td>

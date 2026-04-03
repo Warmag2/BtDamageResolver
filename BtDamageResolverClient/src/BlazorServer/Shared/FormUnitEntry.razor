@@ -14,7 +14,7 @@
 
         <div class="resolver_div_componentrow">
             <div class="resolver_div_unitid">
-                <FormToggle Checked="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnStaticDataHiddenChanged">Editable</FormToggle>
+                <FormToggle @key=@($"{UnitEntry.Id}_StaticDataHidden") Checked="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnStaticDataHiddenChanged">Editable</FormToggle>
                 <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveUp"><b>&uarr;</b></button>
                 <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveDown"><b>&darr;</b></button>
                 <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" @onclick="ShowModalLoad">Load</button>
@@ -45,49 +45,49 @@
                     <tr>
                         <td>Name</td>
                         <td>
-                            <FormText SelectedOption="@UnitEntry.Name" OnChanged="@OnNameChanged" InvalidOptionGenerator="@GenerateInvalidNameList" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
+                            <FormText @key=@($"{UnitEntry.Id}_Name") SelectedOption="@UnitEntry.Name" OnChanged="@OnNameChanged" InvalidOptionGenerator="@GenerateInvalidNameList" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
                         </td>
                     </tr>
                     <tr>
                         <td>Gunnery</td>
                         <td>
-                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSkills" SelectedOption="@UnitEntry.Gunnery" Min="0" Max="8" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnGunneryChanged"></FormNumberPicker>
+                            <FormNumberPicker @key=@($"{UnitEntry.Id}_Gunnery") BracketCreatorDelegate="@CommonData.FormPickBracketsSkills" SelectedOption="@UnitEntry.Gunnery" Min="0" Max="8" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnGunneryChanged"></FormNumberPicker>
                         </td>
                     </tr>
                     <tr>
                         <td>Piloting</td>
                         <td>
-                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSkills" SelectedOption="@UnitEntry.Piloting" Min="0" Max="8" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnPilotingChanged"></FormNumberPicker>
+                            <FormNumberPicker @key=@($"{UnitEntry.Id}_Melee") BracketCreatorDelegate="@CommonData.FormPickBracketsSkills" SelectedOption="@UnitEntry.Piloting" Min="0" Max="8" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnPilotingChanged"></FormNumberPicker>
                         </td>
                     </tr>
                     <tr>
                         <td>Type</td>
                         <td>
-                            <FormSelect Options="@_commonData.DictionaryUnitType" SelectedOption="@UnitEntry.Type" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(UnitType unitType) => OnUnitTypeChanged(unitType)"></FormSelect>
+                            <FormSelect @key=@($"{UnitEntry.Id}_Type") Options="@_commonData.DictionaryUnitType" SelectedOption="@UnitEntry.Type" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(UnitType unitType) => OnUnitTypeChanged(unitType)"></FormSelect>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetTonnageHidden(UnitEntry.Type)))">
                         <td>Tonnage</td>
                         <td>
-                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsTonnage" SelectedOption="@UnitEntry.Tonnage" Min="0" Max="100" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnTonnageChanged"></FormNumberPicker>
+                            <FormNumberPicker @key=@($"{UnitEntry.Id}_Tonnage") BracketCreatorDelegate="@CommonData.FormPickBracketsTonnage" SelectedOption="@UnitEntry.Tonnage" Min="0" Max="100" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnTonnageChanged"></FormNumberPicker>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetSpeedHidden(UnitEntry.Type)))">
                         <td>Speed</td>
                         <td>
-                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSpeed" SelectedOption="@UnitEntry.Speed" Min="0" Max="12" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnSpeedChanged"></FormNumberPicker>
+                            <FormNumberPicker @key=@($"{UnitEntry.Id}_Speed") BracketCreatorDelegate="@CommonData.FormPickBracketsSpeed" SelectedOption="@UnitEntry.Speed" Min="0" Max="12" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnSpeedChanged"></FormNumberPicker>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetJumpJetsHidden(UnitEntry.Type)))">
                         <td>Jump Jets</td>
                         <td>
-                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsJumpJets" SelectedOption="@UnitEntry.JumpJets" Min="0" Max="12" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnJumpJetsChanged"></FormNumberPicker>
+                            <FormNumberPicker @key=@($"{UnitEntry.Id}_JumpJets") BracketCreatorDelegate="@CommonData.FormPickBracketsJumpJets" SelectedOption="@UnitEntry.JumpJets" Min="0" Max="12" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnJumpJetsChanged"></FormNumberPicker>
                         </td>
                     </tr>
                     <tr>
                         <td>Features <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="() => _formPickSetFeatures.ShowAddDialog()">+</button></td>
                         <td>
-                            <FormPickSet @ref="_formPickSetFeatures" Options="@_commonData.DictionaryFeature" ShowAddButton="@false" ContainedItems="@UnitEntry.Features" Editable="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(HashSet<UnitFeature> features) => OnFeaturesChanged(features)"></FormPickSet>
+                            <FormPickSet @key=@($"{UnitEntry.Id}_Features") @ref="_formPickSetFeatures" Options="@_commonData.DictionaryFeature" ShowAddButton="@false" ContainedItems="@UnitEntry.Features" Editable="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="(HashSet<UnitFeature> features) => OnFeaturesChanged(features)"></FormPickSet>
                         </td>
                     </tr>
                 </table>
@@ -103,13 +103,13 @@
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetTroopersHidden(UnitEntry.Type)))">
                         <td>Troopers</td>
                         <td>
-                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsTroopers" SelectedOption="@UnitEntry.Troopers" Min="1" Max="30" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnTroopersChanged"></FormNumberPicker>
+                            <FormNumberPicker @key=@($"{UnitEntry.Id}_Troopers") BracketCreatorDelegate="@CommonData.FormPickBracketsTroopers" SelectedOption="@UnitEntry.Troopers" Min="1" Max="30" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnTroopersChanged"></FormNumberPicker>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
                         <td>Dissipation</td>
                         <td>
-                            <FormNumberPicker BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" SelectedOption="@UnitEntry.Sinks" Min="1" Max="100" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnSinksChanged"></FormNumberPicker>
+                            <FormNumberPicker @key=@($"{UnitEntry.Id}_Sinks") BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" SelectedOption="@UnitEntry.Sinks" Min="1" Max="100" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnSinksChanged"></FormNumberPicker>
                         </td>
                     </tr>
                     <tr>
@@ -124,7 +124,7 @@
                             <FormToggle Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnEvasionChanged">Evading</FormToggle>
                         </td>
                     </tr>
-                    <tr>
+                    <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetHexesMovedHidden(UnitEntry.Type)))">
                         <td>Hexes moved</td>
                         <td>
                             <FormRadio Options="@_commonData.FormMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
@@ -168,12 +168,32 @@
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(UnitEntry.GetHeatSpeedPenalty() == 0 || !UnitEntry.IsHeatTracking()))">
-                        <td colspan="4">
-                            <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatSpeedPenalty() == 0))">Movement penalty: <b>@($"{UnitEntry.GetHeatSpeedPenalty()}")</b></div>
-                            <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAttackPenalty() == 0))">Attack penalty: <b>@($"{UnitEntry.GetHeatAttackPenalty()}")</b></div>
-                            <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatShutdownDifficulty() == 0))">Avoid shutdown: <b>@($"{UnitEntry.GetHeatShutdownDifficulty()}")</b>+</div>
-                            <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAmmoExplosionDifficulty() == 0))">Avoid ammo explosion: <b>@($"{UnitEntry.GetHeatAmmoExplosionDifficulty()}")</b>+</div>
-                        </td>
+                        @switch(UnitEntry.Type)
+                        {
+                            case UnitType.AerospaceFighter:
+                                <td colspan="4">
+                                    <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAttackPenalty() == 0))">Attack penalty: <b>@($"{UnitEntry.GetHeatAttackPenalty()}")</b></div>
+                                    <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatRandomMovementDifficulty() == 0))">Avoid random movement: <b>@($"{UnitEntry.GetHeatRandomMovementDifficulty()}")</b>+</div>
+                                    <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatShutdownDifficulty() == 0))">Avoid shutdown: <b>@($"{UnitEntry.GetHeatShutdownDifficulty()}")</b>+</div>
+                                    <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAmmoExplosionDifficulty() == 0))">Avoid ammo explosion: <b>@($"{UnitEntry.GetHeatAmmoExplosionDifficulty()}")</b>+</div>
+                                    <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatPilotDamageDifficulty() == 0))">Avoid pilot damage: <b>@($"{UnitEntry.GetHeatPilotDamageDifficulty()}")</b>+</div>
+                                </td>
+                                break;
+                            case UnitType.Mech:
+                            case UnitType.MechQuad:
+                            case UnitType.MechTripod:
+                                <td colspan="4">
+                                    <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAttackPenalty() == 0))">Attack penalty: <b>@($"{UnitEntry.GetHeatAttackPenalty()}")</b></div>
+                                    <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatSpeedPenalty() == 0))">Movement penalty: <b>@($"{UnitEntry.GetHeatSpeedPenalty()}")</b></div>
+                                    <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatShutdownDifficulty() == 0))">Avoid shutdown: <b>@($"{UnitEntry.GetHeatShutdownDifficulty()}")</b>+</div>
+                                    <div class="resolver_div_attackerheat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAmmoExplosionDifficulty() == 0))">Avoid ammo explosion: <b>@($"{UnitEntry.GetHeatAmmoExplosionDifficulty()}")</b>+</div>
+                                </td>
+                                break;
+                            default:
+                                <td colspan="4">This unit type does not track heat.</td>
+                                break;
+
+                        }
                     </tr>
                 </table>
                 <table style="@(VisualStyleController.HideElement(VisualStyleController.GetUnitAmmoHidden(UnitEntry.Type) && UnitEntry.Consumables.AmmoUsage.Count != 0))">
@@ -480,6 +500,12 @@
         if (UnitEntry.MovementClass != movementClass)
         {
             UnitEntry.MovementClass = movementClass;
+
+            if (UnitEntry.MovementClass == MovementClass.Immobile || UnitEntry.MovementClass == MovementClass.Stationary)
+            {
+                UnitEntry.Movement = 0;
+            }
+
             SendUpdate();
         }
     }

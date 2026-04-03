@@ -36,6 +36,12 @@ public class LogicUnitBuilding : LogicUnit
     }
 
     /// <inheritdoc />
+    public override int GetMovementModifier()
+    {
+        return 0;
+    }
+
+    /// <inheritdoc />
     public override PaperDollType GetPaperDollType()
     {
         return PaperDollType.Building;

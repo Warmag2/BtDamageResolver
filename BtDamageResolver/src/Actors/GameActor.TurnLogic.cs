@@ -28,7 +28,7 @@ public partial class GameActor
     /// <returns>The primary target, or Guid.Empty if no target was found.</returns>
     private static Guid GetPrimaryTarget(UnitEntry unitEntry)
     {
-        var primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.Arc == Arc.Front)?.FiringSolution.Target;
+        var primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.Arc == Arc.Front)?.FiringSolution.Target;
 
         if (primaryTargetCandidate == null)
         {

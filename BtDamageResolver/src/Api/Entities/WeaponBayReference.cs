@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Faemiyah.BtDamageResolver.Api.Entities.Prototypes;
+using Faemiyah.BtDamageResolver.Api.Enums;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities;
 
@@ -16,6 +17,8 @@ public class WeaponBayReference : NamedEntity
     /// </summary>
     public WeaponBayReference()
     {
+        Arc = Arc.Default;
+        Name = "All";
         Weapons = [];
     }
 
@@ -30,6 +33,11 @@ public class WeaponBayReference : NamedEntity
     }
 
     /// <summary>
+    /// The arc the bay is in.
+    /// </summary>
+    public Arc Arc { get; set; }
+
+    /// <summary>
     /// The weapons in this bay.
     /// </summary>
     public List<WeaponEntryReference> Weapons { get; set; }
@@ -37,7 +45,7 @@ public class WeaponBayReference : NamedEntity
     /// <summary>
     /// Makes a copy of this weapon bay reference.
     /// </summary>
-    /// <returns>A copy of the weapon entry.</returns>
+    /// <returns>A copy of the weapon bay reference.</returns>
     public WeaponBayReference Copy()
     {
         return new WeaponBayReference
@@ -45,4 +53,10 @@ public class WeaponBayReference : NamedEntity
             Weapons = Weapons.Select(w => w.Copy()).ToList()
         };
     }
+
+    /// <summary>
+    /// Gets the formal name of the weapon bay reference, which includes the arc and the name.
+    /// </summary>
+    /// <returns>The formal name of the weapon bay reference.</returns>
+    public string GetFormalName() => Arc.ToString() + " " + Name;
 }

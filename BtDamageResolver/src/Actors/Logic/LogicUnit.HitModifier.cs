@@ -459,7 +459,7 @@ public abstract partial class LogicUnit
                 return 0;
             default:
                 // Front arc for secondary targets is 1 penalty, all other arcs are 2 penalty.
-                switch (weaponBay.FiringSolution.Arc)
+                switch (weaponBay.Arc)
                 {
                     case Arc.Front:
                         return 1;

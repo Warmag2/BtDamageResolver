@@ -150,6 +150,17 @@ public partial class UnitEntry
             validationResult.Fail("Negative movement amount is not allowed.");
         }
 
+        switch(Type)
+        {
+            // Buildings cannot move and aerospace units do not have a relevant maximum movement amount
+            case UnitType.Building:
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                return;
+        }
+
         // Speed
         switch (MovementClass)
         {

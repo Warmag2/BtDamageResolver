@@ -173,7 +173,6 @@
                         .SelectMany(kvp => kvp.Value.Select(Damage => (kvp.Key, Damage)))
                         .ToList();
 
-
                 return $"'<b>{location}</b><br>{string.Join("<br>", damageOwnerPairs.Select(dop => $"{DamageReport.FiringUnitNames[dop.Key]} — {dop.Damage}"))}'";
             }
             else

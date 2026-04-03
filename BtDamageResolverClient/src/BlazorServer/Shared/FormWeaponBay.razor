@@ -4,6 +4,7 @@
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData _commonData
 @inject UserStateController _userStateController
 @implements IDisposable
 
@@ -18,11 +19,17 @@
                 }
                 else
                 {
-                    <FormText SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
+                    <FormText @key=@($"{WeaponBay.Id}_Name") SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
                 }
             </td>
             <td style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
                 <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
+            </td>
+        </tr>
+        <tr style="@(VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1 || UnitEntry.StaticDataHidden))">
+            <td>Arc</td>
+            <td>
+                <FormRadio Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.Arc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Arc arc) => OnArcChanged(arc)"></FormRadio>
             </td>
         </tr>
         @foreach (var weaponEntry in WeaponBay.Weapons)
@@ -96,6 +103,15 @@
     }
 
     #region Property changing delegates
+
+    private void OnArcChanged(Arc arc)
+    {
+        if (WeaponBay.Arc != arc)
+        {
+            WeaponBay.Arc = arc;
+            OnUpdate.InvokeAsync();
+        }
+    }
 
     private void OnNameChanged(string name)
     {

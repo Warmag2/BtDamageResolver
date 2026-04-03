@@ -503,6 +503,20 @@ public class CommonData
     /// <returns>The map for valid movement amount options for the given unit.</returns>
     public Dictionary<string, int> FormMapMovementAmount(UnitEntry unitEntry)
     {
+        switch (unitEntry.Type)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                var speed = unitEntry.Speed;
+                var possibleMovementAmountsAerospace = new List<int> { speed, 2 * speed, 2 * speed + 1 };
+                var bracketsAerospace = MakeArbitraryPickBrackets(possibleMovementAmountsAerospace);
+                return bracketsAerospace.ToDictionary(p => p.ToString(), p => p.Begin);
+            default:
+                break;
+        }
+
         if (unitEntry.MovementClass == MovementClass.Jump)
         {
             return MakeSimplePickBrackets(0, 1, unitEntry.JumpJets).ToDictionary(p => p.ToString(), p => p.Begin);

@@ -74,6 +74,22 @@ public static class VisualStyleController
     }
 
     /// <summary>
+    /// Indicates whether hexes moved should be hidden for this unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type.</param>
+    /// <returns><b>True</b> if hexes moved should be hidden, <b>false</b> otherwise.</returns>
+    public static bool GetHexesMovedHidden(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.Building:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
     /// Indicates whether the number of jump jets should be hidden for this unit type.
     /// </summary>
     /// <param name="unitType">The unit type.</param>
