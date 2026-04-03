@@ -208,7 +208,7 @@
                             {
                                 <div class="resolver_div_ammo">
                                     @ammoUsage.Key:
-                                    <FormNumberPickerDisplayOnly @key="@(ammoUsage.Value)" BracketCreatorDelegate="@CommonData.FormPickBracketsAmmo" StyleSelectorDelegate="@VisualStyleController.GetStyleForAmmo" NumberToDisplay="@ammoUsage.Value" Disabled="@_userStateController.PlayerState.IsReady" Hint="@ammoUsage.Key" OnChangedWithHint="@OnAmmoChanged"></FormNumberPickerDisplayOnly>
+                                    <FormNumberPickerDisplayOnly @key=@($"{UnitEntry.Id}_AmmoUsage_{ammoUsage.Key}_{ammoUsage.Value}") BracketCreatorDelegate="@CommonData.FormPickBracketsAmmo" StyleSelectorDelegate="@VisualStyleController.GetStyleForAmmo" NumberToDisplay="@ammoUsage.Value" Disabled="@_userStateController.PlayerState.IsReady" Hint="@ammoUsage.Key" OnChangedWithHint="@OnAmmoChanged"></FormNumberPickerDisplayOnly>
                                     <button class="resolver_button resolver_button_delete" disabled="@_userStateController.PlayerState.IsReady" @onclick="() => DeleteAmmoUsage(ammoUsage.Key)">X</button>
                                 </div>
                             }
