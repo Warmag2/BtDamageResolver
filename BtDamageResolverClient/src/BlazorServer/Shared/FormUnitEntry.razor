@@ -196,7 +196,7 @@
                         }
                     </tr>
                 </table>
-                <table style="@(VisualStyleController.HideElement(VisualStyleController.GetUnitAmmoHidden(UnitEntry.Type) && UnitEntry.Consumables.AmmoUsage.Count != 0))">
+                <table style="@(VisualStyleController.HideElement(VisualStyleController.GetUnitAmmoHidden(UnitEntry.Type) || UnitEntry.Consumables.AmmoUsage.Count == 0))">
                     <tr>
                         <th>
                             Ammo spent

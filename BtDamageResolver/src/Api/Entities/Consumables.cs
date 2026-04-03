@@ -12,7 +12,7 @@ public class Consumables
     /// <summary>
     /// The ammo spent.
     /// </summary>
-    public Dictionary<string, int> AmmoUsage { get; set; } = new();
+    public Dictionary<string, int> AmmoUsage { get; set; } = [];
 
     /// <summary>
     /// Heat generated.

@@ -10,7 +10,7 @@
 @implements IDisposable
 
 @{
-    var targetingText = UnitEntry.WeaponBays.Count > 1 ? WeaponBay.GetFormalName() : string.Empty;
+    var targetingText = UnitEntry.WeaponBays.Count > 1 ? WeaponBay.GetFormalName() : "Targeting Parameters";
 }
 
 @if(_userStateController.IsConnectedToGame)
@@ -19,7 +19,7 @@
         <table>
             <tr>
                 <th colspan="2">
-                    @(string.IsNullOrWhiteSpace(targetingText) ? targetingText : "Targeting Parameters")
+                    @targetingText
                 </th>
             </tr>
             <tr>
