@@ -95,21 +95,9 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     }
 
     /// <inheritdoc />
-    public TEntity Get(TKey key)
-    {
-        return _cache.TryGetValue(key, out var entity) ? entity : null;
-    }
-
-    /// <inheritdoc />
     public Task<TEntity> GetAsync(TKey key)
     {
         return _cache.TryGetValue(key, out var entity) ? Task.FromResult(entity) : Task.FromResult((TEntity)null);
-    }
-
-    /// <inheritdoc />
-    public IReadOnlyCollection<TEntity> GetAll()
-    {
-        return [.. _cache.Values];
     }
 
     /// <inheritdoc />
@@ -119,14 +107,14 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     }
 
     /// <inheritdoc />
-    public IReadOnlyCollection<TKey> GetAllKeys()
+    public async Task<IReadOnlyCollection<TKey>> GetAllKeysAsync()
     {
-        var keys = _repository.GetAllKeys();
+        var keys = await _repository.GetAllKeysAsync();
 
-        // Update cache in this situation
+        // Update local cache in this situation
         foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
         {
-            var item = _repository.Get(key);
+            var item = await _repository.GetAsync(key);
             _cache.Add(item.GetName(), item);
         }
 

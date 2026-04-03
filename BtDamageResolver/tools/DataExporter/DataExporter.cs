@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Orleans;
-using Orleans.Configuration;
-using Orleans.Hosting;
-using Orleans.Serialization;
+using Microsoft.Extensions.Options;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Tools.DataExporter;
@@ -25,22 +21,35 @@ namespace Faemiyah.BtDamageResolver.Tools.DataExporter;
 /// </summary>
 internal sealed class DataExporter
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<DataExporter> _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly RepositoryProvider _repositoryProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DataExporter"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    public DataExporter(ILogger logger)
+    public DataExporter(ILoggerFactory loggerFactory)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = loggerFactory.CreateLogger<DataExporter>();
         _jsonSerializerOptions = GetJsonSerializerOptions();
 
         // Pretty printing options
         _jsonSerializerOptions.IndentCharacter = ' ';
         _jsonSerializerOptions.IndentSize = 4;
         _jsonSerializerOptions.WriteIndented = true;
+
+        // Repository provider setup
+        var configuration = GetConfiguration("DataImporterSettings.json");
+        var communicationOptions = configuration.GetSection(Settings.CommunicationOptionsBlockName).Get<CommunicationOptions>();
+        _repositoryProvider = new RepositoryProvider(
+            new RedisEntityRepository<Ammo>(loggerFactory.CreateLogger<RedisEntityRepository<Ammo>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<ArcDiagram>(loggerFactory.CreateLogger<RedisEntityRepository<ArcDiagram>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<ClusterTable>(loggerFactory.CreateLogger<RedisEntityRepository<ClusterTable>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<CriticalDamageTable>(loggerFactory.CreateLogger<RedisEntityRepository<CriticalDamageTable>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<PaperDoll>(loggerFactory.CreateLogger<RedisEntityRepository<PaperDoll>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<Unit>(loggerFactory.CreateLogger<RedisEntityRepository<Unit>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<Weapon>(loggerFactory.CreateLogger<RedisEntityRepository<Weapon>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString));
     }
 
     /// <summary>
@@ -53,10 +62,7 @@ internal sealed class DataExporter
     /// <returns>A task which finishes when data exporting is completed.</returns>
     public async Task Work(DataExportOptions options)
     {
-        using var host = await ConnectClient();
-        var client = host.Services.GetRequiredService<IClusterClient>();
-
-        var data = await FetchData(client);
+        var data = await FetchData();
         _logger.LogInformation("{Count} data objects matched the filter(s)", data.Count);
 
         foreach (var dataObject in data)
@@ -92,46 +98,12 @@ internal sealed class DataExporter
         _logger.LogInformation("Finished exporting.");
     }
 
-    private static async Task<List<object>> FetchData(IClusterClient client)
+    private async Task<List<object>> FetchData()
     {
         var exportedDataObjects = new List<object>();
 
-        exportedDataObjects.AddRange(await client.GetUnitRepository().GetAll());
+        exportedDataObjects.AddRange(await _repositoryProvider.UnitRepository.GetAllAsync());
 
         return exportedDataObjects;
-    }
-
-    private async Task<IHost> ConnectClient()
-    {
-        var configuration = GetConfiguration("DataExporterSettings.json");
-        var section = configuration.GetSection(Settings.ClusterOptionsBlockName);
-        var clusterOptions = section.Get<FaemiyahClusterOptions>();
-
-        var hostBuilder = new HostBuilder()
-            .UseOrleansClient((_, clientBuilder) =>
-            {
-                clientBuilder.Configure<ClusterOptions>(options =>
-                    {
-                        options.ClusterId = "faemiyah";
-                        options.ServiceId = "Resolver";
-                    })
-                    .Configure<ConnectionOptions>(options =>
-                    {
-                        options.ConnectionRetryDelay = TimeSpan.FromSeconds(30);
-                        options.OpenConnectionTimeout = TimeSpan.FromSeconds(30);
-                    }).UseAdoNetClustering(options =>
-                    {
-                        options.Invariant = clusterOptions?.Invariant;
-                        options.ConnectionString = clusterOptions?.ConnectionString;
-                    })
-                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver")))
-                    .ConfigureJsonSerializerOptions();
-            }).Build();
-
-        _logger.LogInformation("Host successfully created.");
-
-        await hostBuilder.StartAsync();
-
-        return hostBuilder;
     }
 }

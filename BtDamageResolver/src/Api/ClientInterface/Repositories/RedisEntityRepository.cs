@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
@@ -91,34 +90,6 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     }
 
     /// <inheritdoc />
-    public TEntity Get(string key)
-    {
-        try
-        {
-            var connection = GetConnection();
-            var value = connection.StringGet(GetKey(key));
-
-            if (value != RedisValue.Null)
-            {
-                var entity = JsonSerializer.Deserialize<TEntity>(value.ToString(), _jsonSerializerOptions);
-                return entity;
-            }
-
-            return null;
-        }
-        catch (DbException ex)
-        {
-            _logger.LogError(ex, "Could not get entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", key, typeof(TEntity), ex.ErrorCode);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Could not get entity {EntityName} of type {EntityType}. Unknown failure.", key, typeof(TEntity));
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
-    }
-
-    /// <inheritdoc />
     public async Task<TEntity> GetAsync(string key)
     {
         try
@@ -147,43 +118,13 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     }
 
     /// <inheritdoc />
-    public IReadOnlyCollection<TEntity> GetAll()
-    {
-        try
-        {
-            var entities = new List<TEntity>();
-
-            foreach (var key in GetAllKeys())
-            {
-                entities.Add(Get(key));
-            }
-
-            return entities;
-        }
-        catch (DataAccessException)
-        {
-            throw;
-        }
-        catch (DbException ex)
-        {
-            _logger.LogError(ex, "Could not get all entities of type {EntityType}. Database failure with error code {Code}.", typeof(TEntity), ex.ErrorCode);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Could not get all entities of type {EntityType}. Unknown failure.", typeof(TEntity));
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
-    }
-
-    /// <inheritdoc />
     public async Task<IReadOnlyCollection<TEntity>> GetAllAsync()
     {
         try
         {
             var entities = new List<TEntity>();
 
-            foreach (var key in GetAllKeys())
+            foreach (var key in await GetAllKeysAsync())
             {
                 entities.Add(await GetAsync(key).ConfigureAwait(false));
             }
@@ -207,13 +148,19 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     }
 
     /// <inheritdoc />
-    public IReadOnlyCollection<string> GetAllKeys()
+    public async Task<IReadOnlyCollection<string>> GetAllKeysAsync()
     {
         try
         {
             var server = GetServer();
-            var keys = server.Keys(pattern: $"{_keyPrefix}*");
-            return keys.Select(k => k.ToString()[(_keyPrefix.Length + 1)..]).ToList();
+            var keys = new List<string>();
+
+            await foreach(var key in server.KeysAsync(pattern: $"{_keyPrefix}*"))
+            {
+                keys.Add(key.ToString()[(_keyPrefix.Length + 1)..]);
+            }
+
+            return keys;
         }
         catch (DbException ex)
         {

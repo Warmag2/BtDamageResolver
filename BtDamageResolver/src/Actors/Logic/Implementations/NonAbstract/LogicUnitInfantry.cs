@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
@@ -26,9 +26,10 @@ public class LogicUnitInfantry : LogicUnitTrooper
     /// <param name="gameOptions">The game options.</param>
     /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="random">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    public LogicUnitInfantry(ILogger<LogicUnitInfantry> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+    public LogicUnitInfantry(ILogger<LogicUnitInfantry> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, repositoryProvider, random, unit)
     {
     }
 
@@ -153,7 +154,7 @@ public class LogicUnitInfantry : LogicUnitTrooper
 
     private async Task<int> ResolveTotalOutgoingDamageInternalInfantry(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
     {
-        var clusterTable = await GrainFactory.GetClusterTableRepository().Get(combatAction.Weapon.ClusterTable);
+        var clusterTable = await RepositoryProvider.ClusterTableRepository.GetAsync(combatAction.Weapon.ClusterTable);
         var damage = clusterTable.GetDamage(Unit.Troopers);
         damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, $"Cluster table reference for {Unit.Troopers} troopers", damage));
 

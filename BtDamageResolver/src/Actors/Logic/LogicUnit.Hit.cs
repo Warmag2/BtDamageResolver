@@ -35,7 +35,7 @@ public partial class LogicUnit
             }
             else
             {
-                var singleMissileDefenseRoll = Random.NextPlusOne(6);
+                var singleMissileDefenseRoll = ResolverRandom.NextPlusOne(6);
                 targetDamageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Ams defense roll against single missile", singleMissileDefenseRoll));
                 if (singleMissileDefenseRoll >= 4)
                 {
@@ -104,7 +104,7 @@ public partial class LogicUnit
             };
         }
 
-        var hitRoll = Random.D26();
+        var hitRoll = ResolverRandom.D26();
         hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "To-hit roll", hitRoll));
 
         var hitHappened = hitRoll >= targetNumber;

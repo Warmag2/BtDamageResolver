@@ -47,22 +47,7 @@ public interface IEntityRepository<TEntity, TKey>
     /// <param name="key">The key of the entity to get.</param>
     /// <returns>The entity, or null, if none could be found.</returns>
     /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
-    TEntity Get(TKey key);
-
-    /// <summary>
-    /// Gets a <see cref="TEntity"/> with the given key from the repository.
-    /// </summary>
-    /// <param name="key">The key of the entity to get.</param>
-    /// <returns>The entity, or null, if none could be found.</returns>
-    /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
     Task<TEntity> GetAsync(TKey key);
-
-    /// <summary>
-    /// Get all entities from the repository.
-    /// </summary>
-    /// <returns>A list of <see cref="TEntity"/> containing all entities from the database, or an empty list, if none could be found.</returns>
-    /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
-    IReadOnlyCollection<TEntity> GetAll();
 
     /// <summary>
     /// Get all entities from the repository.
@@ -76,7 +61,7 @@ public interface IEntityRepository<TEntity, TKey>
     /// </summary>
     /// <returns>A list of <see cref="TKey"/> containing all keys from the database, or an empty list, if none could be found.</returns>
     /// <exception cref="DataAccessException"> with the error code OperationFailure if there is a problem with the repository.</exception>
-    IReadOnlyCollection<TKey> GetAllKeys();
+    Task<IReadOnlyCollection<TKey>> GetAllKeysAsync();
 
     /// <summary>
     /// Updates a <see cref="TEntity"/> in the repository.

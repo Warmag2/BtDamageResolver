@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -21,14 +20,14 @@ public partial class LogicUnit
         var transformedLocation = TransformLocation(location);
         var criticalDamageTableId = CriticalDamageTable.GetIdFromProperties(transformedTargetType, criticalDamageTableType, transformedLocation);
 
-        return await GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
+        return await RepositoryProvider.CriticalDamageTableRepository.GetAsync(criticalDamageTableId);
     }
 
     /// <inheritdoc />
     public async Task<DamagePaperDoll> GetDamagePaperDoll(ILogicUnit target, AttackType attackType, Direction direction, List<WeaponFeature> weaponFeatures)
     {
         var paperDollName = GetPaperDollNameFromAttackParameters(target, attackType, direction, GameOptions, weaponFeatures);
-        var paperDoll = await GrainFactory.GetPaperDollRepository().Get(paperDollName);
+        var paperDoll = await RepositoryProvider.PaperDollRepository.GetAsync(paperDollName);
 
         return paperDoll.ToDamagePaperDoll();
     }
@@ -40,11 +39,11 @@ public partial class LogicUnit
     /// <returns>The <see cref="Weapon"/> with the chosen ammo in the weapon entry applied, if possible.</returns>
     protected async Task<Weapon> FormWeapon(WeaponEntry weaponEntry)
     {
-        var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
+        var weapon = await RepositoryProvider.WeaponRepository.GetAsync(weaponEntry.WeaponName);
 
         if (!string.IsNullOrWhiteSpace(weaponEntry.Ammo) && weapon.Ammo.TryGetValue(weaponEntry.Ammo, out var value))
         {
-            weapon = weapon.ApplyAmmo(await GrainFactory.GetAmmoRepository().Get(value));
+            weapon = weapon.ApplyAmmo(await RepositoryProvider.AmmoRepository.GetAsync(value));
         }
 
         if (weaponEntry.Amount > 1)
