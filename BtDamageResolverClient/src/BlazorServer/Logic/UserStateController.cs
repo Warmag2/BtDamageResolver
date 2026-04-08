@@ -480,7 +480,7 @@ public class UserStateController
 
         // Only perform dictionary swap if the list has actually changed
         // Be careful about this optimization. Might be wisest to always change the unit list.
-        if (_unitList.Any(u => !newUnitList.ContainsKey(u.Key)) || newUnitList.Any(u => !_unitList.ContainsKey(u.Key)))
+        if (_unitList.Count != newUnitList.Count || newUnitList.Any(u => !_unitList.ContainsKey(u.Key)))
         {
             _unitList = newUnitList;
 
