@@ -2,7 +2,7 @@
     "UnitType": "MechQuad",
     "Arcs":
     [
-        "Full",
+        "Turret",
         "Front",
         "Left",
         "Right",

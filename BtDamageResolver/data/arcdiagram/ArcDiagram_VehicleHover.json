@@ -2,7 +2,7 @@
     "UnitType": "VehicleHover",
     "Arcs":
     [
-        "Full",
+        "Turret",
         "Front",
         "Left",
         "Right",
