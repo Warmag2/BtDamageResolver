@@ -54,27 +54,31 @@ The following services are now available and running in containers:
 Only the BtDamageResolverClient needs to be accessed by players, and it does not need a password. To access the rest of these services, use the password and username you set in the `.env` file.
 For users who do not need to access these services from the outside world, I would recommend firewalling all of them except the aforementioned BtDamageResolverClient.
 
-To edit the external ports or adjust any service settings, edit the `docker-compose.yml` file in the `BtDamageResolverInfrastructure` folder.
+To edit the external ports or adjust any service settings, edit the `docker-compose.yml` file in the `infra` folder.
 
 ### Shutting down and starting up
 
 To shut down the system, do the following:
 
-* Go to the `BtDamageResolverInfrastructure` folder in repository root
+* Go to the `infra` folder in repository root
 * Type `docker-compose down`
 
 This should bring down everything. The volumes are persisted, should you want to bring up the system later.
 
 To start the system at any later time, do the following:
 
-* Go to the `BtDamageResolverInfrastructure` folder in repository root
+* Go to the `infra` folder in repository root
 * Type `docker-compose up -d`
+
+or
+
+* Run `refresh.sh` in repository root
 
 ### Getting rid of all BtDamageResolver data
 
 Normal docker prune methods should work once the system has been shut down. If you are sure that there is nothing you want to keep, you can also do the following:
 
-* Go to the `BtDamageResolverInfrastructure` folder in repository root
+* Go to the `infra` folder in repository root
 * Run `prune.sh`
 
 **Do note that the above will delete absolutely all dangling content in your docker environment.** All dangling images, networks, volumes etc. Only use it if you have nothing in your docker you want to spare. It is included only because I want this to be usable by someone who doesn't know anything about docker and has only installed it to run BtDamageResolver.
