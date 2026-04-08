@@ -5,6 +5,7 @@ using System.Linq;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using static Faemiyah.BtDamageResolver.Api.Extensions.EnumExtensions;
 
@@ -15,11 +16,12 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
 /// </summary>
 public class UserStateController
 {
-    private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers;
-    private Dictionary<string, GameEntry> _gameEntries;
+    private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers = [];
+    private Dictionary<string, GameEntry> _gameEntries = [];
     private GameState _gameState;
     private HashSet<Guid> _invalidUnitIds = [];
-    private ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> _unitList;
+    private ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> _unitList = [];
+    private long _unitListHash;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UserStateController"/> class.
@@ -27,9 +29,6 @@ public class UserStateController
     public UserStateController()
     {
         DamageReportContainer = new DamageReportContainer();
-        _gameEntries = [];
-        _unitList = new();
-        _targetNumbers = new();
     }
 
     /// <summary>
@@ -175,7 +174,24 @@ public class UserStateController
     /// <summary>
     /// Unit list, with player IDs included.
     /// </summary>
-    public ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> UnitList => _unitList;
+    public ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> UnitList
+    {
+        get
+        {
+            return _unitList;
+        }
+        set
+        {
+            _unitList = value;
+            _unitListHash = string.Join("-", _unitList.Select(u => $"({u.Key}:{u.Value.PlayerId}:{u.Value.Unit.Name})")).Fnv1aHash64();
+            OnGameUnitListUpdated?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// Unit list hash which accounts for units and their names.
+    /// </summary>
+    public long UnitListHash => _unitListHash;
 
     /// <summary>
     /// The player state.
@@ -253,7 +269,7 @@ public class UserStateController
     /// <returns>The type of the unit, or default enum value, if the unit could not be found.</returns>
     public UnitType GetUnitType(Guid unitId)
     {
-        if (_unitList.TryGetValue(unitId, out var unit))
+        if (UnitList.TryGetValue(unitId, out var unit))
         {
             return unit.Unit.Type;
         }
@@ -268,7 +284,7 @@ public class UserStateController
     /// <returns>The name of the unit, or \"N/A\" if the unit could not be found.</returns>
     public string GetUnitName(Guid unitId)
     {
-        if (_unitList.TryGetValue(unitId, out var unit))
+        if (UnitList.TryGetValue(unitId, out var unit))
         {
             return unit.Unit.Name;
         }
@@ -285,7 +301,7 @@ public class UserStateController
     {
         var targetsForUnit = new SortedDictionary<string, Guid>();
 
-        foreach (var (playerId, unit) in _unitList.Values)
+        foreach (var (playerId, unit) in UnitList.Values)
         {
             if (unit.Id != unitId)
             {
@@ -304,7 +320,7 @@ public class UserStateController
     {
         var dictionary = new SortedDictionary<string, Guid>();
 
-        foreach (var (playerId, unit) in _unitList.Values)
+        foreach (var (playerId, unit) in UnitList.Values)
         {
             dictionary.TryAdd($"{unit.Name} ({playerId})", unit.Id);
         }
@@ -473,30 +489,26 @@ public class UserStateController
         }
         else
         {
-            _unitList.Clear();
+            UnitList.Clear();
         }
 
         newUnitList.TryAdd(Guid.Empty, ("N/A", new UnitEntry { Id = Guid.Empty, Name = " NO TARGET" }));
 
         // Only perform dictionary swap if the list has actually changed
         // Be careful about this optimization. Might be wisest to always change the unit list.
-        if (_unitList.Count != newUnitList.Count || newUnitList.Any(u => !_unitList.ContainsKey(u.Key)))
+        if (UnitList.Count != newUnitList.Count || newUnitList.Any(u => !UnitList.ContainsKey(u.Key)))
         {
-            _unitList = newUnitList;
-
-            OnGameUnitListUpdated?.Invoke();
+            UnitList = newUnitList;
         }
         else
         {
             // We are also forced to check deeper if the units do not belong to the same players or their names or types have changed
             foreach (var newUnit in newUnitList)
             {
-                var oldUnit = _unitList[newUnit.Key];
+                var oldUnit = UnitList[newUnit.Key];
                 if (oldUnit.PlayerId != newUnit.Value.PlayerId || oldUnit.Unit.Name != newUnit.Value.Unit.Name || oldUnit.Unit.Type != newUnit.Value.Unit.Type)
                 {
-                    _unitList = newUnitList;
-
-                    OnGameUnitListUpdated?.Invoke();
+                    UnitList = newUnitList;
                     break;
                 }
             }

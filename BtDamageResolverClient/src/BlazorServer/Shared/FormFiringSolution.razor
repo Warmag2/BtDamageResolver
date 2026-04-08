@@ -25,7 +25,7 @@
             <tr>
                 <td>Target</td>
                 <td>
-                    <FormComboBox @key=@($"{WeaponBay.Id}_Target") EnableErrorDisplay="true" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
+                    <FormComboBox @key=@($"{WeaponBay.Id}_Target_{_userStateController.UnitListHash}") EnableErrorDisplay="true" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
                 </td>
             </tr>
             <tr>
