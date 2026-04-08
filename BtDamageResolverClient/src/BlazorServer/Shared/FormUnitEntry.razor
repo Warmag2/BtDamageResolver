@@ -115,25 +115,25 @@
                     <tr>
                         <td>Movement</td>
                         <td>
-                            <FormRadio Options="@CommonData.FormMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
+                            <FormRadio @key=@($"{UnitEntry.Id}_MovementClass") Options="@CommonData.FormMapMovementClass(UnitEntry)" SelectedOption="@UnitEntry.MovementClass" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(MovementClass movementClass) => OnMovementClassChanged(movementClass)"></FormRadio>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetEvasionHidden(UnitEntry.Type)))">
                         <td>Evasion</td>
                         <td>
-                            <FormToggle Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnEvasionChanged">Evading</FormToggle>
+                            <FormToggle @key=@($"{UnitEntry.Id}_Evading") Checked="@UnitEntry.Evading" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnEvasionChanged">Evading</FormToggle>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetHexesMovedHidden(UnitEntry.Type)))">
                         <td>Hexes moved</td>
                         <td>
-                            <FormRadio Options="@_commonData.FormMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
+                            <FormRadio @key=@($"{UnitEntry.Id}_MovementAmount") Options="@_commonData.FormMapMovementAmount(UnitEntry)" SelectedOption="@UnitEntry.Movement" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(int movement) => OnMovementChanged(movement)"></FormRadio>
                         </td>
                     </tr>
                     <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetStanceHidden(UnitEntry.Type)))">
                         <td>Stance</td>
                         <td>
-                            <FormRadio Options="@CommonData.FormMapStance(UnitEntry.Type)" SelectedOption="@UnitEntry.Stance" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Stance stance) => OnStanceChanged(stance)"></FormRadio>
+                            <FormRadio @key=@($"{UnitEntry.Id}_Stance") Options="@CommonData.FormMapStance(UnitEntry.Type)" SelectedOption="@UnitEntry.Stance" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Stance stance) => OnStanceChanged(stance)"></FormRadio>
                         </td>
                     </tr>
                     <tr>
@@ -142,8 +142,8 @@
                         </td>
                         <td>
                             <div>
-                                <FormToggle @key="@($"narc_{_userStateController.ComparisonTime}")" Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnNarcedChanged">Narced</FormToggle>
-                                <FormToggle @key="@($"tag_{_userStateController.ComparisonTime}")" Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
+                                <FormToggle @key="@($"{UnitEntry.Id}_Narc")" Checked="@UnitEntry.Narced" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnNarcedChanged">Narced</FormToggle>
+                                <FormToggle @key="@($"{UnitEntry.Id}_Tag")" Checked="@UnitEntry.Tagged" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnTaggedChanged">Tagged</FormToggle>
                             </div>
                         </td>
                     </tr>
