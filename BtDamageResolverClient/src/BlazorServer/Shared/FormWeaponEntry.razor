@@ -25,7 +25,7 @@
         <b>@(targetNumber)</b>
     </td>
     <td>
-        <FormToggle Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(_userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormToggle>
+        <FormToggle @key=@($"{WeaponEntry.Id}_State") Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(_userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormToggle>
     </td>
     <td class="resolver_td_weaponentry" style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponAmountHidden(UnitEntry.Type) && WeaponEntry.Amount == 1)">
         @if (UnitEntry.StaticDataHidden)
