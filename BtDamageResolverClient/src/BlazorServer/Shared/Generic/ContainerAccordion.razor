@@ -13,6 +13,7 @@
 @code
 {
     private bool _enabled;
+    private bool _previousEnabled;
 
     [Parameter]
     public bool Enabled { get; set; }
@@ -23,8 +24,12 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        _enabled = Enabled;
+        if (Enabled != _previousEnabled)
+        {
+            _enabled = Enabled;
+            _previousEnabled = Enabled;
+        }
     }
 }

@@ -30,14 +30,7 @@
         <div class="resolver_div_componentrow">
 
             <div class="resolver_div_unitname resolver_div_componentcell draggable desktop" draggable="true" @ondrag="@StartDrag" @ondrop="@Drop">
-                @for (int ii = 0; ii < UnitEntry.Name.Length; ii++)
-                {
-                    @UnitEntry.Name[ii]
-                    if (ii != UnitEntry.Name.Length - 1)
-                    {
-                        <br />
-                    }
-                }
+                @UnitEntry.Name
             </div>
 
             <div class="resolver_div_unit resolver_div_componentcell" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">

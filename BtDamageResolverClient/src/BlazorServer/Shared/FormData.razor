@@ -2,11 +2,6 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 
-@{
-    var sortedItemDict = new SortedDictionary<string, string>();
-    _items.ForEach(i => sortedItemDict.Add(i, i));
-}
-
 <div class="resolver_div_componentlistcontainer">
 
     <div class="resolver_div_componentcontainer">
@@ -25,7 +20,7 @@
             </h3>
 
             <div class="resolver_div_componentrow">
-                <FormComboBox @key="@_entryName" Options="@sortedItemDict" SelectedOption=@_entryName OnChanged="(string entryName) => OnEntityChanged(entryName)"></FormComboBox>
+                <FormComboBox @key="@_entryName" Options="@_sortedItemDict" SelectedOption=@_entryName OnChanged="(string entryName) => OnEntityChanged(entryName)"></FormComboBox>
             </div>
 
             @if (_selectedDataType == ResolverDataType.Weapon)
@@ -58,7 +53,8 @@
                     <FormDataDisplayWeapon @key=@_entryName WeaponName=@_entryName Ammo=@_ammoName></FormDataDisplayWeapon>
                     break;
                 default:
-                    throw new NotImplementedException($"Handling for data type {_selectedDataType} not present.");
+                    <span class="error">Unknown data type: @_selectedDataType</span>
+                    break;
             }
         }
     </div>
@@ -67,6 +63,7 @@
 @code
 {
     private ResolverDataType _selectedDataType = ResolverDataType.ClusterTable;
+    private SortedDictionary<string, string> _sortedItemDict = new();
     private List<string> _items = new();
     private string _ammoName;
     private string _entryName;
@@ -100,6 +97,8 @@
         }
 
         _entryName = _items.FirstOrDefault();
+        _sortedItemDict = new SortedDictionary<string, string>();
+        _items.ForEach(i => _sortedItemDict.Add(i, i));
     }
 
     private void OnAmmoChanged(string ammoName)

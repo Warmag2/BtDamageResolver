@@ -20,6 +20,7 @@ public class FaemiyahLoggingOptions
         LogToFile = false;
         ProgramName = Assembly.GetExecutingAssembly().GetName().Name;
         LogFile = $"/logs/{ProgramName}.log";
+        SendDetailedErrorsToClient = true;
     }
 
     /// <summary>
@@ -62,4 +63,14 @@ public class FaemiyahLoggingOptions
     /// This property will be enriched onto each log line.
     /// </remarks>
     public string ProgramName { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether exception details (message and stack trace)
+    /// are sent back to the client on error.
+    /// </summary>
+    /// <remarks>
+    /// Enable in development to surface errors immediately. Disable in production
+    /// to avoid leaking internal implementation details to clients.
+    /// </remarks>
+    public bool SendDetailedErrorsToClient { get; set; }
 }

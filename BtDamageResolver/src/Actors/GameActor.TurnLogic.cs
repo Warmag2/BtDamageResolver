@@ -98,14 +98,16 @@ public partial class GameActor
                 ? await ProcessTargetNumberUpdatesForUnits()
                 : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
 
+            // Save game actor and damage report states before distributing so clients never get ahead of persisted state.
+            await _gameActorState.WriteStateAsync();
+
             await DistributeGameStateToPlayers(fireEventHappened);
             await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
 
-            // Save game actor state
-            await _gameActorState.WriteStateAsync();
             if (fireEventHappened)
             {
                 await _gameActorDamageReportState.WriteStateAsync();
+                await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
             }
 
             // Log update to permanent store
@@ -161,8 +163,6 @@ public partial class GameActor
             ClearUnitPenalties(true, false);
             ModifyGameStateBasedOnDamageReports([.. tagDamageReports, .. damageReports]);
 
-            await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
-
             // Unmark ready in local memory
             foreach (var playerState in _gameActorState.State.PlayerStates.Values)
             {
@@ -195,9 +195,10 @@ public partial class GameActor
         {
             if (bay.FiringSolution.Target != Guid.Empty && !await IsUnitInGame(bay.FiringSolution.Target))
             {
+                var invalidTarget = bay.FiringSolution.Target;
                 bay.FiringSolution.Target = Guid.Empty;
                 bay.TimeStamp = DateTime.UtcNow;
-                _logger.LogWarning("Player {PlayerId} unit {UnitId} tried to fire at an unit {TargetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, bay.FiringSolution.Target);
+                _logger.LogWarning("Player {PlayerId} unit {UnitId} tried to fire at an unit {TargetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, invalidTarget);
             }
         }
 

@@ -3,6 +3,7 @@
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
+@implements IDisposable
 
 @{
     var attackingUnitOwnedByYou = _userStateController.PlayerState.UnitEntries.Exists(u => DamageReport.FiringUnitIds.Contains(u.Id));
@@ -199,5 +200,10 @@
             _logLineVisibility[attackLogEntryType] = entryVisibility;
             InvokeStateChange();
         }
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnDamageReportsUpdated -= InvokeStateChange;
     }
 }

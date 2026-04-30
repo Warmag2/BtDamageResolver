@@ -3,7 +3,7 @@ CREATE TABLE ResolverLogGame
 (
     Id SERIAL PRIMARY KEY,
     EventTime TIMESTAMP(3) NOT NULL,
-    GameId INT NOT NULL,
+    GameId BIGINT NOT NULL,
     ActionType SMALLINT NOT NULL,
     ActionData INT NOT NULL
 );
@@ -16,7 +16,7 @@ CREATE TABLE ResolverLogPlayer
 (
     Id SERIAL PRIMARY KEY,
     EventTime TIMESTAMP(3) NOT NULL,
-    PlayerId INT NOT NULL,
+    PlayerId BIGINT NOT NULL,
     ActionType SMALLINT NOT NULL,
     ActionData INT NOT NULL
 );

@@ -1,5 +1,5 @@
 ﻿@inherits BaseFaemiyahComponent
-@implements IDisposable
+@implements IAsyncDisposable
 @page "/"
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 @using Faemiyah.BtDamageResolver.Api.ClientInterface.Events
@@ -55,7 +55,7 @@
 </ContainerTab>
 
 <!-- This is here because we only want exactly one /-->
-<div id="resolver_tooltip_paperdoll" class="resolver_div_tooltip" display="none" style="position: absolute; display: none;"></div>
+<div id="resolver_tooltip_paperdoll" class="resolver_div_tooltip" style="position: absolute; display: none;"></div>
 
 @code
 {
@@ -196,13 +196,16 @@
         _formServer.LeaveGame();
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         _userStateController.OnPlayerStateUpdated -= SendPlayerState;
         _userStateController.OnGameOptionsUpdated -= SendGameOptions;
         _userStateController.OnPlayerOptionsUpdated -= SendPlayerOptions;
         _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
         _resolverCommunicator?.Dispose();
-        _hubConnection?.DisposeAsync();
+        if (_hubConnection != null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
     }
 }

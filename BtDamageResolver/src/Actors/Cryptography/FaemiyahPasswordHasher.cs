@@ -4,60 +4,30 @@ using System.Text;
 namespace Faemiyah.BtDamageResolver.Actors.Cryptography;
 
 /// <summary>
-/// Shitty implementation of a password hasher.
+/// SHA-512 password hasher with a random salt.
+/// Uses the static <see cref="SHA512.HashData"/> method, which is stateless and safe for concurrent
+/// use without any locking — each call gets its own internal hash context from the runtime.
+/// Uses <see cref="CryptographicOperations.FixedTimeEquals"/> for constant-time comparison
+/// to prevent timing-oracle attacks.
+/// Note: consider upgrading to PBKDF2 or Argon2 for stronger brute-force resistance in the future.
 /// </summary>
 public class FaemiyahPasswordHasher : IHasher
 {
     private const int SaltLength = 32;
-    private readonly SHA512 _sha;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FaemiyahPasswordHasher"/> class.
-    /// </summary>
-    public FaemiyahPasswordHasher()
-    {
-        _sha = SHA512.Create();
-    }
 
     /// <inheritdoc/>
     public (byte[] Hash, byte[] Salt) Hash(string password)
     {
-        var salt = GetSalt();
-
-        var hash = _sha.ComputeHash(GetSaltedBytes(password, salt));
-
+        var salt = RandomNumberGenerator.GetBytes(SaltLength);
+        var hash = SHA512.HashData(GetSaltedBytes(password, salt));
         return (hash, salt);
     }
 
     /// <inheritdoc/>
     public bool Verify(string password, byte[] salt, byte[] referenceHash)
     {
-        var hash = _sha.ComputeHash(GetSaltedBytes(password, salt));
-
-        return CompareHashes(hash, referenceHash);
-    }
-
-    private static bool CompareHashes(byte[] hash1, byte[] hash2)
-    {
-        if (hash1.Length != hash2.Length)
-        {
-            return false;
-        }
-
-        for (var ii = 0; ii < hash1.Length; ii++)
-        {
-            if (hash1[ii] != hash2[ii])
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static byte[] GetSalt()
-    {
-        return RandomNumberGenerator.GetBytes(SaltLength);
+        var hash = SHA512.HashData(GetSaltedBytes(password, salt));
+        return CryptographicOperations.FixedTimeEquals(hash, referenceHash);
     }
 
     private static byte[] GetSaltedBytes(string password, byte[] salt)

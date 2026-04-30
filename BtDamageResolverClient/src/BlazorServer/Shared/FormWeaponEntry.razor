@@ -10,18 +10,13 @@
 
 @{
     var targetNumberUpdate = _userStateController.GetTargetNumberUpdateSingleWeapon(UnitEntry.Id, WeaponEntry.Id);
-    var calculationLog = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
+    var tooltipContent = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
     var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName);
-    
-    if (WeaponEntry.Ammo == null || !mapWeaponAmmo.ContainsKey(WeaponEntry.Ammo))
-    {
-        WeaponEntry.Ammo = _commonData.GetWeaponDefaultAmmo(WeaponEntry.WeaponName);
-    }
 }
 
 <tr class="resolver_tr_weaponentry draggable @(WeaponEntry.State == WeaponState.Active ? "active" : "inactive")" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
-    <td class="resolver_td_targetnumber" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', @calculationLog);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
+    <td class="resolver_td_targetnumber" data-tooltip-content="@tooltipContent" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', this.dataset.tooltipContent);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
         <b>@(targetNumber)</b>
     </td>
     <td>
@@ -113,6 +108,22 @@
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
         _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
+        if (CorrectAmmoForWeapon(_weaponName))
+        {
+            UpdateWeaponEntry();
+        }
+    }
+
+    private bool CorrectAmmoForWeapon(string weaponName)
+    {
+        var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(weaponName);
+        if (_weaponAmmo == null || !mapWeaponAmmo.ContainsKey(_weaponAmmo))
+        {
+            _weaponAmmo = _commonData.GetWeaponDefaultAmmo(weaponName);
+            return true;
+        }
+
+        return false;
     }
 
     private void DeleteWeapon()
@@ -178,6 +189,7 @@
     private void OnWeaponNameChanged(string name)
     {
         _weaponName = name;
+        CorrectAmmoForWeapon(name);
         UpdateWeaponEntry();
     }
 
@@ -234,10 +246,10 @@
     {
         if (attackLog != null && attackLog.Log.Any())
         {
-            return $"'{attackLog.Log.Where(entry => showAllLines || entry.Number != 0).Aggregate(string.Empty, (current, entry) => current + (entry + "<br>"))}'";
+            return attackLog.Log.Where(entry => showAllLines || entry.Number != 0).Aggregate(string.Empty, (current, entry) => current + (entry + "<br>"));
         }
 
-        return "'No target number calculation log available.'";
+        return "No target number calculation log available.";
     }
 
     public void Dispose()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
@@ -369,6 +370,7 @@ public class ResolverCommunicator : IDisposable
 
     private void SendErrorMessage(string errorMessage)
     {
-        _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage);
+        _ = _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage)
+            .ContinueWith(t => _logger.LogError(t.Exception, "Failed to send error message to hub"), TaskContinuationOptions.OnlyOnFaulted);
     }
 }

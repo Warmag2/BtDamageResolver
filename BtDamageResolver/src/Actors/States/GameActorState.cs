@@ -64,11 +64,13 @@ public class GameActorState
     public DateTime TurnTimeStamp { get; set; }
 
     /// <summary>
-    /// Reset the game turn to 0.
+    /// Reset the game turn to 0 and clear all player tracking.
     /// </summary>
     public void Reset()
     {
         TurnTimeStamp = DateTime.UtcNow;
         Turn = 0;
+        PlayerIds.Clear();
+        AdminId = null;
     }
 }

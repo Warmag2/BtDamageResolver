@@ -668,6 +668,7 @@
     .resolver_div_unitname.desktop {
         line-height: 95%;
         text-align: center;
+        writing-mode: vertical-lr;
         display: none;
     }
 

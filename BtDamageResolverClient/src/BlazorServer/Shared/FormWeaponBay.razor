@@ -92,11 +92,6 @@
         OnChanged.InvokeAsync();
     }
 
-    public DateTime GetComparisonTime()
-    {
-        return _userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue;
-    }
-
     public void DeleteWeaponBay()
     {
         OnDeleted.InvokeAsync(WeaponBay);

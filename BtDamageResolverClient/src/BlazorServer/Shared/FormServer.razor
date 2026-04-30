@@ -60,7 +60,7 @@
             <div class="resolver_modal_body">
                 <label class="resolver_label_auth">
                     Password:
-                    <input class="resolver_input resolver_input_text" type="text" @bind="_joinDialogGamePassword" />
+                    <input class="resolver_input resolver_input_text" type="password" @bind="_joinDialogGamePassword" />
                 </label>
             </div>
 
@@ -82,11 +82,6 @@
     protected override void OnInitialized()
     {
         _userStateController.OnGameEntriesReceived += InvokeStateChange;
-        RefreshGameList();
-    }
-
-    private void OnTimerInterval(object sender, ElapsedEventArgs e)
-    {
         RefreshGameList();
     }
 
@@ -135,7 +130,7 @@
         }
     }
 
-    public void ModalShow() => _showModal = true;
+    private void ModalShow() => _showModal = true;
 
     private void ModalCancel() => _showModal = false;
 

@@ -176,10 +176,7 @@ public class UserStateController
     /// </summary>
     public ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> UnitList
     {
-        get
-        {
-            return _unitList;
-        }
+        get => _unitList;
         set
         {
             _unitList = value;
@@ -260,7 +257,7 @@ public class UserStateController
     /// The comparison time for field highlighting.
     /// </summary>
     /// <returns>The comparison time for field highlighting.</returns>
-    public DateTime ComparisonTime => PlayerOptions.HighlightUnalteredFields ? GameState.TurnTimeStamp : DateTime.MinValue;
+    public DateTime ComparisonTime => PlayerOptions?.HighlightUnalteredFields == true && GameState != null ? GameState.TurnTimeStamp : DateTime.MinValue;
 
     /// <summary>
     /// Gets the type of the given unit.
@@ -418,6 +415,11 @@ public class UserStateController
     /// <returns>A dictionary containing all player IDs.</returns>
     public SortedDictionary<string, string> GetPlayerIds()
     {
+        if (GameState == null)
+        {
+            return [];
+        }
+
         return new SortedDictionary<string, string>(GameState.Players.Keys.ToDictionary(p => p));
     }
 
@@ -428,6 +430,11 @@ public class UserStateController
     /// <returns><b>True</b> if the damage report concerns the given player, <b>false</b> otherwise. </returns>
     public bool DamageReportConcernsPlayer(DamageReport damageReport)
     {
+        if (PlayerState == null)
+        {
+            return false;
+        }
+
         return damageReport.FiringUnitIds.Contains(Guid.Empty) ||
                PlayerState.UnitEntries.Exists(u => damageReport.FiringUnitIds.Contains(u.Id)) ||
                PlayerState.UnitEntries.Exists(u => u.Id == damageReport.TargetUnitId);

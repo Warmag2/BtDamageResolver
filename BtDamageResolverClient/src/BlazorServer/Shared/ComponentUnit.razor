@@ -17,14 +17,7 @@
         </div>
 
         <div class="resolver_div_unit resolver_div_unitname resolver_div_componentcell desktop">
-            @for (int ii = 0; ii < UnitEntry.Name.Length; ii++)
-            {
-                @UnitEntry.Name[ii]
-                if (ii != UnitEntry.Name.Length - 1)
-                {
-                    <br />
-                }
-            }
+            @UnitEntry.Name
         </div>
             
         <table class="resolver_div_unit resolver_div_componentcell">
@@ -61,12 +54,6 @@
             <tr class="resolver_tr_unitinformation" style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
                 <td class="resolver_td_unitinformation_label">Dissipation</td>
                 <td class="resolver_td_unitinformation_data">@UnitEntry.Sinks</td>
-            </tr>
-            <tr class="resolver_tr_unitinformation">
-                <td class="resolver_td_unitinformation_label" colspan="2">
-                    <div style="@(VisualStyleController.HideElement(!UnitEntry.Narced))" class="resolver_div_unitinformation_data">Narced</div>
-                    <div style="@(VisualStyleController.HideElement(!UnitEntry.Tagged))" class="resolver_div_unitinformation_data">Tagged</div>
-                </td>
             </tr>
             <tr class="resolver_tr_unitinformation">
                 <td class="resolver_td_unitinformation_label">Movement</td>

@@ -9,5 +9,6 @@
   },
   "CommunicationOptions": {
     "ConnectionString": "redis:6379,password=PASSWORD"
-  }
+  },
+  "DataProtectionKeysPath": "/app/dpkeys/"
 }
