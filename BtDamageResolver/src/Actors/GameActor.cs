@@ -194,7 +194,7 @@ public partial class GameActor : Grain, IGameActor
     private void CheckForPlayerCountEvents()
     {
         // If we have no players, reset turn and erase damage reports
-        if (_gameActorState.State.PlayerStates.Count == 0)
+        if (_gameActorState.State.PlayerIds.Count == 0)
         {
             _gameActorState.State.Reset();
             _gameActorDamageReportState.State.Reset();
