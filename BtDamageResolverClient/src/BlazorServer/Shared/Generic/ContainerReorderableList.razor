@@ -1,0 +1,89 @@
+@typeparam TItem
+
+<div class="resolver_div_reorderablelistcontainer" ondragover="event.preventDefault();">
+    @for (var i = 0; i < Items.Count; i++)
+    {
+        var capturedIndex = i;
+        <div class="resolver_div_reorderableitem draggable @(_dragOverIndex == capturedIndex ? "resolver_div_reorderableitem--dropover" : string.Empty)"
+             draggable="true"
+             @ondragstart="() => StartDrag(capturedIndex)"
+             @ondragstart:stopPropagation="true"
+             @ondragenter="() => SetDragOver(capturedIndex)"
+             @ondragenter:stopPropagation="true"
+             @ondragend="CancelDrag"
+             @ondragend:stopPropagation="true"
+             @ondrop="() => Drop(capturedIndex)"
+             @ondrop:stopPropagation="true"
+             ondragover="event.preventDefault();">
+            @ItemTemplate(Items[capturedIndex])
+        </div>
+    }
+    <div class="resolver_div_reorderablesentinel @(_dragOverSentinel ? "resolver_div_reorderablesentinel--dropover" : string.Empty)"
+         @ondragenter="() => { _dragOverIndex = null; _dragOverSentinel = true; }"
+         @ondragenter:stopPropagation="true"
+         @ondragleave="() => _dragOverSentinel = false"
+         @ondragleave:stopPropagation="true"
+         @ondrop="() => Drop(Items.Count)"
+         @ondrop:stopPropagation="true"
+         ondragover="event.preventDefault();">
+    </div>
+</div>
+
+@code
+{
+    private int? _draggedIndex;
+    private int? _dragOverIndex;
+    private bool _dragOverSentinel;
+
+    [Parameter]
+    public IList<TItem> Items { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemTemplate { get; set; }
+
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    private void StartDrag(int index)
+    {
+        _draggedIndex = index;
+        _dragOverIndex = null;
+        _dragOverSentinel = false;
+    }
+
+    private void SetDragOver(int index)
+    {
+        _dragOverIndex = index;
+        _dragOverSentinel = false;
+    }
+
+    private void CancelDrag()
+    {
+        _draggedIndex = null;
+        _dragOverIndex = null;
+        _dragOverSentinel = false;
+    }
+
+    private void Drop(int targetIndex)
+    {
+        if (_draggedIndex.HasValue)
+        {
+            var from = _draggedIndex.Value;
+
+            // Adjust target index because removal shifts elements after the dragged position down by one.
+            var adjustedTarget = targetIndex > from ? targetIndex - 1 : targetIndex;
+
+            if (from != adjustedTarget)
+            {
+                var item = Items[from];
+                Items.RemoveAt(from);
+                Items.Insert(adjustedTarget, item);
+                OnChanged.InvokeAsync();
+            }
+        }
+
+        _draggedIndex = null;
+        _dragOverIndex = null;
+        _dragOverSentinel = false;
+    }
+}

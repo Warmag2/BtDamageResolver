@@ -1,4 +1,53 @@
 ﻿/*******************************************************************************
+    Base
+*******************************************************************************/
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+a, .btn-link {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+/*******************************************************************************
     Variables
 *******************************************************************************/
 
@@ -106,9 +155,6 @@
     padding: 0;
     margin: 0;
     cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     white-space: nowrap;
     font-family: Tahoma;
@@ -188,9 +234,6 @@
     margin-bottom: 12px;
     cursor: pointer;
     font-size: 16px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -253,8 +296,6 @@
     height: 10px;
     border: solid white;
     border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
 
@@ -311,9 +352,6 @@
     vertical-align: middle;
     margin-left: 0;
     margin-right: 0;
-}
-
-.resolver_div_pickeritem {
     background-color: var(--color_bg_unselected);
     color: var(--color_text_unselected);
 }
@@ -358,17 +396,14 @@
 
 .resolver_button_add {
     font-weight: bold;
-    content: '+';
 }
 
 .resolver_button_delete {
     font-weight: bold;
-    content: 'X';
 }
 
 .resolver_button_leave {
     font-weight: bold;
-    content: 'X';
 }
 
 .resolver_button_ready {
@@ -625,7 +660,6 @@
 .flexbox-column {
     display: flex;
     flex-direction: column;
-    background-color: beige;
 }
 
 .resolver_div_componentcell {
@@ -712,6 +746,20 @@
     background-color: var(--color_bg_dragdrop);
 }
 
+.resolver_div_reorderableitem.draggable:hover { background-color: var(--color_bg_dragdrop); }
+
+.resolver_div_reorderableitem--dropover { border-top: 3px solid var(--color_bg_dragdrop); }
+
+.resolver_div_reorderablesentinel {
+    height: 0.4rem;
+    transition: height 0.1s, background-color 0.1s;
+}
+
+.resolver_div_reorderablesentinel--dropover {
+    height: 1.5rem;
+    background-color: var(--color_bg_dragdrop);
+}
+
 .emptydragtarget {
     background-color: var(--color_bg_weaponentry_active);
 }
@@ -720,9 +768,6 @@
     background-color: var(--color_bg_dragdrop);
 }
 
-.resolver_tr_unitinformation { }
-
-.resolver_td_unitinformation_label { }
 
 .resolver_td_unitinformation_data {
     padding-left: 4px;
@@ -908,7 +953,7 @@
 *******************************************************************************/
 
 .resolver_status_transparent {
-    background-color: none;
+    background-color: transparent;
     color: var(--color_text_status_normal);
 }
 

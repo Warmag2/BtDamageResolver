@@ -123,16 +123,16 @@ Other elements using `float: left` that won't cooperate on mobile:
 
 ## Proposed Implementation Plan
 
-### Phase 1 — Remove Dead CSS
-- Trim `site.css` to only: `html/body` font, `a/.btn-link` color, `.btn-primary`, `.valid.modified`, `.invalid`, `.validation-message`, `#blazor-error-ui` and `.dismiss`
+### ~~Phase 1 — Remove Dead CSS~~ ✓ Done
+`site.css` deleted. Live rules merged into top of `Resolver.css`. Open-iconic import dropped (unused).
 
-### Phase 2 — Fix CSS Bugs
-- `background-color: none` → `transparent`
-- Remove `content` property from button modifier classes
-- Remove duplicate `.resolver_div_pickeritem`
-- Remove empty rules
-- Remove `background-color: beige` from `.flexbox-column`
-- Drop obsolete vendor prefixes
+### ~~Phase 2 — Fix CSS Bugs~~ ✓ Done
+- `background-color: none` → `transparent` on `.resolver_status_transparent`
+- Removed `content` property from `.resolver_button_add/delete/leave`
+- Merged duplicate `.resolver_div_pickeritem` rules
+- Deleted empty `.resolver_tr_unitinformation` and `.resolver_td_unitinformation_label`
+- Removed `background-color: beige` debug artifact from `.flexbox-column`
+- Dropped all `-webkit-`/`-moz-`/`-ms-` vendor prefixes
 
 ### Phase 3 — Modernize Container Layout (flexbox)
 - `resolver_div_componentlistcontainer` → `display: flex; flex-wrap: wrap`
@@ -286,8 +286,8 @@ The weapon list is genuine tabular data (multiple weapons, same columns: target#
 
 | File | Changes |
 |------|---------|
-| `src/BlazorServer/wwwroot/css/site.css` | Remove ~90% dead boilerplate |
-| `src/BlazorServer/wwwroot/css/Resolver.css` | Fix bugs, modernize layout classes, add breakpoints, add new form section classes |
+| ~~`src/BlazorServer/wwwroot/css/site.css`~~ | ✓ Deleted — live rules merged into `Resolver.css` |
+| `src/BlazorServer/wwwroot/css/Resolver.css` | ✓ Bugs fixed — modernize layout classes, add breakpoints, add new form section classes (remaining) |
 | `src/BlazorServer/Shared/FormUnitEntry.razor` | Replace two layout tables (static data + unit parameters) with flex form sections; wrap weapon table in overflow-x:auto div |
 | `src/BlazorServer/Shared/FormFiringSolution.razor` | Replace layout table with flex form section |
 | `src/BlazorServer/Shared/FormDamageInstance.razor` | Replace layout table with flex form section |
