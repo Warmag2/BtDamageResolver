@@ -118,7 +118,7 @@ public partial class GameActor
                 new GameEntry
                 {
                     Name = this.GetPrimaryKeyString(),
-                    PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
+                    PasswordProtected = _gameActorState.State.PasswordHash != null,
                     Players = _gameActorState.State.PlayerStates.Count,
                     TimeStamp = DateTime.UtcNow
                 });
