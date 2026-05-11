@@ -211,7 +211,7 @@
                 <table>
                     @foreach (var weaponBay in UnitEntry.WeaponBays)
                     {
-                        <FormWeaponBay @key="@weaponBay.Id" WeaponBay="@weaponBay" UnitEntry="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@SendUpdate" OnDeleted="@OnWeaponBayDeleted" OnUpdate="@SendUpdate" />
+                        <FormWeaponBay @key="@weaponBay.Id" WeaponBay="@weaponBay" UnitEntry="@UnitEntry" Disabled="@_userStateController.PlayerState.IsReady" OnUpdated="@SendUpdate" OnDeleted="@OnWeaponBayDeleted" />
                     }
                     <tr>
                         <td colspan="5">

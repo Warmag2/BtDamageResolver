@@ -1,10 +1,10 @@
 @typeparam TItem
 
-<div class="resolver_div_reorderablelistcontainer" ondragover="event.preventDefault();">
+<div class="resolver_div_reorderablelistcontainer @ContainerClass" ondragover="event.preventDefault();">
     @for (var i = 0; i < Items.Count; i++)
     {
         var capturedIndex = i;
-        <div class="resolver_div_reorderableitem draggable @(_dragOverIndex == capturedIndex ? "resolver_div_reorderableitem--dropover" : string.Empty)"
+        <div class="resolver_div_reorderableitem draggable @ItemClass @(_dragOverIndex == capturedIndex ? "resolver_div_reorderableitem--dropover" : string.Empty) @(ItemClassSelector?.Invoke(Items[capturedIndex]) ?? string.Empty)"
              draggable="true"
              @ondragstart="() => StartDrag(capturedIndex)"
              @ondragstart:stopPropagation="true"
@@ -43,6 +43,15 @@
 
     [Parameter]
     public EventCallback OnChanged { get; set; }
+
+    [Parameter]
+    public string ContainerClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ItemClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public Func<TItem, string> ItemClassSelector { get; set; }
 
     private void StartDrag(int index)
     {

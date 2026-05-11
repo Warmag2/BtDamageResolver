@@ -76,6 +76,7 @@ a, .btn-link {
     --color_bg_heat: #FFC0E0;
     --color_text_heat: #600030;
     --color_bg_dragdrop: #CCAAFF;
+    --color_bg_dragdrop_dropover: #AA88DD;
     --color_text_dragdrop: #000000;
     --color_outline_incomingdamage: #FF0000;
     --color_outline_outgoingdamage: #0060FF;
@@ -650,20 +651,18 @@ a, .btn-link {
 }
 
 .resolver_div_componentrow {
-    display: table-row;
-    margin: 1em;
-    padding: 0.5em;
-    border-radius: 1em;
-}
-
-/* Hiding some of the changes to '.resolver_div_componentrow' behind this CSS class so they can be applied gradually across different tabs */
-.flexbox-column {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    border-radius: 0.2rem;
+    margin: 0.2rem;
+    padding: 0;
 }
 
 .resolver_div_componentcell {
-    float: left;
+    display: flex;
+    margin: 0;
+    padding: 0.2rem 0.25rem;
+    display: flex;
 }
 
 .resolver_div_unitid
@@ -727,19 +726,41 @@ a, .btn-link {
 
 .resolver_div_unitname.draggable:hover { background-color: var(--color_bg_dragdrop); }
 
-.resolver_tr_weaponentry { background-color: var(--color_bg_weaponentry_inactive); }
-
-.resolver_tr_weaponentry.active { background-color: var(--color_bg_weaponentry_active); }
-
-.resolver_td_targetnumber {
-    width: 3.5rem;
-    font-weight: bold;
-    text-align: center;
+.resolver_div_weaponentrylist {
+    display: grid;
+    grid-template-columns: repeat(8, auto);
 }
 
-.resolver_td_weaponentry {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+.resolver_div_weaponentrylist > .resolver_div_reorderableitem {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+}
+
+.resolver_div_weaponentry {
+    background-color: var(--color_bg_weaponentry_inactive);
+}
+
+.resolver_div_weaponentry.active {
+    background-color: var(--color_bg_weaponentry_active);
+}
+
+.resolver_div_targetnumber {
+    justify-content: center;
+    width: 2.5rem;
+}
+
+.resolver_div_componentcell--hidden {
+    visibility: hidden;
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.resolver_div_weaponentrylist > .resolver_div_reorderablesentinel {
+    grid-column: 1 / -1;
 }
 
 .resolver_tr_weaponentry.draggable:hover {
@@ -748,16 +769,18 @@ a, .btn-link {
 
 .resolver_div_reorderableitem.draggable:hover { background-color: var(--color_bg_dragdrop); }
 
-.resolver_div_reorderableitem--dropover { border-top: 3px solid var(--color_bg_dragdrop); }
+.resolver_div_reorderableitem--dropover {
+    border-top: 0.5rem solid var(--color_bg_dragdrop_dropover);
+}
 
 .resolver_div_reorderablesentinel {
-    height: 0.4rem;
+    height: 1rem;
     transition: height 0.1s, background-color 0.1s;
 }
 
 .resolver_div_reorderablesentinel--dropover {
-    height: 1.5rem;
-    background-color: var(--color_bg_dragdrop);
+    height: 2rem;
+    background-color: var(--color_bg_dragdrop_dropover);
 }
 
 .emptydragtarget {
