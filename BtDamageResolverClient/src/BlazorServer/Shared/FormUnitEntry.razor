@@ -137,24 +137,24 @@
                 </div>
             </div>
 
-            @foreach(var weaponBay in UnitEntry.WeaponBays)
-            {
-                <FormFiringSolution @key=@weaponBay.Id UnitEntry="@UnitEntry" WeaponBay="@weaponBay" />
-            }
+            <div class="resolver_div_componentcell">
+                <div class="resolver_div_componentgroup">
+                    @foreach(var weaponBay in UnitEntry.WeaponBays)
+                    {
+                        <FormFiringSolution @key=@weaponBay.Id UnitEntry="@UnitEntry" WeaponBay="@weaponBay" />
+                    }
+                </div>
+            </div>
 
             <div class="resolver_div_componentcell">
                 <div class="resolver_div_componentgroup">
                     <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetUnitStateHidden(UnitEntry.Type)))">
-                        <div class="resolver_div_componentcell" style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
+                        <div style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
                             Heat
-                        </div>
-                        <div class="resolver_div_componentcell" style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
                             <FormNumberPickerDisplayOnly @key="@UnitEntry.Consumables.Heat" BracketCreatorDelegate="@CommonData.FormPickBracketsSinks" StyleSelectorDelegate="@VisualStyleController.GetStyleForHeat" NumberToDisplay="@UnitEntry.Consumables.Heat" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnHeatChanged"></FormNumberPickerDisplayOnly>
                         </div>
-                        <div class="resolver_div_componentcell" style="@(VisualStyleController.HideElement(VisualStyleController.GetPenaltyHidden(UnitEntry.Type)))">
+                        <div style="@(VisualStyleController.HideElement(VisualStyleController.GetPenaltyHidden(UnitEntry.Type)))">
                             Penalty
-                        </div>
-                        <div class="resolver_div_componentcell" style="@(VisualStyleController.HideElement(VisualStyleController.GetPenaltyHidden(UnitEntry.Type)))">
                             <FormNumberPickerDisplayOnly @key="@UnitEntry.Consumables.Penalty" BracketCreatorDelegate="@CommonData.FormPickBracketsPenalty" StyleSelectorDelegate="@VisualStyleController.GetStyleForPenalty" NumberToDisplay="@UnitEntry.Consumables.Penalty" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnPenaltyChanged"></FormNumberPickerDisplayOnly>
                         </div>
                     </div>
@@ -188,9 +188,9 @@
                     </div>
                     @foreach(var ammoUsage in UnitEntry.Consumables.AmmoUsage)
                     {
-                        <div class="resolver_div_componentrow">
-                            <div class="resolver_div_componentcell">@ammoUsage.Key</div>
-                            <div class="resolver_div_componentcell">
+                        <div class="resolver_div_componentrow resolver_div_ammo">
+                            <div>@ammoUsage.Key</div>
+                            <div>
                                 <FormNumberPickerDisplayOnly @key=@($"{UnitEntry.Id}_AmmoUsage_{ammoUsage.Key}_{ammoUsage.Value}") BracketCreatorDelegate="@CommonData.FormPickBracketsAmmo" StyleSelectorDelegate="@VisualStyleController.GetStyleForAmmo" NumberToDisplay="@ammoUsage.Value" Disabled="@_userStateController.PlayerState.IsReady" Hint="@ammoUsage.Key" OnChangedWithHint="@OnAmmoChanged"></FormNumberPickerDisplayOnly>
                                 <button class="resolver_button resolver_button_delete" disabled="@_userStateController.PlayerState.IsReady" @onclick="() => DeleteAmmoUsage(ammoUsage.Key)">X</button>
                             </div>

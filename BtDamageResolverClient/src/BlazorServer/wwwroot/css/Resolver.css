@@ -653,15 +653,13 @@ a, .btn-link {
 .resolver_div_componentrow {
     display: flex;
     flex-direction: row;
-    border-radius: 0.2rem;
-    margin: 0.2rem;
     padding: 0;
 }
 
 .resolver_div_componentcell {
     display: flex;
     margin: 0;
-    padding: 0.2rem 0.25rem;
+    padding: 0.1rem 0.3rem;
     display: flex;
 }
 
@@ -761,7 +759,8 @@ a, .btn-link {
 
 .resolver_div_componentgroup {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: repeat(4, auto);
+    align-content: start;
     margin-bottom: 0.2rem;
 }
 
