@@ -10,8 +10,8 @@
 
 @if(_userStateController.IsConnectedToGame)
 {
-    <div class="resolver_div_componentrow" style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
-        <div class="resolver_div_componentrow">
+    <div class="resolver_div_componentgroup">
+        <div class="resolver_div_componentrow" style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
             <div class="resolver_div_componentcell">
                 @if (UnitEntry.StaticDataHidden)
                 {
@@ -26,23 +26,23 @@
                 <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
             </div>
         </div>
-        <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(UnitEntry.StaticDataHidden))">
+        <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(UnitEntry.StaticDataHidden || UnitEntry.WeaponBays.Count <= 1))">
             <div class="resolver_div_componentcell">Arc</div>
             <div class="resolver_div_componentcell">
                 <FormRadio Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.Arc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Arc arc) => OnArcChanged(arc)"></FormRadio>
             </div>
         </div>
-    </div>
 
-    <ContainerReorderableList Items="@WeaponBay.Weapons" OnChanged="@OnUpdated" ContainerClass="resolver_div_weaponentrylist" ItemClass="resolver_div_weaponentry" ItemClassSelector="@(w => w.State == WeaponState.Active ? "active" : "inactive")">
-        <ItemTemplate Context="weaponEntry">
-            <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" WeaponBay="@WeaponBay" Disabled="@_userStateController.PlayerState.IsReady" OnUpdated="@OnUpdated" OnDeleted="@OnWeaponDeleted" />
-        </ItemTemplate>
-    </ContainerReorderableList>
-    
-    <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-        <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
-    </span>
+        <ContainerReorderableList Items="@WeaponBay.Weapons" OnChanged="@OnUpdated" ContainerClass="resolver_div_weaponentrylist" ItemClass="resolver_div_weaponentry" ItemClassSelector="@(w => w.State == WeaponState.Active ? "active" : "inactive")">
+            <ItemTemplate Context="weaponEntry">
+                <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" WeaponBay="@WeaponBay" Disabled="@_userStateController.PlayerState.IsReady" OnUpdated="@OnUpdated" OnDeleted="@OnWeaponDeleted" />
+            </ItemTemplate>
+        </ContainerReorderableList>
+
+        <div style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
+            <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
+        </div>
+    </div>
 }
 
 @code {

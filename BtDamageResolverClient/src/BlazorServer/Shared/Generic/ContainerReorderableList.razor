@@ -4,8 +4,8 @@
     @for (var i = 0; i < Items.Count; i++)
     {
         var capturedIndex = i;
-        <div class="resolver_div_reorderableitem draggable @ItemClass @(_dragOverIndex == capturedIndex ? "resolver_div_reorderableitem--dropover" : string.Empty) @(ItemClassSelector?.Invoke(Items[capturedIndex]) ?? string.Empty)"
-             draggable="true"
+        <div class="resolver_div_reorderableitem @(ShowDragHandle ? string.Empty : "draggable") @ItemClass @(_dragOverIndex == capturedIndex ? "resolver_div_reorderableitem--dropover" : string.Empty) @(ItemClassSelector?.Invoke(Items[capturedIndex]) ?? string.Empty)"
+             draggable="@(ShowDragHandle ? "false" : "true")"
              @ondragstart="() => StartDrag(capturedIndex)"
              @ondragstart:stopPropagation="true"
              @ondragenter="() => SetDragOver(capturedIndex)"
@@ -15,11 +15,26 @@
              @ondrop="() => Drop(capturedIndex)"
              @ondrop:stopPropagation="true"
              ondragover="event.preventDefault();">
-            @ItemTemplate(Items[capturedIndex])
+            @if (ShowDragHandle)
+            {
+                <div class="resolver_div_componentrow">
+                    <div class="resolver_div_draghandle"
+                         draggable="true"
+                         @ondragstart="() => StartDrag(capturedIndex)"
+                         @ondragstart:stopPropagation="true">⠿</div>
+                    <div class="resolver_div_componentcell">
+                        @ItemTemplate(Items[capturedIndex])
+                    </div>
+                </div>
+            }
+            else
+            {
+                @ItemTemplate(Items[capturedIndex])
+            }
         </div>
     }
     <div class="resolver_div_reorderablesentinel @(_dragOverSentinel ? "resolver_div_reorderablesentinel--dropover" : string.Empty)"
-         @ondragenter="() => { _dragOverIndex = null; _dragOverSentinel = true; }"
+         @ondragenter="SetDragOverSentinel"
          @ondragenter:stopPropagation="true"
          @ondragleave="() => _dragOverSentinel = false"
          @ondragleave:stopPropagation="true"
@@ -53,6 +68,9 @@
     [Parameter]
     public Func<TItem, string> ItemClassSelector { get; set; }
 
+    [Parameter]
+    public bool ShowDragHandle { get; set; }
+
     private void StartDrag(int index)
     {
         _draggedIndex = index;
@@ -62,8 +80,20 @@
 
     private void SetDragOver(int index)
     {
-        _dragOverIndex = index;
-        _dragOverSentinel = false;
+        if (_draggedIndex.HasValue)
+        {
+            _dragOverIndex = index;
+            _dragOverSentinel = false;
+        }
+    }
+
+    private void SetDragOverSentinel()
+    {
+        if (_draggedIndex.HasValue)
+        {
+            _dragOverIndex = null;
+            _dragOverSentinel = true;
+        }
     }
 
     private void CancelDrag()
