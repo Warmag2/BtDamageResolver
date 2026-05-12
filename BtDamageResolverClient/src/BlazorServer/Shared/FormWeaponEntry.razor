@@ -57,11 +57,7 @@
         <FormSelect @key=@($"{WeaponEntry.Id}_Ammo") Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
     }
 </div>
-<div class="resolver_div_componentcell" style="grid-column: 7">
-    <button class="resolver_button" disabled="@Disabled" @onclick="MoveUp"><b>&uarr;</b></button>
-    <button class="resolver_button" disabled="@Disabled" @onclick="MoveDown"><b>&darr;</b></button>
-</div>
-<div class="resolver_div_componentcell @(UnitEntry.StaticDataHidden ? "resolver_div_hidden" : string.Empty)" style="grid-column: 8">
+<div class="resolver_div_componentcell @(UnitEntry.StaticDataHidden ? "resolver_div_hidden" : string.Empty)" style="grid-column: 7">
     <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeapon">X</button>
 </div>
 
@@ -189,35 +185,6 @@
     {
         _weaponState = state ? WeaponState.Active : WeaponState.Inactive;
         UpdateWeaponEntry();
-    }
-
-    public void MoveUp()
-    {
-        var index = WeaponBay.Weapons.IndexOf(WeaponEntry);
-
-        if (index >= 1)
-        {
-            Swap(index - 1, index);
-        }
-    }
-
-    public void MoveDown()
-    {
-        var index = WeaponBay.Weapons.IndexOf(WeaponEntry);
-
-        if (index < WeaponBay.Weapons.Count - 1)
-        {
-            Swap(index, index + 1);
-        }
-    }
-
-    private void Swap(int i1, int i2)
-    {
-        var swapTarget = WeaponBay.Weapons[i2];
-        WeaponBay.Weapons[i2] = WeaponBay.Weapons[i1];
-        WeaponBay.Weapons[i1] = swapTarget;
-
-        OnUpdated.InvokeAsync();
     }
 
     private static string GetTargetNumberText(AttackLog attackLog, bool showAllLines)

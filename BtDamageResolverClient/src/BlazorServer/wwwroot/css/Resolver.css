@@ -722,8 +722,6 @@ a, .btn-link {
     }
 }
 
-.resolver_div_unitname.draggable:hover { background-color: var(--color_bg_dragdrop); }
-
 .resolver_div_weaponentrylist {
     display: grid;
     grid-template-columns: repeat(8, auto);
@@ -785,11 +783,9 @@ a, .btn-link {
     grid-column: 1 / -1;
 }
 
-.resolver_tr_weaponentry.draggable:hover {
+.resolver_div_reorderableitem.draggable:hover {
     background-color: var(--color_bg_dragdrop);
 }
-
-.resolver_div_reorderableitem.draggable:hover { background-color: var(--color_bg_dragdrop); }
 
 .resolver_div_draghandle {
     display: flex;

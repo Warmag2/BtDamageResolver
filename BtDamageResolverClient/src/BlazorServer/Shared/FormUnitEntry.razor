@@ -10,7 +10,7 @@
 
 @if(_userStateController.IsConnectedToGame)
 {
-    <div class="resolver_div_componentcontainer @(_userStateController.InvalidUnitIds.Contains(UnitEntry.Id) ? "error" : "alternatingcolors")" ondragover="event.preventDefault();">
+    <div class="resolver_div_componentcontainer @(_userStateController.InvalidUnitIds.Contains(UnitEntry.Id) ? "error" : "alternatingcolors")">
 
         <div class="resolver_div_componentrow">
             <div class="resolver_div_componentcell">
@@ -23,13 +23,13 @@
             </div>
         </div>
 
-        <div class="resolver_div_unitname resolver_div_componentcell draggable mobile" draggable="true" @ondrag="@StartDrag" @ondrop="@Drop">
+        <div class="resolver_div_unitname resolver_div_componentcell mobile">
             @UnitEntry.Name
         </div>
 
         <div class="resolver_div_componentrow">
 
-            <div class="resolver_div_unitname resolver_div_componentcell draggable desktop" draggable="true" @ondrag="@StartDrag" @ondrop="@Drop">
+            <div class="resolver_div_unitname resolver_div_componentcell desktop">
                 @UnitEntry.Name
             </div>
 
@@ -188,9 +188,9 @@
                     </div>
                     @foreach(var ammoUsage in UnitEntry.Consumables.AmmoUsage)
                     {
-                        <div class="resolver_div_componentrow resolver_div_ammo">
-                            <div>@ammoUsage.Key</div>
-                            <div>
+                        <div class="resolver_div_componentrow">
+                            <div class="resolver_div_ammo">
+                                @ammoUsage.Key
                                 <FormNumberPickerDisplayOnly @key=@($"{UnitEntry.Id}_AmmoUsage_{ammoUsage.Key}_{ammoUsage.Value}") BracketCreatorDelegate="@CommonData.FormPickBracketsAmmo" StyleSelectorDelegate="@VisualStyleController.GetStyleForAmmo" NumberToDisplay="@ammoUsage.Value" Disabled="@_userStateController.PlayerState.IsReady" Hint="@ammoUsage.Key" OnChangedWithHint="@OnAmmoChanged"></FormNumberPickerDisplayOnly>
                                 <button class="resolver_button resolver_button_delete" disabled="@_userStateController.PlayerState.IsReady" @onclick="() => DeleteAmmoUsage(ammoUsage.Key)">X</button>
                             </div>
@@ -294,9 +294,6 @@
 
     [Parameter]
     public EventCallback<UnitEntry> OnLoad { get; set; }
-
-    [Parameter]
-    public EventCallback<SwapTuple> OnSwap { get; set; }
 
     protected override void OnInitialized()
     {
@@ -538,27 +535,16 @@
         SendUpdate();
     }
 
-    public void OnWeaponBaySwap(SwapTuple swapTuple)
-    {
-        if (swapTuple.From != swapTuple.To)
-        {
-            SwapWeaponBays(swapTuple.From, swapTuple.To);
-        }
-    }
-
-    private void SwapWeaponBays(int ix1, int ix2)
-    {
-        (UnitEntry.WeaponBays[ix1], UnitEntry.WeaponBays[ix2]) = (UnitEntry.WeaponBays[ix2], UnitEntry.WeaponBays[ix1]);
-        SendUpdate();
-    }
-
     public void MoveUp()
     {
         var index = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
 
         if (index >= 1)
         {
-            OnSwap.InvokeAsync(new SwapTuple(index - 1, index));
+            (_userStateController.PlayerState.UnitEntries[index - 1], _userStateController.PlayerState.UnitEntries[index]) =
+                (_userStateController.PlayerState.UnitEntries[index], _userStateController.PlayerState.UnitEntries[index - 1]);
+            _userStateController.NotifyPlayerDataUpdated();
+            _userStateController.NotifyPlayerUnitListUpdated();
         }
     }
 
@@ -568,58 +554,11 @@
 
         if (index < _userStateController.PlayerState.UnitEntries.Count - 1)
         {
-            OnSwap.InvokeAsync(new SwapTuple(index, index + 1));
+            (_userStateController.PlayerState.UnitEntries[index], _userStateController.PlayerState.UnitEntries[index + 1]) =
+                (_userStateController.PlayerState.UnitEntries[index + 1], _userStateController.PlayerState.UnitEntries[index]);
+            _userStateController.NotifyPlayerDataUpdated();
+            _userStateController.NotifyPlayerUnitListUpdated();
         }
-    }
-
-    #endregion
-
-    #region dragdrop
-
-    void StartDrag()
-    {
-        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-        _userStateController.DraggedWeaponBayIndex = null;
-        _userStateController.DraggedWeaponIndex = null;
-    }
-
-    void Drop()
-    {
-        // Check that we are dragging an unit
-        if (_userStateController.DraggedUnitIndex.HasValue && !_userStateController.DraggedWeaponBayIndex.HasValue && !_userStateController.DraggedWeaponIndex.HasValue)
-        {
-            // Get target unit
-            var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-
-            // Don't do anything if we drag onto the same place
-            if (targetUnitIndex != _userStateController.DraggedUnitIndex.Value)
-            {
-                // Get dragged unit
-                var draggedUnit = _userStateController.PlayerState.UnitEntries[_userStateController.DraggedUnitIndex.Value];
-
-                // Insert this unit into the new place
-                _userStateController.PlayerState.UnitEntries.Insert(targetUnitIndex, draggedUnit);
-
-                if (targetUnitIndex > _userStateController.DraggedUnitIndex.Value)
-                {
-                    _userStateController.PlayerState.UnitEntries.RemoveAt(_userStateController.DraggedUnitIndex.Value);
-                }
-                else
-                {
-                    _userStateController.PlayerState.UnitEntries.RemoveAt(_userStateController.DraggedUnitIndex.Value + 1);
-                }
-
-                SendUpdate();
-
-                // Dragdrop always induces a ordering check
-                _userStateController.NotifyPlayerUnitListUpdated();
-            }
-        }
-
-        // Clear drag information
-        _userStateController.DraggedUnitIndex = null;
-        _userStateController.DraggedWeaponBayIndex = null;
-        _userStateController.DraggedWeaponIndex = null;
     }
 
     #endregion

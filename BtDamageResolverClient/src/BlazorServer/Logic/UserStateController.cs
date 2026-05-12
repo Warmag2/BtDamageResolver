@@ -82,21 +82,6 @@ public class UserStateController
     public event Action OnTargetNumbersUpdated;
 
     /// <summary>
-    /// Index of the dragged unit.
-    /// </summary>
-    public int? DraggedUnitIndex { get; set; }
-
-    /// <summary>
-    /// Index of the dragged weapon.
-    /// </summary>
-    public int? DraggedWeaponIndex { get; set; }
-
-    /// <summary>
-    /// Index of the dragged weapon bay.
-    /// </summary>
-    public int? DraggedWeaponBayIndex { get; set; }
-
-    /// <summary>
     /// The damage instance.
     /// </summary>
     public DamageInstance DamageInstance { get; private set; }
