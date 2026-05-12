@@ -13,7 +13,7 @@
              @ondragend="CancelDrag"
              @ondragend:stopPropagation="true"
              @ondrop="() => Drop(capturedIndex)"
-             @ondrop:stopPropagation="true"
+             @ondrop:stopPropagation="_draggedIndex.HasValue"
              ondragover="event.preventDefault();">
             @if (ShowDragHandle)
             {
@@ -39,7 +39,7 @@
          @ondragleave="() => _dragOverSentinel = false"
          @ondragleave:stopPropagation="true"
          @ondrop="() => Drop(Items.Count)"
-         @ondrop:stopPropagation="true"
+         @ondrop:stopPropagation="_draggedIndex.HasValue"
          ondragover="event.preventDefault();">
     </div>
 </div>
