@@ -751,12 +751,35 @@ a, .btn-link {
     width: 2.5rem;
 }
 
-.resolver_div_componentcell--hidden {
+.resolver_div_hidden {
     visibility: hidden;
     width: 0;
     min-width: 0;
     padding: 0;
     overflow: hidden;
+}
+
+.resolver_div_componentgroup {
+    display: grid;
+    grid-template-columns: auto auto;
+    margin-bottom: 0.2rem;
+}
+
+.resolver_div_componentgroup > .resolver_div_componentrow {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+}
+
+/* Single-cell rows (e.g. headers) span both columns automatically */
+.resolver_div_componentgroup > .resolver_div_componentrow > .resolver_div_componentcell:only-child {
+    grid-column: 1 / -1;
+}
+
+/* Non-row children (containers, buttons, etc.) span the full width */
+.resolver_div_componentgroup > *:not(.resolver_div_componentrow) {
+    grid-column: 1 / -1;
 }
 
 .resolver_div_weaponentrylist > .resolver_div_reorderablesentinel {
