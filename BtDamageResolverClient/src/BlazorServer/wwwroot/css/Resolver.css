@@ -811,12 +811,19 @@ a, .btn-link {
 }
 
 .resolver_div_reorderablesentinel {
-    height: 1rem;
-    transition: height 0.1s, background-color 0.1s;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.1s, background-color 0.1s, outline-color 0.1s;
+    outline: 2px dashed transparent;
+    outline-offset: -2px;
+}
+
+.resolver_div_reorderablelistcontainer--dragging > .resolver_div_reorderablesentinel {
+    height: 2rem;
+    outline-color: var(--color_bg_dragdrop_dropover);
 }
 
 .resolver_div_reorderablesentinel--dropover {
-    height: 2rem;
     background-color: var(--color_bg_dragdrop_dropover);
 }
 

@@ -1,6 +1,6 @@
 @typeparam TItem
 
-<div class="resolver_div_reorderablelistcontainer @ContainerClass" ondragover="event.preventDefault();">
+<div class="resolver_div_reorderablelistcontainer @ContainerClass @(_draggedIndex.HasValue ? "resolver_div_reorderablelistcontainer--dragging" : string.Empty)" ondragover="event.preventDefault();">
     @for (var i = 0; i < Items.Count; i++)
     {
         var capturedIndex = i;
