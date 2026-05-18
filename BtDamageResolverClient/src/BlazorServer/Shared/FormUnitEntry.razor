@@ -23,18 +23,20 @@
             </div>
         </div>
 
-        <div class="resolver_div_unitname resolver_div_componentcell mobile">
-            @UnitEntry.Name
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_componentcell resolver_div_unitname mobile">
+                @UnitEntry.Name
+            </div>
         </div>
 
         <div class="resolver_div_componentrow">
 
-            <div class="resolver_div_unitname resolver_div_componentcell desktop">
+            <div class="resolver_div_componentcell resolver_div_unitname desktop">
                 @UnitEntry.Name
             </div>
 
-            <div class="resolver_div_componentcell" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-                <div class="resolver_div_componentgroup">
+            <div class="resolver_div_componentblock">
+                <div class="resolver_div_componentgroup" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
                     <div class="resolver_div_componentrow">
                         <div class="resolver_div_componentcell">Name</div>
                         <div class="resolver_div_componentcell">
@@ -86,7 +88,7 @@
                 </div>
             </div>
 
-            <div class="resolver_div_componentcell">
+            <div class="resolver_div_componentblock">
                 <div class="resolver_div_componentgroup">
                     <div class="resolver_div_componentrow">
                         <div class="resolver_div_componentcell"><b>Unit parameters</b></div>
@@ -137,7 +139,7 @@
                 </div>
             </div>
 
-            <div class="resolver_div_componentcell">
+            <div class="resolver_div_componentblock">
                 <div class="resolver_div_componentgroup">
                     @foreach(var weaponBay in UnitEntry.WeaponBays)
                     {
@@ -146,7 +148,7 @@
                 </div>
             </div>
 
-            <div class="resolver_div_componentcell">
+            <div class="resolver_div_componentblock">
                 <div class="resolver_div_componentgroup">
                     <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetUnitStateHidden(UnitEntry.Type)))">
                         <div style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">

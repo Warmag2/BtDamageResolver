@@ -650,6 +650,37 @@ a, .btn-link {
     color: var(--color_text_base);
 }
 
+.resolver_div_componentblock {
+    display: flex;
+    margin: 0;
+    padding: 0.1rem 0.3rem;
+    display: flex;
+}
+
+.resolver_div_componentgroup {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    align-content: start;
+    margin-bottom: 0.2rem;
+}
+
+    .resolver_div_componentgroup > .resolver_div_componentrow {
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: subgrid;
+        align-items: center;
+    }
+
+        /* Single-cell rows (e.g. headers) span both columns automatically */
+        .resolver_div_componentgroup > .resolver_div_componentrow > .resolver_div_componentcell:only-child {
+            grid-column: 1 / -1;
+        }
+
+    /* Non-row children (containers, buttons, etc.) span the full width */
+    .resolver_div_componentgroup > *:not(.resolver_div_componentrow) {
+        grid-column: 1 / -1;
+    }
+
 .resolver_div_componentrow {
     display: flex;
     flex-direction: row;
@@ -708,20 +739,6 @@ a, .btn-link {
         display: block;
     }
 
-@media only screen and (min-width: 1024px) {
-    .resolver_div_unitname.desktop {
-        display: block;
-    }
-
-    .resolver_div_unitname.mobile {
-        display: none;
-    }
-
-    .resolver_div_unit {
-        width: auto;
-    }
-}
-
 .resolver_div_weaponentrylist {
     display: grid;
     grid-template-columns: repeat(8, auto);
@@ -753,30 +770,6 @@ a, .btn-link {
     min-width: 0;
     padding: 0;
     overflow: hidden;
-}
-
-.resolver_div_componentgroup {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
-    align-content: start;
-    margin-bottom: 0.2rem;
-}
-
-.resolver_div_componentgroup > .resolver_div_componentrow {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    align-items: center;
-}
-
-/* Single-cell rows (e.g. headers) span both columns automatically */
-.resolver_div_componentgroup > .resolver_div_componentrow > .resolver_div_componentcell:only-child {
-    grid-column: 1 / -1;
-}
-
-/* Non-row children (containers, buttons, etc.) span the full width */
-.resolver_div_componentgroup > *:not(.resolver_div_componentrow) {
-    grid-column: 1 / -1;
 }
 
 .resolver_div_weaponentrylist > .resolver_div_reorderablesentinel {
@@ -1038,4 +1031,22 @@ a, .btn-link {
 .resolver_status_ammo_normal {
     background-color: var(--color_bg_status_ammo_normal);
     color: var(--color_text_status_ammo_normal);
+}
+
+/*******************************************************************************
+    Desktop-mobile switches
+*******************************************************************************/
+
+@media only screen and (min-width: 1024px) {
+    .resolver_div_unitname.desktop {
+        display: block;
+    }
+
+    .resolver_div_unitname.mobile {
+        display: none;
+    }
+
+    .resolver_div_unit {
+        width: auto;
+    }
 }
