@@ -130,16 +130,14 @@ a, .btn-link {
 }
 
 /*******************************************************************************
-    Generic inputs
+    Generic inputs and classes
 *******************************************************************************/
 
 .resolver_input_text {
-    min-width: 12rem;
-    max-width: 24rem;
 }
 
-.resolver_wide {
-    width: 100% !important;
+.fullwidth {
+    width: 100%;
 }
 
 .resolver_input.reminder {
@@ -306,6 +304,8 @@ a, .btn-link {
 
 .resolver_div_combobox {
     position: absolute;
+    top: 100%;
+    left: 0;
     overflow-y: auto;
     max-height: 300px;
     width: 16rem;
@@ -339,9 +339,10 @@ a, .btn-link {
 
 .resolver_div_picker {
     position: absolute;
+    top: 100%;
+    left: 0;
     overflow-y: auto;
-    max-width: 15rem;
-    padding: 4px 4px;
+    width: 16rem;
     z-index: 9999 !important;
     background-color: var(--color_bg_base);
 }
@@ -349,7 +350,7 @@ a, .btn-link {
 .resolver_div_pickeritem {
     border: 1px outset var(--color_outline_base);
     float: left;
-    padding: 4px 8px;
+    padding: 0.2rem 0.3rem;
     vertical-align: middle;
     margin-left: 0;
     margin-right: 0;
@@ -372,8 +373,8 @@ a, .btn-link {
     color: var(--color_text_hover_selected);
 }
 
-.resolver_distance_picker_display_only {
-    padding: 4px 8px;
+.resolver_number_picker_display_only {
+    padding: 0.2rem 0.3rem;
     font-weight: bold;
 }
 
@@ -658,10 +659,12 @@ a, .btn-link {
 }
 
 .resolver_div_componentgroup {
-    display: grid;
+    display: inline-grid;
+    vertical-align: top;
     grid-template-columns: repeat(4, auto);
     align-content: start;
     margin-bottom: 0.2rem;
+    max-width: 50rem;
 }
 
     .resolver_div_componentgroup > .resolver_div_componentrow {
@@ -689,9 +692,16 @@ a, .btn-link {
 
 .resolver_div_componentcell {
     display: flex;
+    align-items: center;
     margin: 0;
     padding: 0.1rem 0.3rem;
-    display: flex;
+}
+
+/* Positioned wrapper for picker/combobox dropdowns so top:100% anchors correctly */
+.resolver_div_inputwrapper {
+    position: relative;
+    display: inline-flex;
+    flex: 1;
 }
 
 .resolver_div_unitid
@@ -728,15 +738,14 @@ a, .btn-link {
 }
 
     .resolver_div_unitname.desktop {
-        line-height: 95%;
+        display: inline-block;
+        vertical-align: top;
         text-align: center;
         writing-mode: vertical-lr;
-        display: none;
     }
 
     .resolver_div_unitname.mobile {
-        text-align: left;
-        display: block;
+        display: none;
     }
 
 .resolver_div_weaponentrylist {
@@ -1037,16 +1046,16 @@ a, .btn-link {
     Desktop-mobile switches
 *******************************************************************************/
 
-@media only screen and (min-width: 1024px) {
+@media (max-width: 50rem) {
     .resolver_div_unitname.desktop {
-        display: block;
-    }
-
-    .resolver_div_unitname.mobile {
         display: none;
     }
 
-    .resolver_div_unit {
-        width: auto;
+    .resolver_div_unitname.mobile {
+        display: block;
+    }
+
+    .resolver_div_componentgroup {
+        max-width: 100%;
     }
 }

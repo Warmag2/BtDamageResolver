@@ -7,27 +7,43 @@
     var numberPrefix = DisplayNumberPrefix ? numberPrefixString : string.Empty;
 }
 
-<span class="resolver_distance_picker_display_only @(StyleSelectorDelegate(_selectedOption))" @onclick="Pick">@($"{numberPrefix}{NumberToDisplay}")</span>
-
-<div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
-    @foreach (var option in _options)
+<div class="resolver_div_inputwrapper">
+    @if (_editingDirectly)
     {
-        var optionToSelect = option.End;
-        if (_selectedOption >= option.Begin && _selectedOption <= option.End)
-        {
-            <div class="resolver_div_pickeritem active" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
-        }
-        else
-        {
-            <div class="resolver_div_pickeritem" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
-        }
+        <input class="resolver_input resolver_number" type="number" min="@Min" max="@Max" value="@_selectedOption" disabled="@Disabled"
+            @onchange="OnDirectInputChange"
+            @onblur="CommitDirectEdit"
+            @onkeydown="OnKeyDown"
+            />
     }
+    else
+    {
+        <span class="resolver_number_picker_display_only @(StyleSelectorDelegate(_selectedOption))" @onclick="StartDirectEdit">@($"{numberPrefix}{NumberToDisplay}")</span>
+    }
+    
+    <button class="resolver_button" disabled="@Disabled" @onclick="Pick">▾</button>
+
+    <div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
+        @foreach (var option in _options)
+        {
+            var optionToSelect = option.End;
+            if (_selectedOption >= option.Begin && _selectedOption <= option.End)
+            {
+                <div class="resolver_div_pickeritem active" @onclick="@(e => SelectOptionManual(optionToSelect))">@option.ToString(DisplayNumberPrefix)</div>
+            }
+            else
+            {
+                <div class="resolver_div_pickeritem" @onclick="@(e => SelectOptionManual(optionToSelect))">@option.ToString(DisplayNumberPrefix)</div>
+            }
+        }
+    </div>
 </div>
 
 @code
 {
     private int _selectedOption;
     private bool _selectionBoxHidden = true;
+    private bool _editingDirectly = false;
     private List<PickBracket> _options = new();
 
     [Parameter]
@@ -72,20 +88,50 @@
         }
     }
 
-    private void Pick()
+    private void OnDirectInputChange(ChangeEventArgs e)
     {
-        if (!_selectionBoxHidden)
+        if (int.TryParse(e.Value?.ToString(), out var parsed))
+        {
+            _selectedOption = parsed;
+        }
+    }
+
+    private void StartDirectEdit()
+    {
+        if (!Disabled)
         {
             HideSelectionBox();
+            _editingDirectly = true;
         }
-        else
+    }
+
+    private void CommitDirectEdit()
+    {
+        _editingDirectly = false;
+        SelectedOptionInternal = Math.Clamp(_selectedOption, Min, Max);
+    }
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" || e.Key == "Escape")
+        {
+            CommitDirectEdit();
+        }
+    }
+
+    private void Pick()
+    {
+        if (_selectionBoxHidden)
         {
             if (!Disabled)
             {
                 _options = BracketCreatorDelegate();
-
                 ShowSelectionBox();
             }
+        }
+        else
+        {
+            HideSelectionBox();
         }
     }
 
