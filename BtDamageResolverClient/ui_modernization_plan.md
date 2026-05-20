@@ -121,7 +121,7 @@ Other elements using `float: left` that won't cooperate on mobile:
 
 ---
 
-## Proposed Implementation Plan
+## Implementation Plan
 
 ### ~~Phase 1 — Remove Dead CSS~~ ✓ Done
 `site.css` deleted. Live rules merged into top of `Resolver.css`. Open-iconic import dropped (unused).
@@ -155,124 +155,40 @@ Other elements using `float: left` that won't cooperate on mobile:
   - Unit cards can be 2-up or full-width depending on content
   - Unit name switches from horizontal (mobile) to vertical sidebar (desktop) — already handled
 
-### Phase 5 — Replace Layout Tables with Flex Form Sections
+### ~~Phase 5 — Replace Layout Tables with CSS Grid Divs~~ ✓ Mostly done
 
-Every `<table>` used for label+input pair alignment (not for tabular data) should be replaced with a flexbox form pattern. This also allows logically related compact fields to share a row.
+**Approach used:** Rather than introducing new CSS form section classes as originally planned, the existing `resolver_div_componentgroup` / `resolver_div_componentrow` / `resolver_div_componentcell` CSS grid classes were reused throughout, with:
+- Inline `style` to set custom `grid-template-columns` when the default doesn't fit (e.g. 2-col, 5-col)
+- A `tablerows` modifier class added to `resolver_div_componentgroup` for alternating row colors
 
-#### New CSS form pattern
+**Genuine data display tables (`FormDataDisplay*`) were intentionally kept as `<table>`** — they display tabular data, not layout.
 
-```css
-/* A section groups one conceptual block of fields */
-.resolver_form_section { display: flex; flex-direction: column; gap: 0.4rem; }
+**The game list (`FormGameList` + `FormGameEntry`) was reverted to `<table>`** — the converted result did not render well enough to keep.
 
-/* A row holds one or more fields side-by-side, wraps on narrow screens */
-.resolver_form_row { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; }
+#### Status per file
 
-/* A field is a label+input pair */
-.resolver_form_field { display: flex; align-items: center; gap: 0.3rem; }
+| File | Status | Notes |
+|------|--------|-------|
+| `FormWeaponBay.razor` | ✓ Done (prior session) | Uses `resolver_div_weaponentrylist` (8-col subgrid) |
+| `FormWeaponEntry.razor` | ✓ Done (prior session) | Emits `resolver_div_componentrow resolver_div_weaponentry` with 8 cells |
+| `FormUnitEntry.razor` | ✓ Done (prior session) | Uses `resolver_div_componentgroup` / row / cell throughout |
+| `FormServer.razor` | ✓ Done | Converted from table to `resolver_div_componentgroup` / row / cell |
+| `ComponentHeatAmmoEstimate.razor` | ✓ Done | Single-column table → plain nested divs |
+| `FormDamageInstance.razor` | ✓ Done | 2-col componentgroup with inline grid-template-columns |
+| `ComponentWeaponEntry.razor` | ✓ Done | Emits `resolver_div_componentrow resolver_div_weaponentry` with 5 cells (read-only context) |
+| `ComponentUnit.razor` | ⚠️ Converted but rendering incorrectly | Needs investigation and fix |
+| `FormGameList.razor` | ✗ Reverted to `<table>` | Converted result didn't render well |
+| `FormGameEntry.razor` | ✗ Reverted to `<tr>/<td>` | Reverted together with FormGameList |
+| `FormDataDisplayClusterTable.razor` | ✓ Kept as `<table>` | Genuine 2D dynamic matrix |
+| `FormDataDisplayWeapon.razor` | ✓ Kept as `<table>` | Tabular data |
+| `FormDataDisplayUnit.razor` | ✓ Kept as `<table>` | Tabular data |
+| `FormDataDisplayPaperDoll.razor` | ✓ Kept as `<table>` | Tabular data |
+| `FormDataDisplayCriticalDamageTable.razor` | ✓ Kept as `<table>` | Tabular data |
 
-/* Full-width field (e.g. the Name text input) */
-.resolver_form_field.wide { flex-basis: 100%; }
+#### Dead CSS to clean up (now unused after table removals)
+`resolver_tr_unitinformation`, `resolver_td_unitinformation_label`, `resolver_td_unitinformation_data`, `resolver_tr_weaponentry`, `resolver_td_targetnumber`
 
-/* Section header (replaces <th colspan="2">) */
-.resolver_form_section_header { font-weight: bold; font-size: 0.9em; margin-bottom: 0.2rem; }
-```
-
-Conditional visibility: `VisualStyleController.HideElement()` already returns `display:none`, so applying it on a `<div class="resolver_form_field">` instead of a `<tr>` works without any C# changes.
-
-#### FormUnitEntry.razor — Left panel (Unit static data)
-
-Current (8-row label/input table):
-```
-Name        [text___________]
-Gunnery     [0][1][2][3][4][5][6][7][8]
-Piloting    [0][1][2][3][4][5][6][7][8]
-Type        [dropdown_______]
-Tonnage     [picker]
-Speed       [picker]
-Jump Jets   [picker]
-Features +  [chip] [chip] ...
-```
-
-Proposed compact flex layout:
-```
-[Name text_____________________________]   ← wide field, full row
-[Gunnery [0-8]]  [Piloting [0-8]]         ← two compact pickers, same row
-[Type [dropdown___]]                       ← full row (select can be wide)
-[Tonnage [picker]] [Speed [picker]] [Jump Jets [picker]]  ← 3 conditionals, same row
-[Features + ] [chip] [chip] ...            ← full row
-```
-
-Markup change: replace `<table>` + `<tr>`/`<td>` with `<div class="resolver_form_section">` containing `<div class="resolver_form_row">` groups. Gunnery and Piloting share one row; Tonnage/Speed/Jump Jets share one row and wrap gracefully when some are hidden.
-
-#### FormUnitEntry.razor — Middle panel (Unit parameters)
-
-Current (7-row label/input table):
-```
-[Unit parameters header]
-Troopers       [picker]
-Dissipation    [picker]
-Movement       [Stand][Walk][Run][Immobile][...]
-Evasion        [Evading toggle]
-Hexes moved    [0][1][2]...[n]
-Stance         [Stand][Crouch][Prone][...]
-Status effects [Narced][Tagged]
-```
-
-Proposed:
-```
-Unit parameters
-[Troopers [picker]] [Dissipation [picker]]   ← both compact, same row
-[Movement [radio buttons]]                    ← full row (can be many options)
-[Evasion [toggle]] [Status: [Narced][Tagged]] ← small toggles, share a row
-[Hexes moved [radio buttons]]                 ← full row
-[Stance [radio buttons]]                      ← full row
-```
-
-#### FormFiringSolution.razor
-
-Current (5-row table):
-```
-Target     [combobox_______]
-Distance   [0][1][2]...[50]
-Modifier   [-2][-1][0][+1][+2]
-Direction  [Front][Left][Right][Rear] (conditional)
-Cover      [None][Partial][Full] (conditional)
-```
-
-Proposed:
-```
-[Target [combobox_____________]]           ← full row
-[Distance [picker]] [Modifier [radio]]     ← both compact, same row
-[Direction [radio]] [Cover [radio]]        ← both conditional, same row (wrap if too wide)
-```
-
-#### FormDamageInstance.razor
-
-Current (5-row table):
-```
-Target     [combobox_______]
-Damage     [number input]
-Clustering [1][2][5]
-Direction  [radio] (conditional)
-Cover      [radio] (conditional)
-```
-
-Proposed:
-```
-[Target [combobox_______]]                 ← full row
-[Damage [input]] [Clustering [1][2][5]]    ← same row
-[Direction [radio]] [Cover [radio]]        ← conditionals, same row
-[Execute button]
-```
-
-#### ComponentHeatAmmoEstimate.razor
-
-Currently uses a `<table>` with single-column rows just for stacking. Replace with `<div>` elements directly — no table needed at all.
-
-#### FormWeaponBay.razor / FormWeaponEntry.razor — Keep as `<table>`
-
-The weapon list is genuine tabular data (multiple weapons, same columns: target#, state, amount, modifier, weapon, ammo, buttons). Keep as `<table>` but add an `overflow-x: auto` wrapper div in `FormUnitEntry.razor` around the weapons table section. On mobile, the user scrolls horizontally within that block.
+Note: `resolver_table_gamelist` is still used (FormGameList reverted to table).
 
 ### Phase 6 — Visual Block Clarity
 - Add a border or subtle background to `resolver_div_componentcontainer` for unit cards (currently alternating colors only)
@@ -282,13 +198,36 @@ The weapon list is genuine tabular data (multiple weapons, same columns: target#
 
 ---
 
-## Files to Change
+## Input Component Improvements (completed this session, outside original plan)
+
+### FormComboBox
+- Added `combobox` modifier class to `resolver_div_inputwrapper` with `max-width: 20rem` to prevent it from expanding beyond its container.
+- The hidden-select sizer approach (to shrink-to-content) was tried but abandoned — it drove grid column width up through the whole componentgroup. `max-width` cap is the practical compromise.
+
+### FormNumber / FormNumberPicker / FormNumberPickerDisplayOnly — Refactored
+`FormNumber` is now the shared number input primitive used by both `FormNumberPicker` and `FormNumberPickerDisplayOnly`. Key behaviors:
+- Commits value only on blur / Enter / Esc (not on every keystroke)
+- Spinner arrows commit immediately when the input is **not** focused; deferred to blur/Enter/Esc when focused
+- `ShouldRender()` returns false while focused, preventing parent re-renders from overwriting mid-typing DOM input value (important for partial inputs like a leading `-`)
+- Exposes `FocusAsync()` for programmatic focus from parent components
+- `Width` parameter removed (was unused). `OnInitialized` and `_typingMode` removed (both redundant)
+
+`FormNumberPickerDisplayOnly` now auto-focuses the inline input when switching from span to edit mode (so Enter/Esc work immediately without an extra click).
+
+---
+
+## Files Changed
 
 | File | Changes |
 |------|---------|
 | ~~`src/BlazorServer/wwwroot/css/site.css`~~ | ✓ Deleted — live rules merged into `Resolver.css` |
-| `src/BlazorServer/wwwroot/css/Resolver.css` | ✓ Bugs fixed — modernize layout classes, add breakpoints, add new form section classes (remaining) |
-| `src/BlazorServer/Shared/FormUnitEntry.razor` | Replace two layout tables (static data + unit parameters) with flex form sections; wrap weapon table in overflow-x:auto div |
-| `src/BlazorServer/Shared/FormFiringSolution.razor` | Replace layout table with flex form section |
-| `src/BlazorServer/Shared/FormDamageInstance.razor` | Replace layout table with flex form section |
-| `src/BlazorServer/Shared/ComponentHeatAmmoEstimate.razor` | Replace single-column table with plain divs |
+| `src/BlazorServer/wwwroot/css/Resolver.css` | ✓ Bugs fixed; `tablerows` modifier added; `combobox` wrapper modifier added; dead CSS cleanup pending |
+| `src/BlazorServer/Shared/FormServer.razor` | ✓ Converted to `resolver_div_componentgroup` / row / cell |
+| `src/BlazorServer/Shared/ComponentHeatAmmoEstimate.razor` | ✓ Table → plain divs |
+| `src/BlazorServer/Shared/FormDamageInstance.razor` | ✓ Table → 2-col componentgroup |
+| `src/BlazorServer/Shared/ComponentWeaponEntry.razor` | ✓ tr → componentrow (5 cells, read-only context) |
+| `src/BlazorServer/Shared/ComponentUnit.razor` | ⚠️ Converted but rendering incorrectly — needs fix |
+| `src/BlazorServer/Shared/Generic/FormComboBox.razor` | ✓ Added `combobox` modifier class |
+| `src/BlazorServer/Shared/Generic/FormNumber.razor` | ✓ Full rewrite — commit-on-blur pattern, spinner support, ShouldRender |
+| `src/BlazorServer/Shared/Generic/FormNumberPicker.razor` | ✓ Now uses FormNumber instead of bare input |
+| `src/BlazorServer/Shared/Generic/FormNumberPickerDisplayOnly.razor` | ✓ Now uses FormNumber with auto-focus |

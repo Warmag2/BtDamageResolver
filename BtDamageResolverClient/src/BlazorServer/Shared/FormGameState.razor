@@ -1,6 +1,5 @@
 ﻿@inherits BaseFaemiyahComponent
 @using Faemiyah.BtDamageResolver.Api.Entities
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @implements IDisposable
@@ -85,7 +84,6 @@
 
     private void OnUnitLoad(UnitEntry unit)
     {
-        // No need to do more.
         _userStateController.NotifyPlayerDataUpdated();
     }
 

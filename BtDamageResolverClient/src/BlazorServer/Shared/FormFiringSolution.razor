@@ -25,6 +25,12 @@
                     <FormComboBox @key=@($"{WeaponBay.Id}_Target_{_userStateController.UnitListHash}") EnableErrorDisplay="true" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
                 </div>
             </div>
+            <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1 || VisualStyleController.GetRelativeArcHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
+                <div class="resolver_div_componentcell">Relative arc</div>
+                <div class="resolver_div_componentcell">
+                    <FormRadio @key=@($"{WeaponBay.Id}_RelativeArc") Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.FiringSolution.RelativeArc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Arc relativeArc) => OnRelativeArcChanged(relativeArc)"></FormRadio>
+                </div>
+            </div>
             <div class="resolver_div_componentrow">
                 <div class="resolver_div_componentcell">Distance</div>
                 <div class="resolver_div_componentcell">
@@ -79,6 +85,15 @@
         if (WeaponBay.FiringSolution.Target != target)
         {
             WeaponBay.FiringSolution.Target = target;
+            SendUpdate();
+        }
+    }
+
+    private void OnRelativeArcChanged(Arc relativeArc)
+    {
+        if (WeaponBay.FiringSolution.RelativeArc != relativeArc)
+        {
+            WeaponBay.FiringSolution.RelativeArc = relativeArc;
             SendUpdate();
         }
     }

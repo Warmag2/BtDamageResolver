@@ -308,7 +308,6 @@ a, .btn-link {
     left: 0;
     overflow-y: auto;
     max-height: 300px;
-    width: 16rem;
     z-index: 9999 !important;
 }
 
@@ -333,6 +332,18 @@ a, .btn-link {
     color: var(--color_text_hover_selected);
 }
 
+/* Positioned wrapper for picker/combobox dropdowns so top:100% anchors correctly */
+.resolver_div_inputwrapper {
+    position: relative;
+    display: inline-flex;
+    flex: 1;
+}
+
+    /* Combobox modifier: cap width to a sensible max */
+    .resolver_div_inputwrapper.combobox {
+        max-width: 25rem;
+    }
+
 /*******************************************************************************
     Distance picker input
 *******************************************************************************/
@@ -344,7 +355,6 @@ a, .btn-link {
     overflow-y: auto;
     width: 16rem;
     z-index: 9999 !important;
-    background-color: var(--color_bg_base);
 }
 
 .resolver_div_pickeritem {
@@ -382,7 +392,8 @@ a, .btn-link {
     PickSet input
 *******************************************************************************/
 .resolver_div_pickset {
-    float: left;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 /*******************************************************************************
@@ -482,6 +493,16 @@ a, .btn-link {
 .resolver_table tr:nth-child(even) { background-color: var(--color_bg_table_even); }
 
 .resolver_table tr:nth-child(odd) { background-color: var(--color_bg_table_odd); }
+
+/* Div-based data table: add tablerows to resolver_div_componentgroup */
+.resolver_div_componentgroup.tablerows > .resolver_div_componentrow { color: var(--color_text_table); }
+.resolver_div_componentgroup.tablerows > .resolver_div_componentrow:not(.header):nth-child(even) { background-color: var(--color_bg_table_even); }
+.resolver_div_componentgroup.tablerows > .resolver_div_componentrow:not(.header):nth-child(odd) { background-color: var(--color_bg_table_odd); }
+.resolver_div_componentgroup.tablerows > .resolver_div_componentrow.header {
+    background-color: var(--color_bg_table_header);
+    color: var(--color_text_table_header);
+    font-weight: bold;
+}
 
 /*******************************************************************************
     Accordion
@@ -615,6 +636,21 @@ a, .btn-link {
 }
 
 /*******************************************************************************
+    Login screen
+*******************************************************************************/
+
+.resolver_span_loginindicator {
+    padding: 0.1rem 0.5rem;
+}
+    .resolver_span_loginindicator.active {
+        background-color: var(--color_bg_status_normal)
+    }
+
+    .resolver_span_loginindicator.inactive {
+        background-color: var(--color_bg_status_warning)
+    }
+
+/*******************************************************************************
     Resolver form base look
 *******************************************************************************/
 
@@ -624,21 +660,21 @@ a, .btn-link {
 
 .resolver_header {
     padding: 0;
-    margin-top: 0.5rem;
-    margin-bottom: 0.2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
     margin-right: 1rem;
 }
 
-.resolver_div_login {
-    width: 100%;
+.resolver_div_componentlistcontainer {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
 }
 
-.resolver_div_componentlistcontainer { position: relative; }
-
 .resolver_div_componentcontainer {
-    display: table;
     position: relative;
-    float: left;
 }
 
 .resolver_div_componentcontainer.error {
@@ -664,7 +700,7 @@ a, .btn-link {
     grid-template-columns: repeat(4, auto);
     align-content: start;
     margin-bottom: 0.2rem;
-    max-width: 50rem;
+    max-width: 40rem;
 }
 
     .resolver_div_componentgroup > .resolver_div_componentrow {
@@ -697,13 +733,6 @@ a, .btn-link {
     padding: 0.1rem 0.3rem;
 }
 
-/* Positioned wrapper for picker/combobox dropdowns so top:100% anchors correctly */
-.resolver_div_inputwrapper {
-    position: relative;
-    display: inline-flex;
-    flex: 1;
-}
-
 .resolver_div_unitid
 {
     margin-top: 0.2rem;
@@ -718,14 +747,6 @@ a, .btn-link {
     margin-bottom: 0.2rem;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
-}
-
-.resolver_div_unit
-{
-    margin-right: 0.5rem;
-    margin-top: 0.2rem;
-    margin-bottom: 0.2rem;
-    width: 100%;
 }
 
 .resolver_div_unitname {
@@ -848,7 +869,6 @@ a, .btn-link {
 /* Unit display label */
 
 .resolver_div_unitinformation_data {
-    float: left;
     padding-left: 4px;
     padding-right: 4px;
     padding-top: 1px;
@@ -863,7 +883,7 @@ a, .btn-link {
 }
 
 .resolver_style_alignright {
-    float: right !important;
+    float: right;
 }
 
 /*******************************************************************************

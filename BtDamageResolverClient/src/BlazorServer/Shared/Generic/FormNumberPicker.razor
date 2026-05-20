@@ -8,7 +8,7 @@
 
 <div class="resolver_div_inputwrapper">
 
-    <input class="resolver_input resolver_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+    <FormNumber SelectedOption="@_selectedOption" Min="@Min" Max="@Max" Disabled="@Disabled" ComparisonTimeStamp="@ComparisonTimeStamp" OnChanged="OnFormNumberCommit" />
 
     <button class="resolver_button" disabled="@pickDisabled" @onclick="Pick">▾</button>
 
@@ -33,7 +33,6 @@
     private int _selectedOption;
     private bool _selectionBoxHidden = true;
     private List<PickBracket> _options = new ();
-    private DateTime _updateTimeStamp = DateTime.MinValue;
 
     [Parameter]
     public Func<List<PickBracket>> BracketCreatorDelegate { get; set; }
@@ -63,10 +62,11 @@
         {
             _selectedOption = value;
             HideSelectionBox();
-            _updateTimeStamp = DateTime.UtcNow;
             OnChanged.InvokeAsync(value);
         }
     }
+
+    private void OnFormNumberCommit(int value) => SelectedOptionInternal = value;
 
     private void Pick()
     {
@@ -95,7 +95,6 @@
     protected override void OnInitialized()
     {
         SelectedOptionInternal = SelectedOption;
-        _updateTimeStamp = DateTime.MinValue;
     }
 
     private void SelectOptionManual(int optionToSelect)

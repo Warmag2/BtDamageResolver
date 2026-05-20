@@ -16,10 +16,10 @@
     }
 }
 
-<div class="resolver_div_inputwrapper fullwidth">
+<div class="resolver_div_inputwrapper combobox">
     <input class="resolver_input resolver_input_text fullwidth @(extraClass)" type="text" disabled="@Disabled" @bind="SelectedOptionInternal" @oninput="AdjustOptionList" @onfocus="ShowComboBoxItems" @onfocusout="CheckHideComboBoxItems" @onkeypress="@(e => CheckForClose(e))">
 
-    <div class="resolver_div_combobox" style="@VisualStyleController.HideElement(_comboBoxItemsHidden)">
+    <div class="resolver_div_combobox fullwidth" style="@VisualStyleController.HideElement(_comboBoxItemsHidden)">
         @foreach (var key in Options.Select(o => o.Key))
         {
             var optionToSelect = $"{key}";

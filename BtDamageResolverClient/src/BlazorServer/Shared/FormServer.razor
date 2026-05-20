@@ -2,21 +2,28 @@
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@using System.Timers
 @inject ResolverCommunicator _resolverCommunicator
 @inject UserStateController _userStateController
 @inject CommonData _commonData
 @implements IDisposable
 
-<div class="resolver_div_login">
+@{
+    var connectionState = _userStateController.IsConnectedToServer ? "active" : "inactive";
+}
+
+<div class="resolver_div_componentgroup">
+
+    <div class="resolver_div_componentrow">
+        <h2 class="resolver_header">
+            Connection:
+            <span class="resolver_span_loginindicator @connectionState">@connectionState</span>
+        </h2>
+    </div>
+
     @if (!_userStateController.IsConnectedToServer)
     {
         <div class="resolver_div_componentrow">
             <div class="resolver_div_componentcell">
-                <h3 class="resolver_header">
-                    Sign in
-                </h3>
-
                 <FormCredentials OnSubmit="@Connect">Player</FormCredentials>
             </div>
         </div>
@@ -25,23 +32,31 @@
     {
         <div class="resolver_div_componentrow">
             <div class="resolver_div_componentcell">
-                <h3 class="resolver_header">
-                    Manual connection
-                </h3>
-
-                <FormCredentials OnSubmit="@JoinGame">Game</FormCredentials>
-            </div>
-
-            <div class="resolver_div_componentcell resolver_style_alignright">
-                <button class="resolver_button resolver_button_leave" @onclick="Disconnect">X</button>
+                <button class="resolver_button resolver_button_leave" @onclick="Disconnect">Disconnect</button>
             </div>
         </div>
 
         <div class="resolver_div_componentrow">
-            <h2 class="resolver_header">
-                Games with recent activity
-            </h2>
+            <div class="resolver_div_componentcell">
+                <h3 class="resolver_header">
+                    Games with recent activity
+                </h3>
+            </div>
+        </div>
+
+        <div class="resolver_div_componentrow">
             <FormGameList Games="@_userStateController.GameEntries.Values.ToList()" OnJoin="@OnGameJoinButtonPressed"></FormGameList>
+        </div>
+
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_componentcell">
+                <h3 class="resolver_header">
+                    Manual game connection
+                </h3>
+            </div>
+        </div>
+        <div class="resolver_div_componentrow">
+            <FormCredentials OnSubmit="@JoinGame">Game</FormCredentials>
         </div>
     }
 </div>

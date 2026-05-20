@@ -26,18 +26,18 @@ public partial class GameActor
     /// </summary>
     /// <param name="unitEntry">The unit entry to find primary target for.</param>
     /// <returns>The primary target, or Guid.Empty if no target was found.</returns>
-    private static Guid GetPrimaryTarget(UnitEntry unitEntry)
+    private static (Guid PrimaryTarget, Arc PrimaryTargetArc) GetPrimaryTarget(UnitEntry unitEntry)
     {
-        var primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.Arc == Arc.Front)?.FiringSolution.Target;
+        var primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.RelativeArc == Arc.Front)?.FiringSolution.Target;
 
         if (primaryTargetCandidate == null)
         {
             var firstBayWithTarget = unitEntry.WeaponBays.Find(w => w.FiringSolution.Target != Guid.Empty);
 
-            return firstBayWithTarget == null ? Guid.Empty : firstBayWithTarget.FiringSolution.Target;
+            return firstBayWithTarget == null ? (Guid.Empty, Arc.Default) : (firstBayWithTarget.FiringSolution.Target, firstBayWithTarget.FiringSolution.RelativeArc);
         }
 
-        return primaryTargetCandidate.Value;
+        return (primaryTargetCandidate.Value, Arc.Front);
     }
 
     private static void ProcessUnitAmmo(List<DamageReport> damageReports, UnitEntry unit)
@@ -222,7 +222,7 @@ public partial class GameActor
 
         var logicUnitAttacker = GetUnitLogic(unitEntry);
 
-        var primaryTarget = GetPrimaryTarget(unitEntry);
+        var (primaryTarget, primaryTargetArc) = GetPrimaryTarget(unitEntry);
 
         foreach (var weaponBay in unitEntry.WeaponBays)
         {
@@ -231,7 +231,7 @@ public partial class GameActor
             {
                 var logicUnitDefender = GetUnitLogic(weaponBay.FiringSolution.Target);
                 var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
-                damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, weaponBay, processOnlyTags, isPrimaryTarget));
+                damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, primaryTargetArc, isPrimaryTarget, processOnlyTags, weaponBay));
             }
         }
 
@@ -258,7 +258,7 @@ public partial class GameActor
         var logicUnitAttacker = GetUnitLogic(unitEntry);
         ILogicUnit logicUnitDefender = null;
 
-        var primaryTarget = GetPrimaryTarget(unitEntry);
+        var (primaryTarget, primaryTargetArc) = GetPrimaryTarget(unitEntry);
 
         foreach (var weaponBay in unitEntry.WeaponBays)
         {
@@ -289,7 +289,7 @@ public partial class GameActor
                     var attackLog = new AttackLog();
                     var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
 
-                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponBay, weaponEntry, isPrimaryTarget);
+                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, primaryTargetArc, isPrimaryTarget, weaponBay, weaponEntry);
 
                     var (ammoEstimate, ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, rangeBracket, weaponEntry);
                     var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, rangeBracket, weaponEntry);

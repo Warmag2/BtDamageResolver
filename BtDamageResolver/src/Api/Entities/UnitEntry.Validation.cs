@@ -21,6 +21,7 @@ public partial class UnitEntry
         ValidateTonnage(validationResult);
         ValidateTrooperAmount(validationResult);
         ValidateWeapons(validationResult);
+        ValidateWeaponBays(validationResult);
 
         return validationResult;
     }
@@ -426,6 +427,23 @@ public partial class UnitEntry
                 default:
                     break;
             }
+        }
+    }
+
+    private void ValidateWeaponBays(RulesValidationResult validationResult)
+    {
+        switch (Type)
+        {
+            case UnitType.Building:
+            case UnitType.Infantry:
+                if (WeaponBays.Count > 1)
+                {
+                    validationResult.Fail("Building and Infantry units cannot have more than one weapon bay.");
+                }
+
+                break;
+            default:
+                break;
         }
     }
 }

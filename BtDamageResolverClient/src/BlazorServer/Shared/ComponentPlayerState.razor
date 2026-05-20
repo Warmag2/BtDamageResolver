@@ -1,11 +1,11 @@
 ﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 
-<div class="resolver_div_componentlistcontainer resolver_div_componentrow">
-    <h3 class="resolver_header @(_userStateController.GameState.Players[PlayerId].IsReady ? "ready" : string.Empty)">
-        @PlayerId @(_userStateController.GameState.AdminId == PlayerId ? "[Admin]" : string.Empty) @(_userStateController.GameState.Players[PlayerId].IsReady ? "[Ready]" : string.Empty)
-    </h3>
+<h3 class="resolver_header @(_userStateController.GameState.Players[PlayerId].IsReady ? "ready" : string.Empty)">
+    @PlayerId @(_userStateController.GameState.AdminId == PlayerId ? "[Admin]" : string.Empty) @(_userStateController.GameState.Players[PlayerId].IsReady ? "[Ready]" : string.Empty)
+</h3>
 
+<div class="resolver_div_componentlistcontainer">
     @foreach (var unitEntry in _userStateController.GameState.Players[PlayerId].UnitEntries)
     {
         <ComponentUnit @key=@($"{unitEntry.Id}_{unitEntry.TimeStamp}") UnitEntry=@unitEntry></ComponentUnit>

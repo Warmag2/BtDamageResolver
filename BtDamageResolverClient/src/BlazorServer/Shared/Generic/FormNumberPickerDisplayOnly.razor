@@ -10,11 +10,7 @@
 <div class="resolver_div_inputwrapper">
     @if (_editingDirectly)
     {
-        <input class="resolver_input resolver_number" type="number" min="@Min" max="@Max" value="@_selectedOption" disabled="@Disabled"
-            @onchange="OnDirectInputChange"
-            @onblur="CommitDirectEdit"
-            @onkeydown="OnKeyDown"
-            />
+        <FormNumber @ref="_formNumber" SelectedOption="@_selectedOption" Min="@_min" Max="@_max" Disabled="@Disabled" OnChanged="OnFormNumberCommit" />
     }
     else
     {
@@ -44,6 +40,10 @@
     private int _selectedOption;
     private bool _selectionBoxHidden = true;
     private bool _editingDirectly = false;
+    private bool _focusPending = false;
+    private FormNumber _formNumber;
+    int _min;
+    int _max;
     private List<PickBracket> _options = new();
 
     [Parameter]
@@ -57,12 +57,6 @@
 
     [Parameter]
     public bool DisplayNumberPrefix { get; set; }
-
-    [Parameter]
-    public int Min { get; set; }
-
-    [Parameter]
-    public int Max { get; set; }
 
     [Parameter]
     public bool Disabled { get; set; }
@@ -88,12 +82,10 @@
         }
     }
 
-    private void OnDirectInputChange(ChangeEventArgs e)
+    private void OnFormNumberCommit(int value)
     {
-        if (int.TryParse(e.Value?.ToString(), out var parsed))
-        {
-            _selectedOption = parsed;
-        }
+        _editingDirectly = false;
+        SelectedOptionInternal = value;
     }
 
     private void StartDirectEdit()
@@ -102,20 +94,7 @@
         {
             HideSelectionBox();
             _editingDirectly = true;
-        }
-    }
-
-    private void CommitDirectEdit()
-    {
-        _editingDirectly = false;
-        SelectedOptionInternal = Math.Clamp(_selectedOption, Min, Max);
-    }
-
-    private void OnKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter" || e.Key == "Escape")
-        {
-            CommitDirectEdit();
+            _focusPending = true;
         }
     }
 
@@ -125,7 +104,6 @@
         {
             if (!Disabled)
             {
-                _options = BracketCreatorDelegate();
                 ShowSelectionBox();
             }
         }
@@ -145,8 +123,20 @@
         _selectionBoxHidden = true;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_focusPending && _formNumber != null)
+        {
+            _focusPending = false;
+            await _formNumber.FocusAsync();
+        }
+    }
+
     protected override void OnInitialized()
     {
+        _options = BracketCreatorDelegate();
+        _min = _options.Min(b => b.Begin);
+        _max = _options.Max(b => b.End);
         SelectedOptionInternal = NumberToDisplay;
     }
 
