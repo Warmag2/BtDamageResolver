@@ -146,30 +146,28 @@
             </div>
         }
 
-    <div class="resolver_div_componentrow">
-        <ContainerAccordion Enabled="@_attackLogVisible" Title="Attack log">
-            <div class="resolver_div_options">
-                @foreach (var attackLogEntryType in _logLineVisibility)
+    <ContainerAccordion Enabled="@_attackLogVisible" Title="Attack log">
+        <div class="resolver_div_options">
+            @foreach (var attackLogEntryType in _logLineVisibility)
+            {
+                <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
+            }
+        </div>
+
+        @foreach (var logLine in DamageReport.AttackLog.Log)
+        {
+            <div class="@($"resolver_div_attacklog_{logLine.Type.ToString().ToLowerInvariant()}")" style="@VisualStyleController.HideElement(!_logLineVisibility[logLine.Type])">
+                @if (DamageReport.FiringUnitIds.Count > 1)
                 {
-                    <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
+                    @logLine.ToString(true, DamageReport.FiringUnitNames)
+                }
+                else
+                {
+                    @logLine.ToString(false, DamageReport.FiringUnitNames)
                 }
             </div>
-
-            @foreach (var logLine in DamageReport.AttackLog.Log)
-            {
-                <div class="@($"resolver_div_attacklog_{logLine.Type.ToString().ToLowerInvariant()}")" style="@VisualStyleController.HideElement(!_logLineVisibility[logLine.Type])">
-                    @if(DamageReport.FiringUnitIds.Count > 1)
-                    {
-                        @logLine.ToString(true, DamageReport.FiringUnitNames)                        
-                    }
-                    else
-                    {
-                        @logLine.ToString(false, DamageReport.FiringUnitNames)
-                    }
-                </div>
-            }
-        </ContainerAccordion>
-    </div>
+        }
+    </ContainerAccordion>
 </div>
 
 @code

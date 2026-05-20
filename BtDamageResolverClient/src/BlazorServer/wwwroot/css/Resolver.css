@@ -890,6 +890,12 @@ a, .btn-link {
     Damage report
 *******************************************************************************/
 
+.resolver_div_damagereportcontainer {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0.25rem;
+}
+
 .resolver_div_damagereportcontainer.outgoingdamage {
     border: 2px solid var(--color_outline_outgoingdamage);
     box-shadow: inset 0 0 0.5rem var(--color_outline_outgoingdamage);
