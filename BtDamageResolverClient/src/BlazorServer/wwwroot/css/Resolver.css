@@ -890,6 +890,33 @@ a, .btn-link {
     Damage report
 *******************************************************************************/
 
+.resolver_div_damagereportgroup {
+    display: inline-block;
+    vertical-align: top;
+    border: 1px solid var(--color_outline_base);
+    border-radius: 4px;
+    margin: 0.25rem 0;
+    padding: 0.25rem;
+}
+
+.resolver_div_damagereportgroupheader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.2rem 0.4rem;
+    margin-bottom: 0.25rem;
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+    border-radius: 3px;
+}
+
+.resolver_div_damagereportgroupcontent {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
 .resolver_div_damagereportcontainer {
     display: inline-block;
     vertical-align: top;
