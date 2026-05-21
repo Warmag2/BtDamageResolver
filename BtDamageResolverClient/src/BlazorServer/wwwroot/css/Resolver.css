@@ -752,10 +752,13 @@ a, .btn-link {
 .resolver_div_unitname {
     max-height: inherit;
     overflow: hidden;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.5rem;
     font-weight: bold;
     font-family: "Lucida Console";
     text-transform: uppercase;
+    font-weight: bold;
+    font-size: 1.5rem;
+    letter-spacing: 0.1rem;
 }
 
     .resolver_div_unitname.desktop {
