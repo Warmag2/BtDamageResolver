@@ -28,8 +28,21 @@ public partial class GameActor
     /// <returns>The primary target, or Guid.Empty if no target was found.</returns>
     private static (Guid PrimaryTarget, Arc PrimaryTargetArc) GetPrimaryTarget(UnitEntry unitEntry)
     {
-        var primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.RelativeArc == Arc.Front)?.FiringSolution.Target;
+        Guid? primaryTargetCandidate = null;
 
+        // Units that have a clearly defined front arc and at least one of their targets in that arc must find their primary target from that arc.
+        switch (unitEntry.Type)
+        {
+            case UnitType.AerospaceFighter:
+            case UnitType.Mech:
+            case UnitType.MechTripod:
+                primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.RelativeArc == Arc.Front)?.FiringSolution.Target;
+                break;
+        }
+        
+        // Units with turrets can select primary target from any arc
+        // This is relevant because vehicles and quad mechs may have weapon systems that are fixed to a direction instead of being relative to the
+        // torso-twisted arc, and depending on the choice of primary target, weapons in other locations may be able to fire at targets in the same arc.
         if (primaryTargetCandidate == null)
         {
             var firstBayWithTarget = unitEntry.WeaponBays.Find(w => w.FiringSolution.Target != Guid.Empty);
