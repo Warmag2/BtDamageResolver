@@ -56,6 +56,8 @@ a, .btn-link {
     --color_bg_weaponentry_inactive: #C0C0C0;
     --color_bg_base: #F0F0F0;
     --color_text_base: #000000;
+    --color_bg_input: #FFFFFF;
+    --color_text_input: #000000;
     --color_outline_base: gray;
     --color_bg_unselected: #E0E0E0;
     --color_text_unselected: #000000;
@@ -132,6 +134,11 @@ a, .btn-link {
 /*******************************************************************************
     Generic inputs and classes
 *******************************************************************************/
+
+.resolver_input {
+    background: var(--color_bg_input);
+    color: var(--color_text_input);
+}
 
 .resolver_input_text {
 }
