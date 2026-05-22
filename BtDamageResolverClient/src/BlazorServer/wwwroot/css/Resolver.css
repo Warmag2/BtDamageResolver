@@ -487,17 +487,16 @@ a, .btn-link {
     margin-bottom: 0.2rem;
 }
 
-.resolver_table td {
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
+    .resolver_table td {
+        padding: 0 0.5rem;
+        padding-right: 1rem;
+    }
 
-.resolver_table th {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    background-color: var(--color_bg_table_header);
-    color: var(--color_text_table_header);
-}
+    .resolver_table th {
+        padding: 0 1rem;
+        background-color: var(--color_bg_table_header);
+        color: var(--color_text_table_header);
+    }
 
 .resolver_table tr { color: var(--color_text_table); }
 
@@ -673,7 +672,6 @@ a, .btn-link {
     padding: 0;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
-    margin-right: 1rem;
 }
 
 .resolver_div_componentlistcontainer {
@@ -686,16 +684,13 @@ a, .btn-link {
 
 .resolver_div_componentcontainer {
     position: relative;
+    background-color: var(--color_bg_base);
+    color: var(--color_text_base);
 }
 
 .resolver_div_componentcontainer.error {
     background: var(--color_bg_error);
     color: var(--color_text_error);
-}
-
-.resolver_div_componentcontainer.alternatingcolors:nth-child(odd) {
-    background-color: var(--color_bg_base);
-    color: var(--color_text_base);
 }
 
 .resolver_div_componentblock {
