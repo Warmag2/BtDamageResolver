@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Text.Json;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
@@ -72,7 +71,8 @@ public class Startup
             conf.AddFaemiyahLogging();
         });
 
-        services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(configuration["DataProtectionKeysPath"] ?? "/app/dpkeys/"));
+        // services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(configuration["DataProtectionKeysPath"] ?? "/app/dpkeys/"));
+        services.AddDataProtection().SetApplicationName("BtDamageResolverClient");
         services.AddRazorPages();
         services.AddServerSideBlazor();
         services.AddSignalR(options =>

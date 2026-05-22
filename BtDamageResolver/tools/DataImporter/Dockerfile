@@ -13,4 +13,5 @@ WORKDIR /app
 COPY --from=build /app/publish .
 COPY ["data/", "data/"]
 COPY importdata.sh .
+USER app
 CMD ["sh", "importdata.sh"]

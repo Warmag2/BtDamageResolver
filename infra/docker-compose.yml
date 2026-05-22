@@ -15,7 +15,6 @@ services:
       - orleansdb   # Data source
       - redis       # Communication bus
     restart: on-failure
-    user: "200:200"
 
   # Battletech Damage Resolver Client
   resolverclient:
@@ -26,8 +25,6 @@ services:
       ASPNETCORE_ENVIRONMENT: Release
       RESOLVER_ENVIRONMENT: Release
       CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
-    volumes:
-      - ./dpkeys:/app/dpkeys
     ports:
       - 8787:8080
     networks:
@@ -35,7 +32,6 @@ services:
     depends_on:
       - resolver    # No sense to start until the server is up
     restart: on-failure
-    user: "200:200"
 
   # Data Importer
   resolverdataimporter:
@@ -50,7 +46,6 @@ services:
     depends_on:
       - resolver
     restart: on-failure
-    user: "200:200"
 
   # Grafana
   grafana:

@@ -10,6 +10,7 @@ RUN dotnet publish "Silo.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+USER app
 EXPOSE 11111
 EXPOSE 30000
 ENTRYPOINT ["dotnet", "Silo.dll"]
