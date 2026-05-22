@@ -707,7 +707,7 @@ a, .btn-link {
     grid-template-columns: repeat(4, auto);
     align-content: start;
     margin-bottom: 0.2rem;
-    max-width: 40rem;
+    max-width: 45rem;
 }
 
     .resolver_div_componentgroup > .resolver_div_componentrow {
@@ -902,10 +902,7 @@ a, .btn-link {
 
 .resolver_div_damagereportgroup {
     display: inline-block;
-    vertical-align: top;
-    border: 1px solid var(--color_outline_base);
-    border-radius: 4px;
-    margin: 0.25rem 0;
+    border: 2px solid var(--color_outline_base);
     padding: 0.25rem;
 }
 
@@ -915,10 +912,8 @@ a, .btn-link {
     align-items: center;
     justify-content: space-between;
     padding: 0.2rem 0.4rem;
-    margin-bottom: 0.25rem;
     background-color: var(--color_bg_unselected);
     color: var(--color_text_unselected);
-    border-radius: 3px;
 }
 
 .resolver_div_damagereportgroupcontent {
@@ -928,9 +923,9 @@ a, .btn-link {
 }
 
 .resolver_div_damagereportcontainer {
+    padding: 0.25rem;
     display: inline-block;
     vertical-align: top;
-    margin: 0.25rem;
 }
 
 .resolver_div_damagereportcontainer.outgoingdamage {
@@ -953,7 +948,6 @@ a, .btn-link {
 .resolver_div_attackerheat {
     background-color: var(--color_bg_heat);
     color: var(--color_text_heat);
-    font-size: 16px;
     padding-left: 1rem;
     padding-right: 1rem;
 }
@@ -961,24 +955,21 @@ a, .btn-link {
 .resolver_div_ammo {
     background-color: var(--color_bg_ammo);
     color: var(--color_text_ammo);
-    font-size: 16px;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 0 0.5rem;
 }
 
-.resolver_div_damagereportheader {
-    font-size: 24px;
+.resolver_span_damagereportheader {
+    font-size: 1.5rem;
     padding-left: 2.5rem;
-    padding-Right: 2rem;
 }
 
 .resolver_div_phase {
-    font-size: 18px;
+    font-size: 1.2rem;
     padding-left: 2rem;
 }
 
 .resolver_div_totaldamage {
-    font-size: 18px;
+    font-size: 1.2rem;
     padding-left: 2rem;
 }
 
@@ -1121,19 +1112,23 @@ a, .btn-link {
     /* Each unit container fills the flex row so units stack vertically */
     .resolver_div_componentcontainer {
         width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
     }
 
     /* Switch from inline-grid (content-sized) to block grid (parent-sized) */
     .resolver_div_componentgroup {
-        display: grid;
         width: 100%;
-        min-width: 0;
     }
 
     /* Weapon list is too wide for a phone; let it scroll horizontally */
     .resolver_div_weaponentrylist {
         overflow-x: auto;
+    }
+
+    .resolver_div_draghandle {
+        display: none;
+    }
+
+    .resolver_div_reorderablesentinel {
+        display: none;
     }
 }

@@ -53,8 +53,9 @@
 
 <div class="resolver_div_componentcontainer resolver_div_damagereportcontainer @(defendingUnitOwnedByYou ? "incomingdamage" : "outgoingdamage")">
     
-        <div class="resolver_div_componentrow">
-            <div class="resolver_div_componentcell resolver_div_damagereportheader">
+    <div class="resolver_div_componentrow resolver_div_damagereportheader">
+        <div class="resolver_div_componentcell">
+            <span class="resolver_span_damagereportheader">
                 <b>
                     @unitAttackString
                 </b>
@@ -62,12 +63,13 @@
                 <b>
                     @unitDefenseString
                 </b>
-            </div>
-            <div class="resolver_div_componentcell resolver_style_alignright">
-                <button class="resolver_button resolver_button_delete" @onclick="Delete">X</button>
-            </div>
+            </span>
         </div>
-         
+        <div class="resolver_div_componentcell">
+            <button class="resolver_button resolver_button_delete" @onclick="Delete">X</button>
+        </div>
+    </div>
+
         <div class="resolver_div_componentrow">
             <div class="resolver_div_phase">
                 Phase: <b>@DamageReport.Phase</b>

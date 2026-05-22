@@ -16,10 +16,10 @@
         <b>@targetNumber</b>
     </div>
     <div class="resolver_div_componentcell">
-        <div class="resolver_div_unitinformation_data">@($"{WeaponEntry.Amount}x")</div>
+        @($"{WeaponEntry.Amount}x")
     </div>
     <div class="resolver_div_componentcell">
-        <div class="resolver_div_unitinformation_data">@($"{(WeaponEntry.Modifier >= 0 ? "+" : string.Empty)}{WeaponEntry.Modifier}")</div>
+        @($"{(WeaponEntry.Modifier >= 0 ? "+" : string.Empty)}{WeaponEntry.Modifier}")
     </div>
     <div class="resolver_div_componentcell">
         <div class="resolver_div_unitinformation_data">@WeaponEntry.WeaponName</div>
