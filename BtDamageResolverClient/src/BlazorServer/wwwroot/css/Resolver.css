@@ -1118,7 +1118,22 @@ a, .btn-link {
         display: block;
     }
 
+    /* Each unit container fills the flex row so units stack vertically */
+    .resolver_div_componentcontainer {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    /* Switch from inline-grid (content-sized) to block grid (parent-sized) */
     .resolver_div_componentgroup {
-        max-width: 100%;
+        display: grid;
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Weapon list is too wide for a phone; let it scroll horizontally */
+    .resolver_div_weaponentrylist {
+        overflow-x: auto;
     }
 }
