@@ -19,7 +19,8 @@ public class GameActorState
         TimeStamp = DateTime.UtcNow;
         PlayerIds = [];
         Options = new();
-        Password = string.Empty;
+        PasswordHash = null;
+        PasswordSalt = null;
         PlayerStates = [];
     }
 
@@ -39,9 +40,14 @@ public class GameActorState
     public GameOptions Options { get; set; }
 
     /// <summary>
-    /// The game password.
+    /// The game password hash.
     /// </summary>
-    public string Password { get; set; }
+    public byte[] PasswordHash { get; set; }
+
+    /// <summary>
+    /// The game password salt.
+    /// </summary>
+    public byte[] PasswordSalt { get; set; }
 
     /// <summary>
     /// The player states.
