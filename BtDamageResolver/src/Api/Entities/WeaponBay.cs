@@ -14,11 +14,15 @@ public class WeaponBay : WeaponBayReference
     /// <summary>
     /// Initializes a new instance of the <see cref="WeaponBay"/> class.
     /// </summary>
+    /// <remarks>
+    /// Randomizes ID when created.
+    /// </remarks>
     public WeaponBay()
     {
+        Arc = Arc.Default;
         FiringSolution = new FiringSolution();
         Id = Guid.NewGuid();
-        Name = Arc.Default.ToString();
+        Name = "All";
         Weapons = [];
     }
 
@@ -31,6 +35,7 @@ public class WeaponBay : WeaponBayReference
     /// </remarks>
     public WeaponBay(WeaponBayReference weaponBayReference)
     {
+        Arc = weaponBayReference.Arc;
         Id = Guid.NewGuid();
         FiringSolution = new FiringSolution();
         Name = weaponBayReference.Name;
@@ -59,13 +64,14 @@ public class WeaponBay : WeaponBayReference
     public new List<WeaponEntry> Weapons { get; set; }
 
     /// <summary>
-    /// Makes a copy of this weapon entry.
+    /// Makes a copy of this weapon bay.
     /// </summary>
-    /// <returns>A copy of the weapon entry.</returns>
+    /// <returns>A copy of the weapon bay.</returns>
     public new WeaponBay Copy()
     {
         return new WeaponBay
         {
+            Arc = Arc,
             FiringSolution = FiringSolution.Copy(),
             Name = Name,
             TimeStamp = DateTime.UtcNow,

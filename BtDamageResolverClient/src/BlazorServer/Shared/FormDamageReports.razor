@@ -5,54 +5,15 @@
 @inject UserStateController _userStateController
 @implements IDisposable
 
-@{
-    var showOtherPlayers = _userStateController.PlayerOptions?.ShowOtherPlayersDamageReports ?? false;
-    var showMovement = _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false;
-
-    var damageReportsToShow = new SortedDictionary<int, List<DamageReport>>();
-
-    if (!_userStateController.DamageReportContainer.IsEmpty())
-    {
-        if (OnlyNewest)
-        {
-            damageReportsToShow.Add(_userStateController.DamageReportContainer.DamageReports.Last().Key, new());
-            foreach (var damageReport in _userStateController.DamageReportContainer.DamageReports.Last().Value)
-            {
-                if ((_userStateController.PlayerState.IsSpectator || showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport)) &&
-                    (showMovement || damageReport.Phase != Phase.Movement))
-                {
-                    damageReportsToShow.Single().Value.Add(damageReport);
-                }
-            }
-        }
-        else
-        {
-            foreach (var singleTurnDamageReports in _userStateController.DamageReportContainer.DamageReports.Reverse())
-            {
-                var turn = singleTurnDamageReports.Key;
-                damageReportsToShow.Add(turn, new());
-                foreach (var damageReport in singleTurnDamageReports.Value)
-                {
-                    if ((_userStateController.PlayerState.IsSpectator || showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport)) &&
-                        (showMovement || damageReport.Phase != Phase.Movement))
-                    {
-                        damageReportsToShow[turn].Add(damageReport);
-                    }
-                }
-            }
-        }
-    }
-}
-
 @if (_userStateController.DamageReportContainer.IsEmpty() || _userStateController.PlayerState == null)
 {
-    <h3>
+    <h2 class="resolver_header">
         No damagereports available
-    </h3>
+    </h2>
 }
 else
 {
-    @foreach (var singleTurnDamageReports in damageReportsToShow.Reverse())
+    @foreach (var singleTurnDamageReports in _damageReportsToShow.Reverse())
     {
         <ContainerAccordion Enabled=@_userStateController.DamageReportContainer.Visible(singleTurnDamageReports.Key) Title=@($"Turn {singleTurnDamageReports.Key}")>
             @foreach (var damageReports in singleTurnDamageReports.Value.GroupBy(dr => $"{dr.TargetUnitId}-{dr.Phase}"))
@@ -65,18 +26,73 @@ else
 
 @code
 {
+    private SortedDictionary<int, List<DamageReport>> _damageReportsToShow = new();
+
     [Parameter]
     public bool OnlyNewest { get; set; }
 
     protected override void OnInitialized()
     {
-        _userStateController.OnDamageReportsUpdated += InvokeStateChange;
-        _userStateController.OnPlayerOptionsUpdated += InvokeStateChange;
+        _userStateController.OnDamageReportsUpdated += OnDataChanged;
+        _userStateController.OnPlayerOptionsUpdated += OnDataChanged;
+    }
+
+    protected override void OnParametersSet()
+    {
+        BuildDamageReportsToShow();
+    }
+
+    private void OnDataChanged()
+    {
+        BuildDamageReportsToShow();
+        InvokeStateChange();
+    }
+
+    private void BuildDamageReportsToShow()
+    {
+        var showOtherPlayers = _userStateController.PlayerOptions?.ShowOtherPlayersDamageReports ?? false;
+        var showMovement = _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false;
+        var result = new SortedDictionary<int, List<DamageReport>>();
+
+        if (!_userStateController.DamageReportContainer.IsEmpty())
+        {
+            if (OnlyNewest)
+            {
+                var last = _userStateController.DamageReportContainer.DamageReports.Last();
+                result.Add(last.Key, new());
+                foreach (var damageReport in last.Value)
+                {
+                    if ((_userStateController.PlayerState?.IsSpectator == true || showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport)) &&
+                        (showMovement || damageReport.Phase != Phase.Movement))
+                    {
+                        result[last.Key].Add(damageReport);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var singleTurnDamageReports in _userStateController.DamageReportContainer.DamageReports.Reverse())
+                {
+                    var turn = singleTurnDamageReports.Key;
+                    result.Add(turn, new());
+                    foreach (var damageReport in singleTurnDamageReports.Value)
+                    {
+                        if ((_userStateController.PlayerState?.IsSpectator == true || showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport)) &&
+                            (showMovement || damageReport.Phase != Phase.Movement))
+                        {
+                            result[turn].Add(damageReport);
+                        }
+                    }
+                }
+            }
+        }
+
+        _damageReportsToShow = result;
     }
 
     public void Dispose()
     {
-        _userStateController.OnDamageReportsUpdated -= InvokeStateChange;
-        _userStateController.OnPlayerOptionsUpdated -= InvokeStateChange;
+        _userStateController.OnDamageReportsUpdated -= OnDataChanged;
+        _userStateController.OnPlayerOptionsUpdated -= OnDataChanged;
     }
 }

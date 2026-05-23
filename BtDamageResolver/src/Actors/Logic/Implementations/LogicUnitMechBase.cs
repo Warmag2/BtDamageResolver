@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
@@ -23,9 +24,10 @@ public abstract class LogicUnitMechBase : LogicUnit
     /// <param name="gameOptions">The game options.</param>
     /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
-    /// <param name="random">The random number generator.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
+    /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    protected LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+    protected LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
     }
 
@@ -166,7 +168,7 @@ public abstract class LogicUnitMechBase : LogicUnit
     /// <inheritdoc />
     protected override async Task ResolveCriticalHit(DamageReport damageReport, Guid damageOwnerId, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
     {
-        var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
+        var criticalDamageTable = GetCriticalDamageTable(criticalDamageTableType, location);
 
         // Simulate arms and legs being able to be blown off
         if (criticalThreatRoll == 12 &&

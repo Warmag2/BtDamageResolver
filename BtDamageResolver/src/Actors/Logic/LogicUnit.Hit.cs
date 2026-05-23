@@ -35,7 +35,7 @@ public partial class LogicUnit
             }
             else
             {
-                var singleMissileDefenseRoll = Random.NextPlusOne(6);
+                var singleMissileDefenseRoll = ResolverRandom.NextPlusOne(6);
                 targetDamageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Ams defense roll against single missile", singleMissileDefenseRoll));
                 if (singleMissileDefenseRoll >= 4)
                 {
@@ -80,11 +80,11 @@ public partial class LogicUnit
         }
     }
 
-    private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget)
+    private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry)
     {
         hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.FiringSolution, Unit.Id, weapon.Name));
 
-        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weapon, weaponBay, weaponEntry, isPrimaryTarget);
+        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, primaryTargetArc, isPrimaryTarget, weapon, weaponBay, weaponEntry);
 
         // Weapons with target numbers above 12 cannot hit
         if (targetNumber > 12)
@@ -104,7 +104,7 @@ public partial class LogicUnit
             };
         }
 
-        var hitRoll = Random.D26();
+        var hitRoll = ResolverRandom.D26();
         hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "To-hit roll", hitRoll));
 
         var hitHappened = hitRoll >= targetNumber;

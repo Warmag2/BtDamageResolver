@@ -18,6 +18,19 @@ public class PickBracket
     /// <inheritdoc />
     public override string ToString()
     {
-        return Begin != End ? $"{Begin}-{End}" : $"{Begin}";
+        return ToString(false);
+    }
+
+    /// <summary>
+    /// Produces a string of the PickBracket object with number prefixes if necessary.
+    /// </summary>
+    /// <param name="displayNumberPrefix">Indicates whether to display number prefixes.</param>
+    /// <returns>A string representation of the PickBracket object.</returns>
+    public string ToString(bool displayNumberPrefix)
+    {
+        var begin = displayNumberPrefix && Begin >= 0 ? $"+{Begin}" : $"{Begin}";
+        var end = displayNumberPrefix && End >= 0 ? $"+{End}" : $"{End}";
+
+        return Begin != End ? $"{begin}-{end}" : $"{begin}";
     }
 }

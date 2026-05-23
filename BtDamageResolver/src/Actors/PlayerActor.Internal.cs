@@ -30,7 +30,6 @@ public partial class PlayerActor
         {
             AuthenticationToken = _playerActorState.State.AuthenticationToken,
             GameId = _playerActorState.State.GameId,
-            GamePassword = _playerActorState.State.GamePassword,
             IsConnected = isConnected,
             PlayerId = this.GetPrimaryKeyString(),
         };

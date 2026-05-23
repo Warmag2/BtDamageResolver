@@ -6,6 +6,7 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
@@ -27,9 +28,10 @@ public abstract class LogicUnitAerospace : LogicUnit
     /// <param name="gameOptions">The game options.</param>
     /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
-    /// <param name="random">The random number generator.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
+    /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    protected LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+    protected LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
     }
 
@@ -90,11 +92,11 @@ public abstract class LogicUnitAerospace : LogicUnit
     /// <inheritdoc />
     protected override async Task ResolveCriticalHit(DamageReport damageReport, Guid damageOwnerId, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
     {
-        var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
+        var criticalDamageTable = GetCriticalDamageTable(criticalDamageTableType, location);
 
         if (criticalThreatRoll > 7)
         {
-            var aerospaceCriticalHitRoll = Random.D26();
+            var aerospaceCriticalHitRoll = ResolverRandom.D26();
             damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, damageOwnerId, "Aerospace critical hit roll", aerospaceCriticalHitRoll));
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, string.Join(", ", criticalDamageTable.Mapping[aerospaceCriticalHitRoll].Select(c => c.ToString())), transformedDamage, location));
@@ -158,7 +160,7 @@ public abstract class LogicUnitAerospace : LogicUnit
                     }
                     else
                     {
-                        var amsPenalty = Random.Next(6);
+                        var amsPenalty = ResolverRandom.Next(6);
                         damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Defender AMS roll for cluster damage reduction", amsPenalty));
                         damageValue -= amsPenalty;
 
@@ -168,7 +170,7 @@ public abstract class LogicUnitAerospace : LogicUnit
 
                 if (target.Unit.HasFeature(UnitFeature.Ecm))
                 {
-                    var ecmPenalty = Random.Next(3);
+                    var ecmPenalty = ResolverRandom.Next(3);
                     damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Defender ECM roll for cluster damage reduction", ecmPenalty));
                     damageValue -= ecmPenalty;
                 }
@@ -179,7 +181,7 @@ public abstract class LogicUnitAerospace : LogicUnit
         // Glancing blow for cluster aerospace weapons (improvised rule, since aerospace units do not normally use clustering)
         if (combatAction.Weapon.HasFeature(WeaponFeature.Cluster, out _) && target.IsGlancingBlow(combatAction.MarginOfSuccess))
         {
-            var glancingBlowPenalty = Random.Next(6);
+            var glancingBlowPenalty = ResolverRandom.Next(6);
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Defender roll for cluster damage reduction from glancing blow", glancingBlowPenalty));
             damageValue -= glancingBlowPenalty;
         }

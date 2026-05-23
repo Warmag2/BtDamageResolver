@@ -41,7 +41,8 @@
                 <FormPaperDollVehicleVtol FormPaperDoll="@this" />
                 break;
             default:
-                throw new NotImplementedException($"Paperdoll view for unit type {DamagePaperDoll.Type} not implemented.");
+                <div class="error">Unknown paper doll type: @DamagePaperDoll.Type</div>
+                break;
         }
     </div>
 
@@ -105,7 +106,8 @@
                                                 @($"Critical damage to: {criticalDamageEntry.Type} ({criticalDamageEntry.InducingDamage})")
                                                 break;
                                             default:
-                                                throw new NotImplementedException($"Critical damage description for threat type {criticalDamageEntry.ThreatType} not implemented.");
+                                                @($"Unknown critical threat type: {criticalDamageEntry.ThreatType}")
+                                                break;
                                         }
 
                                         break;
@@ -129,7 +131,7 @@
                         </b>
                         &rarr;
                         <b>
-                            @int.Parse(value.Data).ToStringExplicit()
+                            @(int.TryParse(value.Data, out var parsedValue) ? parsedValue.ToStringExplicit() : value.Data)
                         </b>
                     </div>
                 }
@@ -141,7 +143,7 @@
                     </b>
                     &rarr;
                     <b>
-                        @specialDamageEntryGroup.Sum(s => int.Parse(s.Data))
+                        @specialDamageEntryGroup.Sum(s => int.TryParse(s.Data, out var v) ? v : 0)
                     </b>
                 </div>
             }
@@ -172,7 +174,6 @@
                     DamagePaperDoll.DamageCollection[location]
                         .SelectMany(kvp => kvp.Value.Select(Damage => (kvp.Key, Damage)))
                         .ToList();
-
 
                 return $"'<b>{location}</b><br>{string.Join("<br>", damageOwnerPairs.Select(dop => $"{DamageReport.FiringUnitNames[dop.Key]} — {dop.Damage}"))}'";
             }

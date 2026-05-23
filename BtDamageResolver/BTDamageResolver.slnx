@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Tests/">
+    <Project Path="tests/CompressionTesterApp/CompressionTesterApp.csproj" />
+    <Project Path="tests/Tests/Tests.csproj" />
+  </Folder>
+  <Project Path="src/ActorInterfaces/ActorInterfaces.csproj" />
+  <Project Path="src/Actors/Actors.csproj" />
+  <Project Path="src/Api/Api.csproj" />
+  <Project Path="src/Common/Common.csproj" />
+  <Project Path="src/ServiceInterfaces/ServiceInterfaces.csproj" />
+  <Project Path="src/Services/Services.csproj" />
+  <Project Path="src/Silo/Silo.csproj" />
+  <Project Path="tools/DataExporter/DataExporter.csproj" />
+  <Project Path="tools/DataImporter/DataImporter.csproj" />
+</Solution>

@@ -19,11 +19,6 @@ public class ConnectionResponse
     public string GameId { get; set; }
 
     /// <summary>
-    /// The password of the game this player is connected to, if any.
-    /// </summary>
-    public string GamePassword { get; set; }
-
-    /// <summary>
     /// Is the user connected or not.
     /// </summary>
     public bool IsConnected { get; set; }

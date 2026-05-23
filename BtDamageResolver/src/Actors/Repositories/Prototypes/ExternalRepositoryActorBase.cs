@@ -64,15 +64,15 @@ public abstract class ExternalRepositoryActorBase<TEntity, TKey> : Grain, IExter
     }
 
     /// <inheritdoc />
-    public virtual async Task<TEntity> Get(TKey key)
+    public virtual Task<TEntity> Get(TKey key)
     {
-        return await Repository.GetAsync(key);
+        return Task.FromResult(Repository.Get(key));
     }
 
     /// <inheritdoc />
-    public virtual async Task<IReadOnlyCollection<TEntity>> GetAll()
+    public virtual Task<IReadOnlyCollection<TEntity>> GetAll()
     {
-        return await Repository.GetAllAsync();
+        return Task.FromResult(Repository.GetAll());
     }
 
     /// <inheritdoc />

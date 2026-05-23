@@ -16,20 +16,20 @@ public abstract partial class LogicUnit
     private static readonly int[] MovementModifierArray = [0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6];
 
     /// <inheritdoc/>
-    public async Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget)
+    public async Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry)
     {
-        return ResolveHitModifier(attackLog, target, await FormWeapon(weaponEntry), weaponBay, weaponEntry, isPrimaryTarget);
+        return ResolveHitModifier(attackLog, target, primaryTargetArc, isPrimaryTarget, await FormWeapon(weaponEntry), weaponBay, weaponEntry);
     }
 
     /// <inheritdoc />
-    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget)
+    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry)
     {
         var modifierBase = weapon.AttackType == AttackType.Normal ? Unit.Gunnery : Unit.Piloting;
 
         // NOTE: In this method, the damageReport may be null, as the target number calculation does not need a damage log. Everywhere else, it must exist.
         attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Base hit modifier", modifierBase));
 
-        var modifierMultiTarget = GetMultiTargetModifier(weaponBay, isPrimaryTarget);
+        var modifierMultiTarget = GetMultiTargetModifier(primaryTargetArc, isPrimaryTarget, weapon, weaponBay);
 
         attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from multiple targets", modifierMultiTarget));
 
@@ -437,14 +437,22 @@ public abstract partial class LogicUnit
         return 0;
     }
 
-    private int GetMultiTargetModifier(WeaponBay weaponBay, bool isPrimaryTarget)
+    private int GetMultiTargetModifier(Arc primaryTargetArc, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay)
     {
+        // Primary target is always 0 penalty
         if (isPrimaryTarget)
         {
             return 0;
         }
 
+        // Multi-target feature negates multi-target penalty
         if (Unit.HasFeature(UnitFeature.MultiTarget))
+        {
+            return 0;
+        }
+
+        // Multi-target penalty does not apply to melee attacks
+        if (weapon.Type == WeaponType.Melee)
         {
             return 0;
         }
@@ -454,18 +462,39 @@ public abstract partial class LogicUnit
             case UnitType.AerospaceCapital:
             case UnitType.AerospaceDropshipAerodyne:
             case UnitType.AerospaceDropshipSpheroid:
-            case UnitType.BattleArmor:
+            case UnitType.Building:
             case UnitType.Infantry:
                 return 0;
-            default:
+            case UnitType.BattleArmor:
+                // At this point we know that this is a secondary target - BA multi-target penalty is always 1.
+                return 1;
+            case UnitType.AerospaceFighter:
+            case UnitType.Mech:
+            case UnitType.MechTripod:
                 // Front arc for secondary targets is 1 penalty, all other arcs are 2 penalty.
-                switch (weaponBay.FiringSolution.Arc)
+                switch (weaponBay.FiringSolution.RelativeArc)
                 {
                     case Arc.Front:
                         return 1;
                     default:
                         return 2;
                 }
+            case UnitType.MechQuad:
+            case UnitType.VehicleHover:
+            case UnitType.VehicleVtol:
+            case UnitType.VehicleTracked:
+            case UnitType.VehicleWheeled:
+                // Front arc for same target as primary is 1 penalty, all other arcs are 2 penalty.
+                if (weaponBay.FiringSolution.RelativeArc == primaryTargetArc)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 2;
+                }
+            default:
+                throw new NotImplementedException($"Handling for unit type {Unit.Type} not implemented.");
         }
     }
 

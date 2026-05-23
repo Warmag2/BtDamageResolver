@@ -103,6 +103,26 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public new List<WeaponBay> WeaponBays { get; set; }
 
     /// <summary>
+    /// Gets the difficulty of the ammo explosion roll, based on heat.
+    /// </summary>
+    /// <returns>The difficulty level of an ammo explosion roll for the current heat.</returns>
+    public int GetHeatAmmoExplosionDifficulty()
+    {
+        if (!IsHeatTracking())
+        {
+            return 0;
+        }
+
+        return Consumables.Heat switch
+        {
+            >= 28 => 8,
+            >= 23 => 6,
+            >= 19 => 4,
+            _ => 0
+        };
+    }
+
+    /// <summary>
     /// Gets the penalty to attacks from heat.
     /// </summary>
     /// <returns>The penalty to attacks from unit heat.</returns>
@@ -124,10 +144,10 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     }
 
     /// <summary>
-    /// Gets the penalty to speed from heat.
+    /// Gets the threshold for avoiding pilot damage from heat.
     /// </summary>
-    /// <returns>The penalty to speed from unit heat.</returns>
-    public int GetHeatSpeedPenalty()
+    /// <returns>The difficulty level for avoiding pilot damage for the current heat.</returns>
+    public int GetHeatPilotDamageDifficulty()
     {
         if (!IsHeatTracking())
         {
@@ -136,20 +156,17 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
 
         return Consumables.Heat switch
         {
-            >= 25 => 5,
-            >= 20 => 4,
-            >= 15 => 3,
-            >= 10 => 2,
-            >= 5 => 1,
+            >= 27 => 9,
+            >= 21 => 6,
             _ => 0
         };
     }
 
     /// <summary>
-    /// Gets the difficulty of the ammo explosion roll, based on heat.
+    /// Gets the threshold for avoiding random movement from heat.
     /// </summary>
-    /// <returns>The difficulty level of an ammo explosion roll for the current heat.</returns>
-    public int GetHeatAmmoExplosionDifficulty()
+    /// <returns>The difficulty level for avoiding random movement for the current heat.</returns>
+    public int GetHeatRandomMovementDifficulty()
     {
         if (!IsHeatTracking())
         {
@@ -158,9 +175,11 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
 
         return Consumables.Heat switch
         {
-            >= 28 => 8,
-            >= 23 => 6,
-            >= 19 => 4,
+            >= 25 => 10,
+            >= 20 => 8,
+            >= 15 => 7,
+            >= 10 => 6,
+            >= 5 => 5,
             _ => 0
         };
     }
@@ -183,6 +202,28 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             >= 22 => 8,
             >= 18 => 6,
             >= 14 => 4,
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Gets the penalty to speed from heat.
+    /// </summary>
+    /// <returns>The penalty to speed from unit heat.</returns>
+    public int GetHeatSpeedPenalty()
+    {
+        if (!IsHeatTracking())
+        {
+            return 0;
+        }
+
+        return Consumables.Heat switch
+        {
+            >= 25 => 5,
+            >= 20 => 4,
+            >= 15 => 3,
+            >= 10 => 2,
+            >= 5 => 1,
             _ => 0
         };
     }
