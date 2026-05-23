@@ -146,10 +146,14 @@ public partial class GameActor : Grain, IGameActor
             return false;
         }
 
-        // Accept any password if the game does not yet have one
+        // Accept any password if the game does not yet have one.
+        // Only hash and store a non-empty password; an empty password means the game is not password-protected.
         if (_gameActorState.State.PasswordHash == null)
         {
-            (_gameActorState.State.PasswordHash, _gameActorState.State.PasswordSalt) = _hasher.Hash(password);
+            if (!string.IsNullOrEmpty(password))
+            {
+                (_gameActorState.State.PasswordHash, _gameActorState.State.PasswordSalt) = _hasher.Hash(password);
+            }
         }
         else if (!_hasher.Verify(password, _gameActorState.State.PasswordSalt, _gameActorState.State.PasswordHash))
         {
