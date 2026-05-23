@@ -11,7 +11,7 @@
     <div class="resolver_div_componentcontainer @(_userStateController.InvalidUnitIds.Contains(UnitEntry.Id) ? "error" : "alternatingcolors")">
 
         <div class="resolver_div_componentrow">
-            <div class="resolver_div_componentcell">
+            <div class="resolver_div_componentcell resolver_div_buttongroup">
                 <FormToggle @key=@($"{UnitEntry.Id}_StaticDataHidden") Checked="@(!UnitEntry.StaticDataHidden)" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnStaticDataHiddenChanged">Editable</FormToggle>
                 <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveUp"><b>&uarr;</b></button>
                 <button class="resolver_button" disabled="@_userStateController.PlayerState.IsReady" @onclick="MoveDown"><b>&darr;</b></button>
@@ -532,12 +532,8 @@
 
     public void MoveUp()
     {
-        var index = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-
-        if (index >= 1)
+        if (_userStateController.PlayerState.UnitEntries.MoveUp(UnitEntry))
         {
-            (_userStateController.PlayerState.UnitEntries[index - 1], _userStateController.PlayerState.UnitEntries[index]) =
-                (_userStateController.PlayerState.UnitEntries[index], _userStateController.PlayerState.UnitEntries[index - 1]);
             _userStateController.NotifyPlayerDataUpdated();
             _userStateController.NotifyPlayerUnitListUpdated();
         }
@@ -545,12 +541,8 @@
 
     public void MoveDown()
     {
-        var index = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-
-        if (index < _userStateController.PlayerState.UnitEntries.Count - 1)
+        if (_userStateController.PlayerState.UnitEntries.MoveDown(UnitEntry))
         {
-            (_userStateController.PlayerState.UnitEntries[index], _userStateController.PlayerState.UnitEntries[index + 1]) =
-                (_userStateController.PlayerState.UnitEntries[index + 1], _userStateController.PlayerState.UnitEntries[index]);
             _userStateController.NotifyPlayerDataUpdated();
             _userStateController.NotifyPlayerUnitListUpdated();
         }

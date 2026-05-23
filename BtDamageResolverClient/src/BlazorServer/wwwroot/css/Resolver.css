@@ -663,7 +663,7 @@ a, .btn-link {
 *******************************************************************************/
 
 .resolver_header {
-    padding: 0;
+    padding-left: 0.5rem;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
 }
@@ -690,14 +690,14 @@ a, .btn-link {
 .resolver_div_componentblock {
     display: flex;
     margin: 0;
-    padding: 0.1rem 0.3rem;
+    padding: 0.1rem 0.25rem;
     display: flex;
 }
 
 .resolver_div_componentgroup {
     display: inline-grid;
     vertical-align: top;
-    grid-template-columns: repeat(4, auto);
+    grid-template-columns: max-content auto;
     align-content: start;
     margin-bottom: 0.2rem;
     max-width: 45rem;
@@ -780,7 +780,7 @@ a, .btn-link {
 
 .resolver_div_weaponentrylist {
     display: grid;
-    grid-template-columns: repeat(8, auto);
+    grid-template-columns: repeat(7, auto);
 }
 
 .resolver_div_weaponentrylist > .resolver_div_reorderableitem {
@@ -803,6 +803,12 @@ a, .btn-link {
     width: 2.5rem;
 }
 
+.resolver_div_buttongroup {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+}
+
 .resolver_div_hidden {
     visibility: hidden;
     width: 0;
@@ -813,6 +819,10 @@ a, .btn-link {
 
 .resolver_div_weaponentrylist > .resolver_div_reorderablesentinel {
     grid-column: 1 / -1;
+}
+
+.resolver_div_componentlistcontainer > .resolver_div_reorderablesentinel {
+    flex-basis: 100%;
 }
 
 .resolver_div_reorderableitem.draggable:hover {
@@ -1103,12 +1113,28 @@ a, .btn-link {
     Desktop-mobile switches
 *******************************************************************************/
 
+button.desktop {
+    display: block;
+}
+
+button.mobile {
+    display: none;
+}
+
 @media (max-width: 50rem) {
     .resolver_div_unitname.desktop {
         display: none;
     }
 
     .resolver_div_unitname.mobile {
+        display: block;
+    }
+
+    button.desktop {
+        display: none;
+    }
+
+    button.mobile {
         display: block;
     }
 
@@ -1128,10 +1154,6 @@ a, .btn-link {
     }
 
     .resolver_div_draghandle {
-        display: none;
-    }
-
-    .resolver_div_reorderablesentinel {
         display: none;
     }
 }

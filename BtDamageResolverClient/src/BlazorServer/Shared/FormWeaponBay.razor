@@ -9,7 +9,7 @@
 @if(_userStateController.IsConnectedToGame)
 {
     <div class="resolver_div_componentgroup">
-        <div class="resolver_div_componentrow" style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
+        <div class="resolver_div_componentrow no-subgrid" style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
             <div class="resolver_div_componentcell">
                 @if (UnitEntry.StaticDataHidden)
                 {
@@ -20,8 +20,10 @@
                     <FormText @key=@($"{WeaponBay.Id}_Name") SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
                 }
             </div>
-            <div class="resolver_div_componentcell" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-                <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
+            <div class="resolver_div_componentcell resolver_div_buttongroup">
+                <button class="resolver_button mobile" disabled="@Disabled" @onclick="MoveUp"><b>&uarr;</b></button>
+                <button class="resolver_button mobile" disabled="@Disabled" @onclick="MoveDown"><b>&darr;</b></button>
+                <button style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
             </div>
         </div>
         <div class="resolver_div_componentrow no-subgrid" style="@(VisualStyleController.HideElement(UnitEntry.StaticDataHidden || UnitEntry.WeaponBays.Count <= 1))">
@@ -36,7 +38,6 @@
                 <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" WeaponBay="@WeaponBay" Disabled="@_userStateController.PlayerState.IsReady" OnUpdated="@OnUpdated" OnDeleted="@OnWeaponDeleted" />
             </ItemTemplate>
         </ContainerReorderableList>
-
         <div style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
             <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+Weapon</button>
         </div>
@@ -83,6 +84,18 @@
     public void DeleteWeaponBay()
     {
         OnDeleted.InvokeAsync(WeaponBay);
+    }
+
+    public void MoveUp()
+    {
+        if (UnitEntry.WeaponBays.MoveUp(WeaponBay))
+            OnUpdated.InvokeAsync();
+    }
+
+    public void MoveDown()
+    {
+        if (UnitEntry.WeaponBays.MoveDown(WeaponBay))
+            OnUpdated.InvokeAsync();
     }
 
     #region Property changing delegates
