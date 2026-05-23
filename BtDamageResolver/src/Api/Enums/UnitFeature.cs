@@ -52,14 +52,34 @@ public enum UnitFeature
     CommandUnit,
 
     /// <summary>
+    /// Two of these units fit one bay.
+    /// </summary>
+    CompactUnit,
+
+    /// <summary>
     /// More head armor from the sides and back, less directly from the front (no effect yet).
     /// </summary>
     Cowl,
 
     /// <summary>
+    /// Ejection is harder from this unit (no effect yet).
+    /// </summary>
+    DifficultEjection,
+
+    /// <summary>
+    /// Unit is harder to repair and maintain (no effect yet).
+    /// </summary>
+    DifficultToMaintain,
+
+    /// <summary>
     /// Torso mount that is actually a turret (no effect yet).
     /// </summary>
     DirectionalTorsoMount,
+
+    /// <summary>
+    /// Unit is fearsome or distracting (no effect yet).
+    /// </summary>
+    Distracting,
 
     /// <summary>
     /// Unit is easier to repair and maintain (no effect yet).
@@ -122,6 +142,11 @@ public enum UnitFeature
     ImprovedCoolingLargeEnergy,
 
     /// <summary>
+    /// Unit has better life support systems (no effect yet).
+    /// </summary>
+    ImprovedLifeSupport,
+
+    /// <summary>
     /// Unit has a more capable sensor system.
     /// </summary>
     ImprovedSensors,
@@ -157,9 +182,19 @@ public enum UnitFeature
     NoMinimalArms,
 
     /// <summary>
+    /// Unit has high-mounted arms (no effect yet).
+    /// </summary>
+    OverheadArms,
+
+    /// <summary>
     /// Unit cannot go from standstill to running speed in one turn (no effect yet).
     /// </summary>
     PoorPerformance,
+
+    /// <summary>
+    /// A vehicle may use full fast movement in reverse.
+    /// </summary>
+    PowerReverse,
 
     /// <summary>
     /// Infantry/BattleArmor swarm attacks are less effective against the actuators of this unit (no effect yet).

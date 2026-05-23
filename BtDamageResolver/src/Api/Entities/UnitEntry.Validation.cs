@@ -44,6 +44,8 @@ public partial class UnitEntry
 
                     break;
                 case UnitFeature.CommandUnit:
+                case UnitFeature.CompactUnit:
+                case UnitFeature.Distracting:
                 case UnitFeature.EasyToPilot:
                 case UnitFeature.FastReload:
                 case UnitFeature.HardToPilot:
@@ -95,6 +97,7 @@ public partial class UnitEntry
                 case UnitFeature.JettisonableWeapon:
                 case UnitFeature.Masc:
                 case UnitFeature.NoMinimalArms:
+                case UnitFeature.OverheadArms:
                 case UnitFeature.ProtectedActuators:
                 case UnitFeature.ReinforcedLegs:
                 case UnitFeature.Stable:
@@ -114,6 +117,8 @@ public partial class UnitEntry
 
                     break;
                 case UnitFeature.CombatComputer:
+                case UnitFeature.DifficultEjection:
+                case UnitFeature.ImprovedLifeSupport:
                     switch (Type)
                     {
                         case UnitType.AerospaceFighter:
@@ -163,9 +168,34 @@ public partial class UnitEntry
                     {
                         case UnitType.BattleArmor:
                         case UnitType.Infantry:
+                            validationResult.Fail($"{feature} is not valid for infantry and battle armor units.");
+                            break;
+                        default:
+                            break;
+                    }
+
+                    break;
+
+                case UnitFeature.DifficultToMaintain:
+                case UnitFeature.EasyToMaintain:
+                    switch (Type)
+                    {
+                        case UnitType.Infantry:
                             validationResult.Fail($"{feature} is not valid for infantry units.");
                             break;
                         default:
+                            break;
+                    }
+
+                    break;
+
+                case UnitFeature.PowerReverse:
+                    switch (Type) {
+                        case UnitType.VehicleTracked:
+                        case UnitType.VehicleWheeled:
+                            break;
+                        default:
+                            validationResult.Fail($"{feature} is only valid for tracked and wheeled ground vehicles.");
                             break;
                     }
 
