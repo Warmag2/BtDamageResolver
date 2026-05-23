@@ -56,14 +56,22 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
         {
             if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedConnectRequest.Credentials.Name).Connect(unpackedConnectRequest.Credentials.AuthenticationToken.Value))
             {
-                LogWarning(unpackedConnectRequest);
+                LogError(unpackedConnectRequest);
+            }
+            else
+            {
+                SendErrorMessage(unpackedConnectRequest.Credentials.Name, string.Empty);
             }
         }
         else
         {
             if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedConnectRequest.Credentials.Name).Connect(unpackedConnectRequest.Credentials.Password))
             {
-                LogWarning(unpackedConnectRequest);
+                LogError(unpackedConnectRequest);
+            }
+            else
+            {
+                SendErrorMessage(unpackedConnectRequest.Credentials.Name, string.Empty);
             }
         }
 
@@ -77,7 +85,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedDisconnectRequest.PlayerName).Disconnect(unpackedDisconnectRequest.AuthenticationToken))
         {
-            LogWarning(unpackedDisconnectRequest);
+            LogError(unpackedDisconnectRequest);
         }
 
         return true;
@@ -90,7 +98,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetDamageReportsRequest.PlayerName).RequestDamageReports(unpackedGetDamageReportsRequest.AuthenticationToken))
         {
-            LogWarning(unpackedGetDamageReportsRequest);
+            LogError(unpackedGetDamageReportsRequest);
         }
 
         return true;
@@ -103,7 +111,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetGameOptionsRequest.PlayerName).RequestGameOptions(unpackedGetGameOptionsRequest.AuthenticationToken))
         {
-            LogWarning(unpackedGetGameOptionsRequest);
+            LogError(unpackedGetGameOptionsRequest);
         }
 
         return true;
@@ -116,7 +124,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetGameStateRequest.PlayerName).RequestGameState(unpackedGetGameStateRequest.AuthenticationToken))
         {
-            LogWarning(unpackedGetGameStateRequest);
+            LogError(unpackedGetGameStateRequest);
         }
 
         return true;
@@ -129,7 +137,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedGetPlayerOptionsRequest.PlayerName).RequestPlayerOptions(unpackedGetPlayerOptionsRequest.AuthenticationToken))
         {
-            LogWarning(unpackedGetPlayerOptionsRequest);
+            LogError(unpackedGetPlayerOptionsRequest);
         }
 
         return true;
@@ -142,7 +150,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedForceReadyRequest.PlayerName).ForceReady(unpackedForceReadyRequest.AuthenticationToken))
         {
-            LogWarning(unpackedForceReadyRequest);
+            LogError(unpackedForceReadyRequest);
         }
 
         return true;
@@ -163,7 +171,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedJoinGameRequest.PlayerName).JoinGame(unpackedJoinGameRequest.AuthenticationToken, unpackedJoinGameRequest.Credentials.Name, unpackedJoinGameRequest.Credentials.Password))
         {
-            LogWarning(unpackedJoinGameRequest);
+            LogError(unpackedJoinGameRequest);
         }
 
         return true;
@@ -176,7 +184,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedKickPlayerRequest.PlayerName).KickPlayer(unpackedKickPlayerRequest.AuthenticationToken, unpackedKickPlayerRequest.PlayerToKickName))
         {
-            LogWarning(unpackedKickPlayerRequest);
+            LogError(unpackedKickPlayerRequest);
         }
 
         return true;
@@ -189,7 +197,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedLeaveGameRequest.PlayerName).LeaveGame(unpackedLeaveGameRequest.AuthenticationToken))
         {
-            LogWarning(unpackedLeaveGameRequest);
+            LogError(unpackedLeaveGameRequest);
         }
 
         return true;
@@ -210,7 +218,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IGameActor>(gameName).MoveUnit(unpackedMoveUnitRequest.PlayerName, unpackedMoveUnitRequest.UnitId, unpackedMoveUnitRequest.ReceivingPlayer))
         {
-            LogWarning(unpackedMoveUnitRequest);
+            LogError(unpackedMoveUnitRequest);
         }
 
         return true;
@@ -223,7 +231,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendDamageInstanceRequest.PlayerName).SendDamageInstance(unpackedSendDamageInstanceRequest.AuthenticationToken, unpackedSendDamageInstanceRequest.DamageInstance))
         {
-            LogWarning(unpackedSendDamageInstanceRequest);
+            LogError(unpackedSendDamageInstanceRequest);
         }
 
         return true;
@@ -236,7 +244,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendGameOptionsRequest.PlayerName).SendGameOptions(unpackedSendGameOptionsRequest.AuthenticationToken, unpackedSendGameOptionsRequest.GameOptions))
         {
-            LogWarning(unpackedSendGameOptionsRequest);
+            LogError(unpackedSendGameOptionsRequest);
         }
 
         return true;
@@ -249,7 +257,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
 
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendPlayerOptionsRequest.PlayerName).SendPlayerOptions(unpackedSendPlayerOptionsRequest.AuthenticationToken, unpackedSendPlayerOptionsRequest.PlayerOptions))
         {
-            LogWarning(unpackedSendPlayerOptionsRequest);
+            LogError(unpackedSendPlayerOptionsRequest);
         }
 
         return true;
@@ -263,7 +271,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
         if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedSendPlayerStateRequest.PlayerName).SendPlayerState(unpackedSendPlayerStateRequest.AuthenticationToken, unpackedSendPlayerStateRequest.PlayerState))
         {
             // Do not use regular LogWarning here - SendPlayerState has internal error handling and sends its own sensible error messages to the player
-            _logger.LogWarning("Failed to handle a message of type {Type} for player {PlayerId}", unpackedSendPlayerStateRequest.GetType(), unpackedSendPlayerStateRequest.PlayerName);
+            _logger.LogError("Failed to handle a message of type {Type} for player {PlayerId}", unpackedSendPlayerStateRequest.GetType(), unpackedSendPlayerStateRequest.PlayerName);
         }
         else
         {
@@ -283,9 +291,9 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
         return (result, validationResults);
     }
 
-    private void LogWarning(RequestBase request)
+    private void LogError(RequestBase request)
     {
-        _logger.LogWarning("Failed to handle a message of type {Type} for player {PlayerId}", request.GetType(), request.PlayerName);
+        _logger.LogError("Failed to handle a message of type {Type} for player {PlayerId}", request.GetType(), request.PlayerName);
         SendErrorMessage(request.PlayerName, $"Failed to handle a {request.GetType()} for player {request.PlayerName}.");
     }
 }
