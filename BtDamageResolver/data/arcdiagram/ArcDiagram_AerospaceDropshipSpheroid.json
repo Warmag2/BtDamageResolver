@@ -3,10 +3,10 @@
     "Arcs":
     [
         "Nose",
-        "FrontLeft",
-        "FrontRight",
-        "RearLeft",
-        "RearRight",
+        "ForeLeft",
+        "ForeRight",
+        "AftLeft",
+        "AftRight",
         "Aft"
     ]
 }

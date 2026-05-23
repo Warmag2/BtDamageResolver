@@ -2,7 +2,7 @@
     "UnitType": "VehicleTracked",
     "Arcs":
     [
-        "Full",
+        "Turret",
         "Front",
         "Left",
         "Right",

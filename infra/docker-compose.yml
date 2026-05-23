@@ -25,10 +25,10 @@ services:
       ASPNETCORE_ENVIRONMENT: Release
       RESOLVER_ENVIRONMENT: Release
       CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
-    volumes:
-      - ./dpkeys:/app/dpkeys
     ports:
       - 8787:8080
+    volumes:
+      - resolverclient-dpkeys:/app/dpkeys
     networks:
       - resolvernet
     depends_on:
@@ -42,7 +42,7 @@ services:
     image: resolverdataimporter:latest
     environment:
       RESOLVER_ENVIRONMENT: Release
-      ClusterOptions__ConnectionString: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=orleansdb;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
+      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     networks:
       - resolvernet
     depends_on:
@@ -107,3 +107,4 @@ volumes:
   grafana-data:
   orleansdb-data:
   redis-data:
+  resolverclient-dpkeys:

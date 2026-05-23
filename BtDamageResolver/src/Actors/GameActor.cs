@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.Actors.Cryptography;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -22,6 +23,7 @@ public partial class GameActor : Grain, IGameActor
 {
     private readonly ILogger<GameActor> _logger;
     private readonly ICommunicationServiceClient _communicationServiceClient;
+    private readonly IHasher _hasher;
     private readonly ILoggingServiceClient _loggingServiceClient;
     private readonly IPersistentState<GameActorState> _gameActorState;
     private readonly IPersistentState<GameActorDamageReportState> _gameActorDamageReportState;
@@ -34,6 +36,7 @@ public partial class GameActor : Grain, IGameActor
     /// <param name="gameActorDamageReportState">The state object for this actor containing damage reports.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="communicationServiceClient">The communication service client.</param>
+    /// <param name="hasher">The password hasher.</param>
     /// <param name="logicUnitFactory">The unit logic factory.</param>
     /// <param name="loggingServiceClient">The logging service client.</param>
     public GameActor(
@@ -41,6 +44,7 @@ public partial class GameActor : Grain, IGameActor
         [PersistentState(nameof(GameActorDamageReportState), Settings.ActorStateStoreName)] IPersistentState<GameActorDamageReportState> gameActorDamageReportState,
         ILogger<GameActor> logger,
         ICommunicationServiceClient communicationServiceClient,
+        IHasher hasher,
         ILogicUnitFactory logicUnitFactory,
         ILoggingServiceClient loggingServiceClient)
     {
@@ -48,6 +52,7 @@ public partial class GameActor : Grain, IGameActor
         _gameActorDamageReportState = gameActorDamageReportState;
         _logger = logger;
         _communicationServiceClient = communicationServiceClient;
+        _hasher = hasher;
         _logicUnitFactory = logicUnitFactory;
         _loggingServiceClient = loggingServiceClient;
     }
@@ -64,6 +69,17 @@ public partial class GameActor : Grain, IGameActor
         // Do not accept player states from players who are not in the game.
         if (!_gameActorState.State.PlayerIds.Contains(sendingPlayerId))
         {
+            return false;
+        }
+
+        // Reject any attempt by one player to submit state on behalf of another player.
+        if (playerState.PlayerId != sendingPlayerId)
+        {
+            _logger.LogWarning(
+                "Security violation in Game {GameId}: player {SendingPlayerId} attempted to submit state for player {TargetPlayerId}. Request rejected.",
+                this.GetPrimaryKeyString(),
+                sendingPlayerId,
+                playerState.PlayerId);
             return false;
         }
 
@@ -113,12 +129,15 @@ public partial class GameActor : Grain, IGameActor
         var damageReport = await ProcessDamageInstance(damageInstance);
         damageReport.Turn = _gameActorState.State.Turn;
 
+        _gameActorDamageReportState.State.DamageReports.Add(damageReport);
+        await _gameActorDamageReportState.WriteStateAsync();
+
         await DistributeDamageReportsToPlayers([damageReport]);
 
         return true;
     }
 
-    /// <inheritdoc />>
+    /// <inheritdoc />
     public async Task<bool> JoinGame(string playerId, string password)
     {
         if (string.IsNullOrWhiteSpace(playerId) || password == null)
@@ -127,27 +146,29 @@ public partial class GameActor : Grain, IGameActor
             return false;
         }
 
-        // Accept any password if the game does not yet exist
-        if (string.IsNullOrWhiteSpace(_gameActorState.State.Password) || string.Equals(_gameActorState.State.Password, password, StringComparison.Ordinal))
+        // Accept any password if the game does not yet have one
+        if (_gameActorState.State.PasswordHash == null)
         {
-            _gameActorState.State.Password = password;
-            _gameActorState.State.PlayerIds.Add(playerId);
-            _gameActorState.State.TimeStamp = DateTime.UtcNow;
-            await _gameActorState.WriteStateAsync();
-
-            _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully connected to the game.", this.GetPrimaryKeyString(), playerId);
-
-            await CheckGameStateUpdateEvents();
-
-            // Log logins to permanent store
-            await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
-
-            return true;
+            (_gameActorState.State.PasswordHash, _gameActorState.State.PasswordSalt) = _hasher.Hash(password);
+        }
+        else if (!_hasher.Verify(password, _gameActorState.State.PasswordSalt, _gameActorState.State.PasswordHash))
+        {
+            _logger.LogInformation("In Game {GameId}, Player {PlayerId} failed to connect to the game.", this.GetPrimaryKeyString(), playerId);
+            return false;
         }
 
-        _logger.LogInformation("In Game {GameId}, Player {PlayerId} failed to connect to the game.", playerId, this.GetPrimaryKeyString());
+        _gameActorState.State.PlayerIds.Add(playerId);
+        _gameActorState.State.TimeStamp = DateTime.UtcNow;
+        await _gameActorState.WriteStateAsync();
 
-        return false;
+        _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully connected to the game.", this.GetPrimaryKeyString(), playerId);
+
+        await CheckGameStateUpdateEvents();
+
+        // Log logins to permanent store
+        await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
+
+        return true;
     }
 
     /// <inheritdoc />
@@ -165,14 +186,14 @@ public partial class GameActor : Grain, IGameActor
             await CheckGameStateUpdateEvents();
 
             _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully disconnected.", this.GetPrimaryKeyString(), playerId);
+
+            // Log logout to permanent store only when the player was actually present.
+            await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.LogOut, 0);
         }
         else
         {
             _logger.LogInformation("In Game {GameId} Player {PlayerId}, cannot be disconnected, since the player is not in the game.", this.GetPrimaryKeyString(), playerId);
         }
-
-        // Log logins to permanent store
-        await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.LogOut, 0);
 
         return true;
     }
@@ -180,7 +201,7 @@ public partial class GameActor : Grain, IGameActor
     private void CheckForPlayerCountEvents()
     {
         // If we have no players, reset turn and erase damage reports
-        if (_gameActorState.State.PlayerStates.Count == 0)
+        if (_gameActorState.State.PlayerIds.Count == 0)
         {
             _gameActorState.State.Reset();
             _gameActorDamageReportState.State.Reset();

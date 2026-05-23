@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -15,20 +14,20 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc />
-    public async Task<CriticalDamageTable> GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location)
+    public CriticalDamageTable GetCriticalDamageTable(CriticalDamageTableType criticalDamageTableType, Location location)
     {
         var transformedTargetType = GetPaperDollType();
         var transformedLocation = TransformLocation(location);
         var criticalDamageTableId = CriticalDamageTable.GetIdFromProperties(transformedTargetType, criticalDamageTableType, transformedLocation);
 
-        return await GrainFactory.GetCriticalDamageTableRepository().Get(criticalDamageTableId);
+        return RepositoryProvider.CriticalDamageTableRepository.Get(criticalDamageTableId);
     }
 
     /// <inheritdoc />
-    public async Task<DamagePaperDoll> GetDamagePaperDoll(ILogicUnit target, AttackType attackType, Direction direction, List<WeaponFeature> weaponFeatures)
+    public DamagePaperDoll GetDamagePaperDoll(ILogicUnit target, AttackType attackType, Direction direction, List<WeaponFeature> weaponFeatures)
     {
         var paperDollName = GetPaperDollNameFromAttackParameters(target, attackType, direction, GameOptions, weaponFeatures);
-        var paperDoll = await GrainFactory.GetPaperDollRepository().Get(paperDollName);
+        var paperDoll = RepositoryProvider.PaperDollRepository.Get(paperDollName);
 
         return paperDoll.ToDamagePaperDoll();
     }
@@ -40,11 +39,11 @@ public partial class LogicUnit
     /// <returns>The <see cref="Weapon"/> with the chosen ammo in the weapon entry applied, if possible.</returns>
     protected async Task<Weapon> FormWeapon(WeaponEntry weaponEntry)
     {
-        var weapon = await GrainFactory.GetWeaponRepository().Get(weaponEntry.WeaponName);
+        var weapon = RepositoryProvider.WeaponRepository.Get(weaponEntry.WeaponName);
 
         if (!string.IsNullOrWhiteSpace(weaponEntry.Ammo) && weapon.Ammo.TryGetValue(weaponEntry.Ammo, out var value))
         {
-            weapon = weapon.ApplyAmmo(await GrainFactory.GetAmmoRepository().Get(value));
+            weapon = weapon.ApplyAmmo(RepositoryProvider.AmmoRepository.Get(value));
         }
 
         if (weaponEntry.Amount > 1)

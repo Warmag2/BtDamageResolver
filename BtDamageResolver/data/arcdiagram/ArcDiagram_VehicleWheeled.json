@@ -2,7 +2,7 @@
     "UnitType": "VehicleWheeled",
     "Arcs":
     [
-        "Full",
+        "Turret",
         "Front",
         "Left",
         "Right",

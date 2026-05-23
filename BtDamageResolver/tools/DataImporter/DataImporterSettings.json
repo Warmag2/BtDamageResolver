@@ -7,8 +7,7 @@
     "LogLevel": "Information",
     "LogLevelOrleans": "Warning"
   },
-  "ClusterOptions": {
-    "Invariant": "Npgsql",
-    "ConnectionString": "User ID=USERNAME;Password=PASSWORD;Host=orleansdb;Port=5432;Database=BtDamageResolver"
+  "CommunicationOptions": {
+    "ConnectionString": "redis:6379,password=PASSWORD"
   }
 }

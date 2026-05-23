@@ -6,7 +6,8 @@
     "LogToDatabase": true,
     "LogToFile": false,
     "LogLevel": "Information",
-    "LogLevelOrleans": "Warning"
+    "LogLevelOrleans": "Warning",
+    "SendDetailedErrorsToClient": true
   },
   "ClusterOptions": {
     "Invariant": "Npgsql",

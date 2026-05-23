@@ -6,8 +6,17 @@
 @{
     if (!string.IsNullOrEmpty(WeaponName) && _commonData.DictionaryWeapon.ContainsKey(WeaponName))
     {
-        _weapon = _commonData.FormWeapon(WeaponName, Ammo);
+        _weapon = _commonData.FormWeapon(WeaponName, _ammoName);
     }
+
+    var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponName);
+}
+
+@if (mapWeaponAmmo.Count > 0)
+{
+    <div class="resolver_div_componentrow">
+        <FormComboBox @key="@WeaponName" Options=@mapWeaponAmmo SelectedOption=@_commonData.GetWeaponDefaultAmmo(WeaponName) OnChanged="(string ammoName) => OnAmmoChanged(ammoName)"></FormComboBox>
+    </div>
 }
 
 @if (_weapon != null)
@@ -170,12 +179,10 @@
 @code
 {
     private Weapon _weapon;
+    private string _ammoName;
 
     [Parameter]
     public string WeaponName { get; set; }
-
-    [Parameter]
-    public string Ammo { get; set; }
 
     private static bool AllValuesAreEqual(Dictionary<RangeBracket, int> valueDict)
     {
@@ -185,5 +192,10 @@
         }
 
         return false;
+    }
+
+    private void OnAmmoChanged(string ammoName)
+    {
+        _ammoName = ammoName;
     }
 }

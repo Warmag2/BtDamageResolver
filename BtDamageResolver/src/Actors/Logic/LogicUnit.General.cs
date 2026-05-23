@@ -16,7 +16,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc />
-    public virtual async Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget)
+    public virtual async Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, bool processOnlyTags, WeaponBay weaponBay)
     {
         var allDamageReports = new List<DamageReport>();
         var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
@@ -38,7 +38,7 @@ public partial class LogicUnit
             var hitCalclulationDamageReport = new DamageReport
             {
                 Phase = weapon.UsePhase,
-                DamagePaperDoll = await GetDamagePaperDoll(target, AttackType.Normal, weaponBay.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
+                DamagePaperDoll = GetDamagePaperDoll(target, AttackType.Normal, weaponBay.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
                 FiringUnitIds = [Unit.Id],
                 FiringUnitNames = new() { { Unit.Id, Unit.Name } },
                 TargetUnitId = target.Unit.Id,
@@ -46,7 +46,7 @@ public partial class LogicUnit
                 InitialTroopers = target.Unit.Troopers
             };
 
-            var combatAction = ResolveHit(hitCalclulationDamageReport, target, weapon, weaponBay, weaponEntry, isPrimaryTarget);
+            var combatAction = ResolveHit(hitCalclulationDamageReport, target, primaryTargetArc, isPrimaryTarget, weapon, weaponBay, weaponEntry);
 
             damageReportCombatActionPairs.Add((hitCalclulationDamageReport, combatAction));
         }

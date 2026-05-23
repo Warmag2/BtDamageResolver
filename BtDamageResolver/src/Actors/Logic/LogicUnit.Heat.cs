@@ -47,7 +47,7 @@ public partial class LogicUnit
         var nonWeaponDamageReport = new DamageReport
         {
             Phase = Phase.Movement,
-            DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, Direction.Front, []),
+            DamagePaperDoll = GetDamagePaperDoll(this, AttackType.Normal, Direction.Front, []),
             FiringUnitIds = [Unit.Id],
             FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = Unit.Id,

@@ -1,6 +1,7 @@
 ﻿using System;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
@@ -21,9 +22,10 @@ public class LogicUnitAerospaceCapital : LogicUnitAerospaceLarge
     /// <param name="gameOptions">The game options.</param>
     /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
-    /// <param name="random">The random number generator.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
+    /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    public LogicUnitAerospaceCapital(ILogger<LogicUnitAerospaceCapital> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+    public LogicUnitAerospaceCapital(ILogger<LogicUnitAerospaceCapital> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, repositoryProvider, resolverRandom, unit)
     {
     }
 

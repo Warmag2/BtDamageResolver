@@ -45,7 +45,7 @@ public partial class LogicUnit
 
                             var criticalTableType = specialDamageEntry.Type == SpecialDamageType.Critical ? CriticalDamageTableType.Critical : CriticalDamageTableType.Motive;
 
-                            var criticalDamageTable = await GetCriticalDamageTable(criticalTableType, location);
+                            var criticalDamageTable = GetCriticalDamageTable(criticalTableType, location);
 
                             // Critical rolls from damage may have a modifier.
                             var specialDamageThreatModifier = MathExpression.Parse(specialDamageEntry.Data);
@@ -56,7 +56,7 @@ public partial class LogicUnit
                                 damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Threat roll glancing blow modifier", glancingBlowModifier));
                             }
 
-                            var specialDamageEntryCriticalThreatRoll = Math.Clamp(Random.D26() + specialDamageThreatModifier + glancingBlowModifier, 2, 12);
+                            var specialDamageEntryCriticalThreatRoll = Math.Clamp(ResolverRandom.D26() + specialDamageThreatModifier + glancingBlowModifier, 2, 12);
                             damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, damageOwnerId, "Threat roll", specialDamageEntryCriticalThreatRoll));
 
                             if (criticalDamageTable.Mapping[specialDamageEntryCriticalThreatRoll].Exists(c => c != CriticalDamageType.None))
@@ -83,7 +83,7 @@ public partial class LogicUnit
 
             if (criticalDamageTableType != CriticalDamageTableType.None)
             {
-                var criticalThreatRoll = Random.D26();
+                var criticalThreatRoll = ResolverRandom.D26();
 
                 if (criticalDamageTableType == CriticalDamageTableType.Motive)
                 {
@@ -153,8 +153,8 @@ public partial class LogicUnit
         {
             hitLocation = paperDoll.LocationMapping.Keys.Count switch
             {
-                11 => Random.D26(),
-                _ => Random.NextPlusOne(paperDoll.LocationMapping.Keys.Count)
+                11 => ResolverRandom.D26(),
+                _ => ResolverRandom.NextPlusOne(paperDoll.LocationMapping.Keys.Count)
             };
 
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, damageOwnerId, "Location", hitLocation));
@@ -162,7 +162,7 @@ public partial class LogicUnit
             var locationList = paperDoll.LocationMapping[hitLocation];
 
             // Return a random entry from the location list, if it has more than one entry
-            location = locationList[Random.Next(locationList.Count)];
+            location = locationList[ResolverRandom.Next(locationList.Count)];
 
             if (locationList.Count != 1)
             {

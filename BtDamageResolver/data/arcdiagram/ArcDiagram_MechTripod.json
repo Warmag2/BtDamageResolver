@@ -2,10 +2,9 @@
     "UnitType": "MechTripod",
     "Arcs":
     [
-        "Full",
         "Front",
-        "Left",
-        "Right",
+        "LeftArm",
+        "RightArm",
         "Rear"
     ]
 }

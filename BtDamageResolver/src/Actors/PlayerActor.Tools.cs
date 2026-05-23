@@ -19,6 +19,12 @@ public partial class PlayerActor
             return false;
         }
 
+        if (!IsConnectedToGame())
+        {
+            _logger.LogWarning("Player {PlayerId} tried to force ready state while not in a game.", this.GetPrimaryKeyString());
+            return false;
+        }
+
         _logger.LogInformation("Player {PlayerId} asking Game {GameId} to force ready state for all players.", this.GetPrimaryKeyString(), _playerActorState.State.GameId);
         return await GrainFactory.GetGrain<IGameActor>(_playerActorState.State.GameId).ForceReady(this.GetPrimaryKeyString());
     }
@@ -28,6 +34,12 @@ public partial class PlayerActor
     {
         if (!await CheckAuthentication(authenticationToken))
         {
+            return false;
+        }
+
+        if (!IsConnectedToGame())
+        {
+            _logger.LogWarning("Player {PlayerId} tried to kick a player while not in a game.", this.GetPrimaryKeyString());
             return false;
         }
 

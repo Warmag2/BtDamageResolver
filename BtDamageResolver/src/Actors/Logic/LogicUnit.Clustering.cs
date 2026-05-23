@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Entities;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Constants;
@@ -54,7 +53,7 @@ public partial class LogicUnit
     /// <returns>Result of the cluster calculation.</returns>
     protected async Task<int> ResolveClusterValue(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, int damageValue, int clusterBonus)
     {
-        var clusterRoll = Random.D26();
+        var clusterRoll = ResolverRandom.D26();
 
         clusterRoll = TransformClusterRollBasedOnWeaponFeatures(damageReport, Unit.Id, combatAction, clusterRoll);
         clusterRoll = target.TransformClusterRollBasedOnUnitType(damageReport, Unit.Id, clusterRoll);
@@ -64,7 +63,7 @@ public partial class LogicUnit
         clusterRoll = Math.Clamp(clusterRoll + clusterBonus, 2, 12);
         damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Modified cluster", clusterRoll));
 
-        var damageTable = await GrainFactory.GetClusterTableRepository().Get(Names.DefaultClusterTableName);
+        var damageTable = RepositoryProvider.ClusterTableRepository.Get(Names.DefaultClusterTableName);
 
         var clusterDamage = damageTable.GetDamage(damageValue, clusterRoll);
         damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Cluster damage", clusterDamage));

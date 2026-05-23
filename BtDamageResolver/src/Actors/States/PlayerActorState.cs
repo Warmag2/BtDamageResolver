@@ -34,11 +34,6 @@ public class PlayerActorState
     public string GameId { get; set; }
 
     /// <summary>
-    /// The password for the game this player is in.
-    /// </summary>
-    public string GamePassword { get; set; }
-
-    /// <summary>
     /// The password hash for the player.
     /// </summary>
     public byte[] PasswordHash { get; set; }

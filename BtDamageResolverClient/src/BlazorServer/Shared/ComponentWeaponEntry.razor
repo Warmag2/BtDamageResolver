@@ -11,26 +11,26 @@
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
 }
 
-<tr class="resolver_tr_weaponentry @(WeaponEntry.State == WeaponState.Active ? "active" : string.Empty)">
-    <td class="resolver_td_targetnumber">
+<div class="resolver_div_componentrow resolver_div_weaponentry @(WeaponEntry.State == WeaponState.Active ? "active" : string.Empty)">
+    <div class="resolver_div_componentcell resolver_div_targetnumber">
         <b>@targetNumber</b>
-    </td>
-    <td>
-        <div class="resolver_div_unitinformation_data">@($"{WeaponEntry.Amount}x")</div>
-    </td>
-    <td>
-        <div class="resolver_div_unitinformation_data">@($"{(WeaponEntry.Modifier >= 0 ? "+" : string.Empty)}{WeaponEntry.Modifier}")</div>
-    </td>
-    <td>
+    </div>
+    <div class="resolver_div_componentcell">
+        @($"{WeaponEntry.Amount}x")
+    </div>
+    <div class="resolver_div_componentcell">
+        @($"{(WeaponEntry.Modifier >= 0 ? "+" : string.Empty)}{WeaponEntry.Modifier}")
+    </div>
+    <div class="resolver_div_componentcell">
         <div class="resolver_div_unitinformation_data">@WeaponEntry.WeaponName</div>
-    </td>
+    </div>
     @{
         var ammoText = WeaponEntry?.Ammo == null ? "-" : WeaponEntry.Ammo;
     }
-    <td>
+    <div class="resolver_div_componentcell">
         <div class="resolver_div_unitinformation_data">@ammoText</div>
-    </td>
-</tr>
+    </div>
+</div>
 
 @code
 {
