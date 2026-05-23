@@ -4,7 +4,6 @@
 @inject UserStateController _userStateController
 
 @{
-    var showCombinedReports = _userStateController.PlayerOptions?.ShowCombinedDamageReports ?? false;
     var combinedDamageReport = DamageReports[0].BlankCopy();
 
     foreach (var damageReport in DamageReports)
@@ -15,17 +14,27 @@
 
 @if (DamageReports.Count > 1)
 {
-    <ContainerExpander Enabled="showCombinedReports">
-        <ChildContentEnabled>
+    <div class="resolver_div_damagereportgroup">
+        <div class="resolver_div_damagereportgroupheader">
+            <span>@DamageReports[0].TargetUnitName &mdash; @DamageReports[0].Phase &mdash; @DamageReports.Count attacks</span>
+            <button class="resolver_button" @onclick="@(() => _combined = !_combined)">
+                @(_combined ? "Split ▶" : "Combine ▼")
+            </button>
+        </div>
+        @if (_combined)
+        {
             <FormDamageReport DamageReport=@combinedDamageReport></FormDamageReport>
-        </ChildContentEnabled>
-        <ChildContentDisabled>
-            @foreach (var damageReport in DamageReports)
-            {
-                <FormDamageReport DamageReport=@damageReport></FormDamageReport>
-            }
-        </ChildContentDisabled>
-    </ContainerExpander>
+        }
+        else
+        {
+            <div class="resolver_div_damagereportgroupcontent">
+                @foreach (var damageReport in DamageReports)
+                {
+                    <FormDamageReport DamageReport=@damageReport></FormDamageReport>
+                }
+            </div>
+        }
+    </div>
 }
 else
 {
@@ -34,6 +43,13 @@ else
 
 @code
 {
+    private bool _combined;
+
     [Parameter]
     public List<DamageReport> DamageReports { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _combined = _userStateController.PlayerOptions?.ShowCombinedDamageReports ?? false;
+    }
 }

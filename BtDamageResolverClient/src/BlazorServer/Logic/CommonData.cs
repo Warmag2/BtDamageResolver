@@ -362,7 +362,7 @@ public class CommonData
     /// <returns>Pick brackets for selecting valid skill values.</returns>
     public static List<PickBracket> FormPickBracketsSkills()
     {
-        return MakeSimplePickBrackets(1, 1, 8);
+        return MakeSimplePickBrackets(0, 1, 8);
     }
 
     /// <summary>
@@ -649,9 +649,19 @@ public class CommonData
     {
         var weapon = DictionaryWeapon[weaponName];
 
-        if (!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.TryGetValue(ammoName, out var value))
+        if (weapon.Ammo.Count > 0)
         {
-            var ammo = DictionaryAmmo[value];
+            Ammo ammo;
+
+            if (!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.TryGetValue(ammoName, out var value))
+            {
+                ammo = DictionaryAmmo[value];
+            }
+            else
+            {
+                ammo = DictionaryAmmo[weapon.Ammo.First().Value];
+            }
+            
             return weapon.ApplyAmmo(ammo);
         }
 

@@ -15,57 +15,53 @@
     var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName);
 }
 
-<tr class="resolver_tr_weaponentry draggable @(WeaponEntry.State == WeaponState.Active ? "active" : "inactive")" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
-    <td class="resolver_td_targetnumber" data-tooltip-content="@tooltipContent" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', this.dataset.tooltipContent);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
-        <b>@(targetNumber)</b>
-    </td>
-    <td>
-        <FormToggle @key=@($"{WeaponEntry.Id}_State") Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(_userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormToggle>
-    </td>
-    <td class="resolver_td_weaponentry" style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponAmountHidden(UnitEntry.Type) && WeaponEntry.Amount == 1)">
-        @if (UnitEntry.StaticDataHidden)
-        {
-            <b>@(WeaponEntry.Amount)x</b>
-        }
-        else
-        {
-            <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Amount") BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
-        }
-    </td>
-    <td class="resolver_td_weaponentry" style="@VisualStyleController.HideElement(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0)">
-        @if (UnitEntry.StaticDataHidden)
-        {
-            <b>@(WeaponEntry.Modifier.ToStringExplicit())</b>
-        }
-        else
-        {
-            <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Modifier") BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
-        }
-    </td>
-    <td class="resolver_td_weaponentry">
-        @if (UnitEntry.StaticDataHidden)
-        {
-            <b>@WeaponEntry.WeaponName</b>
-        }
-        else
-        {
-            <FormComboBox @key=@($"{WeaponEntry.Id}_WeaponName") Options="@_commonData.FormMapWeaponName(UnitEntry.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
-        }
-    </td>
-    <td>
-        @if (_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))
-        {
-            <FormSelect @key=@($"{WeaponEntry.Id}_Ammo") Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
-        }
-    </td>
-    <td>
-        <button class="resolver_button" disabled="@Disabled" @onclick="MoveUp"><b>&uarr;</b></button>
-        <button class="resolver_button" disabled="@Disabled" @onclick="MoveDown"><b>&darr;</b></button>
-    </td>
-    <td style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-        <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeapon">X</button>
-    </td>
-</tr>
+<div class="resolver_div_componentcell resolver_div_targetnumber" style="grid-column: 1" data-tooltip-content="@tooltipContent" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', this.dataset.tooltipContent);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
+    <b>@(targetNumber)</b>
+</div>
+<div style="grid-column: 2">
+    <FormToggle @key=@($"{WeaponEntry.Id}_State") Checked="@(WeaponEntry.State == WeaponState.Active)" Disabled="@Disabled" ComparisonTimeStamp="@(_userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue)" OnChanged="@OnWeaponStateChanged">@(WeaponEntry.State == WeaponState.Active ? "Active" : "Inactive")</FormToggle>
+</div>
+<div class="resolver_div_componentcell @(VisualStyleController.GetWeaponAmountHidden(UnitEntry.Type) && WeaponEntry.Amount == 1 ? "resolver_div_hidden" : string.Empty)" style="grid-column: 3">
+    @if (UnitEntry.StaticDataHidden)
+    {
+        <b>@(WeaponEntry.Amount)x</b>
+    }
+    else
+    {
+        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Amount") BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+    }
+</div>
+<div class="resolver_div_componentcell @(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0 ? "resolver_div_hidden" : string.Empty)" style="grid-column: 4">
+    @if (UnitEntry.StaticDataHidden)
+    {
+        <b>@(WeaponEntry.Modifier.ToStringExplicit())</b>
+    }
+    else
+    {
+        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Modifier") BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
+    }
+</div>
+<div class="resolver_div_componentcell" style="grid-column: 5">
+    @if (UnitEntry.StaticDataHidden)
+    {
+        <b>@WeaponEntry.WeaponName</b>
+    }
+    else
+    {
+        <FormComboBox @key=@($"{WeaponEntry.Id}_WeaponName") Options="@_commonData.FormMapWeaponName(UnitEntry.Type)" SelectedOption="@WeaponEntry.WeaponName" Disabled="@Disabled" OnChanged="(string weaponName) => OnWeaponNameChanged(weaponName)"></FormComboBox>
+    }
+</div>
+<div class="resolver_div_componentcell" style="grid-column: 6">
+    @if (_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))
+    {
+        <FormSelect @key=@($"{WeaponEntry.Id}_Ammo") Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
+    }
+</div>
+<div class="resolver_div_componentcell resolver_div_buttongroup" style="grid-column: 7">
+    <button class="resolver_button mobile" disabled="@Disabled" @onclick="MoveUp"><b>&uarr;</b></button>
+    <button class="resolver_button mobile" disabled="@Disabled" @onclick="MoveDown"><b>&darr;</b></button>
+    <button class="resolver_button resolver_button_delete" style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" disabled="@Disabled" @onclick="DeleteWeapon">X</button>
+</div>
 
 @code
 {
@@ -88,16 +84,10 @@
     public bool Disabled { get; set; }
 
     [Parameter]
-    public EventCallback OnChanged { get; set; }
-
-    [Parameter]
     public EventCallback<WeaponEntry> OnDeleted { get; set; }
 
     [Parameter]
-    public EventCallback<int> OnDragWeapon { get; set; }
-
-    [Parameter]
-    public EventCallback<int> OnDropWeapon { get; set; }
+    public EventCallback OnUpdated { get; set; }
 
     protected override void OnInitialized()
     {
@@ -129,6 +119,18 @@
     private void DeleteWeapon()
     {
         OnDeleted.InvokeAsync(WeaponEntry);
+    }
+
+    private void MoveUp()
+    {
+        if (WeaponBay.Weapons.MoveUp(WeaponEntry))
+            OnUpdated.InvokeAsync();
+    }
+
+    private void MoveDown()
+    {
+        if (WeaponBay.Weapons.MoveDown(WeaponEntry))
+            OnUpdated.InvokeAsync();
     }
 
     private void UpdateWeaponEntry()
@@ -164,7 +166,7 @@
         if (anythingChanged)
         {
             WeaponEntry.TimeStamp = DateTime.UtcNow;
-            OnChanged.InvokeAsync(WeaponEntry);
+            OnUpdated.InvokeAsync();
         }
     }
 
@@ -198,49 +200,6 @@
         _weaponState = state ? WeaponState.Active : WeaponState.Inactive;
         UpdateWeaponEntry();
     }
-
-    public void MoveUp()
-    {
-        var index = WeaponBay.Weapons.IndexOf(WeaponEntry);
-
-        if (index >= 1)
-        {
-            Swap(index - 1, index);
-        }
-    }
-
-    public void MoveDown()
-    {
-        var index = WeaponBay.Weapons.IndexOf(WeaponEntry);
-
-        if (index < WeaponBay.Weapons.Count - 1)
-        {
-            Swap(index, index + 1);
-        }
-    }
-
-    private void Swap(int i1, int i2)
-    {
-        var swapTarget = WeaponBay.Weapons[i2];
-        WeaponBay.Weapons[i2] = WeaponBay.Weapons[i1];
-        WeaponBay.Weapons[i1] = swapTarget;
-
-        OnChanged.InvokeAsync();
-    }
-
-    #region dragdrop
-
-    private void Drag()
-    {
-        OnDragWeapon.InvokeAsync(WeaponBay.Weapons.IndexOf(WeaponEntry));
-    }
-
-    private void Drop()
-    {
-        OnDropWeapon.InvokeAsync(WeaponBay.Weapons.IndexOf(WeaponEntry));
-    }
-
-    #endregion
 
     private static string GetTargetNumberText(AttackLog attackLog, bool showAllLines)
     {

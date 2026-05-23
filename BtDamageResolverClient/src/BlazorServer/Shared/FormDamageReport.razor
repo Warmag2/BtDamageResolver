@@ -53,8 +53,9 @@
 
 <div class="resolver_div_componentcontainer resolver_div_damagereportcontainer @(defendingUnitOwnedByYou ? "incomingdamage" : "outgoingdamage")">
     
-        <div class="resolver_div_componentrow">
-            <div class="resolver_div_componentcell resolver_div_damagereportheader">
+    <div class="resolver_div_componentrow resolver_div_damagereportheader">
+        <div class="resolver_div_componentcell">
+            <span class="resolver_span_damagereportheader">
                 <b>
                     @unitAttackString
                 </b>
@@ -62,12 +63,13 @@
                 <b>
                     @unitDefenseString
                 </b>
-            </div>
-            <div class="resolver_div_componentcell resolver_style_alignright">
-                <button class="resolver_button resolver_button_delete" @onclick="Delete">X</button>
-            </div>
+            </span>
         </div>
-         
+        <div class="resolver_div_componentcell">
+            <button class="resolver_button resolver_button_delete" @onclick="Delete">X</button>
+        </div>
+    </div>
+
         <div class="resolver_div_componentrow">
             <div class="resolver_div_phase">
                 Phase: <b>@DamageReport.Phase</b>
@@ -146,30 +148,28 @@
             </div>
         }
 
-    <div class="resolver_div_componentrow">
-        <ContainerAccordion Enabled="@_attackLogVisible" Title="Attack log">
-            <div class="resolver_div_options">
-                @foreach (var attackLogEntryType in _logLineVisibility)
+    <ContainerAccordion Enabled="@_attackLogVisible" Title="Attack log">
+        <div class="resolver_div_options">
+            @foreach (var attackLogEntryType in _logLineVisibility)
+            {
+                <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
+            }
+        </div>
+
+        @foreach (var logLine in DamageReport.AttackLog.Log)
+        {
+            <div class="@($"resolver_div_attacklog_{logLine.Type.ToString().ToLowerInvariant()}")" style="@VisualStyleController.HideElement(!_logLineVisibility[logLine.Type])">
+                @if (DamageReport.FiringUnitIds.Count > 1)
                 {
-                    <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
+                    @logLine.ToString(true, DamageReport.FiringUnitNames)
+                }
+                else
+                {
+                    @logLine.ToString(false, DamageReport.FiringUnitNames)
                 }
             </div>
-
-            @foreach (var logLine in DamageReport.AttackLog.Log)
-            {
-                <div class="@($"resolver_div_attacklog_{logLine.Type.ToString().ToLowerInvariant()}")" style="@VisualStyleController.HideElement(!_logLineVisibility[logLine.Type])">
-                    @if(DamageReport.FiringUnitIds.Count > 1)
-                    {
-                        @logLine.ToString(true, DamageReport.FiringUnitNames)                        
-                    }
-                    else
-                    {
-                        @logLine.ToString(false, DamageReport.FiringUnitNames)
-                    }
-                </div>
-            }
-        </ContainerAccordion>
-    </div>
+        }
+    </ContainerAccordion>
 </div>
 
 @code
