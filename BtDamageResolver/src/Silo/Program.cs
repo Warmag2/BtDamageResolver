@@ -95,7 +95,8 @@ internal static class Program
         try
         {
             // Allow 30 to finish up gracefully, otherwise shut down forcefully.
-            await _siloHost.StopAsync(new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
+            using var shutdownCts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+            await _siloHost.StopAsync(shutdownCts.Token);
         }
         catch (Exception ex)
         {

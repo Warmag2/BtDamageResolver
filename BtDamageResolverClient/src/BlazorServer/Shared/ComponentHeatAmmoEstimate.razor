@@ -10,41 +10,35 @@
 
 @if (targetNumberUpdate != null)
 {
-    <table>
+    <div>
         @if (targetNumberUpdate.HeatWorstCase > 0)
         {
-            <tr>
-                <td>
-                    Projected heat: @targetNumberUpdate.HeatEstimate
-                    @if (targetNumberUpdate.HeatEstimate != targetNumberUpdate.HeatWorstCase)
-                    {
-                        @($" ({targetNumberUpdate.HeatWorstCase})")
-                    }
-                </td>
-            </tr>
+            <div>
+                Projected heat: @targetNumberUpdate.HeatEstimate
+                @if (targetNumberUpdate.HeatEstimate != targetNumberUpdate.HeatWorstCase)
+                {
+                    @($" ({targetNumberUpdate.HeatWorstCase})")
+                }
+            </div>
         }
 
         @if (targetNumberUpdate.AmmoEstimate.Any())
         {
-            <tr>
-                <td>
-                    Projected ammo usage:
-                </td>
-            </tr>
+            <div>
+                Projected ammo usage:
+            </div>
             foreach (var item in targetNumberUpdate.AmmoEstimate)
             {
-                <tr>
-                    <td>
-                        @($"{item.Key}: {item.Value}")
-                        @if (targetNumberUpdate.AmmoWorstCase[item.Key] != targetNumberUpdate.AmmoEstimate[item.Key])
-                        {
-                            @($" ({targetNumberUpdate.AmmoWorstCase[item.Key]})")
-                        }
-                    </td>
-                </tr>
+                <div>
+                    @($"{item.Key}: {item.Value}")
+                    @if (targetNumberUpdate.AmmoWorstCase[item.Key] != targetNumberUpdate.AmmoEstimate[item.Key])
+                    {
+                        @($" ({targetNumberUpdate.AmmoWorstCase[item.Key]})")
+                    }
+                </div>
             }
         }
-    </table>
+    </div>
 }
 
 @code

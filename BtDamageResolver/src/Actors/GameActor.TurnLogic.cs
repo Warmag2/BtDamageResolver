@@ -26,18 +26,31 @@ public partial class GameActor
     /// </summary>
     /// <param name="unitEntry">The unit entry to find primary target for.</param>
     /// <returns>The primary target, or Guid.Empty if no target was found.</returns>
-    private static Guid GetPrimaryTarget(UnitEntry unitEntry)
+    private static (Guid PrimaryTarget, Arc PrimaryTargetArc) GetPrimaryTarget(UnitEntry unitEntry)
     {
-        var primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.Arc == Arc.Front)?.FiringSolution.Target;
+        Guid? primaryTargetCandidate = null;
 
+        // Units that have a clearly defined front arc and at least one of their targets in that arc must find their primary target from that arc.
+        switch (unitEntry.Type)
+        {
+            case UnitType.AerospaceFighter:
+            case UnitType.Mech:
+            case UnitType.MechTripod:
+                primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.RelativeArc == Arc.Front)?.FiringSolution.Target;
+                break;
+        }
+        
+        // Units with turrets can select primary target from any arc
+        // This is relevant because vehicles and quad mechs may have weapon systems that are fixed to a direction instead of being relative to the
+        // torso-twisted arc, and depending on the choice of primary target, weapons in other locations may be able to fire at targets in the same arc.
         if (primaryTargetCandidate == null)
         {
             var firstBayWithTarget = unitEntry.WeaponBays.Find(w => w.FiringSolution.Target != Guid.Empty);
 
-            return firstBayWithTarget == null ? Guid.Empty : firstBayWithTarget.FiringSolution.Target;
+            return firstBayWithTarget == null ? (Guid.Empty, Arc.Default) : (firstBayWithTarget.FiringSolution.Target, firstBayWithTarget.FiringSolution.RelativeArc);
         }
 
-        return primaryTargetCandidate.Value;
+        return (primaryTargetCandidate.Value, Arc.Front);
     }
 
     private static void ProcessUnitAmmo(List<DamageReport> damageReports, UnitEntry unit)
@@ -98,14 +111,16 @@ public partial class GameActor
                 ? await ProcessTargetNumberUpdatesForUnits()
                 : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
 
+            // Save game actor and damage report states before distributing so clients never get ahead of persisted state.
+            await _gameActorState.WriteStateAsync();
+
             await DistributeGameStateToPlayers(fireEventHappened);
             await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
 
-            // Save game actor state
-            await _gameActorState.WriteStateAsync();
             if (fireEventHappened)
             {
                 await _gameActorDamageReportState.WriteStateAsync();
+                await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
             }
 
             // Log update to permanent store
@@ -161,8 +176,6 @@ public partial class GameActor
             ClearUnitPenalties(true, false);
             ModifyGameStateBasedOnDamageReports([.. tagDamageReports, .. damageReports]);
 
-            await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
-
             // Unmark ready in local memory
             foreach (var playerState in _gameActorState.State.PlayerStates.Values)
             {
@@ -195,9 +208,10 @@ public partial class GameActor
         {
             if (bay.FiringSolution.Target != Guid.Empty && !await IsUnitInGame(bay.FiringSolution.Target))
             {
+                var invalidTarget = bay.FiringSolution.Target;
                 bay.FiringSolution.Target = Guid.Empty;
                 bay.TimeStamp = DateTime.UtcNow;
-                _logger.LogWarning("Player {PlayerId} unit {UnitId} tried to fire at an unit {TargetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, bay.FiringSolution.Target);
+                _logger.LogWarning("Player {PlayerId} unit {UnitId} tried to fire at an unit {TargetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, invalidTarget);
             }
         }
 
@@ -221,7 +235,7 @@ public partial class GameActor
 
         var logicUnitAttacker = GetUnitLogic(unitEntry);
 
-        var primaryTarget = GetPrimaryTarget(unitEntry);
+        var (primaryTarget, primaryTargetArc) = GetPrimaryTarget(unitEntry);
 
         foreach (var weaponBay in unitEntry.WeaponBays)
         {
@@ -230,7 +244,7 @@ public partial class GameActor
             {
                 var logicUnitDefender = GetUnitLogic(weaponBay.FiringSolution.Target);
                 var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
-                damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, weaponBay, processOnlyTags, isPrimaryTarget));
+                damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, primaryTargetArc, isPrimaryTarget, processOnlyTags, weaponBay));
             }
         }
 
@@ -257,7 +271,7 @@ public partial class GameActor
         var logicUnitAttacker = GetUnitLogic(unitEntry);
         ILogicUnit logicUnitDefender = null;
 
-        var primaryTarget = GetPrimaryTarget(unitEntry);
+        var (primaryTarget, primaryTargetArc) = GetPrimaryTarget(unitEntry);
 
         foreach (var weaponBay in unitEntry.WeaponBays)
         {
@@ -288,7 +302,7 @@ public partial class GameActor
                     var attackLog = new AttackLog();
                     var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
 
-                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponBay, weaponEntry, isPrimaryTarget);
+                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, primaryTargetArc, isPrimaryTarget, weaponBay, weaponEntry);
 
                     var (ammoEstimate, ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, rangeBracket, weaponEntry);
                     var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, rangeBracket, weaponEntry);

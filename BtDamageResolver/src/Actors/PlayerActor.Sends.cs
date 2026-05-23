@@ -69,7 +69,7 @@ public partial class PlayerActor
 
         // Validate unit entries and do not proceed if they contain data that would compromise the rules engine.
         // This player state is not updated with invalid state.
-        var errorMessage = string.Empty;
+        var errorMessageStringBuilder = new System.Text.StringBuilder();
         var unitsWithErrors = new HashSet<Guid>();
 
         foreach (var unit in playerState.UnitEntries)
@@ -78,7 +78,7 @@ public partial class PlayerActor
 
             if (!validationResult.IsValid)
             {
-                errorMessage += $"Unit {unit} has the following errors: {validationResult}\n";
+                errorMessageStringBuilder.AppendLine($"Unit {unit} has the following errors: {validationResult}");
                 unitsWithErrors.Add(unit.Id);
                 _logger.LogWarning("Player {PlayerId} is sending invalid data for unit {UnitId}. Reason: {ValidationResult}", this.GetPrimaryKeyString(), unit.Id, validationResult);
             }
@@ -86,7 +86,7 @@ public partial class PlayerActor
 
         if (unitsWithErrors.Count > 0)
         {
-            await SendErrorMessageToClient(new ClientErrorEvent(errorMessage, unitsWithErrors));
+            await SendErrorMessageToClient(new ClientErrorEvent(errorMessageStringBuilder.ToString(), unitsWithErrors));
             return false;
         }
 
@@ -125,7 +125,11 @@ public partial class PlayerActor
         }
         catch (Exception ex)
         {
-            await SendErrorMessageToClient($"{ex.Message}\n{ex.StackTrace}");
+            _logger.LogError(ex, "Unhandled exception while processing player state update for player {PlayerId}.", this.GetPrimaryKeyString());
+            var errorDetail = _loggingOptions.SendDetailedErrorsToClient
+                ? $"{ex.Message}\n{ex.StackTrace}"
+                : "An internal error occurred. Please try again.";
+            await SendErrorMessageToClient(errorDetail);
         }
 
         return false;

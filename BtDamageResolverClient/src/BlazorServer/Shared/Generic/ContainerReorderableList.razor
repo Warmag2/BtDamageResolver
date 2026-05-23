@@ -1,0 +1,128 @@
+@typeparam TItem
+
+<div class="resolver_div_reorderablelistcontainer @ContainerClass @(_draggedIndex.HasValue ? "resolver_div_reorderablelistcontainer--dragging" : string.Empty)" ondragover="event.preventDefault();">
+    @for (var i = 0; i < Items.Count; i++)
+    {
+        var capturedIndex = i;
+        <div class="resolver_div_reorderableitem @(ShowDragHandle ? string.Empty : "draggable") @ItemClass @(_dragOverIndex == capturedIndex ? "resolver_div_reorderableitem--dropover" : string.Empty) @(ItemClassSelector?.Invoke(Items[capturedIndex]) ?? string.Empty)"
+             draggable="@(ShowDragHandle ? "false" : "true")"
+             @ondragstart="() => StartDrag(capturedIndex)"
+             @ondragstart:stopPropagation="true"
+             @ondragenter="() => SetDragOver(capturedIndex)"
+             @ondragenter:stopPropagation="true"
+             @ondragend="CancelDrag"
+             @ondragend:stopPropagation="true"
+             @ondrop="() => Drop(capturedIndex)"
+             @ondrop:stopPropagation="_draggedIndex.HasValue"
+             ondragover="event.preventDefault();">
+            @if (ShowDragHandle)
+            {
+                <div class="resolver_div_componentrow">
+                    <div class="resolver_div_draghandle"
+                         draggable="true"
+                         @ondragstart="() => StartDrag(capturedIndex)"
+                         @ondragstart:stopPropagation="true">⠿</div>
+                    <div class="resolver_div_componentcell">
+                        @ItemTemplate(Items[capturedIndex])
+                    </div>
+                </div>
+            }
+            else
+            {
+                @ItemTemplate(Items[capturedIndex])
+            }
+        </div>
+    }
+    <div class="resolver_div_reorderablesentinel @(_dragOverSentinel ? "resolver_div_reorderablesentinel--dropover" : string.Empty)"
+         @ondragenter="SetDragOverSentinel"
+         @ondragenter:stopPropagation="true"
+         @ondragleave="() => _dragOverSentinel = false"
+         @ondragleave:stopPropagation="true"
+         @ondrop="() => Drop(Items.Count)"
+         @ondrop:stopPropagation="_draggedIndex.HasValue"
+         ondragover="event.preventDefault();">
+    </div>
+</div>
+
+@code
+{
+    private int? _draggedIndex;
+    private int? _dragOverIndex;
+    private bool _dragOverSentinel;
+
+    [Parameter]
+    public IList<TItem> Items { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemTemplate { get; set; }
+
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    [Parameter]
+    public string ContainerClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ItemClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public Func<TItem, string> ItemClassSelector { get; set; }
+
+    [Parameter]
+    public bool ShowDragHandle { get; set; }
+
+    private void StartDrag(int index)
+    {
+        _draggedIndex = index;
+        _dragOverIndex = null;
+        _dragOverSentinel = false;
+    }
+
+    private void SetDragOver(int index)
+    {
+        if (_draggedIndex.HasValue)
+        {
+            _dragOverIndex = index;
+            _dragOverSentinel = false;
+        }
+    }
+
+    private void SetDragOverSentinel()
+    {
+        if (_draggedIndex.HasValue)
+        {
+            _dragOverIndex = null;
+            _dragOverSentinel = true;
+        }
+    }
+
+    private void CancelDrag()
+    {
+        _draggedIndex = null;
+        _dragOverIndex = null;
+        _dragOverSentinel = false;
+    }
+
+    private void Drop(int targetIndex)
+    {
+        if (_draggedIndex.HasValue)
+        {
+            var from = _draggedIndex.Value;
+
+            // Adjust target index because removal shifts elements after the dragged position down by one.
+            var adjustedTarget = targetIndex > from ? targetIndex - 1 : targetIndex;
+
+            if (from != adjustedTarget)
+            {
+                var item = Items[from];
+                Items.RemoveAt(from);
+                Items.Insert(adjustedTarget, item);
+                OnChanged.InvokeAsync();
+            }
+        }
+
+        _draggedIndex = null;
+        _dragOverIndex = null;
+        _dragOverSentinel = false;
+    }
+}

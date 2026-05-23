@@ -204,11 +204,12 @@ public interface ILogicUnit
     /// Resolves combat for this unit logic and a specific weapon bay.
     /// </summary>
     /// <param name="target">The target unit logic.</param>
-    /// <param name="weaponBay">The weapon bay.</param>
-    /// <param name="processOnlyTags">Only process weapons with tagging features.</param>
+    /// <param name="primaryTargetArc">The arc of the primary target.</param>
     /// <param name="isPrimaryTarget">Does this bay attack the primary target.</param>
+    /// <param name="processOnlyTags">Only process weapons with tagging features.</param>
+    /// <param name="weaponBay">The weapon bay.</param>
     /// <returns>A set of damage reports caused by this unit attacking.</returns>
-    Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, WeaponBay weaponBay, bool processOnlyTags, bool isPrimaryTarget);
+    Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, bool processOnlyTags, WeaponBay weaponBay);
 
     /// <summary>
     /// Resolve the given damage instance.
@@ -224,23 +225,25 @@ public interface ILogicUnit
     /// </summary>
     /// <param name="attackLog">The attack log to log to.</param>
     /// <param name="target">The target unit logic.</param>
+    /// <param name="primaryTargetArc">The arc of the primary target.</param>
+    /// <param name="isPrimaryTarget">Is this the primary target of the unit.</param>
     /// <param name="weapon">The weapon used.</param>
     /// <param name="weaponBay">The weapon bay the weapon is in.</param>
     /// <param name="weaponEntry">The weapon entry used.</param>
-    /// <param name="isPrimaryTarget">Is this the primary target of the unit.</param>
     /// <returns>A tuple with the hit modifier and the range bracket.</returns>
-    (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget);
+    (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry);
 
     /// <summary>
     /// Resolves a hit modifier and logs events related to the calculation in the given damage report.
     /// </summary>
     /// <param name="attackLog">The attack log to log to.</param>
     /// <param name="target">The target unit logic.</param>
+    /// <param name="primaryTargetArc">The arc of the primary target.</param>
+    /// <param name="isPrimaryTarget">Is this the primary target of the unit.</param>
     /// <param name="weaponBay">The weapon bay the weapon is in.</param>
     /// <param name="weaponEntry">The weapon entry used.</param>
-    /// <param name="isPrimaryTarget">Is this the primary target of the unit.</param>
     /// <returns>A tuple with the hit modifier and the range bracket.</returns>
-    Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget);
+    Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry);
 
     /// <summary>
     /// Calculates all heat buildup not related to weapon fire.

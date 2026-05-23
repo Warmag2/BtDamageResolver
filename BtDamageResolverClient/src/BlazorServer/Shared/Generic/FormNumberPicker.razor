@@ -6,29 +6,26 @@
     var pickDisabled = Disabled;
 }
 
-@if (Width == 0)
-{
-    <input class="resolver_input resolver_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
-}
-else
-{
-    <input class="resolver_input resolver_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" style="width:@(Width)rem" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
-}
-<button class="resolver_button" disabled="@pickDisabled" @onclick="Pick">Pick</button>
+<div class="resolver_div_inputwrapper">
 
-<div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
-    @foreach(var option in _options)
-    {
-        var optionToSelect = option.End;
-        if (_selectedOption >= option.Begin && _selectedOption <= option.End)
+    <FormNumber SelectedOption="@_selectedOption" Min="@Min" Max="@Max" Disabled="@Disabled" ComparisonTimeStamp="@ComparisonTimeStamp" OnChanged="OnFormNumberCommit" />
+
+    <button class="resolver_button" disabled="@pickDisabled" @onclick="Pick">▾</button>
+
+    <div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
+        @foreach(var option in _options)
         {
-            <div class="resolver_div_pickeritem active" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
+            var optionToSelect = option.End;
+            if (_selectedOption >= option.Begin && _selectedOption <= option.End)
+            {
+                <div class="resolver_div_pickeritem active" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
+            }
+            else
+            {
+                <div class="resolver_div_pickeritem" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
+            }
         }
-        else
-        {
-            <div class="resolver_div_pickeritem" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
-        }
-    }
+    </div>
 </div>
 
 @code
@@ -36,7 +33,6 @@ else
     private int _selectedOption;
     private bool _selectionBoxHidden = true;
     private List<PickBracket> _options = new ();
-    private DateTime _updateTimeStamp = DateTime.MinValue;
 
     [Parameter]
     public Func<List<PickBracket>> BracketCreatorDelegate { get; set; }
@@ -49,9 +45,6 @@ else
 
     [Parameter]
     public int Max { get; set; }
-
-    [Parameter]
-    public int Width { get; set; } = 0;
 
     [Parameter]
     public bool Disabled { get; set; }
@@ -69,10 +62,11 @@ else
         {
             _selectedOption = value;
             HideSelectionBox();
-            _updateTimeStamp = DateTime.UtcNow;
             OnChanged.InvokeAsync(value);
         }
     }
+
+    private void OnFormNumberCommit(int value) => SelectedOptionInternal = value;
 
     private void Pick()
     {
@@ -101,7 +95,6 @@ else
     protected override void OnInitialized()
     {
         SelectedOptionInternal = SelectedOption;
-        _updateTimeStamp = DateTime.MinValue;
     }
 
     private void SelectOptionManual(int optionToSelect)

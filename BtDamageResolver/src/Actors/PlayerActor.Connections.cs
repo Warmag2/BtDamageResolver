@@ -43,7 +43,7 @@ public partial class PlayerActor
 
         _logger.LogWarning("Player {PlayerId} has received a failed connection request from a client. Incorrect password.", this.GetPrimaryKeyString());
 
-        await SendErrorMessageToClient($"Player {this.GetPrimaryKeyString()} has received a failed connection request from a client.Incorrect password.");
+        await SendErrorMessageToClient($"Player {this.GetPrimaryKeyString()} has received a failed connection request from a client. Incorrect password.");
 
         return false;
     }

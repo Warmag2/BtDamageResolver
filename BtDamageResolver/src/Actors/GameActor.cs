@@ -67,6 +67,17 @@ public partial class GameActor : Grain, IGameActor
             return false;
         }
 
+        // Reject any attempt by one player to submit state on behalf of another player.
+        if (playerState.PlayerId != sendingPlayerId)
+        {
+            _logger.LogWarning(
+                "Security violation in Game {GameId}: player {SendingPlayerId} attempted to submit state for player {TargetPlayerId}. Request rejected.",
+                this.GetPrimaryKeyString(),
+                sendingPlayerId,
+                playerState.PlayerId);
+            return false;
+        }
+
         var updated = false;
 
         if (_gameActorState.State.PlayerStates.TryGetValue(playerState.PlayerId, out var value))
@@ -113,12 +124,15 @@ public partial class GameActor : Grain, IGameActor
         var damageReport = await ProcessDamageInstance(damageInstance);
         damageReport.Turn = _gameActorState.State.Turn;
 
+        _gameActorDamageReportState.State.DamageReports.Add(damageReport);
+        await _gameActorDamageReportState.WriteStateAsync();
+
         await DistributeDamageReportsToPlayers([damageReport]);
 
         return true;
     }
 
-    /// <inheritdoc />>
+    /// <inheritdoc />
     public async Task<bool> JoinGame(string playerId, string password)
     {
         if (string.IsNullOrWhiteSpace(playerId) || password == null)
@@ -145,7 +159,7 @@ public partial class GameActor : Grain, IGameActor
             return true;
         }
 
-        _logger.LogInformation("In Game {GameId}, Player {PlayerId} failed to connect to the game.", playerId, this.GetPrimaryKeyString());
+        _logger.LogInformation("In Game {GameId}, Player {PlayerId} failed to connect to the game.", this.GetPrimaryKeyString(), playerId);
 
         return false;
     }
@@ -165,14 +179,14 @@ public partial class GameActor : Grain, IGameActor
             await CheckGameStateUpdateEvents();
 
             _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully disconnected.", this.GetPrimaryKeyString(), playerId);
+
+            // Log logout to permanent store only when the player was actually present.
+            await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.LogOut, 0);
         }
         else
         {
             _logger.LogInformation("In Game {GameId} Player {PlayerId}, cannot be disconnected, since the player is not in the game.", this.GetPrimaryKeyString(), playerId);
         }
-
-        // Log logins to permanent store
-        await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.LogOut, 0);
 
         return true;
     }
@@ -180,7 +194,7 @@ public partial class GameActor : Grain, IGameActor
     private void CheckForPlayerCountEvents()
     {
         // If we have no players, reset turn and erase damage reports
-        if (_gameActorState.State.PlayerStates.Count == 0)
+        if (_gameActorState.State.PlayerIds.Count == 0)
         {
             _gameActorState.State.Reset();
             _gameActorDamageReportState.State.Reset();

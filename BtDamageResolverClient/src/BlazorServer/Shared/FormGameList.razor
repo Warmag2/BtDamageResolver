@@ -1,9 +1,5 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 
-@{
-    Games.Sort((x, y) => y.TimeStamp.CompareTo(x.TimeStamp));
-}
-
 <table class="resolver_table resolver_table_gamelist">
     <tr>
         <th>
@@ -21,9 +17,9 @@
         <th>
         </th>
     </tr>
-    @if (Games.Any())
+    @if (_sortedGames.Count > 0)
     {
-        @foreach (var game in Games)
+        @foreach (var game in _sortedGames)
         {
             <FormGameEntry Game="@game" OnJoin="@OnGameJoin"></FormGameEntry>
         }
@@ -41,11 +37,18 @@
 
 @code
 {
+    private List<GameEntry> _sortedGames = [];
+
     [Parameter]
     public List<GameEntry> Games { get; set; }
 
     [Parameter]
     public EventCallback<string> OnJoin { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _sortedGames = [.. Games.OrderByDescending(g => g.TimeStamp)];
+    }
 
     private void OnGameJoin(string gameName)
     {

@@ -1,16 +1,23 @@
-﻿@if (Width == 0)
-{
-    <input class="resolver_input resolver_input_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
+﻿@{
+    var reminderClass = ComparisonTimeStamp > _updateTimeStamp ? "reminder" : string.Empty;
 }
-else
-{
-    <input class="resolver_input resolver_input_number @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" style="width:@(Width)rem" type="number" min="@Min" max="@Max" disabled="@Disabled" @bind="SelectedOptionInternal">
-}
+
+<input class="resolver_input resolver_input_number @reminderClass" type="number" min="@Min" max="@Max" disabled="@Disabled"
+    @ref="_inputRef"
+    value="@_selectedOption"
+    @onfocus="OnFocus"
+    @oninput="OnInputChange"
+    @onchange="OnInputChange"
+    @onblur="CommitEdit"
+    @onkeydown="OnKeyDown" />
 
 @code
 {
     private int _selectedOption;
-    private DateTime _updateTimeStamp = DateTime.MinValue;
+    private int _lastParameterValue;
+    private DateTime _updateTimeStamp;
+    private bool _isBeingEdited;
+    private ElementReference _inputRef;
 
     [Parameter]
     public int SelectedOption { get; set; }
@@ -22,9 +29,6 @@ else
     public int Max { get; set; }
 
     [Parameter]
-    public int Width { get; set; } = 0;
-
-    [Parameter]
     public bool Disabled { get; set; }
 
     [Parameter]
@@ -33,20 +37,48 @@ else
     [Parameter]
     public EventCallback<int> OnChanged { get; set; }
 
-    public int SelectedOptionInternal
+    public async Task FocusAsync() => await _inputRef.FocusAsync();
+
+    // Suppress re-renders while focused so value="@_selectedOption" doesn't overwrite mid-typing.
+    protected override bool ShouldRender() => !_isBeingEdited;
+
+    private void OnFocus() => _isBeingEdited = true;
+
+    private void OnKeyDown(KeyboardEventArgs e)
     {
-        get => _selectedOption;
-        set
+        if (e.Key == "Enter" || e.Key == "Escape")
+            CommitEdit();
+    }
+
+    private void OnInputChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var parsed))
         {
-            _selectedOption = value;
-            _updateTimeStamp = DateTime.UtcNow;
-            OnChanged.InvokeAsync(value);
+            _selectedOption = parsed;
+            if (!_isBeingEdited)
+                CommitValue(); // unfocused spinner/arrow — commit immediately
         }
     }
 
-    protected override void OnInitialized()
+    private void CommitValue()
     {
-        SelectedOptionInternal = SelectedOption;
-        _updateTimeStamp = DateTime.MinValue;
+        _selectedOption = Math.Clamp(_selectedOption, Min, Max);
+        _updateTimeStamp = DateTime.UtcNow;
+        OnChanged.InvokeAsync(_selectedOption);
+    }
+
+    private void CommitEdit()
+    {
+        _isBeingEdited = false;
+        CommitValue();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (SelectedOption != _lastParameterValue)
+        {
+            _lastParameterValue = SelectedOption;
+            _selectedOption = SelectedOption;
+        }
     }
 }
