@@ -54,7 +54,8 @@ a, .btn-link {
 :root {
     --color_bg_weaponentry_active: #C0E0C0;
     --color_bg_weaponentry_inactive: #C0C0C0;
-    --color_bg_base: #F0F0F0;
+    --color_bg_base: #FFFFFF;
+    --color_bg_component: #F0F0F0;
     --color_text_base: #000000;
     --color_bg_input: #FFFFFF;
     --color_text_input: #000000;
@@ -443,11 +444,12 @@ a, .btn-link {
 
 .resolver_div_tabcontainer {
     position: relative;
-    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
     background-color: var(--color_bg_unselected);
 }
 
-.resolver_div_tab { float: left; }
+.resolver_div_tab { }
 
 /* Individual tab buttons */
 
@@ -550,7 +552,6 @@ a, .btn-link {
 .resolver_div_accordioncontent { padding: 0; }
 
 .resolver_accordion_indicator {
-    float: left;
     font-weight: bolder;
     padding-right: 0.5em;
 }
@@ -589,11 +590,6 @@ a, .btn-link {
             color: var(--color_text_hover_selected);
         }
 
-.resolver_div_expandercontent {
-    position: relative;
-    float: left;
-}
-
 /*******************************************************************************
     Modal
 *******************************************************************************/
@@ -612,22 +608,25 @@ a, .btn-link {
 }
 
 /* Modal Content/Box */
-
 .resolver_modal {
-    background-color: #fefefe;
-    margin: 10% auto; /* 15% from the top and centered */
-    padding: 1rem;
+    background-color: var(--color_bg_base);
+    margin: 10% auto;
+    padding: 1rem 2rem 2rem 2rem;
     border: 1px solid var(--color_outline_base);
-    width: 50%; /* Could be more or less, depending on screen size */
+    width: fit-content;
 }
 
-.resolver_modal_title { float: left; }
+.resolver_modal_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    vertical-align: central;
+    clear: unset;
+}
 
-.resolver_modal_header { clear: both; }
+.resolver_modal_body { }
 
-.resolver_modal_body { clear: both; }
-
-.resolver_modal_footer { clear: both; }
+.resolver_modal_footer { }
 
 /* The Close Button */
 
@@ -635,7 +634,6 @@ a, .btn-link {
     color: var(--color_text_unselected);
     background-color: var(--color_bg_unselected);
     border: none;
-    float: right;
     font-size: 20px;
     font-weight: bold;
 }
@@ -664,10 +662,6 @@ a, .btn-link {
     Resolver form base look
 *******************************************************************************/
 
-.resolver_top_header {
-    text-decoration: underline;
-}
-
 .resolver_header {
     padding: 0;
     margin-top: 1rem;
@@ -684,7 +678,7 @@ a, .btn-link {
 
 .resolver_div_componentcontainer {
     position: relative;
-    background-color: var(--color_bg_base);
+    background-color: var(--color_bg_component);
     color: var(--color_text_base);
 }
 
@@ -720,6 +714,12 @@ a, .btn-link {
         .resolver_div_componentgroup > .resolver_div_componentrow > .resolver_div_componentcell:only-child {
             grid-column: 1 / -1;
         }
+
+    /* Rows that shouldn't align to the parent column grid (e.g. wrapping radio groups) */
+    .resolver_div_componentgroup > .resolver_div_componentrow.no-subgrid {
+        display: flex;
+        flex-wrap: wrap;
+    }
 
     /* Non-row children (containers, buttons, etc.) span the full width */
     .resolver_div_componentgroup > *:not(.resolver_div_componentrow) {
@@ -892,7 +892,7 @@ a, .btn-link {
 }
 
 .resolver_style_alignright {
-    float: right;
+    margin-left: auto;
 }
 
 /*******************************************************************************
@@ -905,12 +905,17 @@ a, .btn-link {
     padding: 0.25rem;
 }
 
+.resolver_div_damagereportheader {
+    justify-content: space-between;
+}
+
 .resolver_div_damagereportgroupheader {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding: 0.2rem 0.4rem;
+    margin-bottom: 0.25rem;
     background-color: var(--color_bg_unselected);
     color: var(--color_text_unselected);
 }
@@ -925,6 +930,7 @@ a, .btn-link {
     padding: 0.25rem;
     display: inline-block;
     vertical-align: top;
+    background-color: var(--color_bg_base);
 }
 
 .resolver_div_damagereportcontainer.outgoingdamage {
@@ -939,7 +945,6 @@ a, .btn-link {
 
 .resolver_div_damagereport {
     padding: 0.5rem;
-    float: left;
 }
 
 .resolver_div_damagereport.damageentry { padding: 0.5rem; }
@@ -959,21 +964,20 @@ a, .btn-link {
 
 .resolver_span_damagereportheader {
     font-size: 1.5rem;
-    padding-left: 2.5rem;
+    padding-left: 1.5rem;
 }
 
 .resolver_div_phase {
     font-size: 1.2rem;
-    padding-left: 2rem;
+    padding-left: 1rem;
 }
 
 .resolver_div_totaldamage {
     font-size: 1.2rem;
-    padding-left: 2rem;
+    padding-left: 1rem;
 }
 
 .resolver_div_imagecontainer {
-    float: left;
     max-width: 18rem;
     height: 18rem;
     overflow: hidden;

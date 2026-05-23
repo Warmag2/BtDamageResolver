@@ -1,8 +1,6 @@
 ﻿@inherits BaseFaemiyahComponent
 @using Faemiyah.BtDamageResolver.Api.Entities
-@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Api.Enums
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 @inject UserStateController _userStateController
@@ -26,7 +24,7 @@
                 <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
             </div>
         </div>
-        <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(UnitEntry.StaticDataHidden || UnitEntry.WeaponBays.Count <= 1))">
+        <div class="resolver_div_componentrow no-subgrid" style="@(VisualStyleController.HideElement(UnitEntry.StaticDataHidden || UnitEntry.WeaponBays.Count <= 1))">
             <div class="resolver_div_componentcell">Arc</div>
             <div class="resolver_div_componentcell">
                 <FormRadio Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.Arc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Arc arc) => OnArcChanged(arc)"></FormRadio>

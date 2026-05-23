@@ -135,27 +135,32 @@ Other elements using `float: left` that won't cooperate on mobile:
 - Dropped all `-webkit-`/`-moz-`/`-ms-` vendor prefixes
 
 ### Phase 3 — Modernize Container Layout (flexbox)
-- `resolver_div_componentlistcontainer` → `display: flex; flex-wrap: wrap`
-- `resolver_div_componentcontainer` → becomes a flex item
-- `resolver_div_componentrow` → `display: flex; flex-wrap: wrap; align-items: flex-start`
-- `resolver_div_componentcell` → flex item, remove `float: left`
-- `resolver_div_damagereport`, `resolver_div_imagecontainer`, `resolver_modal_title`, etc. → remove floats, use flex
-- Accordion indicator → remove `float: left`, use inline-flex
-- Tab container → already `float: left` per tab, can stay or switch to flex
+
+Main container layout is done. Remaining floats:
+
+| Selector | Float | Notes |
+|----------|-------|-------|
+| `.resolver_div_tab` | `float: left` | Tab buttons — could switch to flex on tabcontainer |
+| `.resolver_accordion_indicator` | `float: left` | Expand/collapse indicator — harmless, can be inline-flex |
+| `.resolver_modal_title` | `float: left` | Modal header title — paired with `float: right` close button and `clear: both` header |
+| `.resolver_div_damagereport` | `float: left` | Damage report sections |
+| `.resolver_div_imagecontainer` | `float: left` | Paper doll image |
+| `.resolver_style_alignright` | `float: right` | Intentional right-align utility |
+| `.button_modal_close` | `float: right` | Intentional — close button in top-right of modal |
 
 ### Phase 4 — Add Responsive Breakpoints
-- **≤768px (phone portrait):**
-  - Unit cards: `width: 100%`
-  - Unit detail cells: `flex-direction: column; width: 100%`
-  - Weapon table wrapper: `overflow-x: auto`
-  - Modal: `width: 90vw; margin: 4vh auto`
-  - Combobox: `width: min(16rem, 90vw)`
-  - Table padding: reduce `1rem` → `0.4rem`
-- **768px–1024px (tablet):**
-  - Unit cards can be 2-up or full-width depending on content
-  - Unit name switches from horizontal (mobile) to vertical sidebar (desktop) — already handled
 
-### ~~Phase 5 — Replace Layout Tables with CSS Grid Divs~~ ✓ Mostly done
+**Done (already in CSS at `@media (max-width: 50rem)`):**
+- Unit name desktop/mobile switch ✓
+- `resolver_div_componentcontainer` → `width: 100%` (units stack vertically) ✓
+- `resolver_div_componentgroup` → `width: 100%` ✓
+- `resolver_div_weaponentrylist` → `overflow-x: auto` ✓
+- Drag handle and reorderable sentinel hidden ✓
+
+**Still missing from breakpoint:**
+- Modal: still `width: 50%; margin: 10% auto` — should be `width: min(90vw, 640px); margin: 5vh auto` at ≤50rem
+
+### ~~Phase 5 — Replace Layout Tables with CSS Grid Divs~~ ✓ Done
 
 **Approach used:** Rather than introducing new CSS form section classes as originally planned, the existing `resolver_div_componentgroup` / `resolver_div_componentrow` / `resolver_div_componentcell` CSS grid classes were reused throughout, with:
 - Inline `style` to set custom `grid-template-columns` when the default doesn't fit (e.g. 2-col, 5-col)
@@ -176,7 +181,7 @@ Other elements using `float: left` that won't cooperate on mobile:
 | `ComponentHeatAmmoEstimate.razor` | ✓ Done | Single-column table → plain nested divs |
 | `FormDamageInstance.razor` | ✓ Done | 2-col componentgroup with inline grid-template-columns |
 | `ComponentWeaponEntry.razor` | ✓ Done | Emits `resolver_div_componentrow resolver_div_weaponentry` with 5 cells (read-only context) |
-| `ComponentUnit.razor` | ⚠️ Converted but rendering incorrectly | Needs investigation and fix |
+| `ComponentUnit.razor` | ✓ Done | Rendering issue fixed |
 | `FormGameList.razor` | ✗ Reverted to `<table>` | Converted result didn't render well |
 | `FormGameEntry.razor` | ✗ Reverted to `<tr>/<td>` | Reverted together with FormGameList |
 | `FormDataDisplayClusterTable.razor` | ✓ Kept as `<table>` | Genuine 2D dynamic matrix |
@@ -186,9 +191,7 @@ Other elements using `float: left` that won't cooperate on mobile:
 | `FormDataDisplayCriticalDamageTable.razor` | ✓ Kept as `<table>` | Tabular data |
 
 #### Dead CSS to clean up (now unused after table removals)
-`resolver_tr_unitinformation`, `resolver_td_unitinformation_label`, `resolver_td_unitinformation_data`, `resolver_tr_weaponentry`, `resolver_td_targetnumber`
-
-Note: `resolver_table_gamelist` is still used (FormGameList reverted to table).
+`resolver_td_unitinformation_data` — the only remaining dead class. `resolver_table_gamelist` is still used (FormGameList reverted to table).
 
 ### Phase 6 — Visual Block Clarity
 - Add a border or subtle background to `resolver_div_componentcontainer` for unit cards (currently alternating colors only)
@@ -198,7 +201,21 @@ Note: `resolver_table_gamelist` is still used (FormGameList reverted to table).
 
 ---
 
-## Input Component Improvements (completed this session, outside original plan)
+## Mobile Responsiveness Fixes (completed outside original plan phases)
+
+### FormRadio wrapping
+`FormRadio.razor` — wrapped all `<label>` elements in `<div class="resolver_div_radiogroup">`. `Resolver.css` — replaced `float: left` on `.resolver_label_toggleradio` with a flexbox `resolver_div_radiogroup` using `display: flex; flex-wrap: wrap`. Individual button text stays on one line (`white-space: nowrap`) but buttons themselves wrap on small screens.
+
+---
+
+## Container Hardening (completed outside original plan phases)
+
+- **Silo, BlazorServer, DataImporter Dockerfiles** — added `USER app` (Microsoft's built-in non-root UID 1654 from .NET 8+ base images) and `COPY --chown=app:app` so all files are owned by `app` regardless of host permissions.
+- **`/app/dpkeys/`** — created and chowned to `app` in each Dockerfile before `USER app`, with a named Docker volume (`resolverclient-dpkeys`) in `docker-compose.yml` to persist ASP.NET Core Data Protection keys across restarts.
+
+---
+
+
 
 ### FormComboBox
 - Added `combobox` modifier class to `resolver_div_inputwrapper` with `max-width: 20rem` to prevent it from expanding beyond its container.
