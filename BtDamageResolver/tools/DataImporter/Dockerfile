@@ -10,7 +10,8 @@ RUN dotnet publish "DataImporter.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
-COPY --from=build /app/publish .
-COPY ["data/", "data/"]
-COPY importdata.sh .
+COPY --chown=app:app --from=build /app/publish .
+COPY --chown=app:app ["data/", "data/"]
+COPY --chown=app:app importdata.sh .
+USER app
 CMD ["sh", "importdata.sh"]

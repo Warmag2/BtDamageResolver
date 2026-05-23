@@ -93,14 +93,16 @@ public class DamageReport
     /// <returns>A blank copy of this <see cref="DamageReport"/>.</returns>
     public DamageReport BlankCopy()
     {
-        var returnedDamageReport = new DamageReport();
-        returnedDamageReport.DamagePaperDoll = new(DamagePaperDoll.PaperDoll);
-        returnedDamageReport.FiringUnitIds = [];
-        returnedDamageReport.FiringUnitNames = [];
-        returnedDamageReport.Phase = Phase;
-        returnedDamageReport.TargetUnitId = TargetUnitId;
-        returnedDamageReport.TargetUnitName = TargetUnitName;
-        returnedDamageReport.Turn = Turn;
+        var returnedDamageReport = new DamageReport
+        {
+            DamagePaperDoll = new(DamagePaperDoll.PaperDoll),
+            FiringUnitIds = [],
+            FiringUnitNames = [],
+            Phase = Phase,
+            TargetUnitId = TargetUnitId,
+            TargetUnitName = TargetUnitName,
+            Turn = Turn
+        };
 
         return returnedDamageReport;
     }

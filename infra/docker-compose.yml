@@ -25,10 +25,10 @@ services:
       ASPNETCORE_ENVIRONMENT: Release
       RESOLVER_ENVIRONMENT: Release
       CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
-    volumes:
-      - ./dpkeys:/app/dpkeys
     ports:
       - 8787:8080
+    volumes:
+      - resolverclient-dpkeys:/app/dpkeys
     networks:
       - resolvernet
     depends_on:
@@ -107,3 +107,4 @@ volumes:
   grafana-data:
   orleansdb-data:
   redis-data:
+  resolverclient-dpkeys:

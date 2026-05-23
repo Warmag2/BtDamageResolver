@@ -80,11 +80,11 @@ public partial class LogicUnit
         }
     }
 
-    private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry, bool isPrimaryTarget)
+    private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry)
     {
         hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.FiringSolution, Unit.Id, weapon.Name));
 
-        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, weapon, weaponBay, weaponEntry, isPrimaryTarget);
+        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, primaryTargetArc, isPrimaryTarget, weapon, weaponBay, weaponEntry);
 
         // Weapons with target numbers above 12 cannot hit
         if (targetNumber > 12)

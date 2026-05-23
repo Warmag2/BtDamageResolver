@@ -30,6 +30,14 @@ public class FiringSolution
     public int Distance { get; set; }
 
     /// <summary>
+    /// Relative arc from the attacker to target.
+    /// </summary>
+    /// <remarks>
+    /// Used onlyto determine penalties for multi-target, if any.
+    /// </remarks>
+    public Arc RelativeArc { get; set; }
+
+    /// <summary>
     /// The ID of the target unit.
     /// </summary>
     public Guid Target { get; set; }
@@ -51,6 +59,7 @@ public class FiringSolution
             Cover = Cover,
             Direction = Direction,
             Distance = Distance,
+            RelativeArc = RelativeArc,
             Target = Target
         };
     }

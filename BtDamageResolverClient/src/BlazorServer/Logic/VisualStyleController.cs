@@ -127,6 +127,27 @@ public static class VisualStyleController
     }
 
     /// <summary>
+    /// Indicates whether relative arc should be hidden for this unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type.</param>
+    /// <returns><b>True</b> if relative arc should be hidden, <b>false</b> otherwise.</returns>
+    public static bool GetRelativeArcHidden(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.BattleArmor:
+            case UnitType.Building:
+            case UnitType.Infantry:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
     /// Indicates whether the number of heat sinks should be hidden for this unit type.
     /// </summary>
     /// <param name="unitType">The unit type.</param>

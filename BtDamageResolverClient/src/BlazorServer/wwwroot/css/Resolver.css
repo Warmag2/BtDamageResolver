@@ -1,12 +1,64 @@
 ﻿/*******************************************************************************
+    Base
+*******************************************************************************/
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+a, .btn-link {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+/*******************************************************************************
     Variables
 *******************************************************************************/
 
 :root {
     --color_bg_weaponentry_active: #C0E0C0;
     --color_bg_weaponentry_inactive: #C0C0C0;
-    --color_bg_base: #F0F0F0;
+    --color_bg_base: #FFFFFF;
+    --color_bg_component: #F0F0F0;
     --color_text_base: #000000;
+    --color_bg_input: #FFFFFF;
+    --color_text_input: #000000;
     --color_outline_base: gray;
     --color_bg_unselected: #E0E0E0;
     --color_text_unselected: #000000;
@@ -27,6 +79,7 @@
     --color_bg_heat: #FFC0E0;
     --color_text_heat: #600030;
     --color_bg_dragdrop: #CCAAFF;
+    --color_bg_dragdrop_dropover: #AA88DD;
     --color_text_dragdrop: #000000;
     --color_outline_incomingdamage: #FF0000;
     --color_outline_outgoingdamage: #0060FF;
@@ -80,16 +133,19 @@
 }
 
 /*******************************************************************************
-    Generic inputs
+    Generic inputs and classes
 *******************************************************************************/
 
-.resolver_input_text {
-    min-width: 12rem;
-    max-width: 24rem;
+.resolver_input {
+    background: var(--color_bg_input);
+    color: var(--color_text_input);
 }
 
-.resolver_wide {
-    width: 100% !important;
+.resolver_input_text {
+}
+
+.fullwidth {
+    width: 100%;
 }
 
 .resolver_input.reminder {
@@ -100,15 +156,16 @@
 /*******************************************************************************
     Toggle and radio inputs
 *******************************************************************************/
+.resolver_div_radiogroup {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .resolver_label_toggleradio {
     position: relative;
-    float: left;
     padding: 0;
     margin: 0;
     cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     white-space: nowrap;
     font-family: Tahoma;
@@ -188,9 +245,6 @@
     margin-bottom: 12px;
     cursor: pointer;
     font-size: 16px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -253,8 +307,6 @@
     height: 10px;
     border: solid white;
     border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
 
@@ -264,9 +316,10 @@
 
 .resolver_div_combobox {
     position: absolute;
+    top: 100%;
+    left: 0;
     overflow-y: auto;
     max-height: 300px;
-    width: 16rem;
     z-index: 9999 !important;
 }
 
@@ -291,29 +344,38 @@
     color: var(--color_text_hover_selected);
 }
 
+/* Positioned wrapper for picker/combobox dropdowns so top:100% anchors correctly */
+.resolver_div_inputwrapper {
+    position: relative;
+    display: inline-flex;
+    flex: 1;
+}
+
+    /* Combobox modifier: cap width to a sensible max */
+    .resolver_div_inputwrapper.combobox {
+        max-width: 25rem;
+    }
+
 /*******************************************************************************
     Distance picker input
 *******************************************************************************/
 
 .resolver_div_picker {
     position: absolute;
+    top: 100%;
+    left: 0;
     overflow-y: auto;
-    max-width: 15rem;
-    padding: 4px 4px;
+    width: 16rem;
     z-index: 9999 !important;
-    background-color: var(--color_bg_base);
 }
 
 .resolver_div_pickeritem {
     border: 1px outset var(--color_outline_base);
     float: left;
-    padding: 4px 8px;
+    padding: 0.2rem 0.3rem;
     vertical-align: middle;
     margin-left: 0;
     margin-right: 0;
-}
-
-.resolver_div_pickeritem {
     background-color: var(--color_bg_unselected);
     color: var(--color_text_unselected);
 }
@@ -333,8 +395,8 @@
     color: var(--color_text_hover_selected);
 }
 
-.resolver_distance_picker_display_only {
-    padding: 4px 8px;
+.resolver_number_picker_display_only {
+    padding: 0.2rem 0.3rem;
     font-weight: bold;
 }
 
@@ -342,7 +404,8 @@
     PickSet input
 *******************************************************************************/
 .resolver_div_pickset {
-    float: left;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 /*******************************************************************************
@@ -358,17 +421,14 @@
 
 .resolver_button_add {
     font-weight: bold;
-    content: '+';
 }
 
 .resolver_button_delete {
     font-weight: bold;
-    content: 'X';
 }
 
 .resolver_button_leave {
     font-weight: bold;
-    content: 'X';
 }
 
 .resolver_button_ready {
@@ -384,11 +444,12 @@
 
 .resolver_div_tabcontainer {
     position: relative;
-    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
     background-color: var(--color_bg_unselected);
 }
 
-.resolver_div_tab { float: left; }
+.resolver_div_tab { }
 
 /* Individual tab buttons */
 
@@ -428,23 +489,32 @@
     margin-bottom: 0.2rem;
 }
 
-.resolver_table td {
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
+    .resolver_table td {
+        padding: 0 0.5rem;
+        padding-right: 1rem;
+    }
 
-.resolver_table th {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    background-color: var(--color_bg_table_header);
-    color: var(--color_text_table_header);
-}
+    .resolver_table th {
+        padding: 0 1rem;
+        background-color: var(--color_bg_table_header);
+        color: var(--color_text_table_header);
+    }
 
 .resolver_table tr { color: var(--color_text_table); }
 
 .resolver_table tr:nth-child(even) { background-color: var(--color_bg_table_even); }
 
 .resolver_table tr:nth-child(odd) { background-color: var(--color_bg_table_odd); }
+
+/* Div-based data table: add tablerows to resolver_div_componentgroup */
+.resolver_div_componentgroup.tablerows > .resolver_div_componentrow { color: var(--color_text_table); }
+.resolver_div_componentgroup.tablerows > .resolver_div_componentrow:not(.header):nth-child(even) { background-color: var(--color_bg_table_even); }
+.resolver_div_componentgroup.tablerows > .resolver_div_componentrow:not(.header):nth-child(odd) { background-color: var(--color_bg_table_odd); }
+.resolver_div_componentgroup.tablerows > .resolver_div_componentrow.header {
+    background-color: var(--color_bg_table_header);
+    color: var(--color_text_table_header);
+    font-weight: bold;
+}
 
 /*******************************************************************************
     Accordion
@@ -482,7 +552,6 @@
 .resolver_div_accordioncontent { padding: 0; }
 
 .resolver_accordion_indicator {
-    float: left;
     font-weight: bolder;
     padding-right: 0.5em;
 }
@@ -521,11 +590,6 @@
             color: var(--color_text_hover_selected);
         }
 
-.resolver_div_expandercontent {
-    position: relative;
-    float: left;
-}
-
 /*******************************************************************************
     Modal
 *******************************************************************************/
@@ -544,22 +608,25 @@
 }
 
 /* Modal Content/Box */
-
 .resolver_modal {
-    background-color: #fefefe;
-    margin: 10% auto; /* 15% from the top and centered */
-    padding: 1rem;
+    background-color: var(--color_bg_base);
+    margin: 10% auto;
+    padding: 1rem 2rem 2rem 2rem;
     border: 1px solid var(--color_outline_base);
-    width: 50%; /* Could be more or less, depending on screen size */
+    width: fit-content;
 }
 
-.resolver_modal_title { float: left; }
+.resolver_modal_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    vertical-align: central;
+    clear: unset;
+}
 
-.resolver_modal_header { clear: both; }
+.resolver_modal_body { }
 
-.resolver_modal_body { clear: both; }
-
-.resolver_modal_footer { clear: both; }
+.resolver_modal_footer { }
 
 /* The Close Button */
 
@@ -567,7 +634,6 @@
     color: var(--color_text_unselected);
     background-color: var(--color_bg_unselected);
     border: none;
-    float: right;
     font-size: 20px;
     font-weight: bold;
 }
@@ -578,30 +644,42 @@
 }
 
 /*******************************************************************************
+    Login screen
+*******************************************************************************/
+
+.resolver_span_loginindicator {
+    padding: 0.1rem 0.5rem;
+}
+    .resolver_span_loginindicator.active {
+        background-color: var(--color_bg_status_normal)
+    }
+
+    .resolver_span_loginindicator.inactive {
+        background-color: var(--color_bg_status_warning)
+    }
+
+/*******************************************************************************
     Resolver form base look
 *******************************************************************************/
 
-.resolver_top_header {
-    text-decoration: underline;
-}
-
 .resolver_header {
-    padding: 0;
-    margin-top: 0.5rem;
-    margin-bottom: 0.2rem;
-    margin-right: 1rem;
+    padding-left: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
 }
 
-.resolver_div_login {
-    width: 100%;
+.resolver_div_componentlistcontainer {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
 }
-
-.resolver_div_componentlistcontainer { position: relative; }
 
 .resolver_div_componentcontainer {
-    display: table;
     position: relative;
-    float: left;
+    background-color: var(--color_bg_component);
+    color: var(--color_text_base);
 }
 
 .resolver_div_componentcontainer.error {
@@ -609,27 +687,56 @@
     color: var(--color_text_error);
 }
 
-.resolver_div_componentcontainer.alternatingcolors:nth-child(odd) {
-    background-color: var(--color_bg_base);
-    color: var(--color_text_base);
+.resolver_div_componentblock {
+    display: flex;
+    margin: 0;
+    padding: 0.1rem 0.25rem;
+    display: flex;
 }
+
+.resolver_div_componentgroup {
+    display: inline-grid;
+    vertical-align: top;
+    grid-template-columns: max-content auto;
+    align-content: start;
+    margin-bottom: 0.2rem;
+    max-width: 45rem;
+}
+
+    .resolver_div_componentgroup > .resolver_div_componentrow {
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: subgrid;
+        align-items: center;
+    }
+
+        /* Single-cell rows (e.g. headers) span both columns automatically */
+        .resolver_div_componentgroup > .resolver_div_componentrow > .resolver_div_componentcell:only-child {
+            grid-column: 1 / -1;
+        }
+
+    /* Rows that shouldn't align to the parent column grid (e.g. wrapping radio groups) */
+    .resolver_div_componentgroup > .resolver_div_componentrow.no-subgrid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Non-row children (containers, buttons, etc.) span the full width */
+    .resolver_div_componentgroup > *:not(.resolver_div_componentrow) {
+        grid-column: 1 / -1;
+    }
 
 .resolver_div_componentrow {
-    display: table-row;
-    margin: 1em;
-    padding: 0.5em;
-    border-radius: 1em;
-}
-
-/* Hiding some of the changes to '.resolver_div_componentrow' behind this CSS class so they can be applied gradually across different tabs */
-.flexbox-column {
     display: flex;
-    flex-direction: column;
-    background-color: beige;
+    flex-direction: row;
+    padding: 0;
 }
 
 .resolver_div_componentcell {
-    float: left;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0.1rem 0.3rem;
 }
 
 .resolver_div_unitid
@@ -648,67 +755,114 @@
     margin-right: 0.5rem;
 }
 
-.resolver_div_unit
-{
-    margin-right: 0.5rem;
-    margin-top: 0.2rem;
-    margin-bottom: 0.2rem;
-    width: 100%;
-}
-
 .resolver_div_unitname {
     max-height: inherit;
     overflow: hidden;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.5rem;
     font-weight: bold;
     font-family: "Lucida Console";
     text-transform: uppercase;
-}
-
-    .resolver_div_unitname.desktop {
-        line-height: 95%;
-        text-align: center;
-        display: none;
-    }
-
-    .resolver_div_unitname.mobile {
-        text-align: left;
-        display: block;
-    }
-
-@media only screen and (min-width: 1024px) {
-    .resolver_div_unitname.desktop {
-        display: block;
-    }
-
-    .resolver_div_unitname.mobile {
-        display: none;
-    }
-
-    .resolver_div_unit {
-        width: auto;
-    }
-}
-
-.resolver_div_unitname.draggable:hover { background-color: var(--color_bg_dragdrop); }
-
-.resolver_tr_weaponentry { background-color: var(--color_bg_weaponentry_inactive); }
-
-.resolver_tr_weaponentry.active { background-color: var(--color_bg_weaponentry_active); }
-
-.resolver_td_targetnumber {
-    width: 3.5rem;
     font-weight: bold;
-    text-align: center;
+    font-size: 1.5rem;
+    letter-spacing: 0.1rem;
 }
 
-.resolver_td_weaponentry {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    .resolver_div_unitname.desktop {
+        display: inline-block;
+        vertical-align: top;
+        text-align: center;
+        writing-mode: vertical-lr;
+    }
+
+    .resolver_div_unitname.mobile {
+        display: none;
+    }
+
+.resolver_div_weaponentrylist {
+    display: grid;
+    grid-template-columns: repeat(7, auto);
 }
 
-.resolver_tr_weaponentry.draggable:hover {
+.resolver_div_weaponentrylist > .resolver_div_reorderableitem {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+}
+
+.resolver_div_weaponentry {
+    background-color: var(--color_bg_weaponentry_inactive);
+}
+
+.resolver_div_weaponentry.active {
+    background-color: var(--color_bg_weaponentry_active);
+}
+
+.resolver_div_targetnumber {
+    justify-content: center;
+    width: 2.5rem;
+}
+
+.resolver_div_buttongroup {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+}
+
+.resolver_div_hidden {
+    visibility: hidden;
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.resolver_div_weaponentrylist > .resolver_div_reorderablesentinel {
+    grid-column: 1 / -1;
+}
+
+.resolver_div_componentlistcontainer > .resolver_div_reorderablesentinel {
+    flex-basis: 100%;
+}
+
+.resolver_div_reorderableitem.draggable:hover {
     background-color: var(--color_bg_dragdrop);
+}
+
+.resolver_div_draghandle {
+    display: flex;
+    align-items: center;
+    padding: 0.2rem 0.4rem;
+    cursor: grab;
+    color: var(--color_text_base);
+    opacity: 0.4;
+    user-select: none;
+}
+
+.resolver_div_draghandle:hover {
+    background-color: var(--color_bg_dragdrop);
+    opacity: 1;
+}
+
+.resolver_div_reorderableitem--dropover {
+    border-top: 0.5rem solid var(--color_bg_dragdrop_dropover);
+}
+
+.resolver_div_reorderablesentinel {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.1s, background-color 0.1s, outline-color 0.1s;
+    outline: 2px dashed transparent;
+    outline-offset: -2px;
+}
+
+.resolver_div_reorderablelistcontainer--dragging > .resolver_div_reorderablesentinel {
+    height: 2rem;
+    outline-color: var(--color_bg_dragdrop_dropover);
+}
+
+.resolver_div_reorderablesentinel--dropover {
+    background-color: var(--color_bg_dragdrop_dropover);
 }
 
 .emptydragtarget {
@@ -719,9 +873,6 @@
     background-color: var(--color_bg_dragdrop);
 }
 
-.resolver_tr_unitinformation { }
-
-.resolver_td_unitinformation_label { }
 
 .resolver_td_unitinformation_data {
     padding-left: 4px;
@@ -737,7 +888,6 @@
 /* Unit display label */
 
 .resolver_div_unitinformation_data {
-    float: left;
     padding-left: 4px;
     padding-right: 4px;
     padding-top: 1px;
@@ -752,12 +902,46 @@
 }
 
 .resolver_style_alignright {
-    float: right !important;
+    margin-left: auto;
 }
 
 /*******************************************************************************
     Damage report
 *******************************************************************************/
+
+.resolver_div_damagereportgroup {
+    display: inline-block;
+    border: 2px solid var(--color_outline_base);
+    padding: 0.25rem;
+}
+
+.resolver_div_damagereportheader {
+    justify-content: space-between;
+}
+
+.resolver_div_damagereportgroupheader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.2rem 0.4rem;
+    margin-bottom: 0.25rem;
+    background-color: var(--color_bg_unselected);
+    color: var(--color_text_unselected);
+}
+
+.resolver_div_damagereportgroupcontent {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.resolver_div_damagereportcontainer {
+    padding: 0.25rem;
+    display: inline-block;
+    vertical-align: top;
+    background-color: var(--color_bg_base);
+}
 
 .resolver_div_damagereportcontainer.outgoingdamage {
     border: 2px solid var(--color_outline_outgoingdamage);
@@ -771,7 +955,6 @@
 
 .resolver_div_damagereport {
     padding: 0.5rem;
-    float: left;
 }
 
 .resolver_div_damagereport.damageentry { padding: 0.5rem; }
@@ -779,7 +962,6 @@
 .resolver_div_attackerheat {
     background-color: var(--color_bg_heat);
     color: var(--color_text_heat);
-    font-size: 16px;
     padding-left: 1rem;
     padding-right: 1rem;
 }
@@ -787,29 +969,25 @@
 .resolver_div_ammo {
     background-color: var(--color_bg_ammo);
     color: var(--color_text_ammo);
-    font-size: 16px;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 0 0.5rem;
 }
 
-.resolver_div_damagereportheader {
-    font-size: 24px;
-    padding-left: 2.5rem;
-    padding-Right: 2rem;
+.resolver_span_damagereportheader {
+    font-size: 1.5rem;
+    padding-left: 1.5rem;
 }
 
 .resolver_div_phase {
-    font-size: 18px;
-    padding-left: 2rem;
+    font-size: 1.2rem;
+    padding-left: 1rem;
 }
 
 .resolver_div_totaldamage {
-    font-size: 18px;
-    padding-left: 2rem;
+    font-size: 1.2rem;
+    padding-left: 1rem;
 }
 
 .resolver_div_imagecontainer {
-    float: left;
     max-width: 18rem;
     height: 18rem;
     overflow: hidden;
@@ -907,7 +1085,7 @@
 *******************************************************************************/
 
 .resolver_status_transparent {
-    background-color: none;
+    background-color: transparent;
     color: var(--color_text_status_normal);
 }
 
@@ -929,4 +1107,53 @@
 .resolver_status_ammo_normal {
     background-color: var(--color_bg_status_ammo_normal);
     color: var(--color_text_status_ammo_normal);
+}
+
+/*******************************************************************************
+    Desktop-mobile switches
+*******************************************************************************/
+
+button.desktop {
+    display: block;
+}
+
+button.mobile {
+    display: none;
+}
+
+@media (max-width: 50rem) {
+    .resolver_div_unitname.desktop {
+        display: none;
+    }
+
+    .resolver_div_unitname.mobile {
+        display: block;
+    }
+
+    button.desktop {
+        display: none;
+    }
+
+    button.mobile {
+        display: block;
+    }
+
+    /* Each unit container fills the flex row so units stack vertically */
+    .resolver_div_componentcontainer {
+        width: 100%;
+    }
+
+    /* Switch from inline-grid (content-sized) to block grid (parent-sized) */
+    .resolver_div_componentgroup {
+        width: 100%;
+    }
+
+    /* Weapon list is too wide for a phone; let it scroll horizontally */
+    .resolver_div_weaponentrylist {
+        overflow-x: auto;
+    }
+
+    .resolver_div_draghandle {
+        display: none;
+    }
 }

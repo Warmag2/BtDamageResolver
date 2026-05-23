@@ -72,7 +72,7 @@ public class Startup
             conf.AddFaemiyahLogging();
         });
 
-        services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(@"/app/dpkeys/"));
+        services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(configuration["DataProtectionKeysPath"] ?? "/app/dpkeys/"));
         services.AddRazorPages();
         services.AddServerSideBlazor();
         services.AddSignalR(options =>
