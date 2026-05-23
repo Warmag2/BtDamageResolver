@@ -159,7 +159,6 @@ public partial class PlayerActor
         {
             _logger.LogInformation("Player {PlayerId} successfully connected to the game {GameId}.", this.GetPrimaryKeyString(), gameId);
             _playerActorState.State.GameId = gameId;
-            _playerActorState.State.GamePassword = password;
             await _playerActorState.WriteStateAsync();
 
             // When we connect to a game, the game is not guaranteed to have our state. Send it and mark all units as updated.
@@ -183,7 +182,6 @@ public partial class PlayerActor
     private async Task MarkDisconnectedStateAndSendToClient()
     {
         _playerActorState.State.GameId = null;
-        _playerActorState.State.GamePassword = null;
         _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
         await SendOnlyThisPlayerGameStateToClient();
         await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));

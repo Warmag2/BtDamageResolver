@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.Actors.Cryptography;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -22,6 +23,7 @@ public partial class GameActor : Grain, IGameActor
 {
     private readonly ILogger<GameActor> _logger;
     private readonly ICommunicationServiceClient _communicationServiceClient;
+    private readonly IHasher _hasher;
     private readonly ILoggingServiceClient _loggingServiceClient;
     private readonly IPersistentState<GameActorState> _gameActorState;
     private readonly IPersistentState<GameActorDamageReportState> _gameActorDamageReportState;
@@ -34,6 +36,7 @@ public partial class GameActor : Grain, IGameActor
     /// <param name="gameActorDamageReportState">The state object for this actor containing damage reports.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="communicationServiceClient">The communication service client.</param>
+    /// <param name="hasher">The password hasher.</param>
     /// <param name="logicUnitFactory">The unit logic factory.</param>
     /// <param name="loggingServiceClient">The logging service client.</param>
     public GameActor(
@@ -41,6 +44,7 @@ public partial class GameActor : Grain, IGameActor
         [PersistentState(nameof(GameActorDamageReportState), Settings.ActorStateStoreName)] IPersistentState<GameActorDamageReportState> gameActorDamageReportState,
         ILogger<GameActor> logger,
         ICommunicationServiceClient communicationServiceClient,
+        IHasher hasher,
         ILogicUnitFactory logicUnitFactory,
         ILoggingServiceClient loggingServiceClient)
     {
@@ -48,6 +52,7 @@ public partial class GameActor : Grain, IGameActor
         _gameActorDamageReportState = gameActorDamageReportState;
         _logger = logger;
         _communicationServiceClient = communicationServiceClient;
+        _hasher = hasher;
         _logicUnitFactory = logicUnitFactory;
         _loggingServiceClient = loggingServiceClient;
     }
@@ -141,27 +146,29 @@ public partial class GameActor : Grain, IGameActor
             return false;
         }
 
-        // Accept any password if the game does not yet exist
-        if (string.IsNullOrWhiteSpace(_gameActorState.State.Password) || string.Equals(_gameActorState.State.Password, password, StringComparison.Ordinal))
+        // Accept any password if the game does not yet have one
+        if (_gameActorState.State.PasswordHash == null)
         {
-            _gameActorState.State.Password = password;
-            _gameActorState.State.PlayerIds.Add(playerId);
-            _gameActorState.State.TimeStamp = DateTime.UtcNow;
-            await _gameActorState.WriteStateAsync();
-
-            _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully connected to the game.", this.GetPrimaryKeyString(), playerId);
-
-            await CheckGameStateUpdateEvents();
-
-            // Log logins to permanent store
-            await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
-
-            return true;
+            (_gameActorState.State.PasswordHash, _gameActorState.State.PasswordSalt) = _hasher.Hash(password);
+        }
+        else if (!_hasher.Verify(password, _gameActorState.State.PasswordSalt, _gameActorState.State.PasswordHash))
+        {
+            _logger.LogInformation("In Game {GameId}, Player {PlayerId} failed to connect to the game.", this.GetPrimaryKeyString(), playerId);
+            return false;
         }
 
-        _logger.LogInformation("In Game {GameId}, Player {PlayerId} failed to connect to the game.", this.GetPrimaryKeyString(), playerId);
+        _gameActorState.State.PlayerIds.Add(playerId);
+        _gameActorState.State.TimeStamp = DateTime.UtcNow;
+        await _gameActorState.WriteStateAsync();
 
-        return false;
+        _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully connected to the game.", this.GetPrimaryKeyString(), playerId);
+
+        await CheckGameStateUpdateEvents();
+
+        // Log logins to permanent store
+        await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
+
+        return true;
     }
 
     /// <inheritdoc />
