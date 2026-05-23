@@ -1,0 +1,45 @@
+{
+    "Features": [
+        "ExtendedTorsoTwist",
+        "JettisonableWeapon"
+    ],
+    "JumpJets": 6,
+    "Sinks": 20,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 50,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Streak SRM-2"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Streak SRM-2"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Hellhound"
+}

@@ -4,61 +4,58 @@
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
-@using Newtonsoft.Json
 @inject CommonData _commonData
 @inject UserStateController _userStateController
 @implements IDisposable
 
 @{
-    var targetingText = UnitEntry.WeaponBays.Count > 1 ? $"({WeaponBay.Name})" : string.Empty;
+    var targetingText = UnitEntry.WeaponBays.Count > 1 ? WeaponBay.GetFormalName() : "Targeting Parameters";
 }
 
 @if(_userStateController.IsConnectedToGame)
 {
-    <div class="resolver_div_unit resolver_div_componentcell">
-        <table>
-            <tr>
-                <th colspan="2">
-                    Targeting Parameters @targetingText
-                </th>
-            </tr>
-            <tr>
-                <td>Target</td>
-                <td>
-                    <FormComboBox @key=_userStateController.GameState?.TimeStamp EnableErrorDisplay="true" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
-                </td>
-            </tr>
-            <tr style="@(VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1))">
-                <td>Arc</td>
-                <td>
-                    <FormRadio Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.FiringSolution.Arc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(Arc arc) => OnArcChanged(arc)"></FormRadio>
-                </td>
-            </tr>
-            <tr>
-                <td>Distance</td>
-                <td>
-                    <FormNumberPicker BracketCreatorDelegate="@(() => _commonData.FormPickBracketsDistance(WeaponBay, UnitEntry.Type))" SelectedOption="@WeaponBay.FiringSolution.Distance" Min="0" Max="50" Disabled="@(_userStateController.PlayerState.IsReady || !WeaponBay.Weapons.Any())" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="@OnDistanceChanged"></FormNumberPicker>
-                </td>
-            </tr>
-            <tr>
-                <td>Modifier</td>
-                <td>
-                    <FormRadio Options="@_commonData.MapAttackModifier" SelectedOption="@WeaponBay.FiringSolution.AttackModifier" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(int attackModifier) => OnAttackModifierChanged(attackModifier)"></FormRadio>
-                </td>
-            </tr>
-            <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetDirectionHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
-                <td>Direction</td>
-                <td>
-                    <FormRadio Options="@_commonData.MapFacing" SelectedOption="@WeaponBay.FiringSolution.Direction" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
-                </td>
-            </tr>
-            <tr style="@(VisualStyleController.HideElement(VisualStyleController.GetCoverHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
-                <td>Cover</td>
-                <td>
-                    <FormRadio Options="@CommonData.FormMapCover(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))" SelectedOption="@WeaponBay.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.GetComparisonTime()" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
-                </td>
-            </tr>
-        </table>
+    <div class="resolver_div_componentrow">
+        <div class="resolver_div_componentgroup">
+            <div class="resolver_div_componentrow">
+                <div class="resolver_div_componentcell"><b>@targetingText</b></div>
+            </div>
+            <div class="resolver_div_componentrow">
+                <div class="resolver_div_componentcell">Target</div>
+                <div class="resolver_div_componentcell">
+                    <FormComboBox @key=@($"{WeaponBay.Id}_Target_{_userStateController.UnitListHash}") EnableErrorDisplay="true" Options="@_userStateController.GetTargetsForUnit(UnitEntry.Id)" SelectedOption="@WeaponBay.FiringSolution.Target" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Guid unitId) => OnTargetChanged(unitId)"></FormComboBox>
+                </div>
+            </div>
+            <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1 || VisualStyleController.GetRelativeArcHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
+                <div class="resolver_div_componentcell">Relative arc</div>
+                <div class="resolver_div_componentcell">
+                    <FormRadio @key=@($"{WeaponBay.Id}_RelativeArc") Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.FiringSolution.RelativeArc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Arc relativeArc) => OnRelativeArcChanged(relativeArc)"></FormRadio>
+                </div>
+            </div>
+            <div class="resolver_div_componentrow">
+                <div class="resolver_div_componentcell">Distance</div>
+                <div class="resolver_div_componentcell">
+                    <FormNumberPicker @key=@($"{WeaponBay.Id}_Distance") BracketCreatorDelegate="@(() => _commonData.FormPickBracketsDistance(WeaponBay, UnitEntry.Type))" SelectedOption="@WeaponBay.FiringSolution.Distance" Min="0" Max="50" Disabled="@(_userStateController.PlayerState.IsReady || !WeaponBay.Weapons.Any())" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="@OnDistanceChanged"></FormNumberPicker>
+                </div>
+            </div>
+            <div class="resolver_div_componentrow">
+                <div class="resolver_div_componentcell">Modifier</div>
+                <div class="resolver_div_componentcell">
+                    <FormRadio @key=@($"{WeaponBay.Id}_Modifier") Options="@_commonData.MapAttackModifier" SelectedOption="@WeaponBay.FiringSolution.AttackModifier" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(int attackModifier) => OnAttackModifierChanged(attackModifier)"></FormRadio>
+                </div>
+            </div>
+            <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetDirectionHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
+                <div class="resolver_div_componentcell">Direction</div>
+                <div class="resolver_div_componentcell">
+                    <FormRadio @key=@($"{WeaponBay.Id}_Facing") Options="@_commonData.MapFacing" SelectedOption="@WeaponBay.FiringSolution.Direction" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Direction direction) => OnDirectionChanged(direction)"></FormRadio>
+                </div>
+            </div>
+            <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetCoverHidden(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))))">
+                <div class="resolver_div_componentcell">Cover</div>
+                <div class="resolver_div_componentcell">
+                    <FormRadio @key=@($"{WeaponBay.Id}_Cover") Options="@CommonData.FormMapCover(_userStateController.GetUnitType(WeaponBay.FiringSolution.Target))" SelectedOption="@WeaponBay.FiringSolution.Cover" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Cover cover) => OnCoverChanged(cover)"></FormRadio>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -92,20 +89,20 @@
         }
     }
 
+    private void OnRelativeArcChanged(Arc relativeArc)
+    {
+        if (WeaponBay.FiringSolution.RelativeArc != relativeArc)
+        {
+            WeaponBay.FiringSolution.RelativeArc = relativeArc;
+            SendUpdate();
+        }
+    }
+
     private void OnDistanceChanged(int distance)
     {
         if (WeaponBay.FiringSolution.Distance != distance)
         {
             WeaponBay.FiringSolution.Distance = distance;
-            SendUpdate();
-        }
-    }
-
-    private void OnArcChanged(Arc arc)
-    {
-        if (WeaponBay.FiringSolution.Arc != arc)
-        {
-            WeaponBay.FiringSolution.Arc = arc;
             SendUpdate();
         }
     }

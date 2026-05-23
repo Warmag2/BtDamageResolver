@@ -312,6 +312,15 @@ public class CommonData
     }
 
     /// <summary>
+    /// Form pick brackets for valid ammo.
+    /// </summary>
+    /// <returns>Pick brackets for selecting valid ammo amounts.</returns>
+    public static List<PickBracket> FormPickBracketsAmmo()
+    {
+        return MakeSimplePickBrackets(0, 1, 100);
+    }
+
+    /// <summary>
     /// Form pick brackets for valid unit speeds.
     /// </summary>
     /// <returns>Pick brackets for selecting valid speeds.</returns>
@@ -353,7 +362,7 @@ public class CommonData
     /// <returns>Pick brackets for selecting valid skill values.</returns>
     public static List<PickBracket> FormPickBracketsSkills()
     {
-        return MakeSimplePickBrackets(1, 1, 8);
+        return MakeSimplePickBrackets(0, 1, 8);
     }
 
     /// <summary>
@@ -432,9 +441,9 @@ public class CommonData
     /// </summary>
     /// <param name="unitName">The name of the unit to get.</param>
     /// <returns>The unit, if found, and null otherwise.</returns>
-    public async Task<Unit> GetUnit(string unitName)
+    public Unit GetUnit(string unitName)
     {
-        return await _unitRepository.GetAsync(unitName);
+        return _unitRepository.Get(unitName);
     }
 
     /// <summary>
@@ -494,6 +503,20 @@ public class CommonData
     /// <returns>The map for valid movement amount options for the given unit.</returns>
     public Dictionary<string, int> FormMapMovementAmount(UnitEntry unitEntry)
     {
+        switch (unitEntry.Type)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                var speed = unitEntry.Speed;
+                var possibleMovementAmountsAerospace = new List<int> { speed, 2 * speed, 2 * speed + 1 };
+                var bracketsAerospace = MakeArbitraryPickBrackets(possibleMovementAmountsAerospace);
+                return bracketsAerospace.ToDictionary(p => p.ToString(), p => p.Begin);
+            default:
+                break;
+        }
+
         if (unitEntry.MovementClass == MovementClass.Jump)
         {
             return MakeSimplePickBrackets(0, 1, unitEntry.JumpJets).ToDictionary(p => p.ToString(), p => p.Begin);
@@ -626,9 +649,19 @@ public class CommonData
     {
         var weapon = DictionaryWeapon[weaponName];
 
-        if (!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.TryGetValue(ammoName, out var value))
+        if (weapon.Ammo.Count > 0)
         {
-            var ammo = DictionaryAmmo[value];
+            Ammo ammo;
+
+            if (!string.IsNullOrWhiteSpace(ammoName) && weapon.Ammo.TryGetValue(ammoName, out var value))
+            {
+                ammo = DictionaryAmmo[value];
+            }
+            else
+            {
+                ammo = DictionaryAmmo[weapon.Ammo.First().Value];
+            }
+            
             return weapon.ApplyAmmo(ammo);
         }
 

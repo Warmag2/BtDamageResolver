@@ -11,7 +11,7 @@ namespace Faemiyah.BtDamageResolver.Api.Extensions;
 public static class CollectionExtensions
 {
     /// <summary>
-    /// Make a deep copy of a hashset object.
+    /// Make a deep copy of a <see cref="HashSet"/> object.
     /// </summary>
     /// <typeparam name="TType">The type of the item in the <see cref="HashSet{TType}"/>.</typeparam>
     /// <param name="input">The <see cref="HashSet{TType}"/> to make a copy of.</param>
@@ -47,14 +47,7 @@ public static class CollectionExtensions
             return [];
         }
 
-        var returnValue = new Dictionary<TKey, TValue>();
-
-        foreach (var item in input)
-        {
-            returnValue.Add(item.Key, item.Value);
-        }
-
-        return returnValue;
+        return new Dictionary<TKey, TValue>(input);
     }
 
     /// <summary>

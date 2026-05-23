@@ -5,19 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.ActorInterfaces.Extensions;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Orleans;
-using Orleans.Configuration;
-using Orleans.Hosting;
-using Orleans.Serialization;
+using Microsoft.Extensions.Options;
 using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
@@ -27,17 +23,30 @@ namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
 /// </summary>
 internal sealed class DataImporter
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<DataImporter> _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly RepositoryProvider _repositoryProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DataImporter"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    public DataImporter(ILogger logger)
+    public DataImporter(ILoggerFactory loggerFactory)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = loggerFactory.CreateLogger<DataImporter>();
         _jsonSerializerOptions = GetJsonSerializerOptions();
+
+        // Repository provider setup
+        var configuration = GetConfiguration("DataImporterSettings.json");
+        var communicationOptions = configuration.GetSection(Settings.CommunicationOptionsBlockName).Get<CommunicationOptions>();
+        _repositoryProvider = new RepositoryProvider(
+            new RedisEntityRepository<Ammo>(loggerFactory.CreateLogger<RedisEntityRepository<Ammo>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<ArcDiagram>(loggerFactory.CreateLogger<RedisEntityRepository<ArcDiagram>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<ClusterTable>(loggerFactory.CreateLogger<RedisEntityRepository<ClusterTable>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<CriticalDamageTable>(loggerFactory.CreateLogger<RedisEntityRepository<CriticalDamageTable>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<PaperDoll>(loggerFactory.CreateLogger<RedisEntityRepository<PaperDoll>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<Unit>(loggerFactory.CreateLogger<RedisEntityRepository<Unit>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
+            new RedisEntityRepository<Weapon>(loggerFactory.CreateLogger<RedisEntityRepository<Weapon>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString));
     }
 
     /// <summary>
@@ -55,10 +64,6 @@ internal sealed class DataImporter
             _logger.LogInformation("{Object}", JsonSerializer.Serialize(dataObject, _jsonSerializerOptions));
         }
 
-        using var host = await ConnectClient();
-
-        var client = host.Services.GetRequiredService<IClusterClient>();
-
         if (!options.DryRun)
         {
             foreach (var dataObject in data)
@@ -69,22 +74,22 @@ internal sealed class DataImporter
                 {
                     case Ammo ammo:
                         ammo.FillMissingFields();
-                        await client.GetAmmoRepository().AddOrUpdate(ammo);
+                        await _repositoryProvider.AmmoRepository.AddOrUpdateAsync(ammo);
                         break;
                     case ArcDiagram arcDiagram:
-                        await client.GetArcDiagramRepository().AddOrUpdate(arcDiagram);
+                        await _repositoryProvider.ArcDiagramRepository.AddOrUpdateAsync(arcDiagram);
                         break;
                     case ClusterTable clusterTable:
-                        await client.GetClusterTableRepository().AddOrUpdate(clusterTable);
+                        await _repositoryProvider.ClusterTableRepository.AddOrUpdateAsync(clusterTable);
                         break;
                     case CriticalDamageTable criticalDamageTable:
-                        await client.GetCriticalDamageTableRepository().AddOrUpdate(criticalDamageTable);
+                        await _repositoryProvider.CriticalDamageTableRepository.AddOrUpdateAsync(criticalDamageTable);
                         break;
                     case PaperDoll paperDoll:
-                        await client.GetPaperDollRepository().AddOrUpdate(paperDoll);
+                        await _repositoryProvider.PaperDollRepository.AddOrUpdateAsync(paperDoll);
                         break;
                     case Unit unit:
-                        await client.GetUnitRepository().AddOrUpdate(unit);
+                        await _repositoryProvider.UnitRepository.AddOrUpdateAsync(unit);
                         break;
                     case Weapon weapon:
                         weapon.FillMissingFields();
@@ -96,7 +101,7 @@ internal sealed class DataImporter
                             throw new InvalidOperationException($"Invalid data in weapon: {weapon.GetName()}");
                         }
 
-                        await client.GetWeaponRepository().AddOrUpdate(weapon);
+                        await _repositoryProvider.WeaponRepository.AddOrUpdateAsync(weapon);
                         break;
                     default:
                         throw new InvalidOperationException($"DataObject is of unknown type: {dataObject.GetType()}");
@@ -149,40 +154,6 @@ internal sealed class DataImporter
         }
 
         return importedDataObjects;
-    }
-
-    private async Task<IHost> ConnectClient()
-    {
-        var configuration = GetConfiguration("DataImporterSettings.json");
-        var section = configuration.GetSection(Settings.ClusterOptionsBlockName);
-        var clusterOptions = section.Get<FaemiyahClusterOptions>();
-
-        var hostBuilder = new HostBuilder()
-            .UseOrleansClient((_, clientBuilder) =>
-            {
-                clientBuilder.Configure<ClusterOptions>(options =>
-                    {
-                        options.ClusterId = "faemiyah";
-                        options.ServiceId = "Resolver";
-                    })
-                    .Configure<ConnectionOptions>(options =>
-                    {
-                        options.ConnectionRetryDelay = TimeSpan.FromSeconds(30);
-                        options.OpenConnectionTimeout = TimeSpan.FromSeconds(30);
-                    }).UseAdoNetClustering(options =>
-                    {
-                        options.Invariant = clusterOptions?.Invariant;
-                        options.ConnectionString = clusterOptions?.ConnectionString;
-                    })
-                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace.StartsWith("Faemiyah.BtDamageResolver")))
-                    .ConfigureJsonSerializerOptions();
-            }).Build();
-
-        _logger.LogInformation("Host successfully created.");
-
-        await hostBuilder.StartAsync();
-
-        return hostBuilder;
     }
 
     /// <summary>

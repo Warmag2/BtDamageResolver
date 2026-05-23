@@ -7,27 +7,43 @@
     var numberPrefix = DisplayNumberPrefix ? numberPrefixString : string.Empty;
 }
 
-<span class="resolver_distance_picker_display_only @(StyleSelectorDelegate(_selectedOption))" @onclick="Pick">@($"{numberPrefix}{NumberToDisplay}")</span>
-
-<div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
-    @foreach (var option in _options)
+<div class="resolver_div_inputwrapper">
+    @if (_editingDirectly)
     {
-        var optionToSelect = option.End;
-        if (_selectedOption >= option.Begin && _selectedOption <= option.End)
-        {
-            <div class="resolver_div_pickeritem active" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
-        }
-        else
-        {
-            <div class="resolver_div_pickeritem" @onclick="@(e => SelectOptionManual(optionToSelect))">@option</div>
-        }
+        <FormNumber @ref="_formNumber" SelectedOption="@_selectedOption" Min="@_min" Max="@_max" Disabled="@Disabled" OnChanged="OnFormNumberCommit" />
     }
+    else
+    {
+        <span class="resolver_number_picker_display_only @(StyleSelectorDelegate(_selectedOption))" @onclick="StartDirectEdit">@($"{numberPrefix}{NumberToDisplay}")</span>
+    }
+    
+    <button class="resolver_button" disabled="@Disabled" @onclick="Pick">▾</button>
+
+    <div class="resolver_div_picker" style="@VisualStyleController.HideElement(_selectionBoxHidden)">
+        @foreach (var option in _options)
+        {
+            var optionToSelect = option.End;
+            if (_selectedOption >= option.Begin && _selectedOption <= option.End)
+            {
+                <div class="resolver_div_pickeritem active" @onclick="@(e => SelectOptionManual(optionToSelect))">@option.ToString(DisplayNumberPrefix)</div>
+            }
+            else
+            {
+                <div class="resolver_div_pickeritem" @onclick="@(e => SelectOptionManual(optionToSelect))">@option.ToString(DisplayNumberPrefix)</div>
+            }
+        }
+    </div>
 </div>
 
 @code
 {
     private int _selectedOption;
     private bool _selectionBoxHidden = true;
+    private bool _editingDirectly = false;
+    private bool _focusPending = false;
+    private FormNumber _formNumber;
+    int _min;
+    int _max;
     private List<PickBracket> _options = new();
 
     [Parameter]
@@ -43,16 +59,16 @@
     public bool DisplayNumberPrefix { get; set; }
 
     [Parameter]
-    public int Min { get; set; }
-
-    [Parameter]
-    public int Max { get; set; }
-
-    [Parameter]
     public bool Disabled { get; set; }
 
     [Parameter]
+    public string Hint { get; set; }
+
+    [Parameter]
     public EventCallback<int> OnChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<(string, int)> OnChangedWithHint { get; set; }
 
     public int SelectedOptionInternal
     {
@@ -62,23 +78,38 @@
             _selectedOption = value;
             HideSelectionBox();
             OnChanged.InvokeAsync(value);
+            OnChangedWithHint.InvokeAsync((Hint, value));
+        }
+    }
+
+    private void OnFormNumberCommit(int value)
+    {
+        _editingDirectly = false;
+        SelectedOptionInternal = value;
+    }
+
+    private void StartDirectEdit()
+    {
+        if (!Disabled)
+        {
+            HideSelectionBox();
+            _editingDirectly = true;
+            _focusPending = true;
         }
     }
 
     private void Pick()
     {
-        if (!_selectionBoxHidden)
-        {
-            HideSelectionBox();
-        }
-        else
+        if (_selectionBoxHidden)
         {
             if (!Disabled)
             {
-                _options = BracketCreatorDelegate();
-
                 ShowSelectionBox();
             }
+        }
+        else
+        {
+            HideSelectionBox();
         }
     }
 
@@ -92,8 +123,20 @@
         _selectionBoxHidden = true;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_focusPending && _formNumber != null)
+        {
+            _focusPending = false;
+            await _formNumber.FocusAsync();
+        }
+    }
+
     protected override void OnInitialized()
     {
+        _options = BracketCreatorDelegate();
+        _min = _options.Min(b => b.Begin);
+        _max = _options.Max(b => b.End);
         SelectedOptionInternal = NumberToDisplay;
     }
 

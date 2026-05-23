@@ -1,0 +1,41 @@
+{
+    "Features": [
+        "Rugged"
+    ],
+    "JumpJets": 4,
+    "Sinks": 15,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 80,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "AC/20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-4"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Victor VTR-9B"
+}

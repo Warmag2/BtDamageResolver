@@ -52,7 +52,7 @@ public partial class LogicUnit
     {
         if (!combatAction.ActionHappened)
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"Combat action was canceled for {combatAction.Weapon.Name} and no ammo will be expended", Type = AttackLogEntryType.Information });
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"Combat action was canceled for {combatAction.Weapon.Name} and no ammo will be expended"));
             return Task.CompletedTask;
         }
 
@@ -81,16 +81,16 @@ public partial class LogicUnit
         if (weapon.Instances > 1)
         {
             ammoUsed *= weapon.Instances;
-            damageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} is a multiplied weapon. Ammo usage multiplier for ammo {ammoName}", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, $"{weapon.Name} is a multiplied weapon. Ammo usage multiplier", ammoUsed));
         }
 
         if (weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
             ammoUsed *= MathExpression.Parse(rapidFeatureEntry.Data);
-            damageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} rate of fire multiplier for ammo usage", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, $"{weapon.Name} rate of fire multiplier for ammo usage", ammoUsed));
         }
 
-        damageReport.Log(new AttackLogEntry { Context = $"{weapon.Name} number of rounds of ammunition expended", Number = ammoUsed, Type = AttackLogEntryType.Calculation });
+        damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, $"{weapon.Name} number of rounds of ammunition ({ammoName}) expended", ammoUsed));
         damageReport.SpendAmmoAttacker(Unit.Id, ammoName, ammoUsed);
     }
 }

@@ -1,0 +1,36 @@
+{
+    "Features": [
+        "NoMinimalArms"
+    ],
+    "JumpJets": 7,
+    "Sinks": 20,
+    "Speed": 9,
+    "Type": "Mech",
+    "Tonnage": 35,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Streak SRM-4"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Jenner 2C"
+}

@@ -1,0 +1,37 @@
+{
+    "Features": [
+        "ActiveProbe",
+        "BattleFists"
+    ],
+    "JumpJets": 5,
+    "Sinks": 15,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 55,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/5"
+                },
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/5"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Large Pulse Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Jiira IIC"
+}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Faemiyah.BtDamageResolver.Services.Database;
@@ -26,7 +27,8 @@ public class LoggingService : GrainService, ILoggingService
     private readonly LoggingRepository _loggingRepository;
     private readonly ConcurrentQueue<GameLogEntry> _gameLogEntries;
     private readonly ConcurrentQueue<PlayerLogEntry> _playerLogEntries;
-    private bool _writerActive;
+    private CancellationTokenSource _cancellationTokenSource;
+    private Task _writeLoopTask;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoggingService"/> class.
@@ -55,19 +57,25 @@ public class LoggingService : GrainService, ILoggingService
     /// <inheritdoc />
     public override Task Start()
     {
-        _writerActive = true;
-        Task.Run(LogWriteLoop);
+        _cancellationTokenSource = new CancellationTokenSource();
+        _writeLoopTask = Task.Run(() => LogWriteLoop(_cancellationTokenSource.Token));
         _logger.LogInformation("{Service} running log writing loop.", GetType());
 
         return base.Start();
     }
 
     /// <inheritdoc />
-    public override Task Stop()
+    public override async Task Stop()
     {
-        _writerActive = false;
+        await _cancellationTokenSource.CancelAsync();
+        await _writeLoopTask;
+        _cancellationTokenSource.Dispose();
 
-        return base.Stop();
+        // Final flush: drain any entries enqueued between the last loop iteration and shutdown.
+        await _loggingRepository.WriteLogEntries(_gameLogEntries);
+        await _loggingRepository.WriteLogEntries(_playerLogEntries);
+
+        await base.Stop();
     }
 
     /// <inheritdoc />
@@ -92,27 +100,46 @@ public class LoggingService : GrainService, ILoggingService
         return Task.CompletedTask;
     }
 
-    private async Task LogWriteLoop()
+    private async Task LogWriteLoop(CancellationToken cancellationToken)
     {
-        while (_writerActive)
+        while (!cancellationToken.IsCancellationRequested)
         {
-            if (_gameLogEntries.IsEmpty && _playerLogEntries.IsEmpty)
+            try
             {
-                _logger.LogDebug("LoggingService has nothing to do, sleeping for {Delay} milliseconds.", LoggingDelayMilliseconds);
-                await Task.Delay(LoggingDelayMilliseconds);
-            }
-            else
-            {
-                if (!_gameLogEntries.IsEmpty)
+                if (_gameLogEntries.IsEmpty && _playerLogEntries.IsEmpty)
                 {
-                    _logger.LogDebug("LoggingService writing {Count} game log entries.", _gameLogEntries.Count);
-                    await _loggingRepository.WriteGameLogEntries(_gameLogEntries);
+                    _logger.LogDebug("LoggingService has nothing to do, sleeping for {Delay} milliseconds.", LoggingDelayMilliseconds);
+                    await Task.Delay(LoggingDelayMilliseconds, cancellationToken);
                 }
-
-                if (!_playerLogEntries.IsEmpty)
+                else
                 {
-                    _logger.LogDebug("LoggingService writing {Count} user log entries.", _playerLogEntries.Count);
-                    await _loggingRepository.WriteUserLogEntries(_playerLogEntries);
+                    if (!_gameLogEntries.IsEmpty)
+                    {
+                        _logger.LogDebug("LoggingService writing {Count} game log entries.", _gameLogEntries.Count);
+                        await _loggingRepository.WriteLogEntries(_gameLogEntries);
+                    }
+
+                    if (!_playerLogEntries.IsEmpty)
+                    {
+                        _logger.LogDebug("LoggingService writing {Count} user log entries.", _playerLogEntries.Count);
+                        await _loggingRepository.WriteLogEntries(_playerLogEntries);
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected exception in log write loop. Retrying after delay.");
+                try
+                {
+                    await Task.Delay(LoggingDelayMilliseconds, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
                 }
             }
         }

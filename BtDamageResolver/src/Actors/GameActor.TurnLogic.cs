@@ -22,45 +22,79 @@ public partial class GameActor
 {
     /// <summary>
     /// Gets the primary target of the unit.
-    /// Primary target is the target of the first weapon bay firing into the front arc, or the first weaponbay to have a target, if no weapon bays target front arc.
+    /// Primary target is the target of the first weapon bay firing into the front arc, or the first weapon bay to have a target, if no weapon bays target front arc.
     /// </summary>
     /// <param name="unitEntry">The unit entry to find primary target for.</param>
     /// <returns>The primary target, or Guid.Empty if no target was found.</returns>
-    private static Guid GetPrimaryTarget(UnitEntry unitEntry)
+    private static (Guid PrimaryTarget, Arc PrimaryTargetArc) GetPrimaryTarget(UnitEntry unitEntry)
     {
-        var primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.Arc == Arc.Front)?.FiringSolution.Target;
+        Guid? primaryTargetCandidate = null;
 
+        // Units that have a clearly defined front arc and at least one of their targets in that arc must find their primary target from that arc.
+        switch (unitEntry.Type)
+        {
+            case UnitType.AerospaceFighter:
+            case UnitType.Mech:
+            case UnitType.MechTripod:
+                primaryTargetCandidate = unitEntry.WeaponBays.Find(w => w.FiringSolution.RelativeArc == Arc.Front)?.FiringSolution.Target;
+                break;
+        }
+        
+        // Units with turrets can select primary target from any arc
+        // This is relevant because vehicles and quad mechs may have weapon systems that are fixed to a direction instead of being relative to the
+        // torso-twisted arc, and depending on the choice of primary target, weapons in other locations may be able to fire at targets in the same arc.
         if (primaryTargetCandidate == null)
         {
             var firstBayWithTarget = unitEntry.WeaponBays.Find(w => w.FiringSolution.Target != Guid.Empty);
 
-            return firstBayWithTarget == null ? Guid.Empty : firstBayWithTarget.FiringSolution.Target;
+            return firstBayWithTarget == null ? (Guid.Empty, Arc.Default) : (firstBayWithTarget.FiringSolution.Target, firstBayWithTarget.FiringSolution.RelativeArc);
         }
 
-        return primaryTargetCandidate.Value;
+        return (primaryTargetCandidate.Value, Arc.Front);
     }
 
-    private static void ProcessUnitHeat(IReadOnlyCollection<DamageReport> damageReports, UnitEntry unit)
+    private static void ProcessUnitAmmo(List<DamageReport> damageReports, UnitEntry unit)
     {
-        var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitIds.Contains(unit.Id)).Sum(damageReport => damageReport.ConsumablesAttackers[unit.Id].Heat);
+        foreach (var consumables in damageReports
+            .Where(
+                d => d.FiringUnitIds.Contains(unit.Id) &&
+                d.ConsumablesAttackers.ContainsKey(unit.Id) &&
+                d.ConsumablesAttackers[unit.Id].AmmoUsage.Count != 0)
+            .SelectMany(d => d.ConsumablesAttackers[unit.Id].AmmoUsage))
+        {
+            unit.Consumables.SpendAmmo(consumables.Key, consumables.Value);
+        }
+    }
+
+    private static void ProcessUnitHeat(List<DamageReport> damageReports, UnitEntry unit)
+    {
+        var heatGeneratedByThisUnit = damageReports.Where(d => d.FiringUnitIds.Contains(unit.Id)).Sum(damageReport =>
+            {
+                if (damageReport.ConsumablesAttackers.TryGetValue(unit.Id, out var consumablesForAttacker))
+                {
+                    return consumablesForAttacker.Heat;
+                }
+
+                return 0;
+            });
 
         // Only apply heat if the generation is positive and the unit tracks heat.
         // However, combat computer and other heat generation reductions never take the heat generated below 0.
         if (heatGeneratedByThisUnit > 0)
         {
-            unit.Heat += heatGeneratedByThisUnit;
+            unit.Consumables.Heat += heatGeneratedByThisUnit;
         }
 
-        unit.Heat -= unit.Sinks;
+        unit.Consumables.Heat -= unit.Sinks;
 
         // Sinks won't take the heat to negative levels
-        if (unit.Heat < 0)
+        if (unit.Consumables.Heat < 0)
         {
-            unit.Heat = 0;
+            unit.Consumables.Heat = 0;
         }
     }
 
-    private async Task CheckGameStateUpdateEvents(IReadOnlyCollection<Guid> updatedUnits = null)
+    private async Task CheckGameStateUpdateEvents(List<Guid> updatedUnits = null)
     {
         try
         {
@@ -77,14 +111,16 @@ public partial class GameActor
                 ? await ProcessTargetNumberUpdatesForUnits()
                 : await ProcessTargetNumberUpdatesForUnits(updatedUnits);
 
+            // Save game actor and damage report states before distributing so clients never get ahead of persisted state.
+            await _gameActorState.WriteStateAsync();
+
             await DistributeGameStateToPlayers(fireEventHappened);
             await DistributeTargetNumberUpdatesToPlayers(targetNumberUpdates);
 
-            // Save game actor state
-            await _gameActorState.WriteStateAsync();
             if (fireEventHappened)
             {
                 await _gameActorDamageReportState.WriteStateAsync();
+                await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
             }
 
             // Log update to permanent store
@@ -95,7 +131,7 @@ public partial class GameActor
                 new GameEntry
                 {
                     Name = this.GetPrimaryKeyString(),
-                    PasswordProtected = !string.IsNullOrEmpty(_gameActorState.State.Password),
+                    PasswordProtected = _gameActorState.State.PasswordHash != null,
                     Players = _gameActorState.State.PlayerStates.Count,
                     TimeStamp = DateTime.UtcNow
                 });
@@ -140,8 +176,6 @@ public partial class GameActor
             ClearUnitPenalties(true, false);
             ModifyGameStateBasedOnDamageReports([.. tagDamageReports, .. damageReports]);
 
-            await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
-
             // Unmark ready in local memory
             foreach (var playerState in _gameActorState.State.PlayerStates.Values)
             {
@@ -174,9 +208,10 @@ public partial class GameActor
         {
             if (bay.FiringSolution.Target != Guid.Empty && !await IsUnitInGame(bay.FiringSolution.Target))
             {
+                var invalidTarget = bay.FiringSolution.Target;
                 bay.FiringSolution.Target = Guid.Empty;
                 bay.TimeStamp = DateTime.UtcNow;
-                _logger.LogWarning("Player {PlayerId} unit {UnitId} tried to fire at an unit {TargetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, bay.FiringSolution.Target);
+                _logger.LogWarning("Player {PlayerId} unit {UnitId} tried to fire at an unit {TargetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, invalidTarget);
             }
         }
 
@@ -200,7 +235,7 @@ public partial class GameActor
 
         var logicUnitAttacker = GetUnitLogic(unitEntry);
 
-        var primaryTarget = GetPrimaryTarget(unitEntry);
+        var (primaryTarget, primaryTargetArc) = GetPrimaryTarget(unitEntry);
 
         foreach (var weaponBay in unitEntry.WeaponBays)
         {
@@ -209,7 +244,7 @@ public partial class GameActor
             {
                 var logicUnitDefender = GetUnitLogic(weaponBay.FiringSolution.Target);
                 var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
-                damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, weaponBay, processOnlyTags, isPrimaryTarget));
+                damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, primaryTargetArc, isPrimaryTarget, processOnlyTags, weaponBay));
             }
         }
 
@@ -236,7 +271,7 @@ public partial class GameActor
         var logicUnitAttacker = GetUnitLogic(unitEntry);
         ILogicUnit logicUnitDefender = null;
 
-        var primaryTarget = GetPrimaryTarget(unitEntry);
+        var (primaryTarget, primaryTargetArc) = GetPrimaryTarget(unitEntry);
 
         foreach (var weaponBay in unitEntry.WeaponBays)
         {
@@ -267,7 +302,7 @@ public partial class GameActor
                     var attackLog = new AttackLog();
                     var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
 
-                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, weaponBay, weaponEntry, isPrimaryTarget);
+                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, primaryTargetArc, isPrimaryTarget, weaponBay, weaponEntry);
 
                     var (ammoEstimate, ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, rangeBracket, weaponEntry);
                     var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, rangeBracket, weaponEntry);
@@ -327,7 +362,7 @@ public partial class GameActor
         return targetNumberUpdate;
     }
 
-    private void ModifyGameStateBasedOnNarcAndTag(IReadOnlyCollection<DamageReport> damageReports)
+    private void ModifyGameStateBasedOnNarcAndTag(List<DamageReport> damageReports)
     {
         // Comb through damage reports to find incoming heat damage and EMP damage effects
         foreach (var damageReport in damageReports)
@@ -349,7 +384,7 @@ public partial class GameActor
         }
     }
 
-    private void ModifyGameStateBasedOnDamageReports(IReadOnlyCollection<DamageReport> damageReports)
+    private void ModifyGameStateBasedOnDamageReports(List<DamageReport> damageReports)
     {
         // Comb through damage reports to find incoming heat damage and EMP damage effects
         foreach (var damageReport in damageReports)
@@ -359,8 +394,8 @@ public partial class GameActor
 
             var unitEntry = GetUnit(damageReport.TargetUnitId);
 
-            unitEntry.Heat += heatToTarget;
-            unitEntry.Penalty += empToTarget;
+            unitEntry.Consumables.Heat += heatToTarget;
+            unitEntry.Consumables.Penalty += empToTarget;
         }
 
         // Heat sinks for all units operate after damage resolution
@@ -368,13 +403,18 @@ public partial class GameActor
         {
             foreach (var unitEntry in playerState.UnitEntries)
             {
+                if (unitEntry.IsAmmoTracking())
+                {
+                    ProcessUnitAmmo(damageReports, unitEntry);
+                }
+
                 if (unitEntry.IsHeatTracking())
                 {
                     ProcessUnitHeat(damageReports, unitEntry);
                 }
                 else
                 {
-                    unitEntry.Heat = 0;
+                    unitEntry.Consumables.Heat = 0;
                 }
 
                 unitEntry.TimeStamp = _gameActorState.State.TurnTimeStamp;
@@ -388,9 +428,9 @@ public partial class GameActor
         {
             foreach (var unitEntry in playerState.UnitEntries)
             {
-                if (clearPenalty && unitEntry.Penalty != 0)
+                if (clearPenalty && unitEntry.Consumables.Penalty != 0)
                 {
-                    unitEntry.Penalty = 0;
+                    unitEntry.Consumables.Penalty = 0;
                 }
 
                 if (clearTag && unitEntry.Tagged)

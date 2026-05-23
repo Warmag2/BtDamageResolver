@@ -49,6 +49,11 @@ public enum SpecialDamageType
     Narc,
 
     /// <summary>
+    /// Forced piloting skill roll.
+    /// </summary>
+    PilotingSkillRoll,
+
+    /// <summary>
     /// Tags target.
     /// </summary>
     Tag

@@ -1,0 +1,34 @@
+{
+    "Features": [
+        "EasyToMaintain"
+    ],
+    "JumpJets": 5,
+    "Sinks": 28,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 50,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Crab CRB-BHI1"
+}

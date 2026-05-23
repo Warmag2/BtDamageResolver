@@ -14,9 +14,14 @@ public enum Arc
     Default,
 
     /// <summary>
-    /// Arc for 360 degree weapons, such as infantry, battle armor and vehicle turrets.
+    /// Arc for 360 degree weapons without facing, such as infantry and battle armor.
     /// </summary>
     Full,
+
+    /// <summary>
+    /// Arc for 360 degree weapons for units with facing, such as vehicle and quad mech turrets.
+    /// </summary>
+    Turret,
 
     /// <summary>
     /// Mech/Vehicle front.
@@ -24,17 +29,17 @@ public enum Arc
     Front,
 
     /// <summary>
-    /// Vechile left.
+    /// Vehicle left.
     /// </summary>
     Left,
 
     /// <summary>
-    /// Vechile right.
+    /// Vehicle right.
     /// </summary>
     Right,
 
     /// <summary>
-    /// Mech/Vechile rear.
+    /// Mech/Vehicle rear.
     /// </summary>
     Rear,
 
@@ -69,14 +74,14 @@ public enum Arc
     RightWingRear,
 
     /// <summary>
-    /// Capital ship forward left.
+    /// Capital ship / dropship forward left.
     /// </summary>
-    FrontLeft,
+    ForeLeft,
 
     /// <summary>
-    /// Capital ship forward right.
+    /// Capital ship / dropship forward right.
     /// </summary>
-    FrontRight,
+    ForeRight,
 
     /// <summary>
     /// Capital ship left broadside.
@@ -89,14 +94,14 @@ public enum Arc
     BroadsideRight,
 
     /// <summary>
-    /// Capital ship rear left.
+    /// Capital ship / dropship aft left.
     /// </summary>
-    RearLeft,
+    AftLeft,
 
     /// <summary>
-    /// Capital ship rear right.
+    /// Capital ship / dropship aft right.
     /// </summary>
-    RearRight,
+    AftRight,
 
     /// <summary>
     /// Aerospace nose.

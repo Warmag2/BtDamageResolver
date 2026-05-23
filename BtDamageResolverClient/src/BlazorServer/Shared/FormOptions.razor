@@ -5,12 +5,11 @@
 
 @{
     var adminRights = _userStateController.IsConnectedToGame && (_userStateController.PlayerName == _userStateController.GameState.AdminId);
-    }
 }
 
-<div class="resolver_div_componentrow flexbox-column">
+<div class="resolver_div_componentcontainer">
     
-    <h2 class="resolver_header resolver_top_header">
+    <h2 class="resolver_header">
         Player options
     </h2>
     
@@ -65,9 +64,9 @@
     }
 </div>
 
-<div class="resolver_div_componentrow flexbox-column">
+<div class="resolver_div_componentcontainer">
 
-    <h2 class="resolver_header resolver_top_header">
+    <h2 class="resolver_header">
         Game options
     </h2>
 
@@ -79,7 +78,7 @@
 
         <div class="resolver_div_options">
             <FormCheckbox Checked="@_userStateController.GameOptions.Rules[Rule.FloatingCritical]" Disabled="@(!adminRights)" OnChanged="@(e => OnRuleChanged(Rule.FloatingCritical, e))">Floating critical</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.GameOptions.Rules[Rule.ImprovedVehicleSurvivability]" Disabled="@(!adminRights)" OnChanged="@(e => OnRuleChanged(Rule.FloatingCritical, e))">Improved vehicle survivability</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.GameOptions.Rules[Rule.ImprovedVehicleSurvivability]" Disabled="@(!adminRights)" OnChanged="@(e => OnRuleChanged(Rule.ImprovedVehicleSurvivability, e))">Improved vehicle survivability</FormCheckbox>
         </div>
 
 

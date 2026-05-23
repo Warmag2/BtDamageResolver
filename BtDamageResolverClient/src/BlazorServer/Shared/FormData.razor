@@ -2,11 +2,6 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 
-@{
-    var sortedItemDict = new SortedDictionary<string, string>();
-    _items.ForEach(i => sortedItemDict.Add(i, i));
-}
-
 <div class="resolver_div_componentlistcontainer">
 
     <div class="resolver_div_componentcontainer">
@@ -25,21 +20,9 @@
             </h3>
 
             <div class="resolver_div_componentrow">
-                <FormComboBox @key="@_entryName" Options="@sortedItemDict" SelectedOption=@_entryName OnChanged="(string entryName) => OnEntityChanged(entryName)"></FormComboBox>
+                <FormComboBox @key="@_entryName" Options="@_sortedItemDict" SelectedOption=@_entryName OnChanged="(string entryName) => OnEntityChanged(entryName)"></FormComboBox>
             </div>
 
-            @if (_selectedDataType == ResolverDataType.Weapon)
-            {
-                var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(_entryName);
-
-                @if (mapWeaponAmmo.Count > 0)
-                {
-                    <div class="resolver_div_componentrow">
-                        <FormComboBox @key="@_entryName" Options=@mapWeaponAmmo SelectedOption=@_commonData.GetWeaponDefaultAmmo(_entryName) OnChanged="(string ammoName) => OnAmmoChanged(ammoName)"></FormComboBox>
-                    </div>
-                }
-            }
-            
             @switch (_selectedDataType)
             {
                 case ResolverDataType.ClusterTable:
@@ -55,10 +38,11 @@
                     <FormDataDisplayUnit @key=@_entryName UnitName=@_entryName OnDelete=@OnUnitDeleted></FormDataDisplayUnit>
                     break;
                 case ResolverDataType.Weapon:
-                    <FormDataDisplayWeapon @key=@_entryName WeaponName=@_entryName Ammo=@_ammoName></FormDataDisplayWeapon>
+                    <FormDataDisplayWeapon @key=@_entryName WeaponName=@_entryName></FormDataDisplayWeapon>
                     break;
                 default:
-                    throw new NotImplementedException($"Handling for data type {_selectedDataType} not present.");
+                    <span class="error">Unknown data type: @_selectedDataType</span>
+                    break;
             }
         }
     </div>
@@ -67,8 +51,8 @@
 @code
 {
     private ResolverDataType _selectedDataType = ResolverDataType.ClusterTable;
+    private SortedDictionary<string, string> _sortedItemDict = new();
     private List<string> _items = new();
-    private string _ammoName;
     private string _entryName;
 
     protected override void OnInitialized()
@@ -100,11 +84,8 @@
         }
 
         _entryName = _items.FirstOrDefault();
-    }
-
-    private void OnAmmoChanged(string ammoName)
-    {
-        _ammoName = ammoName;
+        _sortedItemDict = new SortedDictionary<string, string>();
+        _items.ForEach(i => _sortedItemDict.Add(i, i));
     }
 
     private void OnDataTypeChanged(ResolverDataType selectedDataType)

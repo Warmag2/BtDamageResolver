@@ -40,7 +40,7 @@ internal static class Program
 
         var result = Parser.Default.ParseArguments<DataImportOptions>(args)
             .MapResult(
-                initOptions => RunDataImport(logger, initOptions).Result,
+                initOptions => RunDataImport(loggerFactory, initOptions).Result,
                 errs => 1);
 
         return result;
@@ -52,11 +52,11 @@ internal static class Program
         return config.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(settingsFile).Build();
     }
 
-    private static async Task<int> RunDataImport(ILogger logger, DataImportOptions options)
+    private static async Task<int> RunDataImport(ILoggerFactory loggerFactory, DataImportOptions options)
     {
         try
         {
-            var dataImporter = new DataImporter(logger);
+            var dataImporter = new DataImporter(loggerFactory);
             await dataImporter.Work(options);
         }
         catch (Exception e)

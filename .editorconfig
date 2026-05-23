@@ -516,6 +516,9 @@ dotnet_diagnostic.CA1871.severity = warning
 # Prefer 'Convert.ToHexString' and 'Convert.ToHexStringLower' over call chains based on 'BitConverter.ToString'
 dotnet_diagnostic.CA1872.severity = warning
 
+# Do not worry about logging performance cost
+dotnet_diagnostic.CA1873.severity = none
+
 # Do not lock on objects with weak identity
 dotnet_diagnostic.CA2002.severity = warning
 
@@ -764,6 +767,9 @@ dotnet_diagnostic.S125.severity = suggestion
 
 # There should be no need to always merge nested ifs
 dotnet_diagnostic.S1066.severity = suggestion
+
+# Covered by MSVS
+dotnet_diagnostic.S1144.severity = none
 
 # I don't understand this
 dotnet_diagnostic.S1168.severity = none

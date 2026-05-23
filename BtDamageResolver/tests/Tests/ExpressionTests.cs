@@ -81,6 +81,7 @@ internal class ExpressionTests
     [TestCase("4/60*6", "0.4")]
     [TestCase("(9*4)/60", "0.6")]
     [TestCase("Ceil((9*4)/60)", "1")]
+    [TestCase("2*Ceil(65/10)", "14")]
     [TestCase("Floor((9*4)/60)", "0")]
     [TestCase("5+7+2^8+3+11", "282")]
     [TestCase("7/2^3*3+11-1", "12.625")]

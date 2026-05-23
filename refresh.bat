@@ -1,4 +1,4 @@
-cd BtDamageResolverInfrastructure
+cd infra
 docker build --tag orleansdb -f ./postgresql/Dockerfile ./postgresql/
 docker build --tag resolvergrafana -f ./grafana/Dockerfile ./grafana/
 docker build --tag resolverredis -f ./redis/Dockerfile ./redis/

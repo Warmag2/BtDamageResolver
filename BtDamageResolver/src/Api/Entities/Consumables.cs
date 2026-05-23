@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Faemiyah.BtDamageResolver.Api.Extensions;
+using static Faemiyah.BtDamageResolver.Api.Extensions.CollectionExtensions;
 
 namespace Faemiyah.BtDamageResolver.Api.Entities;
 
@@ -9,14 +10,29 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 public class Consumables
 {
     /// <summary>
+    /// The ammo spent.
+    /// </summary>
+    public Dictionary<string, int> AmmoUsage { get; set; } = [];
+
+    /// <summary>
     /// Heat generated.
     /// </summary>
     public int Heat { get; set; }
 
     /// <summary>
-    /// The ammo spent.
+    /// Amount of targeting difficulty -inducing effects for this unit (for now, only EMP).
     /// </summary>
-    public Dictionary<string, int> AmmoUsage { get; set; } = new();
+    public int Penalty { get; set; }
+
+    public Consumables Copy()
+    {
+        return new Consumables
+        {
+            Heat = Heat,
+            Penalty = Penalty,
+            AmmoUsage = AmmoUsage.Copy()
+        };
+    }
 
     public void Merge(Consumables input)
     {

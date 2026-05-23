@@ -1,0 +1,39 @@
+{
+    "Features": [],
+    "JumpJets": 0,
+    "Sinks": 24,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 50,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/20"
+                },
+                {
+                    "Ammo": "Rapid",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Hunchback 2C"
+}

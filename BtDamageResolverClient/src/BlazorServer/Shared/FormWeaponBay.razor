@@ -1,48 +1,47 @@
 ﻿@inherits BaseFaemiyahComponent
 @using Faemiyah.BtDamageResolver.Api.Entities
-@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Api.Enums
-@using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@inject CommonData _commonData
 @inject UserStateController _userStateController
 @implements IDisposable
 
 @if(_userStateController.IsConnectedToGame)
 {
-    <table>
-        <tr style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
-            <td colspan="6" class="draggable" draggable="true" @ondrag="@Drag" @ondrop="@Drop">
+    <div class="resolver_div_componentgroup">
+        <div class="resolver_div_componentrow no-subgrid" style="@VisualStyleController.HideElement(UnitEntry.WeaponBays.Count <= 1)">
+            <div class="resolver_div_componentcell">
                 @if (UnitEntry.StaticDataHidden)
                 {
-                    <b>@WeaponBay.Name</b>
+                    <b>@WeaponBay.GetFormalName()</b>
                 }
                 else
                 {
-                    <FormText SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
+                    <FormText @key=@($"{WeaponBay.Id}_Name") SelectedOption="@WeaponBay.Name" OnChanged="@OnNameChanged" Disabled="@_userStateController.PlayerState.IsReady"></FormText>
                 }
-            </td>
-            <td style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-                <button class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
-            </td>
-        </tr>
-        @foreach (var weaponEntry in WeaponBay.Weapons)
-        {
-            <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" WeaponBay="@WeaponBay" Disabled="@_userStateController.PlayerState.IsReady" OnChanged="@OnUpdate" OnDeleted="@OnWeaponDeleted" OnDragWeapon="@DragWeapon" OnDropWeapon="@DropWeapon" />
-        }
-        @if (!UnitEntry.StaticDataHidden)
-        {
-            <tr class="resolver_tr_weaponentry draggable" draggable="true" @ondrop="@(() => DropWeapon(-1))">
-                <td colspan="7" class="emptydragtarget">end of list</td>
-            </tr>
-        }
-        <tr>
-            <td colspan="7">
-                <span style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
-                    <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+</button>
-                </span>
-            </td>
-        </tr>
-    </table>
+            </div>
+            <div class="resolver_div_componentcell resolver_div_buttongroup">
+                <button class="resolver_button mobile" disabled="@Disabled" @onclick="MoveUp"><b>&uarr;</b></button>
+                <button class="resolver_button mobile" disabled="@Disabled" @onclick="MoveDown"><b>&darr;</b></button>
+                <button style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)" class="resolver_button resolver_button_delete" disabled="@Disabled" @onclick="DeleteWeaponBay">X</button>
+            </div>
+        </div>
+        <div class="resolver_div_componentrow no-subgrid" style="@(VisualStyleController.HideElement(UnitEntry.StaticDataHidden || UnitEntry.WeaponBays.Count <= 1))">
+            <div class="resolver_div_componentcell">Arc</div>
+            <div class="resolver_div_componentcell">
+                <FormRadio Options="@_commonData.FormMapArc(UnitEntry.Type)" SelectedOption="@WeaponBay.Arc" Disabled="@_userStateController.PlayerState.IsReady" ComparisonTimeStamp="@_userStateController.ComparisonTime" OnChanged="(Arc arc) => OnArcChanged(arc)"></FormRadio>
+            </div>
+        </div>
+
+        <ContainerReorderableList Items="@WeaponBay.Weapons" OnChanged="@OnUpdated" ContainerClass="resolver_div_weaponentrylist" ItemClass="resolver_div_weaponentry" ItemClassSelector="@(w => w.State == WeaponState.Active ? "active" : "inactive")">
+            <ItemTemplate Context="weaponEntry">
+                <FormWeaponEntry @key="@weaponEntry.Id" WeaponEntry="@weaponEntry" UnitEntry="@UnitEntry" WeaponBay="@WeaponBay" Disabled="@_userStateController.PlayerState.IsReady" OnUpdated="@OnUpdated" OnDeleted="@OnWeaponDeleted" />
+            </ItemTemplate>
+        </ContainerReorderableList>
+        <div style="@VisualStyleController.HideElement(UnitEntry.StaticDataHidden)">
+            <button class="resolver_button resolver_button_add" disabled="@_userStateController.PlayerState.IsReady" @onclick="AddWeapon">+Weapon</button>
+        </div>
+    </div>
 }
 
 @code {
@@ -56,13 +55,10 @@
     public bool Disabled { get; set; }
 
     [Parameter]
-    public EventCallback OnChanged { get; set; }
-
-    [Parameter]
     public EventCallback<WeaponBay> OnDeleted { get; set; }
 
     [Parameter]
-    public EventCallback OnUpdate { get; set; }
+    public EventCallback OnUpdated { get; set; }
 
     protected override void OnInitialized()
     {
@@ -82,12 +78,7 @@
             WeaponBay.Weapons.Add(CommonData.GetDefaultWeapon(UnitEntry.Type));
         }
 
-        OnChanged.InvokeAsync();
-    }
-
-    public DateTime GetComparisonTime()
-    {
-        return _userStateController.PlayerOptions.HighlightUnalteredFields ? _userStateController.GameState.TurnTimeStamp : DateTime.MinValue;
+        OnUpdated.InvokeAsync();
     }
 
     public void DeleteWeaponBay()
@@ -95,147 +86,42 @@
         OnDeleted.InvokeAsync(WeaponBay);
     }
 
+    public void MoveUp()
+    {
+        if (UnitEntry.WeaponBays.MoveUp(WeaponBay))
+            OnUpdated.InvokeAsync();
+    }
+
+    public void MoveDown()
+    {
+        if (UnitEntry.WeaponBays.MoveDown(WeaponBay))
+            OnUpdated.InvokeAsync();
+    }
+
     #region Property changing delegates
+
+    private void OnArcChanged(Arc arc)
+    {
+        if (WeaponBay.Arc != arc)
+        {
+            WeaponBay.Arc = arc;
+            OnUpdated.InvokeAsync();
+        }
+    }
 
     private void OnNameChanged(string name)
     {
         if (WeaponBay.Name != name)
         {
             WeaponBay.Name = name;
-            OnUpdate.InvokeAsync();
+            OnUpdated.InvokeAsync();
         }
     }
 
     private void OnWeaponDeleted(WeaponEntry weaponEntry)
     {
         WeaponBay.Weapons.Remove(weaponEntry);
-        OnUpdate.InvokeAsync();
-    }
-
-    public void OnWeaponSwap(SwapTuple swapTuple)
-    {
-        if (swapTuple.From != swapTuple.To)
-        {
-            SwapWeapons(swapTuple.From, swapTuple.To);
-        }
-    }
-
-    private void SwapWeapons(int ix1, int ix2)
-    {
-        (WeaponBay.Weapons[ix1], WeaponBay.Weapons[ix2]) = (WeaponBay.Weapons[ix2], WeaponBay.Weapons[ix1]);
-        OnUpdate.InvokeAsync();
-    }
-
-    #endregion
-
-    #region dragdrop
-
-    private void Drag()
-    {
-        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-        _userStateController.DraggedWeaponBayIndex = UnitEntry.WeaponBays.IndexOf(WeaponBay);
-        _userStateController.DraggedWeaponIndex = null;
-    }
-
-    private void Drop()
-    {
-        var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-
-        // Dragging weapon bay
-        if (_userStateController.DraggedUnitIndex.HasValue && _userStateController.DraggedWeaponBayIndex.HasValue && !_userStateController.DraggedWeaponIndex.HasValue)
-        {
-            if (targetUnitIndex == _userStateController.DraggedUnitIndex)
-            {
-                // Get moved weaponbay
-                var weaponBayToMove = UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value];
-
-                // Get target weapon bay index
-                var targetWeaponBayIndex = UnitEntry.WeaponBays.IndexOf(WeaponBay);
-
-                // Insert a copy of the moved weapon bay at the right index
-                UnitEntry.WeaponBays.Insert(targetWeaponBayIndex, weaponBayToMove.Copy());
-
-                // Remove moved weapon bay from original place
-                UnitEntry.WeaponBays.Remove(weaponBayToMove);
-
-                OnUpdate.InvokeAsync();
-
-                // Dragdrop always induces a ordering check
-                _userStateController.NotifyPlayerUnitListUpdated();
-            }
-        }
-
-        // Dragging weapon, hitting weapon bay, insert into bay as last entry, remove from original
-        if (_userStateController.DraggedUnitIndex.HasValue && _userStateController.DraggedWeaponBayIndex.HasValue && _userStateController.DraggedWeaponIndex.HasValue)
-        {
-            if (targetUnitIndex == _userStateController.DraggedUnitIndex)
-            {
-                // Get moved weapon
-                var weaponToMove = UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons[_userStateController.DraggedWeaponIndex.Value];
-
-                // Insert copy of moved weapon to the end of the list at this weapon bay
-                WeaponBay.Weapons.Add(weaponToMove.Copy());
-
-                // Remove moved weapon from original place
-                UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons.Remove(weaponToMove);
-
-                OnUpdate.InvokeAsync();
-                
-                // Dragdrop always induces a ordering check
-                _userStateController.NotifyPlayerUnitListUpdated();
-            }
-        }
-
-        // Clear drag information
-        _userStateController.DraggedUnitIndex = null;
-        _userStateController.DraggedWeaponBayIndex = null;
-        _userStateController.DraggedWeaponIndex = null;
-    }
-
-    void DragWeapon(int sourceWeaponIndex)
-    {
-        _userStateController.DraggedUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-        _userStateController.DraggedWeaponBayIndex = UnitEntry.WeaponBays.IndexOf(WeaponBay);
-        _userStateController.DraggedWeaponIndex = sourceWeaponIndex;
-    }
-
-    void DropWeapon(int targetWeaponIndex)
-    {
-        // Dragging weapon and hitting weapon, only valid situation
-        if (_userStateController.DraggedUnitIndex.HasValue && _userStateController.DraggedWeaponBayIndex.HasValue && _userStateController.DraggedWeaponIndex.HasValue)
-        {
-            var targetUnitIndex = _userStateController.PlayerState.UnitEntries.IndexOf(UnitEntry);
-
-            if (targetUnitIndex == _userStateController.DraggedUnitIndex)
-            {
-                // Get moved weapon
-                var weaponToMove = UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons[_userStateController.DraggedWeaponIndex.Value];
-
-                // if target weapon index is at end of list, add to the end
-                if (targetWeaponIndex == -1)
-                {
-                    WeaponBay.Weapons.Add(weaponToMove.Copy());
-                }
-                else
-                {
-                    // Insert copy of moved weapon to new place
-                    WeaponBay.Weapons.Insert(targetWeaponIndex, weaponToMove.Copy());
-                }
-
-                // Remove original moved weapon
-                UnitEntry.WeaponBays[_userStateController.DraggedWeaponBayIndex.Value].Weapons.Remove(weaponToMove);
-
-                OnUpdate.InvokeAsync();
-
-                // Dragdrop always induces a ordering check
-                _userStateController.NotifyPlayerUnitListUpdated();
-            }
-        }
-
-        // Clear drag information
-        _userStateController.DraggedUnitIndex = null;
-        _userStateController.DraggedWeaponBayIndex = null;
-        _userStateController.DraggedWeaponIndex = null;
+        OnUpdated.InvokeAsync();
     }
 
     #endregion

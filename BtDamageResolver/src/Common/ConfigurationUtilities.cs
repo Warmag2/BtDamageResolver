@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -53,7 +52,7 @@ public static class ConfigurationUtilities
         }
         catch (Exception ex)
         {
-            throw new ConfigurationErrorsException("Unable to resolve silo port configuration from environment variables.", ex);
+            throw new InvalidOperationException("Unable to resolve silo port configuration from environment variables.", ex);
         }
 
         if (GetEnvironmentName() == DefaultDebugEnvironmentName)
@@ -77,7 +76,7 @@ public static class ConfigurationUtilities
         }
         catch (Exception ex)
         {
-            throw new ConfigurationErrorsException($"Unable to resolve environment name from environment variables, using default environment name: {DefaultEnvironmentName}).", ex);
+            throw new InvalidOperationException($"Unable to resolve environment name from environment variables, using default environment name: {DefaultEnvironmentName}).", ex);
         }
     }
 
@@ -107,7 +106,7 @@ public static class ConfigurationUtilities
                 }
                 else
                 {
-                    throw new ConfigurationErrorsException($"No configuration override file present for given environment name: {environmentName}");
+                    throw new FileNotFoundException($"No configuration override file present for given environment name: {environmentName}");
                 }
             }
 
@@ -117,7 +116,7 @@ public static class ConfigurationUtilities
         }
         catch (Exception ex)
         {
-            throw new ConfigurationErrorsException("Unable to build configuration.", ex);
+            throw new InvalidOperationException("Unable to build configuration.", ex);
         }
     }
 
@@ -136,7 +135,7 @@ public static class ConfigurationUtilities
             }
         }
 
-        throw new ConfigurationErrorsException("Could not resolve an IP address for this host.");
+        throw new InvalidOperationException("Could not resolve an IP address for this host.");
     }
 
     /// <summary>

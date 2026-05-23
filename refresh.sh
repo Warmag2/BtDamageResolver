@@ -1,5 +1,5 @@
 #!/bin/sh
-cd BtDamageResolverInfrastructure
+cd infra
 docker build --tag orleansdb -f ./postgresql/Dockerfile ./postgresql/
 chmod -R o+rx grafana/dashboards/
 chmod -R o+rx grafana/datasources/

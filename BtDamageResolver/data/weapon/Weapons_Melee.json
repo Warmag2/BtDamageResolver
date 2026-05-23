@@ -45,6 +45,7 @@
       "Short": 0
     },
     "HitModifier": -2,
+    "SpecialDamage": [ { "Data": "0", "Type": "PilotingSkillRoll" } ],
     "SpecialFeatures": [ { "Data": "$tonnage/5", "Type": "Melee" }, { "Type": "MeleeKick" } ]
   },
   {
@@ -226,6 +227,7 @@
     "ClusterSize": 5,
     "ClusterDamage": 1,
     "HitModifier": 0,
+    "SpecialDamage": [ { "Data": "2", "Type": "PilotingSkillRoll" } ],
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "3*$tonnage/10", "Type": "Melee" }, { "Type": "MeleeDfa" } ]
   },
   {
@@ -252,6 +254,7 @@
     "HitModifier": 0,
     "ClusterSize": 5,
     "ClusterDamage": 1,
+    "SpecialDamage": [ { "Data": "2", "Type": "PilotingSkillRoll" } ],
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Data": "Ceil($distance*$tonnage/10)", "Type": "Melee" }, { "Data": "0", "Type": "MeleeCharge" } ]
   }
 ]

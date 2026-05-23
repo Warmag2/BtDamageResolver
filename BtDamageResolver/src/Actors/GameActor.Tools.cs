@@ -13,29 +13,35 @@ namespace Faemiyah.BtDamageResolver.Actors;
 public partial class GameActor
 {
     /// <inheritdoc />
-    public Task<bool> KickPlayer(string askingPlayerId, string playerId)
+    public async Task<bool> KickPlayer(string askingPlayerId, string playerId)
     {
         if (askingPlayerId != _gameActorState.State.AdminId)
         {
             _logger.LogWarning("In Game {GameId}, Player {PlayerId} failed to kick player {PlayerToKickId}. No admin authority.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
-            return Task.FromResult(false);
+            return false;
         }
 
         if (askingPlayerId == playerId)
         {
             _logger.LogWarning("In Game {GameId}, Player {PlayerId} tried to kick himself. Disallowing.", this.GetPrimaryKeyString(), playerId);
-            return Task.FromResult(false);
+            return false;
         }
 
-        var playerActor = GrainFactory.GetGrain<IPlayerActor>(playerId);
+        // Remove the player from game state immediately via a direct same-grain call.
+        // This is a plain method call (not through a grain reference), so it runs
+        // in the current activation with no scheduling and no deadlock risk.
+        await LeaveGame(playerId);
 
-        // Perform the disconnect through the player actor.
-        // Must be ignored because the player actor may be sending data simultaneously.
-        playerActor.LeaveGame().Ignore();
+        // Asynchronously notify the kicked player's own actor so it can clear its game state.
+        // Must NOT be awaited: the player actor may currently be waiting on this grain,
+        // which would cause a deadlock. When it eventually processes LeaveGame it will
+        // call back into GameActor.LeaveGame(), which is idempotent and handles the
+        // already-removed case gracefully.
+        GrainFactory.GetGrain<IPlayerActor>(playerId).LeaveGame().Ignore();
 
         _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully kicked player {PlayerToKickId}.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
 
-        return Task.FromResult(true);
+        return true;
     }
 
     /// <inheritdoc />
@@ -63,7 +69,16 @@ public partial class GameActor
     /// <inheritdoc />
     public async Task<bool> MoveUnit(string askingPlayerId, Guid unitId, string playerId)
     {
-        var unitOwner = _gameActorState.State.PlayerStates.Single(p => p.Value.UnitEntries.Exists(u => u.Id == unitId)).Key;
+        var ownerKvp = _gameActorState.State.PlayerStates
+            .SingleOrDefault(p => p.Value.UnitEntries.Exists(u => u.Id == unitId));
+
+        if (ownerKvp.Key == null)
+        {
+            _logger.LogWarning("Game {GameId} refusing to move unit {UnitId}. Unit not found.", this.GetPrimaryKeyString(), unitId);
+            return false;
+        }
+
+        var unitOwner = ownerKvp.Key;
 
         if (playerId == unitOwner)
         {

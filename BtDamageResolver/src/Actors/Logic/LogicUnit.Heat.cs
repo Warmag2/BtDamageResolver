@@ -47,7 +47,7 @@ public partial class LogicUnit
         var nonWeaponDamageReport = new DamageReport
         {
             Phase = Phase.Movement,
-            DamagePaperDoll = await GetDamagePaperDoll(this, AttackType.Normal, Direction.Front, []),
+            DamagePaperDoll = GetDamagePaperDoll(this, AttackType.Normal, Direction.Front, []),
             FiringUnitIds = [Unit.Id],
             FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = Unit.Id,
@@ -80,12 +80,12 @@ public partial class LogicUnit
                 throw new ArgumentOutOfRangeException($"The movement class {Unit.MovementClass} is not handled.");
         }
 
-        nonWeaponDamageReport.Log(new AttackLogEntry { Context = $"Unit movement class {Unit.MovementClass}", Number = nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat, Type = AttackLogEntryType.Heat });
+        nonWeaponDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Heat, Unit.Id, $"Unit movement class {Unit.MovementClass}", nonWeaponDamageReport.ConsumablesAttackers[Unit.Id].Heat));
 
         // Combat computer sinks 4 heat by itself
         if (Unit.HasFeature(UnitFeature.CombatComputer))
         {
-            nonWeaponDamageReport.Log(new AttackLogEntry { Context = $"Combat computer", Number = -4, Type = AttackLogEntryType.Heat });
+            nonWeaponDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Heat, Unit.Id, $"Combat computer", -4));
             nonWeaponDamageReport.SpendAttackerHeat(Unit.Id, -4);
         }
 
@@ -101,13 +101,13 @@ public partial class LogicUnit
     {
         if (!combatAction.ActionHappened)
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"Combat action was canceled for {combatAction.Weapon.Name} and no heat will be generated", Type = AttackLogEntryType.Information });
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"Combat action was canceled for {combatAction.Weapon.Name} and no heat will be generated"));
             return;
         }
 
         if (!IsHeatTracking())
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"Units of type {Unit.Type} do not track heat, so {combatAction.Weapon.Name} causes no heat.", Type = AttackLogEntryType.Information });
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"Units of type {Unit.Type} do not track heat, so {combatAction.Weapon.Name} causes no heat."));
             return;
         }
 
@@ -118,14 +118,14 @@ public partial class LogicUnit
         {
             var multiplier = MathExpression.Parse(rapidFeatureEntry.Data);
             heat = calculatedSingleHitheat * multiplier;
-            hitCalculationDamageReport.Log(new AttackLogEntry { Context = $"{combatAction.Weapon.Name} rate of fire multiplier for heat", Number = multiplier, Type = AttackLogEntryType.Calculation });
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, $"{combatAction.Weapon.Name} rate of fire multiplier for heat", multiplier));
         }
         else
         {
             heat = calculatedSingleHitheat;
         }
 
-        hitCalculationDamageReport.Log(new AttackLogEntry { Context = combatAction.Weapon.Name, Type = AttackLogEntryType.Heat, Number = heat });
+        hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Heat, Unit.Id, combatAction.Weapon.Name, heat));
         hitCalculationDamageReport.SpendAttackerHeat(Unit.Id, heat);
     }
 

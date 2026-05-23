@@ -1,5 +1,7 @@
 {
-    "Features": [],
+    "Features": [
+        "FastReload"
+    ],
     "JumpJets": 5,
     "Sinks": 13,
     "Speed": 5,

@@ -1,0 +1,64 @@
+{
+    "Features": [
+        "ExtendedTorsoTwist",
+        "ProtectedActuators"
+    ],
+    "JumpJets": 0,
+    "Sinks": 20,
+    "Speed": 3,
+    "Type": "Mech",
+    "Tonnage": 100,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/10"
+                },
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/10"
+                },
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/10"
+                },
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/10"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Kraken 2"
+}

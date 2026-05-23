@@ -1,0 +1,44 @@
+{
+    "Features": [
+        "CommandUnit"
+    ],
+    "JumpJets": 5,
+    "Sinks": 32,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 75,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Black Knight BL-TDHI-1-KNT"
+}

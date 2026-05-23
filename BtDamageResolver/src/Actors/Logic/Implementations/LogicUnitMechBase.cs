@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
@@ -23,9 +24,10 @@ public abstract class LogicUnitMechBase : LogicUnit
     /// <param name="gameOptions">The game options.</param>
     /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
-    /// <param name="random">The random number generator.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
+    /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    protected LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, random, unit)
+    protected LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
     }
 
@@ -54,6 +56,24 @@ public abstract class LogicUnitMechBase : LogicUnit
     public override PaperDollType GetPaperDollType()
     {
         return PaperDollType.Mech;
+    }
+
+    /// <inheritdoc />
+    public override int GetStanceModifier(int distance)
+    {
+        switch (Unit.Stance)
+        {
+            // Prone mechs are easier to hit at point-blank range and harder to hit at any other range
+            case Stance.Prone:
+                if (distance <= 1)
+                {
+                    return -1;
+                }
+
+                return 1;
+            default:
+                return 0;
+        }
     }
 
     /// <inheritdoc />
@@ -148,7 +168,7 @@ public abstract class LogicUnitMechBase : LogicUnit
     /// <inheritdoc />
     protected override async Task ResolveCriticalHit(DamageReport damageReport, Guid damageOwnerId, Location location, int criticalThreatRoll, int inducingDamage, int transformedDamage, CriticalDamageTableType criticalDamageTableType)
     {
-        var criticalDamageTable = await GetCriticalDamageTable(criticalDamageTableType, location);
+        var criticalDamageTable = GetCriticalDamageTable(criticalDamageTableType, location);
 
         // Simulate arms and legs being able to be blown off
         if (criticalThreatRoll == 12 &&
@@ -156,31 +176,16 @@ public abstract class LogicUnitMechBase : LogicUnit
              location == Location.RightArm || location == Location.RightLeg))
         {
             damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
-            damageReport.Log(new AttackLogEntry
-            {
-                Context = string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())),
-                Number = transformedDamage,
-                Location = location,
-                Type = AttackLogEntryType.Critical
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())), transformedDamage, location));
         }
         else if (criticalDamageTable.Mapping[criticalThreatRoll].Exists(c => c != CriticalDamageType.None))
         {
             damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
-            damageReport.Log(new AttackLogEntry
-            {
-                Number = transformedDamage,
-                Location = location,
-                Type = AttackLogEntryType.Critical
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, transformedDamage, location));
         }
         else
         {
-            damageReport.Log(new AttackLogEntry
-            {
-                Context = "Threat roll does not result in a critical hit",
-                Type = AttackLogEntryType.Information
-            });
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Threat roll does not result in a critical hit"));
         }
     }
 }

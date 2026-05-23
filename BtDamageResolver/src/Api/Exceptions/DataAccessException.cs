@@ -9,6 +9,10 @@ namespace Faemiyah.BtDamageResolver.Api.Exceptions;
 [Serializable]
 public class DataAccessException : Exception
 {
+    public DataAccessException()
+    {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DataAccessException"/> class.
     /// </summary>

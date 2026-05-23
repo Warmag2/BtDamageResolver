@@ -21,6 +21,7 @@ public partial class UnitEntry
         ValidateTonnage(validationResult);
         ValidateTrooperAmount(validationResult);
         ValidateWeapons(validationResult);
+        ValidateWeaponBays(validationResult);
 
         return validationResult;
     }
@@ -42,8 +43,50 @@ public partial class UnitEntry
                     }
 
                     break;
-                case UnitFeature.BattleFists:
                 case UnitFeature.CommandUnit:
+                case UnitFeature.EasyToPilot:
+                case UnitFeature.FastReload:
+                case UnitFeature.HardToPilot:
+                case UnitFeature.PoorPerformance:
+                case UnitFeature.StabilizedWeapons:
+                    switch (Type)
+                    {
+                        case UnitType.AerospaceFighter:
+                        case UnitType.Mech:
+                        case UnitType.MechTripod:
+                        case UnitType.MechQuad:
+                        case UnitType.VehicleHover:
+                        case UnitType.VehicleTracked:
+                        case UnitType.VehicleVtol:
+                        case UnitType.VehicleWheeled:
+                            break;
+                        default:
+                            validationResult.Fail($"{feature} is only valid for mechs, vehicles and aerospace fighters.");
+                            break;
+                    }
+
+                    break;
+
+                case UnitFeature.ExposedWeaponLinkage:
+                case UnitFeature.NarrowLowProfile:
+                    switch (Type)
+                    {
+                        case UnitType.Mech:
+                        case UnitType.MechTripod:
+                        case UnitType.MechQuad:
+                        case UnitType.VehicleHover:
+                        case UnitType.VehicleTracked:
+                        case UnitType.VehicleVtol:
+                        case UnitType.VehicleWheeled:
+                            break;
+                        default:
+                            validationResult.Fail($"{feature} is only valid for mechs and vehicles.");
+                            break;
+                    }
+
+                    break;
+
+                case UnitFeature.BattleFists:
                 case UnitFeature.Cowl:
                 case UnitFeature.DirectionalTorsoMount:
                 case UnitFeature.ExposedActuators:
@@ -110,19 +153,12 @@ public partial class UnitEntry
                         case UnitType.MechQuad:
                             break;
                         default:
-                            validationResult.Fail($"{feature} is not valid for non-mech, non-infantry units.");
+                            validationResult.Fail($"{feature} is only valid for jump-capable units.");
                             break;
                     }
 
                     break;
                 case UnitFeature.Ams:
-                case UnitFeature.EasyToPilot:
-                case UnitFeature.ExposedWeaponLinkage:
-                case UnitFeature.FastReload:
-                case UnitFeature.HardToPilot:
-                case UnitFeature.NarrowLowProfile:
-                case UnitFeature.PoorPerformance:
-                case UnitFeature.StabilizedWeapons:
                     switch (Type)
                     {
                         case UnitType.BattleArmor:
@@ -148,6 +184,17 @@ public partial class UnitEntry
         if (Movement < 0)
         {
             validationResult.Fail("Negative movement amount is not allowed.");
+        }
+
+        switch(Type)
+        {
+            // Buildings cannot move and aerospace units do not have a relevant maximum movement amount
+            case UnitType.Building:
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.AerospaceFighter:
+                return;
         }
 
         // Speed
@@ -415,6 +462,23 @@ public partial class UnitEntry
                 default:
                     break;
             }
+        }
+    }
+
+    private void ValidateWeaponBays(RulesValidationResult validationResult)
+    {
+        switch (Type)
+        {
+            case UnitType.Building:
+            case UnitType.Infantry:
+                if (WeaponBays.Count > 1)
+                {
+                    validationResult.Fail("Building and Infantry units cannot have more than one weapon bay.");
+                }
+
+                break;
+            default:
+                break;
         }
     }
 }

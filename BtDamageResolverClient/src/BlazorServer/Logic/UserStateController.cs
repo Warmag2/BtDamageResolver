@@ -5,6 +5,7 @@ using System.Linq;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
+using Faemiyah.BtDamageResolver.Api.Extensions;
 using Faemiyah.BtDamageResolver.Api.Options;
 using static Faemiyah.BtDamageResolver.Api.Extensions.EnumExtensions;
 
@@ -15,11 +16,12 @@ namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
 /// </summary>
 public class UserStateController
 {
-    private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers;
-    private Dictionary<string, GameEntry> _gameEntries;
+    private readonly ConcurrentDictionary<Guid, TargetNumberUpdate> _targetNumbers = [];
+    private Dictionary<string, GameEntry> _gameEntries = [];
     private GameState _gameState;
     private HashSet<Guid> _invalidUnitIds = [];
-    private ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> _unitList;
+    private ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> _unitList = [];
+    private long _unitListHash;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UserStateController"/> class.
@@ -27,9 +29,6 @@ public class UserStateController
     public UserStateController()
     {
         DamageReportContainer = new DamageReportContainer();
-        _gameEntries = [];
-        _unitList = new();
-        _targetNumbers = new();
     }
 
     /// <summary>
@@ -83,21 +82,6 @@ public class UserStateController
     public event Action OnTargetNumbersUpdated;
 
     /// <summary>
-    /// Index of the dragged unit.
-    /// </summary>
-    public int? DraggedUnitIndex { get; set; }
-
-    /// <summary>
-    /// Index of the dragged weapon.
-    /// </summary>
-    public int? DraggedWeaponIndex { get; set; }
-
-    /// <summary>
-    /// Index of the dragged weapon bay.
-    /// </summary>
-    public int? DraggedWeaponBayIndex { get; set; }
-
-    /// <summary>
     /// The damage instance.
     /// </summary>
     public DamageInstance DamageInstance { get; private set; }
@@ -135,16 +119,9 @@ public class UserStateController
         get => _gameState;
         set
         {
-            if (_gameState == null || value == null)
+            if (_gameState == null || value == null || _gameState.TimeStamp < value.TimeStamp)
             {
                 _gameState = value;
-            }
-            else
-            {
-                if (_gameState.TimeStamp < value.TimeStamp)
-                {
-                    _gameState = value;
-                }
             }
 
             // The below method checks whether it is actually necessary to invoke UI refresh.
@@ -182,7 +159,21 @@ public class UserStateController
     /// <summary>
     /// Unit list, with player IDs included.
     /// </summary>
-    public ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> UnitList => _unitList;
+    public ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)> UnitList
+    {
+        get => _unitList;
+        set
+        {
+            _unitList = value;
+            _unitListHash = string.Join("-", _unitList.Select(u => $"({u.Key}:{u.Value.PlayerId}:{u.Value.Unit.Name})")).Fnv1aHash64();
+            OnGameUnitListUpdated?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// Unit list hash which accounts for units and their names.
+    /// </summary>
+    public long UnitListHash => _unitListHash;
 
     /// <summary>
     /// The player state.
@@ -248,13 +239,10 @@ public class UserStateController
     }
 
     /// <summary>
-    /// Get comparison time for field highlighting.
+    /// The comparison time for field highlighting.
     /// </summary>
     /// <returns>The comparison time for field highlighting.</returns>
-    public DateTime GetComparisonTime()
-    {
-        return PlayerOptions.HighlightUnalteredFields ? GameState.TurnTimeStamp : DateTime.MinValue;
-    }
+    public DateTime ComparisonTime => PlayerOptions?.HighlightUnalteredFields == true && GameState != null ? GameState.TurnTimeStamp : DateTime.MinValue;
 
     /// <summary>
     /// Gets the type of the given unit.
@@ -263,7 +251,7 @@ public class UserStateController
     /// <returns>The type of the unit, or default enum value, if the unit could not be found.</returns>
     public UnitType GetUnitType(Guid unitId)
     {
-        if (_unitList.TryGetValue(unitId, out var unit))
+        if (UnitList.TryGetValue(unitId, out var unit))
         {
             return unit.Unit.Type;
         }
@@ -278,7 +266,7 @@ public class UserStateController
     /// <returns>The name of the unit, or \"N/A\" if the unit could not be found.</returns>
     public string GetUnitName(Guid unitId)
     {
-        if (_unitList.TryGetValue(unitId, out var unit))
+        if (UnitList.TryGetValue(unitId, out var unit))
         {
             return unit.Unit.Name;
         }
@@ -295,7 +283,7 @@ public class UserStateController
     {
         var targetsForUnit = new SortedDictionary<string, Guid>();
 
-        foreach (var (playerId, unit) in _unitList.Values)
+        foreach (var (playerId, unit) in UnitList.Values)
         {
             if (unit.Id != unitId)
             {
@@ -314,7 +302,7 @@ public class UserStateController
     {
         var dictionary = new SortedDictionary<string, Guid>();
 
-        foreach (var (playerId, unit) in _unitList.Values)
+        foreach (var (playerId, unit) in UnitList.Values)
         {
             dictionary.TryAdd($"{unit.Name} ({playerId})", unit.Id);
         }
@@ -412,6 +400,11 @@ public class UserStateController
     /// <returns>A dictionary containing all player IDs.</returns>
     public SortedDictionary<string, string> GetPlayerIds()
     {
+        if (GameState == null)
+        {
+            return [];
+        }
+
         return new SortedDictionary<string, string>(GameState.Players.Keys.ToDictionary(p => p));
     }
 
@@ -422,6 +415,11 @@ public class UserStateController
     /// <returns><b>True</b> if the damage report concerns the given player, <b>false</b> otherwise. </returns>
     public bool DamageReportConcernsPlayer(DamageReport damageReport)
     {
+        if (PlayerState == null)
+        {
+            return false;
+        }
+
         return damageReport.FiringUnitIds.Contains(Guid.Empty) ||
                PlayerState.UnitEntries.Exists(u => damageReport.FiringUnitIds.Contains(u.Id)) ||
                PlayerState.UnitEntries.Exists(u => u.Id == damageReport.TargetUnitId);
@@ -483,30 +481,26 @@ public class UserStateController
         }
         else
         {
-            _unitList.Clear();
+            UnitList.Clear();
         }
 
         newUnitList.TryAdd(Guid.Empty, ("N/A", new UnitEntry { Id = Guid.Empty, Name = " NO TARGET" }));
 
         // Only perform dictionary swap if the list has actually changed
         // Be careful about this optimization. Might be wisest to always change the unit list.
-        if (_unitList.Any(u => !newUnitList.ContainsKey(u.Key)) || newUnitList.Any(u => !_unitList.ContainsKey(u.Key)))
+        if (UnitList.Count != newUnitList.Count || newUnitList.Any(u => !UnitList.ContainsKey(u.Key)))
         {
-            _unitList = newUnitList;
-
-            OnGameUnitListUpdated?.Invoke();
+            UnitList = newUnitList;
         }
         else
         {
             // We are also forced to check deeper if the units do not belong to the same players or their names or types have changed
             foreach (var newUnit in newUnitList)
             {
-                var oldUnit = _unitList[newUnit.Key];
+                var oldUnit = UnitList[newUnit.Key];
                 if (oldUnit.PlayerId != newUnit.Value.PlayerId || oldUnit.Unit.Name != newUnit.Value.Unit.Name || oldUnit.Unit.Type != newUnit.Value.Unit.Type)
                 {
-                    _unitList = newUnitList;
-
-                    OnGameUnitListUpdated?.Invoke();
+                    UnitList = newUnitList;
                     break;
                 }
             }

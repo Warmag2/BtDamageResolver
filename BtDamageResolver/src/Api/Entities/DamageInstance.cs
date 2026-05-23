@@ -35,12 +35,17 @@ public class DamageInstance
     public Direction Direction { get; set; }
 
     /// <summary>
-    /// The Unit to damage.
+    /// The SpecialDamageEntry for this damage instance, if any.
     /// </summary>
-    public Guid UnitId { get; set; }
+    public SpecialDamageEntry SpecialDamage { get; set; } = new();
 
     /// <summary>
     /// The timestamp of this damage instance.
     /// </summary>
     public DateTime TimeStamp { get; set; }
+
+    /// <summary>
+    /// The Unit to damage.
+    /// </summary>
+    public Guid UnitId { get; set; }
 }

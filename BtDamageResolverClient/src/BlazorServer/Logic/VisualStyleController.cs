@@ -74,6 +74,22 @@ public static class VisualStyleController
     }
 
     /// <summary>
+    /// Indicates whether hexes moved should be hidden for this unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type.</param>
+    /// <returns><b>True</b> if hexes moved should be hidden, <b>false</b> otherwise.</returns>
+    public static bool GetHexesMovedHidden(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.Building:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
     /// Indicates whether the number of jump jets should be hidden for this unit type.
     /// </summary>
     /// <param name="unitType">The unit type.</param>
@@ -103,6 +119,27 @@ public static class VisualStyleController
         switch (unitType)
         {
             case UnitType.BattleArmor:
+            case UnitType.Infantry:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
+    /// Indicates whether relative arc should be hidden for this unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type.</param>
+    /// <returns><b>True</b> if relative arc should be hidden, <b>false</b> otherwise.</returns>
+    public static bool GetRelativeArcHidden(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.AerospaceCapital:
+            case UnitType.AerospaceDropshipAerodyne:
+            case UnitType.AerospaceDropshipSpheroid:
+            case UnitType.BattleArmor:
+            case UnitType.Building:
             case UnitType.Infantry:
                 return true;
             default:
@@ -200,6 +237,22 @@ public static class VisualStyleController
     }
 
     /// <summary>
+    /// Indicates whether unit ammo indicators should be hidden for this unit type.
+    /// </summary>
+    /// <param name="unitType">The unit type.</param>
+    /// <returns><b>True</b> if unit ammo indicators should be hidden, <b>false</b> otherwise.</returns>
+    public static bool GetUnitAmmoHidden(UnitType unitType)
+    {
+        switch (unitType)
+        {
+            case UnitType.Infantry:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
     /// Indicates whether unit state indicators should be hidden for this unit type.
     /// </summary>
     /// <param name="unitType">The unit type.</param>
@@ -253,6 +306,17 @@ public static class VisualStyleController
     public static string GetActiveClass(bool active)
     {
         return active ? "active" : "inactive";
+    }
+
+    /// <summary>
+    /// Gets the correct style for a given ammo level.
+    /// </summary>
+    /// <param name="ammo">The amount of ammo that has been spent.</param>
+    /// <returns>The correct style for the given ammo level.</returns>
+    public static string GetStyleForAmmo(int ammo)
+    {
+        // no logic yet
+        return "resolver_status_ammo_normal";
     }
 
     /// <summary>

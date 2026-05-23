@@ -21,10 +21,16 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     {
         TimeStamp = DateTime.UtcNow;
         Id = Guid.NewGuid();
+        Consumables = new();
         Features = [];
         WeaponBays = [];
         Troopers = 1; // In practice, 0 is illegal in many situations and this is never bad.
     }
+
+    /// <summary>
+    /// All the resources this unit entry has currently spent.
+    /// </summary>
+    public Consumables Consumables { get; set; }
 
     /// <summary>
     /// Is the unit currently evading.
@@ -40,11 +46,6 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public int Gunnery { get; set; } = 4;
 
     /// <summary>
-    /// The amount of heat this unit currently has.
-    /// </summary>
-    public int Heat { get; set; }
-
-    /// <summary>
     /// The ID of this unit.
     /// </summary>
     public Guid Id { get; set; }
@@ -53,11 +54,6 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     /// Is this unit currently narced.
     /// </summary>
     public bool Narced { get; set; }
-
-    /// <summary>
-    /// Current amount of targeting difficulty -inducing effects for this unit (for now, only EMP).
-    /// </summary>
-    public int Penalty { get; set; }
 
     /// <summary>
     /// The piloting skill of this unit.
@@ -107,49 +103,6 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public new List<WeaponBay> WeaponBays { get; set; }
 
     /// <summary>
-    /// Gets the penalty to attacks from heat.
-    /// </summary>
-    /// <returns>The penalty to attacks from unit heat.</returns>
-    public int GetHeatAttackPenalty()
-    {
-        if (!IsHeatTracking())
-        {
-            return 0;
-        }
-
-        return Heat switch
-        {
-            >= 24 => 4,
-            >= 17 => 3,
-            >= 13 => 2,
-            >= 8 => 1,
-            _ => 0
-        };
-    }
-
-    /// <summary>
-    /// Gets the penalty to speed from heat.
-    /// </summary>
-    /// <returns>The penalty to speed from unit heat.</returns>
-    public int GetHeatSpeedPenalty()
-    {
-        if (!IsHeatTracking())
-        {
-            return 0;
-        }
-
-        return Heat switch
-        {
-            >= 25 => 5,
-            >= 20 => 4,
-            >= 15 => 3,
-            >= 10 => 2,
-            >= 5 => 1,
-            _ => 0
-        };
-    }
-
-    /// <summary>
     /// Gets the difficulty of the ammo explosion roll, based on heat.
     /// </summary>
     /// <returns>The difficulty level of an ammo explosion roll for the current heat.</returns>
@@ -160,11 +113,73 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             return 0;
         }
 
-        return Heat switch
+        return Consumables.Heat switch
         {
             >= 28 => 8,
             >= 23 => 6,
             >= 19 => 4,
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Gets the penalty to attacks from heat.
+    /// </summary>
+    /// <returns>The penalty to attacks from unit heat.</returns>
+    public int GetHeatAttackPenalty()
+    {
+        if (!IsHeatTracking())
+        {
+            return 0;
+        }
+
+        return Consumables.Heat switch
+        {
+            >= 24 => 4,
+            >= 17 => 3,
+            >= 13 => 2,
+            >= 8 => 1,
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Gets the threshold for avoiding pilot damage from heat.
+    /// </summary>
+    /// <returns>The difficulty level for avoiding pilot damage for the current heat.</returns>
+    public int GetHeatPilotDamageDifficulty()
+    {
+        if (!IsHeatTracking())
+        {
+            return 0;
+        }
+
+        return Consumables.Heat switch
+        {
+            >= 27 => 9,
+            >= 21 => 6,
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Gets the threshold for avoiding random movement from heat.
+    /// </summary>
+    /// <returns>The difficulty level for avoiding random movement for the current heat.</returns>
+    public int GetHeatRandomMovementDifficulty()
+    {
+        if (!IsHeatTracking())
+        {
+            return 0;
+        }
+
+        return Consumables.Heat switch
+        {
+            >= 25 => 10,
+            >= 20 => 8,
+            >= 15 => 7,
+            >= 10 => 6,
+            >= 5 => 5,
             _ => 0
         };
     }
@@ -180,13 +195,35 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             return 0;
         }
 
-        return Heat switch
+        return Consumables.Heat switch
         {
             >= 30 => 13,
             >= 26 => 10,
             >= 22 => 8,
             >= 18 => 6,
             >= 14 => 4,
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Gets the penalty to speed from heat.
+    /// </summary>
+    /// <returns>The penalty to speed from unit heat.</returns>
+    public int GetHeatSpeedPenalty()
+    {
+        if (!IsHeatTracking())
+        {
+            return 0;
+        }
+
+        return Consumables.Heat switch
+        {
+            >= 25 => 5,
+            >= 20 => 4,
+            >= 15 => 3,
+            >= 10 => 2,
+            >= 5 => 1,
             _ => 0
         };
     }
@@ -234,16 +271,15 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
 
         return new UnitEntry
         {
+            Consumables = Consumables.Copy(),
             Features = Features.Copy(),
             Gunnery = Gunnery,
-            Heat = Heat,
             Id = id,
             JumpJets = JumpJets,
             Movement = Movement,
             MovementClass = MovementClass,
             Name = GenerateName(Name),
             Narced = Narced,
-            Penalty = Penalty,
             Piloting = Piloting,
             Sinks = Sinks,
             Speed = Speed,

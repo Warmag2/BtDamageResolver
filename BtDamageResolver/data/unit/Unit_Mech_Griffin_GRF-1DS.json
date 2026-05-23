@@ -23,6 +23,11 @@
                     "Amount": 1,
                     "Modifier": 0,
                     "WeaponName": "LRM-20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Melee Punch"
                 }
             ],
             "Name": "Default"

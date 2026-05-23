@@ -101,21 +101,9 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     }
 
     /// <inheritdoc />
-    public Task<TEntity> GetAsync(TKey key)
-    {
-        return _cache.TryGetValue(key, out var entity) ? Task.FromResult(entity) : Task.FromResult((TEntity)null);
-    }
-
-    /// <inheritdoc />
     public IReadOnlyCollection<TEntity> GetAll()
     {
-        return [.. _cache.Values];
-    }
-
-    /// <inheritdoc />
-    public Task<IReadOnlyCollection<TEntity>> GetAllAsync()
-    {
-        return Task.FromResult<IReadOnlyCollection<TEntity>>(_cache.Values.ToArray());
+        return _cache.Values.ToArray();
     }
 
     /// <inheritdoc />
@@ -123,7 +111,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     {
         var keys = _repository.GetAllKeys();
 
-        // Update cache in this situation
+        // Update local cache in this situation
         foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
         {
             var item = _repository.Get(key);
@@ -150,7 +138,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
 
     private async Task<int> FillCache()
     {
-        var items = await _repository.GetAllAsync();
+        var items = _repository.GetAll();
         var count = 0;
         foreach (var item in items)
         {

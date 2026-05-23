@@ -1,0 +1,43 @@
+{
+    "Features": [
+        "StabilizedWeapons"
+    ],
+    "JumpJets": 3,
+    "Sinks": 20,
+    "Speed": 3,
+    "Type": "Mech",
+    "Tonnage": 90,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-15"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-15"
+                },
+                {
+                    "Ammo": "Single",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Ultra AC/10"
+                },
+                {
+                    "Ammo": "Rapid",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Ultra AC/10"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Mauler MAL-TDHI2"
+}

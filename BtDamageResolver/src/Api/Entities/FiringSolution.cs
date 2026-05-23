@@ -10,11 +10,6 @@ namespace Faemiyah.BtDamageResolver.Api.Entities;
 public class FiringSolution
 {
     /// <summary>
-    /// The arc the target is in.
-    /// </summary>
-    public Arc Arc { get; set; }
-
-    /// <summary>
     /// The attack modifier.
     /// </summary>
     public int AttackModifier { get; set; }
@@ -33,6 +28,14 @@ public class FiringSolution
     /// Distance to target.
     /// </summary>
     public int Distance { get; set; }
+
+    /// <summary>
+    /// Relative arc from the attacker to target.
+    /// </summary>
+    /// <remarks>
+    /// Used onlyto determine penalties for multi-target, if any.
+    /// </remarks>
+    public Arc RelativeArc { get; set; }
 
     /// <summary>
     /// The ID of the target unit.
@@ -56,6 +59,7 @@ public class FiringSolution
             Cover = Cover,
             Direction = Direction,
             Distance = Distance,
+            RelativeArc = RelativeArc,
             Target = Target
         };
     }

@@ -40,7 +40,7 @@ internal static class Program
 
         var result = Parser.Default.ParseArguments<DataExportOptions>(args)
             .MapResult(
-                initOptions => RunDataExport(logger, initOptions).Result,
+                initOptions => RunDataExport(loggerFactory, initOptions).Result,
                 errs => 1);
 
         return result;
@@ -52,11 +52,11 @@ internal static class Program
         return config.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(settingsFile).Build();
     }
 
-    private static async Task<int> RunDataExport(ILogger logger, DataExportOptions options)
+    private static async Task<int> RunDataExport(ILoggerFactory loggerFactory, DataExportOptions options)
     {
         try
         {
-            var dataExporter = new DataExporter(logger);
+            var dataExporter = new DataExporter(loggerFactory);
             await dataExporter.Work(options);
         }
         catch (Exception e)

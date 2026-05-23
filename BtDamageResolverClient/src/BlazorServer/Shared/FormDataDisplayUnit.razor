@@ -102,10 +102,10 @@
     @if (_showModalExport)
     {
         <div class="resolver_modal_background">
-            <div class="resolver_modal" style="display:block" role="dialog">
+            <div class="resolver_modal" role="dialog">
                 <!-- Modal Header -->
-                <div class="resolver_modal_header resolver_header">
-                    <h4 class="resolver_modal_title">Exported Unit Data</h4>
+                <div class="resolver_modal_header">
+                    <h3 class="resolver_header">Exported Unit Data</h3>
                     <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
                 </div>
 
@@ -133,7 +133,7 @@
     {
         if (!string.IsNullOrEmpty(UnitName))
         {
-            _unit = await _commonData.GetUnit(UnitName);
+            _unit = _commonData.GetUnit(UnitName);
         }
     }
 
