@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.Actors.Extensions;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
@@ -36,8 +37,10 @@ public partial class GameActor
         // Must NOT be awaited: the player actor may currently be waiting on this grain,
         // which would cause a deadlock. When it eventually processes LeaveGame it will
         // call back into GameActor.LeaveGame(), which is idempotent and handles the
-        // already-removed case gracefully.
-        GrainFactory.GetGrain<IPlayerActor>(playerId).LeaveGame().Ignore();
+        // already-removed case gracefully. Use LogAndForget so failures surface in the log
+        // instead of being silently swallowed by .Ignore().
+        GrainFactory.GetGrain<IPlayerActor>(playerId).LeaveGame()
+            .LogAndForget(_logger, "Failed to notify kicked player {PlayerId} in Game {GameId}.", playerId, this.GetPrimaryKeyString());
 
         _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully kicked player {PlayerToKickId}.", this.GetPrimaryKeyString(), askingPlayerId, playerId);
 

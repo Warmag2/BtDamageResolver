@@ -80,11 +80,13 @@ public partial class PlayerActor
             await SendErrorMessageToClient($"Inconsistent state. Player {this.GetPrimaryKeyString()} Unable to sign out of the active game. {_playerActorState.State.GameId}");
         }
 
+        // Persist before responding so the client never sees a "disconnected" response that the
+        // server later forgets due to a failed write or deactivation.
+        await _playerActorState.WriteStateAsync();
         await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(false));
 
         // Log the logout to permanent store
         await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Logout, 0);
-        await _playerActorState.WriteStateAsync();
 
         return true;
     }
@@ -183,6 +185,12 @@ public partial class PlayerActor
     {
         _playerActorState.State.GameId = null;
         _playerActorState.State.UpdateTimeStamp = DateTime.UtcNow;
+
+        // Persist the cleared GameId before notifying the client. Otherwise the actor could
+        // deactivate (or the silo could die) after the client has been told it disconnected,
+        // leaving stale GameId in persistent storage and resurrecting it on next activation.
+        await _playerActorState.WriteStateAsync();
+
         await SendOnlyThisPlayerGameStateToClient();
         await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
     }

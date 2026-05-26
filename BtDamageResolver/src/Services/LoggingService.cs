@@ -9,7 +9,6 @@ using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orleans.Concurrency;
 using Orleans.Runtime;
 
 namespace Faemiyah.BtDamageResolver.Services;
@@ -17,7 +16,6 @@ namespace Faemiyah.BtDamageResolver.Services;
 /// <summary>
 /// Provides stateful logging methods for grains.
 /// </summary>
-[Reentrant]
 public class LoggingService : GrainService, ILoggingService
 {
     private const int LoggingDelayMilliseconds = 15000; // Check for logs to write 4 times a minute

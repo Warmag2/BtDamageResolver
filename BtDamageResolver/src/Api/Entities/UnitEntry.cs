@@ -272,6 +272,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
         return new UnitEntry
         {
             Consumables = Consumables.Copy(),
+            Evading = Evading,
             Features = Features.Copy(),
             Gunnery = Gunnery,
             Id = id,
@@ -283,6 +284,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             Piloting = Piloting,
             Sinks = Sinks,
             Speed = Speed,
+            Stance = Stance,
             StaticDataHidden = StaticDataHidden,
             Tagged = Tagged,
             TimeStamp = DateTime.UtcNow,

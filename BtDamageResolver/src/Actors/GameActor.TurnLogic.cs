@@ -94,7 +94,7 @@ public partial class GameActor
         }
     }
 
-    private async Task CheckGameStateUpdateEvents(List<Guid> updatedUnits = null)
+    private async Task CheckGameStateUpdateEvents(List<Guid> updatedUnits = null, bool refreshGameEntry = false)
     {
         try
         {
@@ -126,21 +126,28 @@ public partial class GameActor
             // Log update to permanent store
             await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
 
-            // Remark game existence
-            await GrainFactory.GetGameEntryRepository().AddOrUpdate(
-                new GameEntry
-                {
-                    Name = this.GetPrimaryKeyString(),
-                    PasswordProtected = _gameActorState.State.PasswordHash != null,
-                    Players = _gameActorState.State.PlayerStates.Count,
-                    TimeStamp = DateTime.UtcNow
-                });
+            // Remark game existence only on events that change lobby-relevant state (join/leave/turn).
+            // Per-keystroke player-state edits do not need to refresh the lobby entry, which would otherwise
+            // trigger a broadcast storm via GameEntryRepository.AddOrUpdate -> Distribute().
+            if (refreshGameEntry || fireEventHappened)
+            {
+                await GrainFactory.GetGameEntryRepository().AddOrUpdate(
+                    new GameEntry
+                    {
+                        Name = this.GetPrimaryKeyString(),
+                        PasswordProtected = _gameActorState.State.PasswordHash != null,
+                        Players = _gameActorState.State.PlayerStates.Count,
+                        TimeStamp = DateTime.UtcNow
+                    });
+            }
         }
         catch (Exception ex)
         {
-            // I really want to clearly log any error in turn logic so I can fix it.
+            // Log critical errors in turn logic so failures are diagnosable, then rethrow.
+            // Using a bare `throw;` preserves the original stack trace; the caller (and Orleans)
+            // sees the actual exception type rather than a generic InvalidOperationException wrapper.
             _logger.LogError(ex, "Game {GameId} experienced a critical failure while running game state update events.", this.GetPrimaryKeyString());
-            throw new InvalidOperationException($"Error while running game state events for game {this.GetPrimaryKeyString()}", ex);
+            throw;
         }
     }
 

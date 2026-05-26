@@ -1,5 +1,6 @@
 	Implemented
 
+[FEATURE] Div-based UI layout and much better draggable items.
 [FEATURE] Spectator mode.
 [FEATURE] Units that violate of game rules have their whole background drawn in red.
 [FEATURE] Exporter for unit data.
@@ -77,6 +78,7 @@
 
 	Fixed
 
+[BUG] When starting up, user needs to wait for the import task to finish before using client.
 [BUG] Units were not displayed correctly on first page refresh after overdraw fixes
 [BUG] Data display errors, especially for Weapons.
 

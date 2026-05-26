@@ -89,7 +89,7 @@ public class LogicUnitBattleArmor : LogicUnitTrooper
     /// <inheritdoc />
     protected override async Task<int> ResolveTotalOutgoingDamage(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
     {
-        return await RapidFireWrapper(damageReport, target, combatAction, ResolveTotalOutgoingDamageInternalBattleArmor(damageReport, target, combatAction));
+        return await RapidFireWrapper(damageReport, target, combatAction, () => ResolveTotalOutgoingDamageInternalBattleArmor(damageReport, target, combatAction));
     }
 
     private async Task<int> ResolveTotalOutgoingDamageInternalBattleArmor(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)

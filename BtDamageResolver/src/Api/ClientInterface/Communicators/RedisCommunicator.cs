@@ -134,7 +134,7 @@ public abstract class RedisCommunicator
     {
         var clientCount = SendEnvelope(clientName, envelope);
 
-        if (clientCount != 0)
+        if (clientCount != 1)
         {
             Logger.LogWarning("Number of clients receiving targeted message with target {Target} was {Count} instead of 1 as expected.", clientName, clientCount);
         }

@@ -137,10 +137,13 @@ public partial class LogicUnit
     /// Aerospace units may have weapon bays where certain versions of weapons fire for different ranges and produce different amounts of heat.
     /// </remarks>
     /// <param name="weapon">The weapon to resolve heat for.</param>
-    /// <param name="rangeBracket">The range bracket to resolve heat for.</param>
+    /// <param name="rangeBracket">The range bracket to resolve heat for. Intentionally ignored in the base implementation; see remarks.</param>
     /// <returns>The heat produced.</returns>
     protected virtual int ResolveHeatForSingleHit(Weapon weapon, RangeBracket rangeBracket)
     {
+        // NOTE: rangeBracket is intentionally ignored here. For non-aerospace actions, heat is range-independent.
+        // Indexing by rangeBracket here would possibly return 0 for Medium/Long/etc. -ranged hits and produce wrong
+        // heat values. Only LogicUnitAerospace (and capital-ship logic) overrides this and uses rangeBracket.
         return weapon.Heat[RangeBracket.Short];
     }
 }

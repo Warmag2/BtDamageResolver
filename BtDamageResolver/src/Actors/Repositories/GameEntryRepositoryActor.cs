@@ -18,8 +18,11 @@ namespace Faemiyah.BtDamageResolver.Actors.Repositories;
 /// </summary>
 public class GameEntryRepositoryActor : ExternalRepositoryActorBase<GameEntry, string>, IGameEntryRepository
 {
+    private static readonly TimeSpan CleanupInterval = TimeSpan.FromMinutes(5);
+
     private readonly ICommunicationServiceClient _communicationServiceClient;
     private readonly TimeSpan _maxGameAge = TimeSpan.FromHours(Settings.MaximumGameEntryAgeHours);
+    private DateTime _lastCleanup = DateTime.MinValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameEntryRepositoryActor"/> class.
@@ -85,9 +88,29 @@ public class GameEntryRepositoryActor : ExternalRepositoryActorBase<GameEntry, s
 
     private async Task CleanupOldEntries()
     {
-        foreach (var entry in (await base.GetAll()).Where(gameEntry => gameEntry.TimeStamp < DateTime.UtcNow - _maxGameAge))
+        // Throttle cleanup scans — entries age in hours so checking on every Get/GetAll
+        // (which the broadcast path also hits) is wasteful. When old entries are actually
+        // deleted, broadcast once at the end so connected lobby clients see the new list.
+        var now = DateTime.UtcNow;
+        if (now - _lastCleanup < CleanupInterval)
         {
-            await base.Delete(entry.GetName());
+            return;
+        }
+
+        _lastCleanup = now;
+
+        var anyDeleted = false;
+        foreach (var entry in (await base.GetAll()).Where(gameEntry => gameEntry.TimeStamp < now - _maxGameAge))
+        {
+            if (await base.Delete(entry.GetName()))
+            {
+                anyDeleted = true;
+            }
+        }
+
+        if (anyDeleted)
+        {
+            await Distribute();
         }
     }
 }

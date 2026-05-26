@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,19 +21,25 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
 {
     private readonly ILogger<CachedEntityRepository<TEntity, TKey>> _logger;
     private readonly IEntityRepository<TEntity, TKey> _repository;
-    private readonly Dictionary<TKey, TEntity> _cache;
+    private readonly ConcurrentDictionary<TKey, TEntity> _cache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CachedEntityRepository{TEntity, TKey}"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="repository">The repository to cache.</param>
+    /// <remarks>
+    /// This cache is a DI singleton accessed concurrently from both the owning <c>*RepositoryActor</c> grain
+    /// (single-threaded writes) and directly from many <c>LogicUnit</c> instances during fire events
+    /// (concurrent reads from arbitrary grain activations). A <see cref="ConcurrentDictionary{TKey,TValue}"/>
+    /// is required to make this safe.
+    /// </remarks>
     public CachedEntityRepository(ILogger<CachedEntityRepository<TEntity, TKey>> logger, IEntityRepository<TEntity, TKey> repository)
     {
         _logger = logger;
         _repository = repository;
-        _cache = [];
-        _logger.LogInformation("Filled entity cache for type {Type} with {Number} items.", typeof(TEntity).Name, FillCache().Result);
+        _cache = new ConcurrentDictionary<TKey, TEntity>();
+        _logger.LogInformation("Filled entity cache for type {Type} with {Number} items.", typeof(TEntity).Name, FillCache());
     }
 
     /// <inheritdoc />
@@ -41,7 +48,10 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         try
         {
             await _repository.AddAsync(entity);
-            _cache.Add(entity.GetName(), entity);
+            if (!_cache.TryAdd(entity.GetName(), entity))
+            {
+                throw new ArgumentException($"An item with key '{entity.GetName()}' already exists in the cache.");
+            }
         }
         catch (Exception ex)
         {
@@ -56,14 +66,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         try
         {
             await _repository.AddOrUpdateAsync(entity);
-            if (_cache.ContainsKey(entity.GetName()))
-            {
-                _cache[entity.GetName()] = entity;
-            }
-            else
-            {
-                _cache.Add(entity.GetName(), entity);
-            }
+            _cache[entity.GetName()] = entity;
         }
         catch (Exception ex)
         {
@@ -80,7 +83,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
             if (_cache.ContainsKey(key))
             {
                 await _repository.DeleteAsync(key);
-                _cache.Remove(key);
+                _cache.TryRemove(key, out _);
 
                 return true;
             }
@@ -115,7 +118,7 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
         {
             var item = _repository.Get(key);
-            _cache.Add(item.GetName(), item);
+            _cache.TryAdd(item.GetName(), item);
         }
 
         return keys;
@@ -136,13 +139,13 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
     }
 
-    private async Task<int> FillCache()
+    private int FillCache()
     {
         var items = _repository.GetAll();
         var count = 0;
         foreach (var item in items)
         {
-            _cache.Add(item.GetName(), item);
+            _cache.TryAdd(item.GetName(), item);
             count++;
         }
 

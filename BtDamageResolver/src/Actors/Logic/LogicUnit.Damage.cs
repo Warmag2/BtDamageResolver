@@ -63,7 +63,7 @@ public partial class LogicUnit
     /// <param name="combatAction">The combat action.</param>
     /// <param name="singleFireDamageCalculation">A task that calculates the damage of a single fire instance.</param>
     /// <returns>The total damage by rapid fire action.</returns>
-    protected async Task<int> RapidFireWrapper(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, Task<int> singleFireDamageCalculation)
+    protected async Task<int> RapidFireWrapper(DamageReport damageReport, ILogicUnit target, CombatAction combatAction, Func<Task<int>> singleFireDamageCalculation)
     {
         if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
@@ -75,7 +75,7 @@ public partial class LogicUnit
             var damage = 0;
             for (var ii = 0; ii < hits; ii++)
             {
-                damage += await singleFireDamageCalculation;
+                damage += await singleFireDamageCalculation();
             }
 
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Total damage after calculating all hits", damage));
@@ -83,7 +83,7 @@ public partial class LogicUnit
             return damage;
         }
 
-        return await singleFireDamageCalculation;
+        return await singleFireDamageCalculation();
     }
 
     /// <summary>
@@ -314,11 +314,11 @@ public partial class LogicUnit
         // Most units can charge, and mech units can make other melee attacks. Resolve their damage here.
         if (combatAction.Weapon.Type == WeaponType.Melee)
         {
-            return await RapidFireWrapper(damageReport, target, combatAction, ResolveTotalOutgoingDamageMelee(damageReport, combatAction));
+            return await RapidFireWrapper(damageReport, target, combatAction, () => ResolveTotalOutgoingDamageMelee(damageReport, combatAction));
         }
         else
         {
-            return await RapidFireWrapper(damageReport, target, combatAction, ResolveTotalOutgoingDamageInternal(damageReport, target, combatAction));
+            return await RapidFireWrapper(damageReport, target, combatAction, () => ResolveTotalOutgoingDamageInternal(damageReport, target, combatAction));
         }
     }
 

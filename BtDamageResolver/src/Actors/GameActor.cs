@@ -64,6 +64,15 @@ public partial class GameActor : Grain, IGameActor
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Stores the incoming <paramref name="playerState"/> by reference. This is safe because
+    /// Orleans serialises Faemiyah types via the JSON serializer registered in
+    /// <c>Silo/Program.cs</c>, so every cross-grain call (including this one) produces a fresh
+    /// deep copy at the boundary. If that serializer registration is ever changed to a by-reference
+    /// path for intra-silo calls, this method (and <c>GetGameState</c>, which mutates timestamps
+    /// on stored states) would need to copy defensively to avoid aliasing
+    /// <see cref="PlayerActor"/> state.
+    /// </remarks>
     public async Task<bool> SendPlayerState(string sendingPlayerId, PlayerState playerState, List<Guid> unitIds)
     {
         // Do not accept player states from players who are not in the game.
@@ -167,7 +176,7 @@ public partial class GameActor : Grain, IGameActor
 
         _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully connected to the game.", this.GetPrimaryKeyString(), playerId);
 
-        await CheckGameStateUpdateEvents();
+        await CheckGameStateUpdateEvents(refreshGameEntry: true);
 
         // Log logins to permanent store
         await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
@@ -187,7 +196,7 @@ public partial class GameActor : Grain, IGameActor
         if (_gameActorState.State.PlayerStates.Remove(playerId) || _gameActorState.State.PlayerIds.Remove(playerId))
         {
             _gameActorState.State.TimeStamp = DateTime.UtcNow;
-            await CheckGameStateUpdateEvents();
+            await CheckGameStateUpdateEvents(refreshGameEntry: true);
 
             _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully disconnected.", this.GetPrimaryKeyString(), playerId);
 
@@ -226,26 +235,17 @@ public partial class GameActor : Grain, IGameActor
 
     private GameState GetGameState(bool markStateAsNew)
     {
-        var timeStampNow = DateTime.UtcNow;
-
-        var gameState = new GameState
+        // markStateAsNew only affects the top-level GameState.TimeStamp. Per-player TimeStamps
+        // are already updated to TurnTimeStamp by CheckForFireEvent when a fire event happens,
+        // so this method does not mutate actor state.
+        return new GameState
         {
             AdminId = _gameActorState.State.AdminId,
             GameId = this.GetPrimaryKeyString(),
             Players = _gameActorState.State.PlayerStates,
-            TimeStamp = markStateAsNew ? timeStampNow : _gameActorState.State.TimeStamp,
+            TimeStamp = markStateAsNew ? DateTime.UtcNow : _gameActorState.State.TimeStamp,
             Turn = _gameActorState.State.Turn,
             TurnTimeStamp = _gameActorState.State.TurnTimeStamp
         };
-
-        if (markStateAsNew)
-        {
-            foreach (var player in gameState.Players)
-            {
-                player.Value.TimeStamp = timeStampNow;
-            }
-        }
-
-        return gameState;
     }
 }
