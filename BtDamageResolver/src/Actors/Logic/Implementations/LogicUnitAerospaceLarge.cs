@@ -88,7 +88,7 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
         // I.e. when applying ammo usage, calculate it for all weapons in the bay.
         foreach (var weaponEntry in combatAction.WeaponBay.Weapons)
         {
-            var weapon = await FormWeapon(weaponEntry);
+            var weapon = FormWeapon(weaponEntry);
             SpendAmmo(hitCalculationDamageReport, weapon);
         }
     }

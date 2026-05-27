@@ -13,7 +13,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc/>
-    public async Task<(decimal Estimate, int Max)> ProjectHeat(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry)
+    public (decimal Estimate, int Max) ProjectHeat(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry)
     {
         var hitChance = GetHitChanceForTargetNumber(targetNumber);
 
@@ -24,7 +24,7 @@ public partial class LogicUnit
 
         int heatGenerated;
 
-        var weapon = await FormWeapon(weaponEntry);
+        var weapon = FormWeapon(weaponEntry);
 
         heatGenerated = weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry)
             ? MathExpression.Parse(rapidFeatureEntry.Data) * ResolveHeatForSingleHit(weapon, rangeBracket)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -16,9 +15,9 @@ public abstract partial class LogicUnit
     private static readonly int[] MovementModifierArray = [0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6];
 
     /// <inheritdoc/>
-    public async Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry)
+    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry)
     {
-        return ResolveHitModifier(attackLog, target, primaryTargetArc, isPrimaryTarget, await FormWeapon(weaponEntry), weaponBay, weaponEntry);
+        return ResolveHitModifier(attackLog, target, primaryTargetArc, isPrimaryTarget, FormWeapon(weaponEntry), weaponBay, weaponEntry);
     }
 
     /// <inheritdoc />

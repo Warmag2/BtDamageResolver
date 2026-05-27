@@ -16,7 +16,7 @@ public class ResolverRandom : IResolverRandom
     /// <inheritdoc/>
     public int D26()
     {
-        return NextPlusOne(6) + NextPlusOne(6);
+        return DX(6) + DX(6);
     }
 
     /// <inheritdoc/>
@@ -26,14 +26,14 @@ public class ResolverRandom : IResolverRandom
     }
 
     /// <inheritdoc/>
-    public int NextPlusOne(int max)
+    public int DX(int max)
     {
         return Random.Shared.Next(max) + 1;
     }
 
     /// <inheritdoc/>
-    public int NextPlusOne(decimal max)
+    public int DX(decimal max)
     {
-        return NextPlusOne(decimal.ToInt32(max));
+        return DX(decimal.ToInt32(max));
     }
 }

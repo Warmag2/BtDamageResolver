@@ -35,7 +35,7 @@ public partial class LogicUnit
             }
             else
             {
-                var singleMissileDefenseRoll = ResolverRandom.NextPlusOne(6);
+                var singleMissileDefenseRoll = ResolverRandom.DX(6);
                 targetDamageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, Unit.Id, "Ams defense roll against single missile", singleMissileDefenseRoll));
                 if (singleMissileDefenseRoll >= 4)
                 {
@@ -59,13 +59,9 @@ public partial class LogicUnit
     /// <returns>The hit chance.</returns>
     protected static decimal GetHitChanceForTargetNumber(int targetNumber)
     {
-        if (targetNumber > 12)
-        {
-            return 0m;
-        }
-
         switch (targetNumber)
         {
+            case < 3: return 1m;
             case 3: return 35m / 36m;
             case 4: return 33m / 36m;
             case 5: return 30m / 36m;
@@ -76,7 +72,7 @@ public partial class LogicUnit
             case 10: return 6m / 36m;
             case 11: return 3m / 36m;
             case 12: return 1m / 36m;
-            default: return 1m;
+            default: return 0m;
         }
     }
 

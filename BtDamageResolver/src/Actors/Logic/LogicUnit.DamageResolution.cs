@@ -154,7 +154,7 @@ public partial class LogicUnit
             hitLocation = paperDoll.LocationMapping.Keys.Count switch
             {
                 11 => ResolverRandom.D26(),
-                _ => ResolverRandom.NextPlusOne(paperDoll.LocationMapping.Keys.Count)
+                _ => ResolverRandom.DX(paperDoll.LocationMapping.Keys.Count)
             };
 
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, damageOwnerId, "Location", hitLocation));

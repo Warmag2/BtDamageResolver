@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -37,7 +36,7 @@ public partial class LogicUnit
     /// </summary>
     /// <param name="weaponEntry">The weapon entry to base the applied weapon on.</param>
     /// <returns>The <see cref="Weapon"/> with the chosen ammo in the weapon entry applied, if possible.</returns>
-    protected async Task<Weapon> FormWeapon(WeaponEntry weaponEntry)
+    protected Weapon FormWeapon(WeaponEntry weaponEntry)
     {
         var weapon = RepositoryProvider.WeaponRepository.Get(weaponEntry.WeaponName);
 

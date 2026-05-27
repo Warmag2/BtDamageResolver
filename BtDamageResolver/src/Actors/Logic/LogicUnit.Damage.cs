@@ -7,7 +7,6 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Extensions;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Microsoft.CodeAnalysis;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic;
 

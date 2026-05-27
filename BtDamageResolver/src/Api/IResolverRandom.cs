@@ -23,12 +23,12 @@ public interface IResolverRandom
     /// </summary>
     /// <param name="max">The maximum value (inclusive) of the given integer.</param>
     /// <returns>A pseudorandom integer number.</returns>
-    int NextPlusOne(int max);
+    int DX(int max);
 
     /// <summary>
     /// Gives the next random integer value between 1 and max.
     /// </summary>
     /// <param name="max">The maximum value (inclusive) of the given integer.</param>
     /// <returns>A pseudorandom decimal number.</returns>
-    int NextPlusOne(decimal max);
+    int DX(decimal max);
 }

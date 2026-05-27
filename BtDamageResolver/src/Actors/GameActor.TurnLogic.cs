@@ -143,11 +143,9 @@ public partial class GameActor
         }
         catch (Exception ex)
         {
-            // Log critical errors in turn logic so failures are diagnosable, then rethrow.
-            // Using a bare `throw;` preserves the original stack trace; the caller (and Orleans)
-            // sees the actual exception type rather than a generic InvalidOperationException wrapper.
             _logger.LogError(ex, "Game {GameId} experienced a critical failure while running game state update events.", this.GetPrimaryKeyString());
-            throw;
+
+            throw new InvalidOperationException($"Game {this.GetPrimaryKeyString()} experienced a critical failure while running game state update events.", ex);
         }
     }
 
@@ -309,10 +307,10 @@ public partial class GameActor
                     var attackLog = new AttackLog();
                     var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
 
-                    var (targetNumber, rangeBracket) = await logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, primaryTargetArc, isPrimaryTarget, weaponBay, weaponEntry);
+                    var (targetNumber, rangeBracket) = logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, primaryTargetArc, isPrimaryTarget, weaponBay, weaponEntry);
 
-                    var (ammoEstimate, ammoMax) = await logicUnitAttacker.ProjectAmmo(targetNumber, rangeBracket, weaponEntry);
-                    var (heatEstimate, heatMax) = await logicUnitAttacker.ProjectHeat(targetNumber, rangeBracket, weaponEntry);
+                    var (ammoEstimate, ammoMax) = logicUnitAttacker.ProjectAmmo(targetNumber, rangeBracket, weaponEntry);
+                    var (heatEstimate, heatMax) = logicUnitAttacker.ProjectHeat(targetNumber, rangeBracket, weaponEntry);
 
                     var weaponAmmoCombinedString = string.IsNullOrEmpty(weaponEntry.Ammo) ? $"{weaponEntry.WeaponName}" : $"{weaponEntry.WeaponName} {weaponEntry.Ammo}";
                     targetNumberUpdate.AmmoEstimate.AddIfNotZero(weaponAmmoCombinedString, ammoEstimate);

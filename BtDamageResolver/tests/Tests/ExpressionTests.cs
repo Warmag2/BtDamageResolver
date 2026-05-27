@@ -3,7 +3,6 @@ using AwesomeAssertions;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using NUnit.Framework;
-using static Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver.ExpressionExtensions;
 
 namespace Faemiyah.BtDamageResolver.Tests;
 
@@ -40,7 +39,7 @@ internal class ExpressionTests
         // Arrange
 
         // Act
-        var result = input.IsToken();
+        var result = Expression.IsToken(input);
 
         // Assert
         result.Should().BeTrue();
@@ -62,7 +61,7 @@ internal class ExpressionTests
         // Arrange
 
         // Act
-        var result = input.IsToken();
+        var result = Expression.IsToken(input);
 
         // Assert
         result.Should().BeFalse();
