@@ -14,15 +14,6 @@ This is intentionally exhaustive — minor things are included on purpose, as re
 
 # PART A — SERVER (BtDamageResolver)
 
-## A3. State, serialization, aliasing
-
-- **`PlayerActor.Internal.cs:44-55` — `GetPlayerState` returns a new `PlayerState` but `UnitEntries.ToList()` is shallow.** UnitEntry references are shared with grain state.
-- **`PlayerActor.Internal.cs:62-72` — `SendOnlyThisPlayerGameStateToClient` allocates a new `SortedDictionary` per send.**
-- **`UnitEntry.cs:301-311` — `FromUnit` does not update `TimeStamp`.**
-- **`UnitEntry.cs:336-341` — `GenerateName` uses `int.Parse`/`string.Concat` without `CultureInfo.InvariantCulture`.**
-- **`UnitEntry.cs:103` — `new` keyword on `WeaponBays`** hides `Unit.WeaponBays`. Any base-class code touching `WeaponBays` sees the wrong (empty) list. Classic bug source.
-- **`Api/Entities/Credentials.cs:36, 43` — `[StringLength(32 …)]`** for name and password — 32 is small for modern password policies; password regex `^\S*$` allows the empty string (used as "no password" — see security).
-
 ## A4. Logic & ExpressionSolver
 
 - **`Logic/ExpressionSolver/Expression.cs:23-32` — `Construct` recursively allocates an `Expression` per token/digit**, uses substring slicing (`input[..ii]`, `input[(ii+1)..]`) — many short-lived strings per fire event.

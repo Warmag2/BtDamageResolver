@@ -39,6 +39,6 @@ public class Credentials
     /// User or game password.
     /// </summary>
     [RegularExpression(@"^\S*$", ErrorMessage = "No whitespace allowed in password.")]
-    [StringLength(32, ErrorMessage = "{0} length must be less than {1} characters.")]
+    [StringLength(128, ErrorMessage = "{0} length must be less than {1} characters.")]
     public string Password { get; set; }
 }

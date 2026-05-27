@@ -9,6 +9,24 @@ Items moved here from `opus47_review.md` as they are addressed.
 
 ## A3. State, serialization, aliasing
 
+- **A3.18 `Api/Entities/Credentials.cs:36, 43` — `[StringLength(32 …)]` for name and password; password regex `^\S*$` allows the empty string.**
+  - **Partially fixed**: bumped password `StringLength` from 32 → 128 (modern password managers routinely generate 64+ char passwords; SHA-512 hashing is fixed-output anyway so wire size is the only concern). Name length left at 32 — fine for player/game names. The empty-password regex is **not** changed: empty value is intentionally treated as "no password" by `PlayerActor.Connections` / `GameActor`, and replacing that semantic is part of the A8 security overhaul (PBKDF2 + explicit registration flow), not this minor item. Merging the `Required`+`MinimumLength=1`+regex on Name was also skipped — they are not redundant in DataAnnotations semantics (`Required` checks null; `MinimumLength=1` checks the rendered string), and the rendering relies on both attributes being present for distinct user-visible error messages.
+
+- **A3.17 `UnitEntry.GenerateName` uses `int.Parse` / `string.Concat` without `CultureInfo.InvariantCulture` and `char.IsNumber` instead of `char.IsAsciiDigit`.**
+  - **Fixed**: switched to `char.IsAsciiDigit` (sidesteps Unicode numeric chars like `½`, `Ⅷ` that would pass `IsNumber` but throw `FormatException` in `int.Parse`), pinned `int.Parse` to `CultureInfo.InvariantCulture`, and explicitly formatted the resulting integer with `InvariantCulture` so the interpolated `$"..."` no longer pulls `CurrentCulture` group separators (e.g. fi-FI thin-space) into copy names. Added `System.Globalization` using.
+
+- **A3.16 `UnitEntry.FromUnit` does not update `TimeStamp`.**
+  - **Fixed**: added `TimeStamp = DateTime.UtcNow` to the FromUnit assignment block. Not a current bug — the only caller (`FormUnitEntry.razor:591`) immediately overwrites `Id` with `Guid.NewGuid()`, so server-side `UnitList.IsNewOrNewer` short-circuits to `true` on the unknown Id without consulting `TimeStamp`. The one-line fix aligns the three data-replacement paths (`UnitEntry()` ctor, `Copy()`, `FromUnit()`) and removes the footgun for any future caller that loads template data without resetting Id.
+
+- **A3.15 `UnitEntry.WeaponBays` uses `new` to hide `Unit.WeaponBays`.**
+  - **Not a bug at current state**: `Unit.WeaponBays` is `List<WeaponBayReference>` (static templates); `UnitEntry.WeaponBays` shadows it with `List<WeaponBay>` (live state with ammo/firing solution/timestamp). The deeper concern — "any base-class code touching `WeaponBays` sees the wrong (empty) list" — has no instances in this codebase: `Unit`'s only methods (`CanMountWeapon`, `IsAmmoTracking`, `IsHeatTracking`, `HasFeature`, `SetFeature`) do not touch `WeaponBays`. Cross-grain JSON transport via Orleans's `AddJsonSerializer` (`Silo/Program.cs:123`) correctly serializes only the most-derived shadowed property in System.Text.Json (.NET 7+ behaviour). Removing the shadow would require a costly redesign (parallel `LiveWeaponBays` / different name) that contradicts the model intent ("UnitEntry IS-A Unit with richer weapon-bay state"). Leaving as-is.
+
+- **A3.14 `PlayerActor.Internal.cs:62-72` `SendOnlyThisPlayerGameStateToClient` allocates a new `SortedDictionary` per send.**
+  - **Already covered by A3.7 / A3.8 (not a bug)**: this single-entry `SortedDictionary` allocation is the same point already adjudicated under A3.7 — the DTO type is `SortedDictionary<string, PlayerState>` because the UI consumes its stable sort order, and constructing a single-entry instance per send (≤30 players, only on actual update events) is sub-microsecond. Removed from review.
+
+- **A3.1 `PlayerActor.Internal.cs:44-55` `GetPlayerState` returns a new `PlayerState` but `UnitEntries.ToList()` is shallow.**
+  - **Documented as A3.1 in the original first pass**: covered by the remarks block on `GetPlayerState` and the cross-grain JSON round-trip via `AddJsonSerializer`. The duplicate bullet that survived under A3 has been removed from the review document.
+
 - **A3.13 `UnitEntry.Copy()` omits `Evading` and `Stance`.**
   - **Fixed**: added `Evading = Evading` and `Stance = Stance` to the new-instance initializer. These are per-turn situational flags consistent with `Movement`, `MovementClass`, `Narced`, `Tagged` (which were already copied). The deeper fragility (manual property-by-property copy) is left as-is per user preference (bespoke deep-copy is the same problem as A3.13 — relying on the JSON serializer round-trip is preferred where possible).
 
