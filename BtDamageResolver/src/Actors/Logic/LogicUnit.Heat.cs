@@ -101,7 +101,7 @@ public partial class LogicUnit
     {
         if (!combatAction.ActionHappened)
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"Combat action was canceled for {combatAction.Weapon.Name} and no heat will be generated"));
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"Combat action was cancelled for {combatAction.Weapon.Name} and no heat will be generated"));
             return;
         }
 
@@ -111,18 +111,18 @@ public partial class LogicUnit
             return;
         }
 
-        var calculatedSingleHitheat = ResolveHeatForSingleHit(combatAction.Weapon, combatAction.RangeBracket);
+        var calculatedSingleHitHeat = ResolveHeatForSingleHit(combatAction.Weapon, combatAction.RangeBracket);
         int heat;
 
         if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
             var multiplier = MathExpression.Parse(rapidFeatureEntry.Data);
-            heat = calculatedSingleHitheat * multiplier;
+            heat = calculatedSingleHitHeat * multiplier;
             hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, $"{combatAction.Weapon.Name} rate of fire multiplier for heat", multiplier));
         }
         else
         {
-            heat = calculatedSingleHitheat;
+            heat = calculatedSingleHitHeat;
         }
 
         hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Heat, Unit.Id, combatAction.Weapon.Name, heat));

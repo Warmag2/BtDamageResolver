@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Concurrent;
 using Faemiyah.BtDamageResolver.Api;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
@@ -9,6 +10,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 public class MathExpression : IMathExpression
 {
     private readonly IResolverRandom _random;
+    private readonly ConcurrentDictionary<string, int> _resultCache = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MathExpression"/> class.
@@ -27,6 +29,17 @@ public class MathExpression : IMathExpression
             return 0;
         }
 
+        // Only deterministic expressions (no dice token) are safe to memoize.
+        if (!expression.Contains((char)Token.Dice))
+        {
+            return _resultCache.GetOrAdd(expression, Evaluate);
+        }
+
+        return Evaluate(expression);
+    }
+
+    private int Evaluate(string expression)
+    {
         var expressionObject = new Expression(_random, expression);
 
         return decimal.ToInt32(Math.Round(expressionObject.Parse(), MidpointRounding.AwayFromZero));

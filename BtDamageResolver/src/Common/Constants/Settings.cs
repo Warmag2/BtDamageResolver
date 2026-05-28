@@ -31,6 +31,11 @@ public static class Settings
     public const string LoggingOptionsBlockName = "LoggingOptions";
 
     /// <summary>
+    /// The name of the options block which configures on-wire compression for Redis pub/sub payloads.
+    /// </summary>
+    public const string CompressionOptionsBlockName = "CompressionOptions";
+
+    /// <summary>
     /// Maximum age of game entries in hours.
     /// </summary>
     public const int MaximumGameEntryAgeHours = 24;

@@ -14,41 +14,6 @@ This is intentionally exhaustive — minor things are included on purpose, as re
 
 # PART A — SERVER (BtDamageResolver)
 
-## A4. Logic & ExpressionSolver
-
-- **`Logic/ExpressionSolver/Expression.cs:23-32` — `Construct` recursively allocates an `Expression` per token/digit**, uses substring slicing (`input[..ii]`, `input[(ii+1)..]`) — many short-lived strings per fire event.
-- **`Expression.cs:174-180, 229, 258` — `decimal.Parse` / `int.Parse` use current culture.** On `fi-FI` etc. decimal points become commas → silent parse failures. Use `CultureInfo.InvariantCulture`.
-- **`Expression.cs:49-90` — `Parse` mutates the instance** (`_tokens.RemoveAt`, `_expressions.RemoveAt`). Cannot be parsed twice; should be immutable / pure.
-- **`Expression.cs:131-153` — `ExtractFunctionType` uses `Enum.GetNames<ExpressionFunction>().SingleOrDefault(input.StartsWith)`** — reflection allocates names array per call; `SingleOrDefault` throws if more than one matches.
-- **`Logic/ExpressionSolver/MathExpression.cs:30-32` — every `Parse` rebuilds the tree from scratch.** No AST cache, no result cache for deterministic non-dice expressions. Called from `ResolveAmmo`, `ResolveHeat`, `Clusterize`, `RapidFireWrapper`, etc. A `ConcurrentDictionary<string, …>` cache would be a large win.
-- **`Actors/Logic/LogicUnitFactory.cs:43-77` — `CreateFrom` is a big `switch` allocating a new `LogicUnit{Type}` per call.** Called from `GetUnitLogic` inside hot paths (`GameActor.Internal.cs:30-43`). Each fire event allocates a new `LogicUnit` per attacker × defender × weapon entry.
-- **`Actors/Logic/LogicUnit.Damage.cs:25, 100, 146, 413` — repeatedly constructs `DamageReport`** with collection-expression literals (`[Unit.Id]`, `new() { { Unit.Id, Unit.Name } }`) and `GetDamagePaperDoll(...)` (repo lookup + clone). Heavy allocations.
-- **`Actors/Logic/LogicUnit.DamagePacket.cs:67, 79` — `MathExpression.Parse(s.Data)`** per special damage entry per cluster. Hot path.
-- **`Actors/Logic/LogicUnit.General.cs:24, 41` — `weapon.SpecialFeatures.Select(...).ToList()` allocated and discarded.** Misspelled local `hitCalclulationDamageReport` (lines 38, 49, 51).
-- **`Actors/Logic/LogicUnit.Fetching.cs:42-54` — `FormWeapon` is `async Task` but contains no awaits.** Allocates a state machine on every call. Make sync.
-- **`Actors/Logic/LogicUnit.Ammo.cs:51-69` — `ResolveAmmo`** same issue.
-- **`Actors/Logic/LogicUnit.HitModifier.cs:25-143` — `ResolveHitModifier` is a 25-call chain** of `attackLog.Append`. Many `Get*Modifier` are virtual but default to 0. Could be simplified to an enumerable.
-- **`Actors/GameActor.TurnLogic.cs:225` — `damageReports.ForEach(d => d.Turn = ...)`** then `SendDamageInstance` (`GameActor.cs:130`) sets `Turn` again. Redundant.
-- **`Actors/GameActor.cs:121-138` — `SendDamageInstance` does no ownership check** that `sendingPlayerId` actually owns the attacking/target unit. See Security.
-
-## A5. Repositories & caching
-
-- **`Api/ClientInterface/Repositories/RedisEntityRepository.cs:43` — `ConnectionMultiplexer.Connect(...)` runs synchronously in the constructor.** Eight repositories built at startup (`Silo/Program.cs:186-193`) each do this; blocks DI resolution.
-- **`Get(string)` (line 94-119) uses synchronous `StringGet`** — blocks the Orleans scheduler thread.
-- **`GetAll()` (line 122-149)** calls `Get(key)` per key → N+1 round-trips. Use `MGET`/pipelining.
-- **`GetAllKeys` (line 152-169) uses `server.Keys(pattern: …)`** which issues Redis `KEYS` (O(N), blocks Redis). Use `SCAN`.
-- **`UpdateAsync` (line 172-200) — TOCTOU**: `KeyExistsAsync` then `AddAsync` is not atomic.
-- **Catch-all of `DbException`** (lines 54, 82, 109, 139, 159, 190) — StackExchange.Redis throws `RedisException`/`RedisConnectionException`, not `DbException`. These branches never fire; everything hits the generic catch.
-- **`GetServer` (line 217-220) — `_connectionString.Split(',')[0]`** — collapses to the first endpoint only; if options follow (`,abortConnect=false`) the result is wrong.
-- **`CachedEntityRepository` is not thread-safe.** Plain `Dictionary<TKey,TEntity>` mutated under no lock from a singleton. Concurrent `Add`/`Get`/`GetAllKeys` from multiple grain activations will corrupt or throw.
-- **`CachedEntityRepository.DeleteAsync` (line 76-95)** silently no-ops if the cache lacks the key, even when the underlying repository still has it.
-- **`CachedEntityRepository.GetAll` (line 104-107)** never refreshes; new underlying entries are invisible.
-- **`CachedEntityRepository.GetAllKeys` (line 110-122)** fetches each missing entity one by one (N+1).
-- **`GameEntryRepositoryActor.cs:81-84` — `Distribute()` broadcasts the entire game list to every client on every CRUD call.** Combined with cleanup-on-read above this is extremely chatty.
-- **Two serializers in the system**: hot path uses `System.Text.Json` (`DataHelper.cs`); Orleans uses its own JSON serializer registered at `Silo/Program.cs:123`.
-- **`Api/ClientInterface/Compression/DataHelper.cs:30-46` — `Pack`/`Unpack` round-trip through UTF-8 string** (`Encoding.UTF8.GetString(input)` then `JsonSerializer.Deserialize<string>`). Use `SerializeToUtf8Bytes`/`DeserializeAsync(Stream)` to skip the intermediate string copy.
-- **LZMA (`SevenZip.Compression.LZMA`)** is extremely expensive (orders slower than gzip/Brotli/LZ4) for small JSON messages. For Redis pub/sub the CPU cost likely exceeds bandwidth savings, especially for `SendErrorMessage` (`RedisCommunicator.cs:125`). Switch to LZ4 or Brotli.
-
 ## A6. Communication / Redis
 
 - **`RedisCommunicator.cs:68` — `Start()` called from base constructor.** If a subclass adds initialisation, it runs after. Footgun.

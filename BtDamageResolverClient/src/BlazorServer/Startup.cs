@@ -57,6 +57,7 @@ public class Startup
         var configuration = GetConfiguration("CommunicationSettings.json");
 
         services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
+        services.Configure<CompressionOptions>(configuration.GetSection(Settings.CompressionOptionsBlockName));
         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
         services.Configure<CircuitOptions>(options =>
         {

@@ -15,5 +15,9 @@
   },
   "CommunicationOptions": {
     "ConnectionString": "redis:6379,password=PASSWORD"
+  },
+  "CompressionOptions": {
+    "Provider": "Brotli",
+    "Quality": 4
   }
 }

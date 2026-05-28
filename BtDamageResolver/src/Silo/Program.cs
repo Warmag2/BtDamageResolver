@@ -120,7 +120,9 @@ internal static class Program
             .UseOrleans(siloBuilder =>
             {
                 siloBuilder
-                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver")));
+                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(
+                        isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver"),
+                        jsonSerializerOptions: CreateJsonSerializerOptions()));
                 siloBuilder
                     .Configure<ClusterOptions>(options =>
                     {
@@ -169,6 +171,7 @@ internal static class Program
                     {
                         services.ConfigureJsonSerializerOptions();
                         services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
+                        services.Configure<CompressionOptions>(configuration.GetSection(Settings.CompressionOptionsBlockName));
                         services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
                         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
                         services.AddLogging(conf =>

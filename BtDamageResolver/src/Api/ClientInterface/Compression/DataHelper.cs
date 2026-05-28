@@ -1,4 +1,6 @@
-﻿using System.Text;
+using System;
+using System.IO;
+using System.IO.Compression;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using SevenZip.Compression.LZMA;
@@ -11,14 +13,17 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 public class DataHelper
 {
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly CompressionOptions _compressionOptions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DataHelper"/> class.
     /// </summary>
     /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
-    public DataHelper(IOptions<JsonSerializerOptions> jsonSerializerOptions)
+    /// <param name="compressionOptions">The compression options.</param>
+    public DataHelper(IOptions<JsonSerializerOptions> jsonSerializerOptions, IOptions<CompressionOptions> compressionOptions)
     {
         _jsonSerializerOptions = jsonSerializerOptions.Value;
+        _compressionOptions = compressionOptions.Value;
     }
 
     /// <summary>
@@ -30,7 +35,7 @@ public class DataHelper
     public byte[] Pack<TType>(TType input)
         where TType : class
     {
-        return CompressionHelper.Compress(Serialize(input));
+        return Compress(Serialize(input));
     }
 
     /// <summary>
@@ -42,7 +47,7 @@ public class DataHelper
     public TType Unpack<TType>(byte[] input)
         where TType : class
     {
-        return Deserialize<TType>(CompressionHelper.Decompress(input));
+        return Deserialize<TType>(Decompress(input));
     }
 
     /// <summary>
@@ -54,7 +59,7 @@ public class DataHelper
     private TType Deserialize<TType>(byte[] input)
         where TType : class
     {
-        return JsonSerializer.Deserialize<TType>(Encoding.UTF8.GetString(input), _jsonSerializerOptions);
+        return JsonSerializer.Deserialize<TType>(input, _jsonSerializerOptions);
     }
 
     /// <summary>
@@ -66,6 +71,50 @@ public class DataHelper
     private byte[] Serialize<TType>(TType input)
         where TType : class
     {
-        return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(input, _jsonSerializerOptions));
+        return JsonSerializer.SerializeToUtf8Bytes(input, _jsonSerializerOptions);
+    }
+
+    private byte[] Compress(byte[] input)
+    {
+        return _compressionOptions.Provider switch
+        {
+            CompressionProvider.Brotli => BrotliCompress(input, _compressionOptions.Quality),
+            CompressionProvider.Lzma => CompressionHelper.Compress(input, _compressionOptions.Quality),
+            _ => throw new InvalidOperationException($"Unsupported compression provider: {_compressionOptions.Provider}")
+        };
+    }
+
+    private byte[] Decompress(byte[] input)
+    {
+        return _compressionOptions.Provider switch
+        {
+            CompressionProvider.Brotli => BrotliDecompress(input),
+            CompressionProvider.Lzma => CompressionHelper.Decompress(input),
+            _ => throw new InvalidOperationException($"Unsupported compression provider: {_compressionOptions.Provider}")
+        };
+    }
+
+    private static byte[] BrotliCompress(byte[] input, int quality)
+    {
+        var clamped = Math.Clamp(quality, 0, 11);
+        var maxLength = BrotliEncoder.GetMaxCompressedLength(input.Length);
+        var output = new byte[maxLength];
+
+        if (!BrotliEncoder.TryCompress(input, output, out var bytesWritten, clamped, window: 22))
+        {
+            throw new InvalidOperationException("Brotli compression failed: destination buffer too small.");
+        }
+
+        return output.AsSpan(0, bytesWritten).ToArray();
+    }
+
+    private static byte[] BrotliDecompress(byte[] input)
+    {
+        using var inputStream = new MemoryStream(input);
+        using var outputStream = new MemoryStream();
+        using var brotli = new BrotliStream(inputStream, CompressionMode.Decompress);
+        brotli.CopyTo(outputStream);
+
+        return outputStream.ToArray();
     }
 }

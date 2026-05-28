@@ -191,12 +191,24 @@ public static class ConfigurationUtilities
     /// <returns>The service collection for further processing.</returns>
     public static IServiceCollection ConfigureJsonSerializerOptions(this IServiceCollection collection)
     {
-        return collection.Configure<JsonSerializerOptions>(options =>
-        {
-            options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            options.PropertyNameCaseInsensitive = false;
+        return collection.Configure<JsonSerializerOptions>(ApplyDefaultJsonSerializerOptions);
+    }
 
-            options.Converters.Add(new JsonStringEnumConverter());
-        });
+    /// <summary>
+    /// Build a new <see cref="JsonSerializerOptions"/> instance with the Faemiyah defaults applied.
+    /// </summary>
+    /// <returns>The configured options instance.</returns>
+    public static JsonSerializerOptions CreateJsonSerializerOptions()
+    {
+        var options = new JsonSerializerOptions();
+        ApplyDefaultJsonSerializerOptions(options);
+        return options;
+    }
+
+    private static void ApplyDefaultJsonSerializerOptions(JsonSerializerOptions options)
+    {
+        options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.PropertyNameCaseInsensitive = false;
+        options.Converters.Add(new JsonStringEnumConverter());
     }
 }

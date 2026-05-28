@@ -11,7 +11,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 /// </summary>
 public class Expression
 {
-    private static HashSet<char> _tokenChars = [.. Enum.GetValues<Token>().Select(x => (char)x)];
+    private static readonly HashSet<char> _tokenChars = [.. Enum.GetValues<Token>().Select(x => (char)x)];
+    private static readonly string[] _functionNames = Enum.GetNames<ExpressionFunction>();
     private readonly List<Expression> _expressions;
     private readonly ExpressionFunction _outerFunction;
     private readonly IResolverRandom _random;
@@ -145,7 +146,7 @@ public class Expression
         var foundFunction = ExpressionFunction.None;
         string functionScope = null;
 
-        var functionName = Enum.GetNames<ExpressionFunction>().SingleOrDefault(input.StartsWith);
+        var functionName = Array.Find(_functionNames, input.StartsWith);
 
         if (functionName != null)
         {

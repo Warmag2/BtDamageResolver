@@ -36,8 +36,9 @@ Racing V8s continue to use the single plane crankshaft because it allows faster
 acceleration and more efficient exhaust system designs.";
 
         var jsonSerializerOptions = Options.Create(new JsonSerializerOptions());
+        var compressionOptions = Options.Create(new CompressionOptions());
 
-        var dataHelper = new DataHelper(jsonSerializerOptions);
+        var dataHelper = new DataHelper(jsonSerializerOptions, compressionOptions);
 
         // Compress it
         var compressed = dataHelper.Pack(originalText);

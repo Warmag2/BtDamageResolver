@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
@@ -14,7 +13,7 @@ using System.Linq;
 namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 
 /// <summary>
-/// A redis-based entity repository, which directly stores all entities into database 0.
+/// A Redis-based entity repository, which directly stores all entities into database 0.
 /// Entities are stored with their string-based name, and prefixed with Resolver{EntityName}.
 /// </summary>
 /// <typeparam name="TEntity">The entity to store.</typeparam>
@@ -22,25 +21,23 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
     where TEntity : class, IEntity<string>
 {
-    private readonly string _connectionString;
     private readonly string _keyPrefix;
     private readonly ILogger<RedisEntityRepository<TEntity>> _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    private readonly ConnectionMultiplexer _redisConnectionMultiplexer;
+    private readonly ConnectionMultiplexer _connectionMultiplexer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisEntityRepository{TEntity}"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="jsonSerializerSettings">JSON serializer options.</param>
+    /// <param name="jsonSerializerOptions">JSON serializer options.</param>
     /// <param name="connectionString">The connection string.</param>
-    public RedisEntityRepository(ILogger<RedisEntityRepository<TEntity>> logger, IOptions<JsonSerializerOptions> jsonSerializerSettings, string connectionString)
+    public RedisEntityRepository(ILogger<RedisEntityRepository<TEntity>> logger, IOptions<JsonSerializerOptions> jsonSerializerOptions, string connectionString)
     {
         _logger = logger;
-        _jsonSerializerOptions = jsonSerializerSettings.Value;
-        _connectionString = connectionString;
+        _jsonSerializerOptions = jsonSerializerOptions.Value;
         _keyPrefix = $"Resolver{typeof(TEntity).Name}";
-        _redisConnectionMultiplexer = ConnectionMultiplexer.Connect(_connectionString);
+        _connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
     }
 
     /// <inheritdoc />
@@ -51,15 +48,10 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
             var connection = GetConnection();
             await connection.StringSetAsync(GetKey(entity), JsonSerializer.Serialize(entity, _jsonSerializerOptions)).ConfigureAwait(false);
         }
-        catch (DbException ex)
-        {
-            _logger.LogError(ex, "Could not add entity {EntityName} of type {EntityType} into redis database. Database failure with error code {Code}.", entity.GetName(), typeof(TEntity), ex.ErrorCode);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add entity {EntityName} of type {EntityType} into redis database. Unknown failure.", entity.GetName(), typeof(TEntity));
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not add entity {EntityName} of type {EntityType} into the database.", entity.GetName(), typeof(TEntity));
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not add entity {entity.GetName()} of type {typeof(TEntity)} into the database.", ex);
         }
     }
 
@@ -78,15 +70,10 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
             var connection = GetConnection();
             return await connection.KeyDeleteAsync(GetKey(key)).ConfigureAwait(false);
         }
-        catch (DbException ex)
-        {
-            _logger.LogError(ex, "Could not delete entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", key, typeof(TEntity), ex.ErrorCode);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not delete entity {EntityName} of type {EntityType}. Unknown failure.", key, typeof(TEntity));
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not delete entity {EntityName} of type {EntityType}.", key, typeof(TEntity));
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not delete entity {key} of type {typeof(TEntity)}.", ex);
         }
     }
 
@@ -106,15 +93,10 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
 
             return null;
         }
-        catch (DbException ex)
-        {
-            _logger.LogError(ex, "Could not get entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", key, typeof(TEntity), ex.ErrorCode);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not get entity {EntityName} of type {EntityType}. Unknown failure.", key, typeof(TEntity));
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not get entity {EntityName} of type {EntityType}.", key, typeof(TEntity));
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not get entity {key} of type {typeof(TEntity)}.", ex);
         }
     }
 
@@ -136,15 +118,10 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         {
             throw;
         }
-        catch (DbException ex)
-        {
-            _logger.LogError(ex, "Could not get all entities of type {EntityType}. Database failure with error code {Code}.", typeof(TEntity), ex.ErrorCode);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not get all entities of type {EntityType}. Unknown failure.", typeof(TEntity));
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not get all entities of type {EntityType}.", typeof(TEntity));
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not get all entities of type {typeof(TEntity)}.", ex);
         }
     }
 
@@ -156,15 +133,10 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
             var server = GetServer();
             return server.Keys(pattern: $"{_keyPrefix}*").Select(key => key.ToString()[(_keyPrefix.Length + 1)..]).ToList();
         }
-        catch (DbException ex)
-        {
-            _logger.LogError(ex, "Could not get keys for all entities of type {EntityType}. Database failure with error code {Code}.", typeof(TEntity), ex.ErrorCode);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not get keys for all entities of type {EntityType}. Unknown failure.", typeof(TEntity));
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not get keys for all entities of type {EntityType}.", typeof(TEntity));
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not get keys for all entities of type {typeof(TEntity)}.", ex);
         }
     }
 
@@ -174,11 +146,12 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         try
         {
             var connection = GetConnection();
-            if (await connection.KeyExistsAsync(GetKey(entity)))
-            {
-                await AddAsync(entity).ConfigureAwait(false);
-            }
-            else
+            var updated = await connection.StringSetAsync(
+                GetKey(entity),
+                JsonSerializer.Serialize(entity, _jsonSerializerOptions),
+                when: When.Exists).ConfigureAwait(false);
+
+            if (!updated)
             {
                 throw new DataAccessException(DataAccessErrorCode.NotFound);
             }
@@ -187,21 +160,16 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
         {
             throw;
         }
-        catch (DbException ex)
-        {
-            _logger.LogError(ex, "Could not update entity {EntityName} of type {EntityType}. Database failure with error code {Code}.", entity.GetName(), typeof(TEntity), ex.ErrorCode);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not update entity {EntityName} of type {EntityType}. Unknown failure.", entity.GetName(), typeof(TEntity));
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not update entity {EntityName} of type {EntityType}.", entity.GetName(), typeof(TEntity));
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not update entity {entity.GetName()} of type {typeof(TEntity)}.", ex);
         }
     }
 
     private IDatabase GetConnection()
     {
-        return _redisConnectionMultiplexer.GetDatabase();
+        return _connectionMultiplexer.GetDatabase();
     }
 
     private string GetKey(TEntity entity)
@@ -216,6 +184,6 @@ public class RedisEntityRepository<TEntity> : IEntityRepository<TEntity, string>
 
     private IServer GetServer()
     {
-        return _redisConnectionMultiplexer.GetServer(_connectionString.Split(',')[0]);
+        return _connectionMultiplexer.GetServer(_connectionMultiplexer.GetEndPoints()[0]);
     }
 }

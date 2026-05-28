@@ -55,8 +55,8 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add entity {EntityName} into the repository. Unknown failure.", entity.GetName());
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not add entity {EntityName} into the repository.", entity.GetName());
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not add entity {entity.GetName()} into the repository.", ex);
         }
     }
 
@@ -70,8 +70,8 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add or update entity {EntityName} in the repository. Unknown failure.", entity.GetName());
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not add or update entity {EntityName} in the repository.", entity.GetName());
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not add or update entity {entity.GetName()} in the repository.", ex);
         }
     }
 
@@ -80,20 +80,15 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     {
         try
         {
-            if (_cache.ContainsKey(key))
-            {
-                await _repository.DeleteAsync(key);
-                _cache.TryRemove(key, out _);
+            var deleted = await _repository.DeleteAsync(key);
+            _cache.TryRemove(key, out _);
 
-                return true;
-            }
-
-            return false;
+            return deleted;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not delete entity {EntityName} from the repository. Unknown failure.", key);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not delete entity {EntityName} from the repository.", key);
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not delete entity {key} from the repository.", ex);
         }
     }
 
@@ -114,11 +109,20 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     {
         var keys = _repository.GetAllKeys();
 
-        // Update local cache in this situation
-        foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
+        // Update local cache for any keys present in the backing store but missing here
+        // (typically entries added by another process — e.g. the client adding a Unit).
+        foreach (var key in keys)
         {
+            if (_cache.ContainsKey(key))
+            {
+                continue;
+            }
+
             var item = _repository.Get(key);
-            _cache.TryAdd(item.GetName(), item);
+            if (item != null)
+            {
+                _cache.TryAdd(key, item);
+            }
         }
 
         return keys;
@@ -134,8 +138,8 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not update entity {EntityName} in repository. Unknown failure.", entity.GetName());
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not update entity {EntityName} in repository.", entity.GetName());
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not update entity {entity.GetName()} in the repository.", ex);
         }
     }
 

@@ -1,5 +1,6 @@
 // 7Zip helper code, original by Peter Bromberg
 // http://www.eggheadcafe.com/tutorials/aspnet/064b41e4-60bc-4d35-9136-368603bcc27a/7zip-lzma-inmemory-com.aspx
+using System;
 using System.IO;
 
 namespace SevenZip.Compression.LZMA;
@@ -10,15 +11,10 @@ namespace SevenZip.Compression.LZMA;
 public static class CompressionHelper
 {
     private const bool Eos = false;
+    private const int MinNumFastBytes = 5;
+    private const int MaxNumFastBytes = 273;
     private static readonly int Dictionary = 1 << 23;
 
-    // static Int32 posStateBits = 2;
-    // static Int32 litContextBits = 3; // for normal files
-    // UInt32 litContextBits = 0; // for 32-bit data
-    // static Int32 litPosBits = 0;
-    // UInt32 litPosBits = 2; // for 32-bit data
-    // static Int32 algorithm = 2;
-    // static Int32 numFastBytes = 128;
     private static readonly CoderPropID[] PropIDs =
     {
         CoderPropID.DictionarySize,
@@ -31,30 +27,18 @@ public static class CompressionHelper
         CoderPropID.EndMarker
     };
 
-    // these are the default properties, keeping it simple for now:
-    private static readonly object[] Properties =
-    {
-        Dictionary,
-        2,
-        3,
-        0,
-        2,
-        128,
-        "bt4",
-        Eos
-    };
-
     /// <summary>
     /// Compress data.
     /// </summary>
     /// <param name="inputBytes">Input data.</param>
+    /// <param name="quality">Compression quality 0-11. Higher = better ratio but more CPU. Maps internally to LZMA's NumFastBytes (5-273).</param>
     /// <returns>The compressed byte array.</returns>
-    public static byte[] Compress(byte[] inputBytes)
+    public static byte[] Compress(byte[] inputBytes, int quality = 4)
     {
         var inStream = new MemoryStream(inputBytes);
         var outStream = new MemoryStream();
         var encoder = new Encoder();
-        encoder.SetCoderProperties(PropIDs, Properties);
+        encoder.SetCoderProperties(PropIDs, BuildProperties(quality));
         encoder.WriteCoderProperties(outStream);
 
         var inputSize = inStream.Length;
@@ -107,5 +91,22 @@ public static class CompressionHelper
         var b = outStream.ToArray();
 
         return b;
+    }
+
+    private static object[] BuildProperties(int quality)
+    {
+        var clamped = Math.Clamp(quality, MinNumFastBytes, MaxNumFastBytes);
+
+        return
+        [
+            Dictionary,
+            2,                  // PosStateBits
+            3,                  // LitContextBits
+            0,                  // LitPosBits
+            2,                  // Algorithm (binary tree)
+            clamped,
+            "bt4",
+            Eos,
+        ];
     }
 }
