@@ -52,7 +52,7 @@
         <div class="resolver_div_options">
             @foreach (var attackLogEntryType in _userStateController.PlayerOptions.AttackLogEntryVisibility)
             {
-                <FormToggle Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormToggle>
+                <FormToggle @key="@attackLogEntryType.Key" Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormToggle>
             }
         </div>
     }

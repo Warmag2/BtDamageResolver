@@ -44,11 +44,11 @@
     </ContainerAccordion>
 
     <ContainerAccordion Enabled="@_sectionEnabledDamageReports" Title="Damage reports">
-        <FormDamageReports OnlyNewest="true"></FormDamageReports>
+        <FormDamageReports @key="@_userStateController.DamageReportContainer?.TimeStamp" OnlyNewest="true"></FormDamageReports>
     </ContainerAccordion>
 
     <ContainerAccordion Enabled="@_sectionEnabledTools" Title="Tools">
-        <FormTools @key="@_userStateController.GameState?.TimeStamp"></FormTools>
+        <FormTools></FormTools>
     </ContainerAccordion>
 }
 

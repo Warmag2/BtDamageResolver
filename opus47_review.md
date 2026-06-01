@@ -22,48 +22,7 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 ## B1. Render performance
 
-- **No `ShouldRender()` overrides** anywhere except `FormNumber.razor:43` (`!_isBeingEdited`). Every other component re-renders on every event/parameter change. At minimum add render guards to `ComponentUnit`, `ComponentWeaponEntry`, `FormWeaponEntry`, `FormFiringSolution`, all `FormPaperDoll*` (10 files), `FormDamageReport`, `FormUnitEntry`, `ComponentPlayerState`, `ComponentGameState`.
-- **Hot subscribers re-render on every target number update.** `ComponentWeaponEntry.razor:45`, `FormWeaponEntry.razor:100`, `ComponentHeatAmmoEstimate.razor:51` all subscribe to `OnTargetNumbersUpdated`. With N weapons × M players × every packet the entire grid re-renders. No "is this MY target number?" diff. `Index.razor:142-146` even notes "Not necessary to invoke state change", but components do it anyway.
-- **Cascading `_userStateController` access in markup.** `FormUnitEntry.razor` references `_userStateController.PlayerState.IsReady` ~30 times per render; `ComparisonTime` recomputes per call. Cache once at top of render: `@{ var isReady = …; var compTime = …; }`.
-- **`@key` instability triggers full subtree disposal — likely the single largest perf bug.**
-  - `Pages/Index.razor:42,46,50,54` — keys include `_userStateController.GameState?.TurnTimeStamp`. Every state update destroys and recreates `FormGameState`, `ComponentGameState`, `FormDamageReports`, `FormOptions` subtrees instead of diffing.
-  - `Shared/ComponentGameState.razor:29` — keys `ComponentPlayerState` by `player.TimeStamp` → every player update recreates every unit subtree.
-  - `Shared/ComponentPlayerState.razor:11` — keys `ComponentUnit` by `unitEntry.TimeStamp` → editing any field on a unit destroys the unit subtree.
-  - `Shared/ComponentUnit.razor:123` — keys `ComponentWeaponEntry` by `weaponEntry.TimeStamp`.
-  - Pattern is endemic. `@key` should be stable IDs (`unitEntry.Id`).
-- **Inline lambdas in templates allocate per render.** Parameter identity changes → child re-renders unnecessarily. Examples:
-  - `FormUnitEntry.razor:44` `OnChanged="(UnitType unitType) => OnUnitTypeChanged(unitType)"` (+15 more in the same file).
-  - `FormWeaponEntry.razor:31,41,51,57` — lambdas as `OnChanged`.
-  - `FormFiringSolution.razor:25,31,37,43,49,55` — every `OnChanged` inline.
-  - `FormFiringSolution.razor:37` `BracketCreatorDelegate="@(() => _commonData.FormPickBracketsDistance(...))"` — new closure per render.
-  - `FormWeaponEntry.razor:31,41` `StyleSelectorDelegate="@((_) => "resolver_status_transparent")"`.
-  - `ContainerReorderableList.razor:9-15` — six inline `() => StartDrag/SetDragOver/Drop(capturedIndex)` lambdas per item per render.
-  - `FormOptions.razor:55,80,81,91,…`; `FormDamageReport.razor:155` lambda inside `@foreach`.
-  - Fix: hoist into named methods or use `EventCallback.Factory.Create` with stable instances.
-- **Large objects as parameters.** `ComponentUnit/FormUnitEntry/ComponentWeaponEntry/FormWeaponEntry/FormFiringSolution/FormPaperDoll/FormDamageReport` accept whole `UnitEntry`, `WeaponEntry`, `WeaponBay`, `DamageReport`, `DamagePaperDoll`. `ChangeDetection.MayHaveChanged` is unreliable for mutated objects. Pass minimal value-type parameters.
-- **No `<Virtualize>` anywhere.** Candidates:
-  - `ComponentGameState` (Shared/ComponentGameState.razor:27) — all players' units.
-  - `FormDamageReports` (Shared/FormDamageReports.razor:16) — per-turn reports.
-  - `FormDamageReport.razor:159` — full `AttackLog.Log` (can be very long).
-  - `FormGameList` — all games.
-  - `FormComboBox.razor:23` renders *every* option with `style="display:none"` for non-matches instead of filtering — hundreds of weapon names per combobox.
-- **Default `@bind`/`@oninput` causing per-keystroke SignalR roundtrips:**
-  - `FormComboBox.razor:20` `@bind="SelectedOptionInternal" @oninput="AdjustOptionList"` — every keystroke = round-trip + `Options.Where(...).ToList()` + child re-render.
-  - `FormText`'s setter calls `InvalidOptionGenerator()` (regenerating lists) on every commit.
-- **Global event subscriptions in granular components:**
-  - `FormWeaponBay.razor:65` subscribes to `OnPlayerUnitListUpdated` → every weapon bay re-renders on any unit list change.
-  - `FormFiringSolution.razor:74` subscribes to `OnGameUnitListUpdated`.
-  - `FormDamageReport.razor:187` subscribes to `OnDamageReportsUpdated` → every existing card re-renders on every new report.
-  - `FormDamageReports.razor:36-37` listens to both `OnDamageReportsUpdated` and `OnPlayerOptionsUpdated`, runs full LINQ pipeline on each.
-- **`Pages/Index.razor` keys on timestamps cause modal/tabs to recreate** (1d above). Modals torn down/rebuilt on every state change.
-- **Tab switching is full rebuild every time** because `ContainerTab.razor:3` only renders ChildContent when active *and* the timestamp `@key` invalidates the tree anyway.
-- **`@foreach` without `@key`:** `FormOptions.razor:54` (FormToggle), `FormDamageReport.razor:153` (FormCheckbox).
-- **`OnInitialized` runs constantly due to key churn:**
-  - `FormPickSet.OnInitialized` — `Options.ToDictionary(...).ToHashSet()` (line 91-92).
-  - `FormNumberPickerDisplayOnly.OnInitialized` — calls `BracketCreatorDelegate()` (line 137) which can construct a list per call.
-  - `FormComboBox.OnInitialized` — `Options.Any` + `Options.FirstOrDefault` (line 181-183).
-  - `FormSelect.OnInitialized` — similar (line 54-56).
-
+- **No `ShouldRender()` overrides** anywhere except `FormNumber.razor:43` (`!_isBeingEdited`) and (now) `ComponentPlayerState`. Remaining components still re-render on every event/parameter change. Add render guards to the editable forms (`FormWeaponEntry`, `FormFiringSolution`, all `FormPaperDoll*` (10 files), `FormDamageReport`, `FormUnitEntry`). _(Read-only All Units path — `ComponentGameState`/`ComponentPlayerState`/`ComponentUnit`/`ComponentWeaponEntry` — done.)_
 ## B2. DOM / HTML structure (excessive nesting)
 
 - **Wrapper-div proliferation.** Every cell wrapped in `resolver_div_componentcontainer > resolver_div_componentrow > resolver_div_componentcell`, often 5-7 deep. Browser layout & style recalc scale with node count; hits ARM hard.

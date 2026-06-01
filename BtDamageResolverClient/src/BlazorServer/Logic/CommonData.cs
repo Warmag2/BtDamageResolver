@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -676,20 +677,25 @@ public class CommonData
             validOptions.ToDictionary(e => e.ToString());
     }
 
+    private static readonly ConcurrentDictionary<(int Begin, int Interval, int End), List<PickBracket>> SimplePickBracketCache = new();
+
     private static List<PickBracket> MakeSimplePickBrackets(int begin, int interval, int end)
     {
-        var pickBrackets = new List<PickBracket>();
-
-        for (var ii = begin; ii <= end; ii += interval)
+        return SimplePickBracketCache.GetOrAdd((begin, interval, end), static key =>
         {
-            pickBrackets.Add(new PickBracket
-            {
-                Begin = ii,
-                End = ii
-            });
-        }
+            var pickBrackets = new List<PickBracket>();
 
-        return pickBrackets;
+            for (var ii = key.Begin; ii <= key.End; ii += key.Interval)
+            {
+                pickBrackets.Add(new PickBracket
+                {
+                    Begin = ii,
+                    End = ii
+                });
+            }
+
+            return pickBrackets;
+        });
     }
 
     private static List<PickBracket> MakeArbitraryPickBrackets(List<int> allChangeLocations)

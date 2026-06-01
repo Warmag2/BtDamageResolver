@@ -26,18 +26,18 @@
 
     @foreach (var player in playerStateList)
     {
-        <ComponentPlayerState @key=@($"{player.PlayerId}") PlayerId="@player.PlayerId" />
+        <ComponentPlayerState @key=@($"{player.PlayerId}") Player="@player" />
     }
 }
 
 @code {
     protected override void OnInitialized()
     {
-        _userStateController.OnGameUnitListUpdated += InvokeStateChange;
+        _userStateController.OnGameStateUpdated += InvokeStateChange;
     }
 
     public void Dispose()
     {
-        _userStateController.OnGameUnitListUpdated -= InvokeStateChange;
+        _userStateController.OnGameStateUpdated -= InvokeStateChange;
     }
 }

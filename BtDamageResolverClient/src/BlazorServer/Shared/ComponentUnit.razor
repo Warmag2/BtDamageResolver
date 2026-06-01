@@ -1,8 +1,6 @@
-﻿@inherits BaseFaemiyahComponent
-@using Faemiyah.BtDamageResolver.Api.Entities
+﻿@using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
-@implements IDisposable
 
 <div class="resolver_div_componentcontainer">
     <div class="resolver_div_componentrow">
@@ -133,28 +131,6 @@
 
 @code
 {
-    private DateTime _timeStamp;
-
     [Parameter]
     public UnitEntry UnitEntry { get; set; }
-
-    protected override void OnInitialized()
-    {
-        _timeStamp = UnitEntry.TimeStamp;
-        _userStateController.OnGameStateUpdated += CheckRefresh;
-    }
-
-    private void CheckRefresh()
-    {
-        if (UnitEntry.TimeStamp != _timeStamp)
-        {
-            _timeStamp = UnitEntry.TimeStamp;
-            InvokeStateChange();
-        }
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnGameStateUpdated -= CheckRefresh;
-    }
 }

@@ -28,7 +28,7 @@
     }
     else
     {
-        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Amount") BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Amount") BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="@OnWeaponAmountChanged" />
     }
 </div>
 <div class="resolver_div_componentcell @(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0 ? "resolver_div_hidden" : string.Empty)" style="grid-column: 4">
@@ -38,7 +38,7 @@
     }
     else
     {
-        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Modifier") BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
+        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Modifier") BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="@OnWeaponModifierChanged" />
     }
 </div>
 <div class="resolver_div_componentcell" style="grid-column: 5">
@@ -70,6 +70,7 @@
     private int _weaponModifier;
     private WeaponState _weaponState;
     private string _weaponName;
+    private DateTime _targetNumberTimeStamp;
 
     [Parameter]
     public WeaponBay WeaponBay { get; set; }
@@ -97,10 +98,23 @@
         _weaponModifier = WeaponEntry.Modifier;
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
-        _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
+        _targetNumberTimeStamp = _userStateController.GetTargetNumberUpdate(UnitEntry.Id)?.TimeStamp ?? DateTime.MinValue;
+        _userStateController.OnTargetNumbersUpdated += CheckRefresh;
         if (CorrectAmmoForWeapon(_weaponName))
         {
             UpdateWeaponEntry();
+        }
+    }
+
+    // Only re-render when the target number update for THIS unit actually changed,
+    // rather than on every global target number packet.
+    private void CheckRefresh()
+    {
+        var timeStamp = _userStateController.GetTargetNumberUpdate(UnitEntry.Id)?.TimeStamp ?? DateTime.MinValue;
+        if (timeStamp != _targetNumberTimeStamp)
+        {
+            _targetNumberTimeStamp = timeStamp;
+            InvokeStateChange();
         }
     }
 
@@ -213,6 +227,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnTargetNumbersUpdated -= InvokeStateChange;
+        _userStateController.OnTargetNumbersUpdated -= CheckRefresh;
     }
 }
