@@ -687,6 +687,13 @@ a, .btn-link {
     color: var(--color_text_error);
 }
 
+/* Unit card (All Units view): stack name / stats / weapon groups vertically without wrapper rows */
+.resolver_div_unitcard {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
 .resolver_div_componentblock {
     display: flex;
     margin: 0;
