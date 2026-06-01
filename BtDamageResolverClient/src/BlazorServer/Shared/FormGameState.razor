@@ -63,7 +63,7 @@
         _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
         _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
         _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
-        _userStateController.OnPlayerUnitListUpdated += InvokeStateChange;
+        _userStateController.OnGameStateUpdated += InvokeStateChange;
     }
 
     private void AddUnit()
@@ -95,6 +95,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnPlayerUnitListUpdated -= InvokeStateChange;
+        _userStateController.OnGameStateUpdated -= InvokeStateChange;
     }
 }
