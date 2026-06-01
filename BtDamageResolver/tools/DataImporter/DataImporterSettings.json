@@ -1,9 +1,6 @@
 ﻿{
   "LoggingOptions": {
-    "LogFile": "/logs/DataImporter_.log",
-    "ProgramName": "DataImporter",
     "LogToConsole": true,
-    "LogToFile": false,
     "LogLevel": "Information",
     "LogLevelOrleans": "Warning"
   },

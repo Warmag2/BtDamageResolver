@@ -1,12 +1,10 @@
 ﻿{
   "LoggingOptions": {
-    "LogFile": "/logs/BtDamageResolver_.log",
-    "ProgramName": "BtDamageResolver",
     "LogToConsole": true,
     "LogToDatabase": true,
-    "LogToFile": false,
     "LogLevel": "Information",
     "LogLevelOrleans": "Warning",
+    "LoggingIntervalMilliseconds": 15000,
     "SendDetailedErrorsToClient": true
   },
   "ClusterOptions": {

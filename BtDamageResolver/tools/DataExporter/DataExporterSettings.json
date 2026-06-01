@@ -1,9 +1,6 @@
 ﻿{
   "LoggingOptions": {
-    "LogFile": "/logs/DataExporter_.log",
-    "ProgramName": "DataExporter",
     "LogToConsole": true,
-    "LogToFile": false,
     "LogLevel": "Information",
     "LogLevelOrleans": "Warning"
   },

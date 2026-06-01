@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -8,9 +8,6 @@ using System.Text.Json.Serialization;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using Serilog.Core.Enrichers;
-using Serilog.Filters;
 
 namespace Faemiyah.BtDamageResolver.Common;
 
@@ -136,35 +133,6 @@ public static class ConfigurationUtilities
         }
 
         throw new InvalidOperationException("Could not resolve an IP address for this host.");
-    }
-
-    /// <summary>
-    /// Initializes the logging system.
-    /// </summary>
-    /// <param name="options">The logging options.</param>
-    /// <returns>A logging interface.</returns>
-    public static ILogger InitializeLogging(FaemiyahLoggingOptions options)
-    {
-        var logfile = options.LogFile;
-        var logLevel = options.LogLevel;
-        var logLevelOrleans = options.LogLevelOrleans;
-
-        var logger = new LoggerConfiguration()
-            .MinimumLevel.Is(logLevel)
-            .Enrich.With(new PropertyEnricher("ProgramName", options.ProgramName))
-            .Filter.ByExcluding(e => Matching.FromSource("Orleans").Invoke(e) && e.Level < logLevelOrleans);
-
-        if (options.LogToConsole)
-        {
-            logger.WriteTo.Console(logLevel);
-        }
-
-        if (options.LogToFile)
-        {
-            logger.WriteTo.File(logfile, logLevel, rollingInterval: RollingInterval.Day, shared: true);
-        }
-
-        return logger.CreateLogger();
     }
 
     /// <summary>

@@ -78,7 +78,12 @@ public class Startup
         services.AddServerSideBlazor();
         services.AddSignalR(options =>
         {
-            options.EnableDetailedErrors = true;
+            // Detailed SignalR errors echo server-side exception messages to the client, so only
+            // enable them outside of Production to avoid leaking internal details.
+            options.EnableDetailedErrors = !string.Equals(
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+                Environments.Production,
+                StringComparison.OrdinalIgnoreCase);
             options.MaximumReceiveMessageSize = 1048576;
         });
         services.ConfigureJsonSerializerOptions();

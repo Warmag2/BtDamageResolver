@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Threading;
-using Faemiyah.BtDamageResolver.Common.Options;
+﻿using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
-using Serilog.Extensions.Logging;
-
-using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Faemiyah.BtDamageResolver.Common.Logging;
 
 /// <summary>
-/// Specific implementation of ILoggerFactory.
-/// Use extension method to enable logging in console / asp.net applications.
-/// See <see cref="FaemiyahLoggingExtensions"/>.
+/// Specific implementation of <see cref="ILoggerFactory"/> backed by the built-in
+/// Microsoft.Extensions.Logging.Console provider, using
+/// <see cref="FaemiyahConsoleFormatter"/> for output formatting.
+/// Use the <see cref="FaemiyahLoggingExtensions"/> extension method to enable logging in console / asp.net applications.
 /// </summary>
-public class FaemiyahLoggerFactory : ILoggerFactory, ILoggerProvider
+public sealed class FaemiyahLoggerFactory : ILoggerFactory
 {
-    private static readonly SemaphoreSlim LogCreationSemaphore = new(1, 1);
-    private readonly ConcurrentDictionary<string, ILogger> _loggers;
-    private readonly SerilogLoggerFactory _logFactory;
+    private readonly ILoggerFactory _innerFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FaemiyahLoggerFactory"/> class.
@@ -28,56 +21,36 @@ public class FaemiyahLoggerFactory : ILoggerFactory, ILoggerProvider
     /// <param name="options">The logging options.</param>
     public FaemiyahLoggerFactory(IOptions<FaemiyahLoggingOptions> options)
     {
-        _logFactory = new SerilogLoggerFactory(InitializeLogging(options.Value ?? new FaemiyahLoggingOptions()));
-        _loggers = new ConcurrentDictionary<string, ILogger>();
-    }
-
-    /// <inheritdoc />
-    public ILogger CreateLogger(string categoryName)
-    {
-        LogCreationSemaphore.Wait();
-        try
-        {
-            if (_loggers.TryGetValue(categoryName, out var storedLogger))
-            {
-                return storedLogger;
-            }
-
-            var createdLogger = _logFactory.CreateLogger(categoryName);
-
-            if (!_loggers.TryAdd(categoryName, createdLogger))
-            {
-                throw new InvalidOperationException("Could not add the new logger to the dictionary. This should never happen.");
-            }
-
-            return createdLogger;
-        }
-        finally
-        {
-            LogCreationSemaphore.Release();
-        }
-    }
-
-    /// <inheritdoc />
-    public void AddProvider(ILoggerProvider provider)
-    {
-        // Inherited method that does not need to do anything.
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        var loggingOptions = options.Value ?? new FaemiyahLoggingOptions();
+        _innerFactory = LoggerFactory.Create(builder => ConfigureBuilder(builder, loggingOptions));
     }
 
     /// <summary>
-    /// Perform cleanup.
+    /// Configures a logging builder with the Faemiyah console logging setup.
     /// </summary>
-    /// <param name="disposing">Is the class disposing.</param>
-    protected virtual void Dispose(bool disposing)
+    /// <param name="builder">The logging builder to configure.</param>
+    /// <param name="options">The logging options.</param>
+    public static void ConfigureBuilder(ILoggingBuilder builder, FaemiyahLoggingOptions options)
     {
-        _loggers.Clear();
-        _logFactory.Dispose();
+        builder.ClearProviders();
+        builder.SetMinimumLevel(options.LogLevel);
+
+        // Orleans infrastructure logging is filtered to its own level, matching the previous Serilog behaviour.
+        builder.AddFilter("Orleans", options.LogLevelOrleans);
+
+        if (options.LogToConsole)
+        {
+            builder.AddConsoleFormatter<FaemiyahConsoleFormatter, ConsoleFormatterOptions>();
+            builder.AddConsole(consoleOptions => consoleOptions.FormatterName = FaemiyahConsoleFormatter.FormatterName);
+        }
     }
+
+    /// <inheritdoc />
+    public ILogger CreateLogger(string categoryName) => _innerFactory.CreateLogger(categoryName);
+
+    /// <inheritdoc />
+    public void AddProvider(ILoggerProvider provider) => _innerFactory.AddProvider(provider);
+
+    /// <inheritdoc />
+    public void Dispose() => _innerFactory.Dispose();
 }

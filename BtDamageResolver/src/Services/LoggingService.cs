@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,13 +18,12 @@ namespace Faemiyah.BtDamageResolver.Services;
 /// </summary>
 public class LoggingService : GrainService, ILoggingService
 {
-    private const int LoggingDelayMilliseconds = 15000; // Check for logs to write 4 times a minute
-
     private readonly ILogger<LoggingService> _logger;
     private readonly FaemiyahLoggingOptions _loggingOptions;
     private readonly LoggingRepository _loggingRepository;
     private readonly ConcurrentQueue<GameLogEntry> _gameLogEntries;
     private readonly ConcurrentQueue<PlayerLogEntry> _playerLogEntries;
+    private readonly int _loggingIntervalMilliseconds;
     private CancellationTokenSource _cancellationTokenSource;
     private Task _writeLoopTask;
 
@@ -47,6 +46,7 @@ public class LoggingService : GrainService, ILoggingService
     {
         _logger = logger;
         _loggingOptions = loggingOptions.Value;
+        _loggingIntervalMilliseconds = _loggingOptions.LoggingIntervalMilliseconds > 0 ? _loggingOptions.LoggingIntervalMilliseconds : 15000;
         _gameLogEntries = new ConcurrentQueue<GameLogEntry>();
         _playerLogEntries = new ConcurrentQueue<PlayerLogEntry>();
         _loggingRepository = new LoggingRepository(loggerFactory.CreateLogger<LoggingRepository>(), clusterOptions.Value);
@@ -106,8 +106,8 @@ public class LoggingService : GrainService, ILoggingService
             {
                 if (_gameLogEntries.IsEmpty && _playerLogEntries.IsEmpty)
                 {
-                    _logger.LogDebug("LoggingService has nothing to do, sleeping for {Delay} milliseconds.", LoggingDelayMilliseconds);
-                    await Task.Delay(LoggingDelayMilliseconds, cancellationToken);
+                    _logger.LogDebug("LoggingService has nothing to do, sleeping for {Delay} milliseconds.", _loggingIntervalMilliseconds);
+                    await Task.Delay(_loggingIntervalMilliseconds, cancellationToken);
                 }
                 else
                 {
@@ -133,7 +133,7 @@ public class LoggingService : GrainService, ILoggingService
                 _logger.LogError(ex, "Unexpected exception in log write loop. Retrying after delay.");
                 try
                 {
-                    await Task.Delay(LoggingDelayMilliseconds, cancellationToken);
+                    await Task.Delay(_loggingIntervalMilliseconds, cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {

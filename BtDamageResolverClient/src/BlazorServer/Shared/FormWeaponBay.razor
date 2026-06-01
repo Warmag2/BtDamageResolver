@@ -4,7 +4,6 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject CommonData _commonData
 @inject UserStateController _userStateController
-@implements IDisposable
 
 @if(_userStateController.IsConnectedToGame)
 {
@@ -60,11 +59,6 @@
     [Parameter]
     public EventCallback OnUpdated { get; set; }
 
-    protected override void OnInitialized()
-    {
-        _userStateController.OnPlayerUnitListUpdated += InvokeStateChange;
-    }
-
     public void AddWeapon()
     {
         var weaponToAdd = WeaponBay.Weapons.LastOrDefault();
@@ -89,16 +83,18 @@
     public void MoveUp()
     {
         if (UnitEntry.WeaponBays.MoveUp(WeaponBay))
+        {
             OnUpdated.InvokeAsync();
+        }
     }
 
     public void MoveDown()
     {
         if (UnitEntry.WeaponBays.MoveDown(WeaponBay))
+        {
             OnUpdated.InvokeAsync();
+        }
     }
-
-    #region Property changing delegates
 
     private void OnArcChanged(Arc arc)
     {
@@ -122,12 +118,5 @@
     {
         WeaponBay.Weapons.Remove(weaponEntry);
         OnUpdated.InvokeAsync();
-    }
-
-    #endregion
-
-    public void Dispose()
-    {
-        _userStateController.OnPlayerUnitListUpdated -= InvokeStateChange;
     }
 }

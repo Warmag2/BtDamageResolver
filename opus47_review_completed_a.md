@@ -179,3 +179,146 @@ Items moved here from `opus47_review.md` as they are addressed.
 
 - **`Actors/Logic/LogicUnit.Heat.cs:142-145` — `ResolveHeatForSingleHit` ignores the `rangeBracket` parameter** and unconditionally returns `weapon.Heat[RangeBracket.Short]`.
   - **Not a bug** (false positive). For non-aerospace weapons heat is range-independent in BT rules, and `Weapon.Heat` is only populated for `RangeBracket.Short` when filled via `CollectionExtensions.Fill` (other brackets are zeroed because `RangeAerospace` defaults to Short for non-aerospace weapons). Indexing by `rangeBracket` would return 0 for Medium/Long/etc. and produce wrong heat. Only `LogicUnitAerospace` (and capital-ship logic) overrides this. Added an in-code comment in `LogicUnit.Heat.cs` documenting the intentional behaviour so this doesn't get "fixed" by a future reviewer.
+
+
+## A6. Communication / Redis
+
+- **A6.2 `RedisCommunicator` `OnMessage(async channelMessage => …)` is effectively `async void` — exceptions thrown while handling a message are swallowed by StackExchange.Redis.**
+  - **Fixed**: replaced both duplicated inline `OnMessage` lambdas (`RedisCommunicator.Subscribe` and `RedisClientToServerCommunicator.SubscribeAdditional`) with a single shared `protected async Task ProcessChannelMessage(ChannelMessage)`. It deserializes the `Envelope` and awaits `RunProcessorMethod` inside a `try/catch (Exception)` that logs via `Logger.LogError(exception, …)` with the channel name. `ChannelMessageQueue.OnMessage(Func<ChannelMessage,Task>)` only observes the returned task to serialize processing — it never surfaces faults — so without this guard any handler exception (bad payload, grain failure, etc.) vanished silently. Now they are logged. Bonus: the two previously divergent inline lambdas can no longer drift apart.
+
+- **A6.4 `RedisCommunicator` does not implement `IDisposable` — `_redisConnectionMultiplexer` is never disposed.**
+  - **Fixed**: `RedisCommunicator` now implements `IDisposable` with a `public void Dispose()` / `protected virtual void Dispose(bool disposing)` pair. Disposal unsubscribes the listened queue, calls `UnsubscribeAll()` on the subscriber, and disposes the `ConnectionMultiplexer` (nulling the fields so it is idempotent). The concrete communicators are DI singletons, so the container now releases the Redis connection on shutdown instead of leaking it.
+
+- **A6.5 `RedisCommunicator.cs` `Publish(..., CommandFlags.FireAndForget)` + the `SendSingle`/`SendToAll` delivery warnings.**
+  - **Fixed (kept FireAndForget, removed the false-positive warnings — per maintainer decision)**: with `CommandFlags.FireAndForget`, `ISubscriber.Publish` returns `0` immediately without waiting for the subscriber count, so `SendSingle`'s `clientCount != 1` warning and `SendToAll`'s `clientCount == 0` warning fired on *every single send* — constant log spam, not a useful delivery signal. `SendEnvelope` now returns `void` (delivery count is intentionally unobservable under fire-and-forget, documented in a `<remarks>`), `SendSingle` is a thin wrapper, and the two meaningless warnings are gone. FireAndForget was retained deliberately: it is non-blocking and a disconnected browser (zero subscribers) must not stall or fault the server's publish loop. The review's "inverted log condition" framing (D2.3) was inaccurate — the condition was correct boolean logic rendered meaningless by fire-and-forget, not inverted.
+
+- **Bonus genuine bug found while editing this area (not in the review):** `RedisServerToClientCommunicator.RunProcessorMethod` dispatched `case RequestNames.GetPlayerOptions` to `HandleGetGameOptionsRequest` instead of `HandleGetPlayerOptionsRequest`. The wrong handler unpacks the payload as `GetGameOptionsRequest` and calls `IPlayerActor.RequestGameOptions` rather than `RequestPlayerOptions`, so client "get player options" requests silently fetched game options. Fixed to call `HandleGetPlayerOptionsRequest`.
+
+- **A6.1 `RedisCommunicator.cs:68` `Start()` called from the base constructor (footgun).**
+  - **Not changed**: both abstract subclasses (`RedisServerToClientCommunicator`, `RedisClientToServerCommunicator`) and both concrete ones (`ServerToClientCommunicator`, `ClientToServerCommunicator`) do no initialization after `base(...)`, so there is no real construction-ordering hazard today. Moving `Start()` out of the ctor would force every DI registration / factory site to remember to call it, trading a theoretical footgun for a real "forgot to start the communicator" footgun. Left as-is.
+
+- **A6.3 `RedisCommunicator.cs` `CheckChannelConnection` re-subscribes on `IsConnected==false` but never reconnects the multiplexer; "can spin".**
+  - **Not changed**: `ConnectionMultiplexer` reconnects its sockets internally and automatically; after a drop, `GetSubscriber()` returns a working subscriber once the multiplexer heals, so the manual unsubscribe/resubscribe is belt-and-suspenders rather than an infinite loop in normal operation. A real reconnect/backoff policy is a connection-configuration concern (`AbortOnConnectFail`, retry policy on the connection string) and reworking it risks destabilizing a currently-working path for negligible benefit.
+
+- **A6.6 `Services/ServerToClientCommunicator.cs` `ValidateObject` allocates a `ValidationContext` per call on "hot endpoints".**
+  - **Not changed (false premise)**: `ValidateObject` is only invoked from `HandleConnectRequest` — the once-per-session connect handshake, not a per-packet hot path. The per-connect DataAnnotations reflection cost is irrelevant to runtime throughput.
+
+- **A6.7 `Services/ServerToClientCommunicator.cs:280` `SendErrorMessage(name, string.Empty)` used as a non-error "all clear" signal.**
+  - **Not changed (intentional, already documented in code)**: `HandleSendPlayerStateRequest` deliberately clears the player's error message on success so a spectator knows he is "in spec" — the existing in-code comment explains this is the only error-channel message a correctly-working game produces. Introducing a dedicated event type is a wire-protocol change spanning client and server with no functional benefit.
+
+- **A6.8 `Services/ServerToClientCommunicator.cs:43-284` — 17 nearly identical `Handle…` methods.**
+  - **Not changed**: collapsing the drift requires a source generator or a reflection-based dispatcher; the explicit per-handler bodies actually differ (distinct request types, grain calls, and error-handling nuances such as `HandleSendPlayerStateRequest`'s special logging), and the explicit switch is debuggable and AOT-friendly. Indirection cost exceeds duplication cost here.
+
+- **A6.9 `Services/CommunicationServiceClient.cs:22` `GrainService => GetGrainService(CurrentGrainReference.GrainId)` invoked per send.**
+  - **Not changed (canonical framework pattern)**: this is the textbook Orleans `GrainServiceClient` usage (matches Microsoft's documentation verbatim). `CurrentGrainReference` is execution-context dependent, so caching the resolved service in a field would be incorrect rather than merely an optimization. `GetGrainService` is a cheap local resolution.
+
+## A7. Logging / PostgreSQL
+
+- **A7.1 `LoggingRepository` inserted one row at a time inside a transaction (a round-trip per entry).**
+  - **Fixed**: `WriteLogEntries` now builds a single `NpgsqlBatch` (one `NpgsqlBatchCommand` per entry) and executes it with one `ExecuteNonQueryAsync`, still wrapped in one transaction. Npgsql pipelines all the inserts in a single network round-trip instead of N round-trips, which matters for the per-turn burst of game/player log entries. The transaction is retained so the batch is atomic — on failure the *entire* drained batch is re-enqueued and never partially committed (no duplicate rows on retry). `BuildCommand`/`BuildGameLogCommand`/`BuildPlayerLogCommand` were reshaped to return `NpgsqlBatchCommand` (no longer take `connection`/`transaction`). Did not use `COPY`: batch sizes are small (a handful per flush) and `COPY` would lose the parameterized-insert safety for marginal benefit at this volume.
+
+- **A7.4 `LoggingRepository` re-enqueued entries on failure unconditionally — a permanently-down DB meant unbounded memory growth.**
+  - **Fixed**: added `MaxRetainedLogEntries = 50000`. On a write failure, if the queue backlog is already at/above that ceiling the failed batch is dropped (with an error log naming the backlog size) instead of re-enqueued; otherwise it is re-enqueued for retry as before. This bounds memory when the database is unavailable for a long time. The "no backoff" half of the finding was already handled: `LoggingService.LogWriteLoop` delays a full interval after any exception before retrying, so the cap + the existing delay together give bounded-memory backoff.
+
+- **A7.7 `LoggingService.cs` hard-coded `15000` ms (`LoggingDelayMilliseconds`).**
+  - **Fixed**: added `int LoggingIntervalMilliseconds` to `FaemiyahLoggingOptions` (default 15000, documented). `LoggingService` reads it into a `_loggingIntervalMilliseconds` field (falling back to 15000 if a non-positive value is configured) and uses it for both the idle sleep and the post-exception retry delay. Surfaced the key in `Silo/SiloSettings.json` under `LoggingOptions` for discoverability. The const is gone.
+
+- **A7.2 `LoggingRepository` `AddWithValue(...)` untyped; FNV-1a 64-bit collision rate.**
+  - **Not changed**: Npgsql's inference is already correct here — `Fnv1aHash64` returns `long`, which maps to the `BIGINT` columns; `ActionType`/`ActionData` map to `SMALLINT`/`INT` via the standard integer conversions. Forcing explicit `NpgsqlDbType` would actually introduce risk on the `EventTime` parameter (Npgsql picks `timestamp` vs `timestamptz` from the `DateTime.Kind`; hard-coding the type could mismatch the `timestamp without time zone` column). The FNV-1a choice is intentional and documented in the class summary (deterministic, cross-session-stable IDs for Grafana joins); a 64-bit space makes collisions negligible for log-analytics cardinality, and these are non-security identifiers, so cryptographic hashing would only add cost.
+
+- **A7.3 `LoggingRepository` unquoted PascalCase identifiers (`ResolverLogGame`).**
+  - **Not a bug**: verified against `infra/postgresql/scripts/06_Resolver_Logging.sql` — the DDL also uses unquoted PascalCase, so PostgreSQL folds *both* the table/column definitions and the repository's DML to the same lowercase form; they match. Quoting the DML as `"ResolverLogGame"` would instead look for a table literally named with capitals (which does not exist) and break every insert. Left unquoted intentionally.
+
+- **A7.5 `LoggingService.cs` `Task.Run(() => LogWriteLoop(...))` runs the loop off the Orleans scheduler.**
+  - **Not changed (intentional)**: the write loop performs blocking-ish database I/O on a fixed interval; running it on the Orleans single-threaded grain scheduler would tie up the activation and could stall other `GrainService` work. Offloading to a thread-pool task is the right call here, and the producer/consumer boundary is explicitly made safe with `ConcurrentQueue<T>` (lock-free, designed exactly for this multi-producer/single-consumer pattern). This is a deliberate design, not an accident "papered over".
+
+- **A7.6 `LoggingService.cs` final flush after `CancelAsync` races in-flight enqueues.**
+  - **Not changed**: the only producers are `LogGameAction`/`LogPlayerAction`, invoked by grains during normal operation. By the time `Stop()` runs the final flush the silo is shutting down and grain traffic is being drained, so the window for a late enqueue is tiny and the worst case is a single late log row being lost at shutdown — an acceptable, non-correctness-affecting outcome for best-effort analytics logging. Closing it fully would require a quiescence handshake disproportionate to the value.
+---
+
+## Serilog removal (user-initiated dependency reduction)
+
+**Context:** User requested removing Serilog entirely in favour of the Microsoft.Extensions.Logging (MEL) infrastructure already present, to reduce dependencies/memory. Only console logging is needed (file logging was dropped; a future docker volume can capture container stdout instead).
+
+**Fixed / changed:**
+- **`Common.csproj`** — removed `Serilog.Extensions.Logging` (10.0.0), `Serilog` (4.3.1), `Serilog.Sinks.Console` (6.1.1), `Serilog.Sinks.File` (7.0.0); added `Microsoft.Extensions.Logging.Console` (10.0.8).
+- **`FaemiyahLoggerFactory.cs`** — rewritten as a thin `ILoggerFactory` wrapper over `LoggerFactory.Create(...)` using the built-in console provider. Removed the Serilog `SerilogLoggerFactory` wrapping, the `SemaphoreSlim LogCreationSemaphore` and `ConcurrentDictionary` logger cache, and the dual `ILoggerProvider` implementation. A new static `ConfigureBuilder(ILoggingBuilder, FaemiyahLoggingOptions)` clears providers, sets the minimum level, applies an `Orleans` category filter at `LogLevelOrleans`, and (when `LogToConsole`) registers the custom formatter. Class marked `sealed` to satisfy the dispose-pattern analyzers.
+  - **Also resolves A9 bullet** ""`FaemiyahLoggerFactory.cs:38` — `LogCreationSemaphore.Wait()` synchronously"": the semaphore/cache is gone entirely, so the synchronous blocking call no longer exists. A9 bullet removed from the review.
+- **`FaemiyahConsoleFormatter.cs`** (new) — a single-line `ConsoleFormatter` named `faemiyah` producing `{ISO-8601 UTC}.fffZ - [{LogLevel}] - {Category} - {message}` with any exception appended on following lines, preserving the previous Serilog console format.
+- **`FaemiyahLoggingOptions.cs`** — switched `LogLevel`/`LogLevelOrleans` from Serilog `LogEventLevel` to MEL `LogLevel` (config strings ""Information""/""Warning""/""Debug"" bind unchanged). Removed the now-unused `LogFile`, `LogToFile` and `ProgramName` options and the `System.Reflection` using.
+- **`ConfigurationUtilities.cs`** — removed the Serilog `InitializeLogging` method and the three `Serilog` usings.
+- **Config JSON** — removed `LogFile`/`ProgramName`/`LogToFile` keys from `SiloSettings.json`, `DataImporterSettings.json`, `DataExporterSettings.json` and BlazorServer `CommunicationSettings.json`. (`LogToDatabase` retained in `SiloSettings.json` — DB logging is handled by the custom `LoggingService`/`LoggingRepository`, not a Serilog sink.)
+
+**Not changed / notes:**
+- `DataExporter`/`DataImporter` construct `new FaemiyahLoggerFactory(Options.Create(...))` directly; the constructor signature is unchanged so they keep working.
+- The custom `FaemiyahLoggerFactory` still builds a self-contained pipeline, so externally-added filters (e.g. `conf.AddFilter(""DeploymentLoadPublisher"", ...)` in `Silo/Program.cs`) remain no-ops as before — behaviour preserved, not a regression introduced here.
+- Serilog was *not* actually unmaintained (factually it is still maintained); the change stands purely on dependency/footprint reduction and the console-only requirement.
+- **Release flow:** `BlazorServer.csproj` consumes `Faemiyah.BtDamageResolver.Api`/`Common` as NuGet `PackageReference`s from the local `CustomNugets` feed. Ran `build.bat` (`build_rollversion.bat` → BuildPipeline rolled Api/Common to **0.0.446**; `build_producenugets.bat` → Release-built and copied the new `.nupkg`s into `CustomNugets\`), then bumped the client's two `PackageReference` versions `0.0.445` → `0.0.446`. Both solutions rebuild clean against the new version, so the client now consumes the Serilog-free Common.
+
+**Build:** Server (`BTDamageResolver.slnx`) and client (`BtDamageResolverClient.slnx`) both build with 0 warnings / 0 errors. `grep` confirms no remaining `Serilog`/`LogEventLevel`/`LogToFile`/`InitializeLogging`/`ProgramName` references in source.
+
+---
+
+## A8. Cryptography / Security
+
+**A8.1 Password hasher (Actors/Cryptography/FaemiyahPasswordHasher.cs)** — **Fixed.** Replaced single-iteration SHA-512 with PBKDF2 (`Rfc2898DeriveBytes.Pbkdf2`, HMAC-SHA256). 32-byte random salt retained, 32-byte derived key, constant-time `FixedTimeEquals` comparison retained. `IHasher` signature unchanged. Per user decision this is an **outright switch with no migration / no embedded algorithm-version tag** — old SHA-512 hashes will no longer verify, and because account/game creation is trust-on-first-use (a record is only created when `PasswordHash == null`), any pre-existing record is effectively locked until its persistent grain state is cleared. The operator clears state out-of-band so accounts/games are recreated fresh on next use. **Iteration count set to 100,000** (user choice) to stay snappy on the target RK3588 (Cortex-A76) hardware; since there is no stored iteration count, this value is fixed for the lifetime of stored hashes (changing it later invalidates them).
+
+**A8.2 Trust-on-first-use account creation (PlayerActor.Connections.cs)** — **Not changed (intentional).** The tool has no registration system by design; first connection with a free player name claims it. Confirmed acceptable by the project owner for this casual, registration-less tool.
+
+**A8.3 Trust-on-first-use game passwords + empty password (GameActor.cs)** — **Not changed (intentional).** First joiner sets the game password; an empty password intentionally means an unprotected game. Owner confirmed ""empty passwords are perfectly OK.""
+
+**A8.4 `SendDetailedErrorsToClient` echoes stack traces (PlayerActor.Sends.cs)** — **Partially changed.** Left the feature intact (useful in development). Changed the **code default to `false`** (`FaemiyahLoggingOptions` ctor) so the safe behaviour applies when the key is absent. Per owner request the active `SiloSettings.json` value is **kept `true` during development**; the owner will flip it to `false` when moving to a hardened deployment.
+
+**A8.5 `SendDamageInstance` ownership (GameActor.cs)** — **Not changed (premise does not match the model).** `DamageInstance` has **no attacker field** — it is a manual damage-application entity (target `UnitId` + damage/direction/cover). Requiring the sender to own the *target* would break the normal use case (applying damage to opponents' units). The existing ""sender must be a member of the game"" check is the correct trust boundary for a cooperative tabletop aid. Owner confirmed: ""Damage instances must be accepted from users in the same game.""
+
+**A8.6 `MoveUnit` differing messages (GameActor.Tools.cs)** — **Not a bug.** The differing ""unit not found"" / ""not in the game"" / ""unknown error"" strings are **server-side log messages only**; every branch returns a bare `false` to the client. No client-facing information disclosure.
+
+**A8.7 `Credentials.Name` regex allows empty (Api/Entities/Credentials.cs)** — **Fixed.** Changed `^[A-Za-z0-9_-]*$` → `^[A-Za-z0-9_-]+$` so the regex itself rejects an empty name, aligning it with the existing `StringLength(MinimumLength = 1)`. (Reaches the Blazor client after the next Api nuget version roll; server-side validation in `ServerToClientCommunicator.ValidateObject` already enforces it.)
+
+**A8.8 ConnectRequest validation message join has no length cap (ServerToClientCommunicator.HandleConnectRequest)** — **Not a bug.** The joined strings are fixed `ErrorMessage` attribute texts over a bounded, fixed set of `ConnectRequest` properties — not attacker-controllable content, so the result cannot grow ""huge.""
+
+**A8.9 No rate-limiting on Redis-driven requests** — **Not changed (out of scope).** Redis is internal, password-protected infrastructure; a peer must already be authenticated to it to publish. General request rate-limiting is a sizeable feature beyond this review pass. Residual risk acknowledged: a compromised/authenticated Redis peer could spam the silo.
+
+**A8.10 SignalR `EnableDetailedErrors = true` unconditional (BlazorServer/Startup.cs)** — **Fixed.** Now enabled only when `ASPNETCORE_ENVIRONMENT` is not `Production` (`Environments.Production`), so production deployments no longer echo server exception text to SignalR clients while development keeps detailed errors.
+
+**Build:** Server (`BTDamageResolver.slnx`) and client (`BtDamageResolverClient.slnx`) both build clean (0 errors; only pre-existing unrelated warnings).
+
+---
+
+## A9. General C# hygiene — closed with no code changes
+
+Reviewed each item against the current code; nearly all were already addressed by earlier passes or are intentional/low-value. Owner agreed to close A9 without changes.
+
+**A9.1 Broad `catch (Exception)` losing stack traces** — **Already addressed (stale finding).** Every cited site already (a) logs the full exception via `_logger.LogError(ex, ...)` (preserving the stack trace) and (b) passes `ex` as the inner exception when wrapping (`DataAccessException` has an `(errorCode, message, innerException)` ctor, used in `RedisEntityRepository` and `CachedEntityRepository` at every wrap site). `LoggingService` and `LoggingRepository` background-loop catches log `ex` and retry/re-enqueue, which is the correct pattern for a long-running worker. The cited line numbers no longer match current code. Nothing is lost.
+
+**A9.2 Constructor-time Redis connections** — **Not changed (intentional fail-fast); partly stale.** `RedisCommunicator` already defers `ConnectionMultiplexer.Connect` to its `Start()` method, not the constructor. `RedisEntityRepository` (a DI singleton) does connect in its constructor; the owner confirmed keeping this as deliberate fail-fast — docker-compose ordering brings Redis up first, and `ConnectionMultiplexer` auto-reconnects for later disconnects. A startup failure when Redis is genuinely unreachable is desirable here.
+
+**A9.3 Magic numbers** — **Mostly already addressed; remainder is domain data.** `15000` ms is now the documented default of the configurable `LoggingIntervalMilliseconds` option (done in A7). `MaximumGameEntryAgeHours` is already a named `Common.Constants.Settings` constant (24). The remaining values — the heat scale, the to-hit/target-number table, and the movement-modifier array — are fixed BattleTech rules data tables; naming individual cells would not improve clarity and risks transcription errors. Left as-is.
+
+**A9.4 Settings split across `Common.Constants.Settings` and `Api.Constants`** — **Not changed.** Centralising would be broad, mechanical churn touching many files for no behavioural benefit; the split follows the assembly boundary (shared vs API-specific) and is not error-prone in practice.
+
+**A9.5 No `ConfigureAwait(false)` in `Api`/`Services`** — **Not changed (no effect here).** The code runs inside Orleans grains and ASP.NET Core, neither of which installs a `SynchronizationContext`, so `ConfigureAwait(false)` has no functional effect. The hot repository paths already use it where it was easy. Adding it pervasively would be noise without benefit.
+
+**A9.6 `protected readonly` fields instead of properties (`LogicUnit.cs`)** — **Not changed.** Exposing constructor-injected dependencies as `protected readonly` fields to subclasses is a standard, perfectly safe pattern (the fields are immutable). Converting to protected properties is cosmetic and would churn the base class and every `LogicUnit` subclass for no real gain.
+
+---
+
+## A10. Project structure — closed with no code changes
+
+These are architectural observations about a mature, working codebase. Each ""fix"" is broad, mechanical churn with real regression/packaging risk and no behavioural or performance benefit. Owner reviewed the options (including a detailed walk-through of A10.1) and chose to close A10 without changes.
+
+**A10.1 `Logic` (in `Actors`) consumed via `Api.ClientInterface...RepositoryProvider` — ""boundary muddled""** — **Not changed (shared-by-design).** `Api` is the NuGet-packaged assembly consumed by the Blazor client, and its `ClientInterface.*` namespace holds live infrastructure (Redis repositories/communicators, `RepositoryProvider`, compression, request types). Both processes legitimately depend on it: the Blazor client uses `Api.ClientInterface.Repositories/Communicators/...` directly, and the silo reaches the same types transitively (`Actors → ActorInterfaces → Api`; `Services → Api`). ""ClientInterface"" denotes ""client of the Redis bus"" — and both the UI **and** the silo are clients of that bus/entity store — not ""the Blazor UI."" The only concrete side effect is that the client NuGet transitively pulls `StackExchange.Redis`, which is justified because the client genuinely talks to Redis directly. A real fix would mean splitting `Api` into `Api.Contracts` (DTOs/enums, no infra deps) + `Api.Messaging` (Redis infra), re-namespacing dozens of files, and reworking the NuGet packaging (`build.bat` rolls `Api`+`Common`) and all references — high churn for a purely conceptual gain. Owner chose to leave it.
+
+**A10.2 `RepositoryProvider` concrete, ""hard to mock""** — **Not changed.** Its members are all already `IEntityRepository<,>` interfaces, so tests can construct one with mocked repositories via the existing constructor today. An extracted `IRepositoryProvider` would add an indirection layer for negligible benefit.
+
+**A10.3 `IEntityRepository` no read/write split** — **Not changed.** CQRS-style interface segregation over a small, fixed set of repositories is a large conceptual change with little practical payoff; the single interface is simple and works.
+
+**A10.4 `LogicUnitFactory` switch breaks open/closed** — **Not changed (pragmatic).** The unit-type set is closed and stable (fixed BattleTech unit types). A `switch` factory over a stable enumeration is readable and correct; a registration/reflection-based factory would add machinery to satisfy OCP for a set that effectively never grows.
+
+**A10.5 Two unit-list representations (`Actors.States.Types.UnitList` vs `PlayerState.UnitEntries`)** — **Not changed.** They serve different layers (grain persistent state vs API/player-state DTO). Unifying them would ripple through serialization and grain state with regression risk for marginal benefit.
+
+**A10.6 `ServerToClientCommunicator` (Services) extends `RedisServerToClientCommunicator` (`Api.ClientInterface.Communicators`)** — **Not changed (cosmetic).** Same root cause as A10.1: `ClientInterface` means ""Redis-bus client,"" which the silo also is. A rename/relocate is purely cosmetic and would ripple across both solutions.
+
+**A10.7 Event names wired by string in `RedisServerToClientCommunicator`** — **Not a defect.** The names are already centralised as `Api.Constants.EventNames` constants; dispatching on those constant string values in a switch is a normal, readable pattern.
+
+**A10.8 Near-circular references mediated by `ServiceInterfaces`** — **Not a defect (correct pattern).** Placing the shared interfaces in a separate `ServiceInterfaces` assembly to break the `Services`/`Actors`/`Api` cycle is textbook dependency inversion — the intended design, not an accident.

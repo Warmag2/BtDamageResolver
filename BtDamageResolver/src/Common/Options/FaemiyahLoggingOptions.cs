@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Serilog.Events;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Faemiyah.BtDamageResolver.Common.Options;
 
@@ -13,30 +12,23 @@ public class FaemiyahLoggingOptions
     /// </summary>
     public FaemiyahLoggingOptions()
     {
-        LogLevel = LogEventLevel.Debug;
-        LogLevelOrleans = LogEventLevel.Debug;
+        LogLevel = LogLevel.Debug;
+        LogLevelOrleans = LogLevel.Debug;
         LogToConsole = true;
         LogToDatabase = true;
-        LogToFile = false;
-        ProgramName = Assembly.GetExecutingAssembly().GetName().Name;
-        LogFile = $"/logs/{ProgramName}.log";
-        SendDetailedErrorsToClient = true;
+        LoggingIntervalMilliseconds = 15000;
+        SendDetailedErrorsToClient = false;
     }
-
-    /// <summary>
-    /// Gets or sets the name of the logfile to log to.
-    /// </summary>
-    public string LogFile { get; set; }
 
     /// <summary>
     /// Gets or sets log level for program logic.
     /// </summary>
-    public LogEventLevel LogLevel { get; set; }
+    public LogLevel LogLevel { get; set; }
 
     /// <summary>
     /// Gets or sets log level for orleans infrastructure logic.
     /// </summary>
-    public LogEventLevel LogLevelOrleans { get; set; }
+    public LogLevel LogLevelOrleans { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether log lines are appended to the console.
@@ -52,17 +44,12 @@ public class FaemiyahLoggingOptions
     public bool LogToDatabase { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether log lines are appended to a file.
-    /// </summary>
-    public bool LogToFile { get; set;  }
-
-    /// <summary>
-    /// Gets or sets name of the executing program.
+    /// Gets or sets the interval, in milliseconds, between database log-write loop iterations.
     /// </summary>
     /// <remarks>
-    /// This property will be enriched onto each log line.
+    /// Controls how often queued game/player log entries are flushed to the database. Defaults to 15000 (four flushes per minute).
     /// </remarks>
-    public string ProgramName { get; set; }
+    public int LoggingIntervalMilliseconds { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether exception details (message and stack trace)

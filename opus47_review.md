@@ -14,62 +14,6 @@ This is intentionally exhaustive — minor things are included on purpose, as re
 
 # PART A — SERVER (BtDamageResolver)
 
-## A6. Communication / Redis
-
-- **`RedisCommunicator.cs:68` — `Start()` called from base constructor.** If a subclass adds initialisation, it runs after. Footgun.
-- **`RedisCommunicator.cs:160-166` — `OnMessage(async channelMessage => …)`** is effectively `async void` from StackExchange's perspective; exceptions are swallowed.
-- **`RedisCommunicator.cs:147-155` — `CheckChannelConnection`** reconnects on `IsConnected==false` and re-subscribes, but never reconnects the underlying `ConnectionMultiplexer`. Can spin.
-- **`RedisCommunicator` does not implement `IDisposable`** — `_redisConnectionMultiplexer` is never disposed.
-- **`RedisCommunicator.cs:115` — `Publish(..., CommandFlags.FireAndForget)`** swallows failures; combined with the inverted log condition the system never notices undelivered messages.
-- **`Services/ServerToClientCommunicator.cs:286-292` — `ValidateObject`** allocates a `ValidationContext` per call and uses DataAnnotations reflection on hot endpoints.
-- **`Services/ServerToClientCommunicator.cs:280` — `SendErrorMessage(name, string.Empty)`** uses the error channel for non-error "all clear" signalling. Should be a separate event.
-- **`Services/ServerToClientCommunicator.cs:43-284` — 17 nearly identical `Handle…` methods.** A generic dispatcher or source generator would remove drift.
-- **`Services/CommunicationServiceClient.cs:22` — `GrainService => GetGrainService(CurrentGrainReference.GrainId);`** invoked on every send; allocates per call.
-
-## A7. Logging / PostgreSQL
-
-- **`Services/Database/LoggingRepository.cs:55-66` — inserts one row at a time inside a transaction.** Use `NpgsqlBatch` or `COPY` for high-volume logging.
-- **`LoggingRepository.cs:91-93, 104-105` — `AddWithValue("playerId", entry.PlayerId.Fnv1aHash64())`** untyped (Npgsql infers). FNV-1a 64-bit has non-trivial collision rate at scale; cryptographic IDs would be safer.
-- **`LoggingRepository.cs:88, 101` — unquoted PascalCase identifiers (`ResolverLogGame`).** PostgreSQL folds unquoted identifiers to lowercase — misleading at minimum.
-- **`LoggingRepository.cs:67-74` — re-enqueues entries on failure** unconditionally. Permanently down DB → infinite retry, growing memory, no backoff.
-- **`LoggingService.cs:61` — `Task.Run(() => LogWriteLoop(...))` from inside `Start()` of a `GrainService`** runs the loop on a Threadpool thread instead of the Orleans single-threaded scheduler — defeats `GrainService` semantics; concurrent producer/consumer hazards (papered over by `ConcurrentQueue`).
-- **`LoggingService.cs:74-76` — final flush after `CancelAsync`** races any in-flight enqueues.
-- **`LoggingService.cs:23` — hard-coded `15000` (`LoggingDelayMilliseconds`)** magic number; belongs in `FaemiyahLoggingOptions`.
-
-## A8. Cryptography / Security
-
-- **`Actors/Cryptography/FaemiyahPasswordHasher.cs`** uses single-iteration SHA-512 with a 32-byte salt. Class doc admits it's weak. SHA-512 is GPU-friendly; trivial to crack. Use PBKDF2/Argon2/bcrypt with a real work factor. No algorithm/version tag on stored hash → no upgrade path.
-- **`Actors/PlayerActor.Connections.cs:26-31` — trust-on-first-use account creation.** First request with a given player name *creates* the account and stores its password. No registration step. Anyone can claim any unused player ID.
-- **`Actors/GameActor.cs:149-157` — same TOFU for game passwords.** First joiner sets it. If `password == string.Empty`, `PasswordHash` stays `null` and the game is unprotected forever; no way to set later.
-- **`Actors/PlayerActor.Sends.cs:128-132` — `SendDetailedErrorsToClient`** echoes `ex.Message + "\n" + ex.StackTrace` to the client when the flag is on. Easy info leak if misconfigured.
-- **`Actors/GameActor.cs:121-138` — `SendDamageInstance`** has no ownership check on attacker or target. Any player in the game can fabricate damage on any unit.
-- **`Actors/GameActor.Tools.cs:99` — `MoveUnit`** leaks "unit not found" vs "you're not in the game" vs "not authorised" via different log paths. Minor info disclosure.
-- **`Api/Entities/Credentials.cs:36` — regex `^[A-Za-z0-9_-]*$`** allows empty name; only `StringLength(MinimumLength=1)` saves it. Merge the checks.
-- **`Services/ServerToClientCommunicator.HandleConnectRequest:50` — error message concatenates `string.Join(", ", validation results)`** with no length cap. Potentially huge.
-- **No rate-limiting** on Redis-driven request handling. A peer that reaches Redis can spam the silo.
-- **`Startup.cs:80` (BlazorServer) — `EnableDetailedErrors = true` for SignalR unconditionally.** Leaks stack traces in production.
-
-## A9. General C# hygiene
-
-- **`Common/Logging/FaemiyahLoggerFactory.cs:38` — `LogCreationSemaphore.Wait()`** synchronously instead of `WaitAsync`.
-- **Broad `catch (Exception)`** everywhere: `PlayerActor.Sends.cs:126`, `CachedEntityRepository.cs:46/68/90/132`, `RedisEntityRepository.cs:59/86/114/144/165/195`, `LoggingRepository.cs:67`, `LoggingService.cs:133`. Many translate to `throw new DataAccessException(DataAccessErrorCode.OperationFailure)` *without inner exception* → stack traces lost.
-- **Constructor-time work in `RedisEntityRepository` and `RedisCommunicator`** (Redis connections) — DI singletons that fail in ctor break silo startup.
-- **Magic numbers everywhere**: heat tables (`UnitEntry.cs:118-228`), target-number table (`LogicUnit.Hit.cs:69-78`), `MovementModifierArray` (`LogicUnit.HitModifier.cs:16`), `15000` ms (`LoggingService.cs:23`), `MaximumGameEntryAgeHours` (`GameEntryRepositoryActor.cs:22`).
-- **Settings split between `Common.Constants.Settings` and `Api.Constants`** — not centralised.
-- **No `ConfigureAwait(false)`** in library code in `Api`/`Services` despite being usable as library code.
-- **Many `protected readonly` fields exposed instead of properties** in `Actors/Logic/LogicUnit.cs:19-58`.
-
-## A10. Project structure
-
-- `Logic` lives inside `Actors` but is consumed via `Api.ClientInterface.Repositories.Providers.RepositoryProvider` — `Api` (client-facing) is hosting server runtime types. Boundary muddled.
-- `RepositoryProvider` is a concrete class injected into every `LogicUnit*` constructor — tight coupling; hard to mock.
-- `IEntityRepository` is implemented twice (Redis + Cached) used directly; no read-only/write-only split.
-- `LogicUnitFactory` switch breaks open/closed: every new unit type touches the factory.
-- `Actors.States.Types.UnitList` and `Api.Entities.PlayerState.UnitEntries` (List<UnitEntry>) are two representations of the same concept.
-- `ServerToClientCommunicator` (`Services`) extends `RedisServerToClientCommunicator` (`Api.ClientInterface.Communicators`) — server-side logic in a client-named namespace.
-- Magic event names live in `Api.Constants.EventNames` wired by string in `RedisServerToClientCommunicator`.
-- Near-circular references mediated only by `ServiceInterfaces`: `Services` references `Api`, `Actors` references both, `Api` depends on `Services` interfaces.
-
 ---
 
 # PART B — BLAZOR CLIENT (BtDamageResolverClient/BlazorServer)
@@ -217,7 +161,7 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 - **Mixed TFMs.** All BtDamageResolver projects target `net10.0` but `CompressionLzma/src/CompressionLzma/CompressionLzma.csproj:4` targets `net9.0`.
 - **No `global.json`** to pin SDK version, no `<RollForward>` policy → non-reproducible across machines.
-- **Mixed package family versions:** `Microsoft.Orleans.*` at `10.1.0` vs `Microsoft.Extensions.Hosting/Logging`/`Microsoft.AspNetCore.SignalR.Client` at `10.0.8`; `Microsoft.VisualStudio.Web.CodeGeneration.Design` at `10.0.2`. `Serilog.Extensions.Logging` `10.0.0` with `Serilog` `4.3.1`, `Sinks.Console` `6.1.1`, `Sinks.File` `7.0.0`. No central `Directory.Packages.props`.
+- **Mixed package family versions:** `Microsoft.Orleans.*` at `10.1.0` vs `Microsoft.Extensions.Hosting/Logging`/`Microsoft.AspNetCore.SignalR.Client` at `10.0.8`; `Microsoft.VisualStudio.Web.CodeGeneration.Design` at `10.0.2`. No central `Directory.Packages.props`.
 - **Stale dep:** `System.ComponentModel.Annotations 5.0.0` in `Api.csproj` is essentially superseded — remove.
 - **Heavy deps for client:** `NuGet.Packaging`/`NuGet.Protocol 7.6.0` in `BlazorServer.csproj` — confirm needed.
 - **Custom NuGets checked in:** `CustomNugets\*.nupkg` (seven versions `0.0.405`-`0.0.434` of `Api`/`Common`). Active is `0.0.440` → none match referenced version; repo bloat.
@@ -287,7 +231,6 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 ## C6. Logging / observability
 
-- `Common.csproj` pulls Serilog + console + file sinks, but **no `Serilog.Sinks.PostgreSQL`** despite `SiloSettings.json` setting `LogToDatabase: true`. Verify package path.
 - **No OpenTelemetry / metrics / tracing** despite Orleans providing rich metrics. No Prometheus exporter.
 - **Grafana datasource is Postgres only** — no system/runtime metrics dashboards. Only `dashboard_resolver_events.json`.
 - **No `/health` or `/metrics` endpoint** in BlazorServer `Startup.cs` (no `AddHealthChecks()`/`MapHealthChecks`).

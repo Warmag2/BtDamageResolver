@@ -47,6 +47,16 @@ public class UserStateController
     public event Action OnGameUnitListUpdated;
 
     /// <summary>
+    /// Event for when player unit list gets changed.
+    /// </summary>
+    public event Action OnPlayerUnitListUpdated;
+
+    /// <summary>
+    /// Event for when game state changes.
+    /// </summary>
+    public event Action OnGameStateUpdated;
+
+    /// <summary>
     /// Event for when unit of invalid units changes.
     /// </summary>
     public event Action OnInvalidUnitListUpdated;
@@ -65,11 +75,6 @@ public class UserStateController
     /// Event for when damage reports get updated.
     /// </summary>
     public event Action OnDamageReportsUpdated;
-
-    /// <summary>
-    /// Event for when player unit list gets changed.
-    /// </summary>
-    public event Action OnPlayerUnitListUpdated;
 
     /// <summary>
     /// Event for when game entries are received.
@@ -126,9 +131,12 @@ public class UserStateController
 
             // The below method checks whether it is actually necessary to invoke UI refresh.
             // Most of the time, this is not the case
-            UpdateUnitList();
+            if(UpdateUnitList())
+            {
+                NotifyGameUnitListUpdated();
+            }
 
-            NotifyPlayerUnitListUpdated();
+            NotifyGameStateUpdated();
         }
     }
 
@@ -311,6 +319,17 @@ public class UserStateController
     }
 
     /// <summary>
+    /// Notification for when game state changes.
+    /// </summary>
+    public void NotifyGameStateUpdated()
+    {
+        if (PlayerState != null)
+        {
+            OnGameStateUpdated?.Invoke();
+        }
+    }
+
+    /// <summary>
     /// Notification for when list of invalid units updates.
     /// </summary>
     public void NotifyInvalidUnitListUpdated()
@@ -330,6 +349,17 @@ public class UserStateController
         {
             PlayerState.TimeStamp = DateTime.UtcNow;
             OnPlayerStateUpdated?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// Notification for when player list orders change.
+    /// </summary>
+    public void NotifyGameUnitListUpdated()
+    {
+        if (PlayerState != null)
+        {
+            OnGameUnitListUpdated?.Invoke();
         }
     }
 
@@ -465,7 +495,7 @@ public class UserStateController
         return null;
     }
 
-    private void UpdateUnitList()
+    private bool UpdateUnitList()
     {
         var newUnitList = new ConcurrentDictionary<Guid, (string PlayerId, UnitEntry Unit)>();
 
@@ -491,6 +521,7 @@ public class UserStateController
         if (UnitList.Count != newUnitList.Count || newUnitList.Any(u => !UnitList.ContainsKey(u.Key)))
         {
             UnitList = newUnitList;
+            return true;
         }
         else
         {
@@ -501,9 +532,11 @@ public class UserStateController
                 if (oldUnit.PlayerId != newUnit.Value.PlayerId || oldUnit.Unit.Name != newUnit.Value.Unit.Name || oldUnit.Unit.Type != newUnit.Value.Unit.Type)
                 {
                     UnitList = newUnitList;
-                    break;
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 }

@@ -1,11 +1,11 @@
-﻿@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+﻿@inherits BaseFaemiyahComponent
+@using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
+@implements IDisposable
 
 @if (_userStateController.IsConnectedToGame)
 {
-    var playerStateList = DisplayOwnUnits ?
-           _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator) :
-           _userStateController.GameState.Players.Where(p => p.Value.PlayerId != _userStateController.PlayerName).Select(p => p.Value).Where(p => !p.IsSpectator);
+    var playerStateList = _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator);
 
     var spectatorList = _userStateController.GameState.Players.Values.Where(p => p.IsSpectator).Select(p => p.PlayerId).ToList();
 
@@ -26,11 +26,18 @@
 
     @foreach (var player in playerStateList)
     {
-        <ComponentPlayerState @key=@($"{player.PlayerId}_{_userStateController.GameState?.TurnTimeStamp}") PlayerId="@player.PlayerId" />
+        <ComponentPlayerState @key=@($"{player.PlayerId}") PlayerId="@player.PlayerId" />
     }
 }
 
 @code {
-    [Parameter]
-    public bool DisplayOwnUnits { get; set; }
+    protected override void OnInitialized()
+    {
+        _userStateController.OnGameUnitListUpdated += InvokeStateChange;
+    }
+
+    public void Dispose()
+    {
+        _userStateController.OnGameUnitListUpdated -= InvokeStateChange;
+    }
 }
