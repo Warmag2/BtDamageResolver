@@ -186,6 +186,13 @@ internal static class Program
                         });
                         services.Configure<ConsoleLifetimeOptions>(opt => opt.SuppressStatusMessages = true);
                         services.AddSingleton<ICommunicationServiceClient, CommunicationServiceClient>();
+                        services.AddSingleton(serviceProvider => new ServerToClientCommunicator(
+                            serviceProvider.GetRequiredService<ILogger<ServerToClientCommunicator>>(),
+                            serviceProvider.GetRequiredService<IOptions<JsonSerializerOptions>>(),
+                            serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString(Settings.RedisConnectionStringName)
+                                ?? throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured."),
+                            serviceProvider.GetRequiredService<DataHelper>(),
+                            serviceProvider.GetRequiredService<IGrainFactory>()));
                         services.AddSingleton<IHasher, FaemiyahPasswordHasher>();
                         services.AddSingleton<ILoggingServiceClient, LoggingServiceClient>();
                         services.AddSingleton<ILogicUnitFactory, LogicUnitFactory>();

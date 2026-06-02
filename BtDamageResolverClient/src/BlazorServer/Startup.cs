@@ -96,7 +96,13 @@ public class Startup
         services.AddSingleton<DataHelper>();
         services.AddScoped<ClientHub>();
         services.AddScoped<LocalStorage>();
-        services.AddScoped<ResolverCommunicator>();
+        services.AddScoped(serviceProvider => new ResolverCommunicator(
+            serviceProvider.GetRequiredService<ILogger<ResolverCommunicator>>(),
+            Configuration.GetConnectionString(Settings.RedisConnectionStringName)
+                ?? throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured."),
+            serviceProvider.GetRequiredService<IOptions<JsonSerializerOptions>>(),
+            serviceProvider.GetRequiredService<DataHelper>(),
+            serviceProvider.GetRequiredService<HubConnection>()));
         services.AddScoped<UserStateController>();
         services.AddScoped<HubConnection>(serviceProvider =>
         {

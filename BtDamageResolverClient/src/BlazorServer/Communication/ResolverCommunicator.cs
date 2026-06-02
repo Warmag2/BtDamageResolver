@@ -6,9 +6,7 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
-using Faemiyah.BtDamageResolver.Common.Constants;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -34,15 +32,15 @@ public class ResolverCommunicator : IDisposable
     /// Initializes a new instance of the <see cref="ResolverCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="configuration">The application configuration.</param>
+    /// <param name="redisConnectionString">The Redis connection string.</param>
     /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
     /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="hubConnection">The SignalR hub connection.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IConfiguration configuration, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, HubConnection hubConnection)
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, string redisConnectionString, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, HubConnection hubConnection)
     {
         _logger = logger;
         _jsonSerializerOptions = jsonSerializerOptions;
-        _redisConnectionString = configuration.GetConnectionString(Settings.RedisConnectionStringName);
+        _redisConnectionString = redisConnectionString;
         _dataHelper = dataHelper;
         _hubConnection = hubConnection;
     }

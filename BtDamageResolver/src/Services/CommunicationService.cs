@@ -1,13 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
-using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Orleans;
 using Orleans.Runtime;
 
 namespace Faemiyah.BtDamageResolver.Services;
@@ -24,31 +18,25 @@ public class CommunicationService : GrainService, ICommunicationService
     /// Initializes a new instance of the <see cref="CommunicationService"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <param name="jsonSerializerOptions">JSON serializer options.</param>
-    /// <param name="dataHelper">The data compression helper.</param>
-    /// <param name="grainFactory">The grain factory.</param>
+    /// <param name="serverToClientCommunicator">The server-to-client communicator.</param>
     /// <param name="grainId">The grain ID.</param>
     /// <param name="silo">The silo.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     public CommunicationService(
         ILogger<CommunicationService> logger,
-        IConfiguration configuration,
-        IOptions<JsonSerializerOptions> jsonSerializerOptions,
-        DataHelper dataHelper,
-        IGrainFactory grainFactory,
+        ServerToClientCommunicator serverToClientCommunicator,
         GrainId grainId,
         Silo silo,
         ILoggerFactory loggerFactory) : base(grainId, silo, loggerFactory)
     {
         _logger = logger;
-        _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), jsonSerializerOptions, configuration.GetConnectionString(Settings.RedisConnectionStringName), dataHelper, grainFactory);
+        _serverToClientCommunicator = serverToClientCommunicator;
     }
 
     /// <inheritdoc />
     public override Task Start()
     {
-        _logger.LogInformation("{Service} connected to redis successfully.", GetType());
+        _logger.LogInformation("{Service} connected to Redis successfully.", GetType());
 
         return base.Start();
     }
