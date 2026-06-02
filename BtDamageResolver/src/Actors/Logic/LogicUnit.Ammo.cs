@@ -75,8 +75,17 @@ public partial class LogicUnit
     /// <param name="weapon">The weapon to apply ammo usage from.</param>
     protected void SpendAmmo(DamageReport damageReport, Weapon weapon)
     {
-        var ammoName = $"{weapon.Name} {weapon.AppliedAmmo}";
+        string ammoName;
         var ammoUsed = 1;
+
+        if (!weapon.MultiAmmo)
+        {
+            ammoName = weapon.Name;
+        }
+        else
+        {
+            ammoName = weapon.AmmoProxyName == null ? $"{weapon.Name} {weapon.AppliedAmmo}" : weapon.AmmoProxyName;
+        }
 
         if (weapon.Instances > 1)
         {

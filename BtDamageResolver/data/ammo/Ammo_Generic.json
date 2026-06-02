@@ -6,7 +6,7 @@
     "Name": "Missile",
     "SpecialFeatures": [ { "Type": "Cluster" } ]
   },
-  {
+    {
     "Name": "Missile+Artemis",
     "SpecialFeatures": [ { "Type": "Cluster" } ],
     "ClusterBonus": {
@@ -15,6 +15,20 @@
   },
   {
     "Name": "MissileHoming",
+    "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ]
+  },
+  {
+    "Name": "MissileHoming+Inferno",
+    "Damage": {
+      "Short": 0
+    },
+    "DamageAerospace": {
+      "Short": 0
+    },
+    "SpecialDamage": [
+      { "Data": "3", "Type": "Burst" },
+      { "Data": "2", "Type": "Heat" }
+    ],
     "SpecialFeatures": [ { "Type": "Cluster" }, { "Type": "Homing" } ]
   },
   {

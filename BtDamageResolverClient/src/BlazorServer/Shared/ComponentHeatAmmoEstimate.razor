@@ -1,5 +1,6 @@
 ﻿@inherits BaseFaemiyahComponent
 @using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Constants
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @implements IDisposable
@@ -10,37 +11,38 @@
 
 @if (targetNumberUpdate != null)
 {
-    <div>
-        @if (targetNumberUpdate.HeatWorstCase > 0)
-        {
-            <div>
-                Projected heat: @targetNumberUpdate.HeatEstimate
-                @if (targetNumberUpdate.HeatEstimate != targetNumberUpdate.HeatWorstCase)
-                {
-                    @($" ({targetNumberUpdate.HeatWorstCase})")
-                }
-                &rarr;
-                @(targetNumberUpdate.HeatEstimate + UnitEntry.Consumables.Heat)
-            </div>
-        }
-
-        @if (targetNumberUpdate.AmmoEstimate.Any())
-        {
-            <div>
-                Projected ammo usage:
-            </div>
-            foreach (var item in targetNumberUpdate.AmmoEstimate)
+    @if (targetNumberUpdate.HeatWorstCase > 0)
+    {
+        <div class="resolver_div_estimate resolver_div_estimate_header">
+            Projected heat:
+        </div>
+        <div class="resolver_div_estimate">
+            @targetNumberUpdate.HeatEstimate.ToString(DisplayConstants.NumberFormat)
+            @if (targetNumberUpdate.HeatEstimate != targetNumberUpdate.HeatWorstCase)
             {
-                <div>
-                    @($"{item.Key}: {item.Value}")
-                    @if (targetNumberUpdate.AmmoWorstCase[item.Key] != targetNumberUpdate.AmmoEstimate[item.Key])
-                    {
-                        @($" ({targetNumberUpdate.AmmoWorstCase[item.Key]})")
-                    }
-                </div>
+                @($" ({targetNumberUpdate.HeatWorstCase})")
             }
+            &rarr;
+            @((targetNumberUpdate.HeatEstimate + UnitEntry.Consumables.Heat - UnitEntry.Sinks).ToString(DisplayConstants.NumberFormat))
+        </div>
+    }
+
+    @if (targetNumberUpdate.AmmoEstimate.Any())
+    {
+        <div class="resolver_div_estimate resolver_div_estimate_header">
+            Projected ammo usage:
+        </div>
+        foreach (var item in targetNumberUpdate.AmmoEstimate)
+        {
+            <div class="resolver_div_estimate">
+                @($"{item.Key}: {item.Value.ToString(DisplayConstants.NumberFormat)}")
+                @if (targetNumberUpdate.AmmoWorstCase[item.Key] != targetNumberUpdate.AmmoEstimate[item.Key])
+                {
+                    @($" ({targetNumberUpdate.AmmoWorstCase[item.Key]})")
+                }
+            </div>
         }
-    </div>
+    }
 }
 
 @code

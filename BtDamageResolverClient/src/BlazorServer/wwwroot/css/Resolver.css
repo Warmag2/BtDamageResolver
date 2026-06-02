@@ -103,12 +103,6 @@ a, .btn-link {
     --color_text_status_ammo_normal: #403020;
 }
 
-.resolver_content { width: 100%; }
-
-@media only screen and (min-width: 1024px) {
-    .resolver_content { padding: 1rem; }
-}
-
 .resolver_div_errormessage {
     background: var(--color_bg_error);
     color: var(--color_text_error);
@@ -744,6 +738,22 @@ a, .btn-link {
     align-items: center;
     margin: 0;
     padding: 0.1rem 0.3rem;
+}
+
+.resolver_div_componentcell_label {
+}
+
+.resolver_div_componentcell_content {
+    min-width: 10rem;
+}
+
+.resolver_div_estimate {
+    padding-left: 0.5rem;
+}
+
+.resolver_div_estimate_header {
+    margin-left: 0.5rem;
+    font-weight: bold;
 }
 
 .resolver_div_unitid

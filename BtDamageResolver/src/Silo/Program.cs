@@ -111,7 +111,7 @@ internal static class Program
 
     private static IHost CreateSilo()
     {
-        var (clientPort, siloPort) = GetSiloPortConfigurationFromEnvironment();
+        //var (clientPort, siloPort) = GetSiloPortConfigurationFromEnvironment();
 
         var siloHostBuilder = Host.CreateDefaultBuilder()
             .UseOrleans((context, siloBuilder) =>
@@ -164,10 +164,10 @@ internal static class Program
                         options.AdvertisedIPAddress = GetHostIp();
 
                         // The socket used for silo-to-silo will bind to this endpoint
-                        options.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, clientPort);
+                        //options.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, clientPort);
 
                         // The socket used by the gateway will bind to this endpoint
-                        options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, siloPort);
+                        //options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, siloPort);
                     })
                     .AddGrainService<CommunicationService>()
                     .AddGrainService<LoggingService>()

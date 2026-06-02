@@ -13,6 +13,11 @@ namespace Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 public class Ammo : NamedEntity
 {
     /// <summary>
+    /// If this ammo gets used, what is the proxy name for the ammo that gets spent.
+    /// </summary>
+    public string AmmoProxyName { get; set; }
+
+    /// <summary>
     /// How big of a cluster bonus the ammo bestows.
     /// </summary>
     public Dictionary<RangeBracket, int> ClusterBonus { get; set; }

@@ -21,6 +21,7 @@
   },
   {
     "Name": "MML3-SRM+Artemis",
+    "AmmoProxyName": "MML3-SRM",
     "Damage": {
       "Short": 3
     },
@@ -65,6 +66,7 @@
   },
   {
     "Name": "MML3-LRM+Artemis",
+    "AmmoProxyName": "MML3-LRM",
     "Damage": {
       "Short": 3
     },
@@ -89,6 +91,7 @@
   },
   {
     "Name": "MML3-LRM Indirect",
+    "AmmoProxyName": "MML3-LRM",
     "Damage": {
       "Short": 3
     },
@@ -131,6 +134,7 @@
   },
   {
     "Name": "MML5-SRM+Artemis",
+    "AmmoProxyName": "MML5-SRM",
     "Damage": {
       "Short": 5
     },
@@ -175,6 +179,7 @@
   },
   {
     "Name": "MML5-LRM+Artemis",
+    "AmmoProxyName": "MML5-LRM",
     "Damage": {
       "Short": 5
     },
@@ -199,6 +204,7 @@
   },
   {
     "Name": "MML5-LRM Indirect",
+    "AmmoProxyName": "MML5-LRM",
     "Damage": {
       "Short": 5
     },
@@ -241,6 +247,7 @@
   },
   {
     "Name": "MML7-SRM+Artemis",
+    "AmmoProxyName": "MML7-SRM",
     "Damage": {
       "Short": 7
     },
@@ -285,6 +292,7 @@
   },
   {
     "Name": "MML7-LRM+Artemis",
+    "AmmoProxyName": "MML7-LRM",
     "Damage": {
       "Short": 7
     },
@@ -309,6 +317,7 @@
   },
   {
     "Name": "MML7-LRM Indirect",
+    "AmmoProxyName": "MML7-LRM",
     "Damage": {
       "Short": 7
     },
@@ -351,6 +360,7 @@
   },
   {
     "Name": "MML9-SRM+Artemis",
+    "AmmoProxyName": "MML9-SRM",
     "Damage": {
       "Short": 9
     },
@@ -395,6 +405,7 @@
   },
   {
     "Name": "MML9-LRM+Artemis",
+    "AmmoProxyName": "MML9-LRM",
     "Damage": {
       "Short": 9
     },
@@ -419,6 +430,7 @@
   },
   {
     "Name": "MML9-LRM Indirect",
+    "AmmoProxyName": "MML9-LRM",
     "Damage": {
       "Short": 9
     },

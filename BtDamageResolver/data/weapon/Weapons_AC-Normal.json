@@ -7,6 +7,7 @@
       "AP": "AC-AP2"
     },
     "AmmoDefault": "Normal",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 4
@@ -36,6 +37,7 @@
       "AP": "AC-AP5"
     },
     "AmmoDefault": "Normal",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 8
@@ -65,6 +67,7 @@
       "AP": "AC-AP10"
     },
     "AmmoDefault": "Normal",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 11
@@ -94,6 +97,7 @@
       "AP": "AC-AP20"
     },
     "AmmoDefault": "Normal",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 20
