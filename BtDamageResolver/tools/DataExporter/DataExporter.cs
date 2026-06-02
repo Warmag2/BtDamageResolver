@@ -40,7 +40,8 @@ internal sealed class DataExporter
         _jsonSerializerOptions.WriteIndented = true;
 
         // Repository provider setup
-        var redisConnectionString = configuration.GetConnectionString(Settings.RedisConnectionStringName);
+        var redisConnectionString = configuration.GetConnectionString(Settings.RedisConnectionStringName)
+            ?? throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured.");
         _repositoryProvider = new RepositoryProvider(
             new RedisEntityRepository<Ammo>(loggerFactory.CreateLogger<RedisEntityRepository<Ammo>>(), Options.Create(_jsonSerializerOptions), redisConnectionString),
             new RedisEntityRepository<ArcDiagram>(loggerFactory.CreateLogger<RedisEntityRepository<ArcDiagram>>(), Options.Create(_jsonSerializerOptions), redisConnectionString),
