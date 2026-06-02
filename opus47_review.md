@@ -26,9 +26,7 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 ## B2. DOM / HTML structure (excessive nesting)
 
 - **Wrapper-div proliferation.** Every cell wrapped in `resolver_div_componentcontainer > resolver_div_componentrow > resolver_div_componentcell`, often 5-7 deep. Browser layout & style recalc scale with node count; hits ARM hard.
-- **`FormUnitEntry.razor`** (~280 lines) — every field is `componentrow > componentcell (label) + componentcell > FormX > inputwrapper > input` (5-6 deep × ~15 fields × N units). Should be flattened with CSS-grid auto-flow.
 - **`FormPaperDollMech.razor` SVG** — 8-11 `<g><polygon … onmousemove="…" onmouseout="…">` per paperdoll, repeated per damage report. Inline JS event attributes force the browser to parse handler strings. Could use CSS `:hover` + delegated tooltip handlers.
-- **10 near-identical `FormPaperDoll*` variants** — should share a base component with polygon list as data.
 - **Identical markup repeated rather than sub-componentised:**
   - Three modals at end of `FormUnitEntry.razor:209-279` — extract a `Modal` component.
   - The `componentrow > componentcell + componentcell` label/value pattern is repeated 80+ times — should be a `<LabelValue>` component.

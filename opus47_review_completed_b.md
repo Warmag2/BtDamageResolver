@@ -298,3 +298,52 @@ the held state (stale/duplicate pushes leave existing references intact and need
 `FormPaperDoll.razor` recomputed `location.Value.SelectMany(l => l.Value).Sum()` on line 63 even though
 line 52 already stores it in `damageInLocation`. Replaced the line-63 recomputation with the existing
 `damageInLocation` local. Pure dedup, no behavior change. Build clean.
+
+## B2. FormUnitEntry flatten — ASSESSED, NO CHANGE NEEDED
+
+`FormUnitEntry.razor` already conforms to the same flattened structure adopted (and visually tested) in
+`ComponentUnit.razor`: a `resolver_div_componentgroup` (2-column `inline-grid`) whose `resolver_div_componentrow`
+children use `grid-template-columns: subgrid` to align label + value cells. That is one wrapper row per field —
+the intended target shape.
+
+A deeper "CSS-grid auto-flow" flatten (dropping the per-field `componentrow` so label/value cells auto-place
+into the two grid columns) was considered and declined as not worth the risk:
+- The shared rule `.resolver_div_componentgroup > *:not(.resolver_div_componentrow) { grid-column: 1 / -1; }`
+  forces bare children to span full width, so auto-flow needs either shared CSS changes (affecting every form
+  that uses componentgroup) or a separate isolated grid class.
+- ~8 fields are conditionally hidden via `HideElement` on the row; without the row each field's two cells must
+  be hidden together (via `@if`) to avoid column misalignment.
+- Net saving is ~1 `<div>` per field against meaningful risk to the primary editing surface.
+
+Decision: leave FormUnitEntry as-is; it is already adequately flat and consistent with ComponentUnit.
+
+## B2. 10 near-identical FormPaperDoll* variants — SHARED COMPONENT EXTRACTED
+
+The 10 `FormPaperDoll*` variant components each repeated the same interactive-shape boilerplate per
+location: `fill="@FormPaperDoll.GetDamageColor(Location.X)" stroke="black" stroke-width="100"` plus a long
+`onmousemove="ShowTooltip(...GetDamageText(Location.X)...)" onmouseout="HideTooltip(...)"` tooltip handler —
+duplicated ~70 times across the files and individually wrapped in a redundant `<g id/class>` element.
+
+Extracted `FormPaperDollRegion.razor`, a shared sub-component that renders one interactive shape
+(`<polygon>` or, via the `Path` parameter, `<path>`) with the fill/stroke/tooltip wiring centralised
+(`RoundJoin` parameter for `stroke-linejoin="round"`). Each variant now expresses its geometry as a flat list
+of `<FormPaperDollRegion ... Points="..." />` entries — "polygon list as data" — instead of hand-repeated
+markup, and the `<g>` wrappers (confirmed unused by CSS/JS) were dropped, reducing SVG node count per the
+B2 nesting goal.
+
+Converted: AerospaceFighter, AerospaceCapital, AerospaceDropshipAerodyne, AerospaceDropshipSpheroid,
+Building (interactive `<path>` + `<polygon>`), Mech (incl. the three conditional rear-torso regions),
+Vehicle, VehicleVtol, BattleArmor (per-trooper loop). Static decorations (the `#A0A0A0` internals, the
+hidden Vehicle turret-internal, and the Spheroid black `<rect>` docking tabs) were left inline in their
+original document order, so z-order is preserved exactly.
+
+Left unchanged: `FormPaperDollTrooper.razor` — its fill is index-based (`#FF0000`/`#E0E0E0` by trooper index),
+not `GetDamageColor`, so it does not fit the damage-colour region model.
+
+Note: the `FormPaperDollMech` inline-JS → CSS `:hover` item (separate B2 bullet) is still open; this change
+only de-duplicates the variants and removes the `<g>` nesting, it does not alter the tooltip mechanism.
+
+Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings). Visual verification of
+the rendered paperdolls is recommended (the only non-obvious risk is SVG-namespace rendering of the
+`<polygon>`/`<path>` through the component boundary — this is the standard Blazor SVG-child-component pattern
+and the namespace is resolved at DOM insertion by the physical parent `<svg>`).
