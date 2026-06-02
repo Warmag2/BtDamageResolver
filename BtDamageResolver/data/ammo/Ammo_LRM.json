@@ -1,7 +1,6 @@
 ﻿[
   {
     "Name": "LRM5-Normal",
-    "AmmoProxyName": "LRM5",
     "Damage": {
       "Short": 5
     },
@@ -12,7 +11,6 @@
   },
   {
     "Name": "LRM5+Artemis",
-    "AmmoProxyName": "LRM5",
     "Damage": {
       "Short": 5
     },
@@ -26,7 +24,6 @@
   },
   {
     "Name": "LRM5 Indirect",
-    "AmmoProxyName": "LRM5",
     "Damage": {
       "Short": 5
     },
@@ -38,7 +35,6 @@
   },
   {
     "Name": "LRM10-Normal",
-    "AmmoProxyName": "LRM10",
     "Damage": {
       "Short": 10
     },
@@ -49,7 +45,6 @@
   },
   {
     "Name": "LRM10+Artemis",
-    "AmmoProxyName": "LRM10",
     "Damage": {
       "Short": 10
     },
@@ -63,7 +58,6 @@
   },
   {
     "Name": "LRM10 Indirect",
-    "AmmoProxyName": "LRM10",
     "Damage": {
       "Short": 10
     },
@@ -75,7 +69,6 @@
   },
   {
     "Name": "LRM15-Normal",
-    "AmmoProxyName": "LRM15",
     "Damage": {
       "Short": 15
     },
@@ -86,7 +79,6 @@
   },
   {
     "Name": "LRM15+Artemis",
-    "AmmoProxyName": "LRM15",
     "Damage": {
       "Short": 15
     },
@@ -100,7 +92,6 @@
   },
   {
     "Name": "LRM15 Indirect",
-    "AmmoProxyName": "LRM15",
     "Damage": {
       "Short": 15
     },
@@ -112,7 +103,6 @@
   },
   {
     "Name": "LRM20-Normal",
-    "AmmoProxyName": "LRM20",
     "Damage": {
       "Short": 20
     },
@@ -123,7 +113,6 @@
   },
   {
     "Name": "LRM20+Artemis",
-    "AmmoProxyName": "LRM20",
     "Damage": {
       "Short": 20
     },
@@ -137,7 +126,6 @@
   },
   {
     "Name": "LRM20 Indirect",
-    "AmmoProxyName": "LRM20",
     "Damage": {
       "Short": 20
     },

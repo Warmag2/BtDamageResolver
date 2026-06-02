@@ -84,7 +84,7 @@ public partial class LogicUnit
         }
         else
         {
-            ammoName = weapon.AmmoProxyName == null ? $"{weapon.Name} {weapon.AppliedAmmo}" : weapon.AmmoProxyName;
+            ammoName = weapon.AmmoProxyName == null ? $"{weapon.Name} {weapon.AppliedAmmo}" : $"{weapon.Name} {weapon.AmmoProxyName}";
         }
 
         if (weapon.Instances > 1)

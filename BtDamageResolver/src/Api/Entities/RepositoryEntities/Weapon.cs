@@ -298,6 +298,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
         {
             Ammo = Ammo.Copy(),
             AmmoDefault = AmmoDefault,
+            AmmoProxyName = AmmoProxyName,
             AppliedAmmo = AppliedAmmo,
             AttackType = AttackType,
             ClusterBonus = ClusterBonus.Copy(),
@@ -309,6 +310,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
             Heat = Heat,
             HitModifier = HitModifier,
             Instances = Instances,
+            MultiAmmo = MultiAmmo,
             Name = Name,
             Range = Range.Copy(),
             RangeAerospace = RangeAerospace,
