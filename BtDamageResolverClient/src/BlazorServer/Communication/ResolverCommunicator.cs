@@ -20,7 +20,7 @@ public class ResolverCommunicator : IDisposable
     private readonly ILogger<ResolverCommunicator> _logger;
     private readonly IOptions<JsonSerializerOptions> _jsonSerializerOptions;
     private readonly DataHelper _dataHelper;
-    private readonly string _redisConnectionString;
+    private readonly string _connectionString;
     private readonly HubConnection _hubConnection;
 
     private string _playerName;
@@ -32,15 +32,15 @@ public class ResolverCommunicator : IDisposable
     /// Initializes a new instance of the <see cref="ResolverCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="redisConnectionString">The Redis connection string.</param>
+    /// <param name="connectionString">The Redis connection string.</param>
     /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
     /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="hubConnection">The SignalR hub connection.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, string redisConnectionString, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, HubConnection hubConnection)
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, string connectionString, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, HubConnection hubConnection)
     {
         _logger = logger;
         _jsonSerializerOptions = jsonSerializerOptions;
-        _redisConnectionString = redisConnectionString;
+        _connectionString = connectionString;
         _dataHelper = dataHelper;
         _hubConnection = hubConnection;
     }
@@ -364,7 +364,7 @@ public class ResolverCommunicator : IDisposable
 
     private void Reset()
     {
-        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _redisConnectionString, _dataHelper, _hubConnection, _playerName);
+        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _connectionString, _dataHelper, _hubConnection, _playerName);
     }
 
     private void SendErrorMessage(string errorMessage)
