@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Threading.Tasks;
 using CommandLine;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
 using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -29,7 +29,7 @@ internal static class Program
     /// <returns>Zero on no errors, nonzero on error.</returns>
     public static int Main(string[] args)
     {
-        var configuration = GetConfiguration("DataExporterSettings.json");
+        var configuration = Host.CreateApplicationBuilder(args).Configuration;
         var section = configuration.GetSection(Settings.LoggingOptionsBlockName);
         var loggingOptions = Options.Create(section.Get<FaemiyahLoggingOptions>());
         var loggerFactory = new FaemiyahLoggerFactory(loggingOptions);
@@ -40,23 +40,17 @@ internal static class Program
 
         var result = Parser.Default.ParseArguments<DataExportOptions>(args)
             .MapResult(
-                initOptions => RunDataExport(loggerFactory, initOptions).Result,
+                initOptions => RunDataExport(loggerFactory, configuration, initOptions).Result,
                 errs => 1);
 
         return result;
     }
 
-    private static IConfiguration GetConfiguration(string settingsFile)
-    {
-        var config = new ConfigurationBuilder();
-        return config.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(settingsFile).Build();
-    }
-
-    private static async Task<int> RunDataExport(ILoggerFactory loggerFactory, DataExportOptions options)
+    private static async Task<int> RunDataExport(ILoggerFactory loggerFactory, IConfiguration configuration, DataExportOptions options)
     {
         try
         {
-            var dataExporter = new DataExporter(loggerFactory);
+            var dataExporter = new DataExporter(loggerFactory, configuration);
             await dataExporter.Work(options);
         }
         catch (Exception e)
