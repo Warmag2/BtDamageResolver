@@ -1,6 +1,6 @@
 #!/bin/sh
 cd infra
-docker build --tag orleansdb -f ./postgresql/Dockerfile ./postgresql/
+docker build --tag resolverpostgres -f ./postgresql/Dockerfile ./postgresql/
 chmod -R o+rx grafana/dashboards/
 chmod -R o+rx grafana/datasources/
 docker build --tag resolvergrafana -f ./grafana/Dockerfile ./grafana/

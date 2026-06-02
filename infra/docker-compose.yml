@@ -6,13 +6,13 @@ services:
     hostname: resolver
     image: resolver:latest
     environment:
-      RESOLVER_ENVIRONMENT: Release
-      ClusterOptions__ConnectionString: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=orleansdb;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
-      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+      DOTNET_ENVIRONMENT: Release
+      ConnectionStrings__Postgres: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=resolverpostgres;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
+      ConnectionStrings__Redis: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     networks:
       - resolvernet
     depends_on:
-      - orleansdb   # Data source
+      - resolverpostgres   # Data source
       - redis       # Communication bus
     restart: on-failure
 
@@ -23,8 +23,7 @@ services:
     image: resolverclient:latest
     environment:
       ASPNETCORE_ENVIRONMENT: Release
-      RESOLVER_ENVIRONMENT: Release
-      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+      ConnectionStrings__Redis: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     ports:
       - 8787:8080
     volumes:
@@ -41,8 +40,8 @@ services:
     hostname: resolverdataimporter
     image: resolverdataimporter:latest
     environment:
-      RESOLVER_ENVIRONMENT: Release
-      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+      DOTNET_ENVIRONMENT: Release
+      ConnectionStrings__Redis: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     networks:
       - resolvernet
     depends_on:
@@ -65,14 +64,14 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - orleansdb # Data source
+      - resolverpostgres # Data source
     restart: on-failure
 
   # Postgresql (for Orleans)
-  orleansdb:
-    container_name: orleansdb
-    hostname: orleansdb
-    image: orleansdb:latest
+  resolverpostgres:
+    container_name: resolverpostgres
+    hostname: resolverpostgres
+    image: resolverpostgres:latest
     environment:
       POSTGRES_DB: BtDamageResolver
       POSTGRES_USER: "${RESOLVER_USER:?err}"
@@ -80,7 +79,7 @@ services:
     ports:
       - 65432:5432
     volumes:
-      - orleansdb-data:/var/lib/postgresql/18/docker
+      - resolverpostgres-data:/var/lib/postgresql/18/docker
     restart: on-failure
     networks:
       - resolvernet
@@ -105,6 +104,6 @@ networks:
 
 volumes:
   grafana-data:
-  orleansdb-data:
+  resolverpostgres-data:
   redis-data:
   resolverclient-dpkeys:
