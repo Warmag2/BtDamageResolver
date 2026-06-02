@@ -16,17 +16,12 @@ public static class Settings
     public const string SessionStateStoreName = "SessionState";
 
     /// <summary>
-    /// The name of the options block which contains the connection settings for RabbitMQ.
+    /// The name of the options block which contains Orleans clustering settings (the ADO.NET invariant).
     /// </summary>
     public const string ClusterOptionsBlockName = "ClusterOptions";
 
     /// <summary>
-    /// The name of the options block which contains the connection settings for RabbitMQ.
-    /// </summary>
-    public const string CommunicationOptionsBlockName = "CommunicationOptions";
-
-    /// <summary>
-    /// The name of the options block which contains the connection settings for RabbitMQ.
+    /// The name of the options block which configures application logging.
     /// </summary>
     public const string LoggingOptionsBlockName = "LoggingOptions";
 
