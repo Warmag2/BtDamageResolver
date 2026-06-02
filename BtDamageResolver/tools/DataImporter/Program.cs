@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using CommandLine;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

@@ -10,7 +10,7 @@ using Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server;

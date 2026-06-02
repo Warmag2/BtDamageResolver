@@ -2,11 +2,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Constants;
+using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Faemiyah.BtDamageResolver.Services.Database;
 using Faemiyah.BtDamageResolver.Services.Events;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans.Runtime;
@@ -31,15 +33,15 @@ public class LoggingService : GrainService, ILoggingService
     /// Initializes a new instance of the <see cref="LoggingService"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="clusterOptions">The cluster options.</param>
     /// <param name="loggingOptions">The logging options.</param>
+    /// <param name="connectionString">The database connection string.</param>
     /// <param name="grainId">The grain ID.</param>
     /// <param name="silo">The silo.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     public LoggingService(
         ILogger<LoggingService> logger,
-        IOptions<FaemiyahClusterOptions> clusterOptions,
         IOptions<FaemiyahLoggingOptions> loggingOptions,
+        [FromKeyedServices(Settings.PostgresConnectionStringName)] string connectionString,
         GrainId grainId,
         Silo silo,
         ILoggerFactory loggerFactory) : base(grainId, silo, loggerFactory)
@@ -49,7 +51,7 @@ public class LoggingService : GrainService, ILoggingService
         _loggingIntervalMilliseconds = _loggingOptions.LoggingIntervalMilliseconds > 0 ? _loggingOptions.LoggingIntervalMilliseconds : 15000;
         _gameLogEntries = new ConcurrentQueue<GameLogEntry>();
         _playerLogEntries = new ConcurrentQueue<PlayerLogEntry>();
-        _loggingRepository = new LoggingRepository(loggerFactory.CreateLogger<LoggingRepository>(), clusterOptions.Value);
+        _loggingRepository = new LoggingRepository(loggerFactory.CreateLogger<LoggingRepository>(), connectionString);
     }
 
     /// <inheritdoc />

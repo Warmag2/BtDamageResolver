@@ -1,5 +1,5 @@
 ﻿using System;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;

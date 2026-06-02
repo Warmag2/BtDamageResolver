@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Extensions;
-using Faemiyah.BtDamageResolver.Common.Options;
 using Faemiyah.BtDamageResolver.Services.Events;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -27,17 +26,17 @@ public class LoggingRepository
     private const int MaxRetainedLogEntries = 50000;
 
     private readonly ILogger<LoggingRepository> _logger;
-    private readonly FaemiyahClusterOptions _clusterOptions;
+    private readonly string _connectionString;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoggingRepository"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="clusterOptions">The cluster options.</param>
-    public LoggingRepository(ILogger<LoggingRepository> logger, FaemiyahClusterOptions clusterOptions)
+    /// <param name="connectionString">The database connection string.</param>
+    public LoggingRepository(ILogger<LoggingRepository> logger, string connectionString)
     {
         _logger = logger;
-        _clusterOptions = clusterOptions;
+        _connectionString = connectionString;
     }
 
     /// <summary>
@@ -61,7 +60,7 @@ public class LoggingRepository
 
         try
         {
-            await using var connection = new NpgsqlConnection(_clusterOptions.ConnectionString);
+            await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
             await using var transaction = await connection.BeginTransactionAsync();
             await using var sqlBatch = new NpgsqlBatch(connection, transaction);

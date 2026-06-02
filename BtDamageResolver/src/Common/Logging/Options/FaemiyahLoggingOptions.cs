@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Faemiyah.BtDamageResolver.Common.Options;
+namespace Faemiyah.BtDamageResolver.Common.Logging.Options;
 
 /// <summary>
 /// Configurable logging options in Orleans projects.
@@ -29,6 +29,11 @@ public class FaemiyahLoggingOptions
     /// Gets or sets log level for orleans infrastructure logic.
     /// </summary>
     public LogLevel LogLevelOrleans { get; set; }
+
+    /// <summary>
+    /// Gets or sets log level for Microsoft infrastructure logic.
+    /// </summary>
+    public LogLevel LogLevelMicrosoft { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether log lines are appended to the console.

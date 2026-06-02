@@ -12,8 +12,8 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - resolverpostgres   # Data source
-      - redis       # Communication bus
+      - resolverpostgres # Data source
+      - redis            # Communication bus
     restart: on-failure
 
   # Battletech Damage Resolver Client
@@ -67,7 +67,7 @@ services:
       - resolverpostgres # Data source
     restart: on-failure
 
-  # Postgresql (for Orleans)
+  # Postgresql
   resolverpostgres:
     container_name: resolverpostgres
     hostname: resolverpostgres
@@ -97,7 +97,6 @@ services:
     networks:
       - resolvernet
     restart: on-failure
-
 
 networks:
   resolvernet:

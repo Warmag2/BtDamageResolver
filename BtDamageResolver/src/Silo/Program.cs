@@ -15,7 +15,7 @@ using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Faemiyah.BtDamageResolver.Services;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -117,12 +117,11 @@ internal static class Program
             .UseOrleans((context, siloBuilder) =>
             {
                 var configuration = context.Configuration;
-
-                // Built here (not from DI) because UseAdoNetClustering/AddGrainStorage run during the
-                // Orleans builder phase, before the DI container exists. The PostConfigure below mirrors
-                // ConnectionString onto the IOptions<FaemiyahClusterOptions> used by LoggingService at runtime.
-                var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>() ?? new FaemiyahClusterOptions();
-                clusterOptions.ConnectionString = configuration.GetConnectionString(Settings.PostgresConnectionStringName);
+                var postgresConnectionString = configuration.GetConnectionString(Settings.PostgresConnectionStringName);
+                if (string.IsNullOrEmpty(postgresConnectionString))
+                {
+                    throw new InvalidOperationException($"No '{Settings.PostgresConnectionStringName}' connection string configured.");
+                }
 
                 siloBuilder
                     .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(
@@ -155,11 +154,11 @@ internal static class Program
                     })
                     .UseAdoNetClustering(options =>
                     {
-                        options.Invariant = clusterOptions.Invariant;
-                        options.ConnectionString = clusterOptions.ConnectionString;
+                        options.Invariant = "Npgsql";
+                        options.ConnectionString = postgresConnectionString;
                     })
-                    .AddGrainStorage(Settings.ActorStateStoreName, clusterOptions)
-                    .AddGrainStorage(Settings.SessionStateStoreName, clusterOptions)
+                    .AddGrainStorage(Settings.ActorStateStoreName, postgresConnectionString)
+                    .AddGrainStorage(Settings.SessionStateStoreName, postgresConnectionString)
                     .Configure<EndpointOptions>(options =>
                     {
                         options.AdvertisedIPAddress = GetHostIp();
@@ -174,10 +173,9 @@ internal static class Program
                     .AddGrainService<LoggingService>()
                     .ConfigureServices(services =>
                     {
+                        services.AddKeyedSingleton<string>(Settings.PostgresConnectionStringName, postgresConnectionString);
                         services.ConfigureJsonSerializerOptions();
                         services.Configure<CompressionOptions>(configuration.GetSection(Settings.CompressionOptionsBlockName));
-                        services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
-                        services.PostConfigure<FaemiyahClusterOptions>(options => options.ConnectionString = configuration.GetConnectionString(Settings.PostgresConnectionStringName));
                         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
                         services.AddLogging(conf =>
                         {
@@ -242,12 +240,12 @@ internal static class Program
             : throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured for entity repository of type {typeof(TType)}.");
     }
 
-    private static ISiloBuilder AddGrainStorage(this ISiloBuilder siloHostBuilder, string name, FaemiyahClusterOptions clusterOptions)
+    private static ISiloBuilder AddGrainStorage(this ISiloBuilder siloHostBuilder, string name, string connectionString)
     {
         siloHostBuilder.AddAdoNetGrainStorage(name, options =>
         {
-            options.Invariant = clusterOptions.Invariant;
-            options.ConnectionString = clusterOptions.ConnectionString;
+            options.Invariant = Settings.PostgresInvariantName;
+            options.ConnectionString = connectionString;
         });
 
         return siloHostBuilder;

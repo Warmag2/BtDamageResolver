@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using AwesomeAssertions;
 using Faemiyah.BtDamageResolver.Common.Logging;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;

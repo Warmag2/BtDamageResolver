@@ -41,6 +41,11 @@ public static class Settings
     public const string PostgresConnectionStringName = "Postgres";
 
     /// <summary>
+    /// The ADO.NET invariant name for the Postgres database provider.
+    /// </summary>
+    public const string PostgresInvariantName = "Npgsql";
+
+    /// <summary>
     /// Maximum age of game entries in hours.
     /// </summary>
     public const int MaximumGameEntryAgeHours = 24;

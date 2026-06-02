@@ -1,4 +1,4 @@
-﻿using Faemiyah.BtDamageResolver.Common.Options;
+﻿using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
@@ -35,8 +35,9 @@ public sealed class FaemiyahLoggerFactory : ILoggerFactory
         builder.ClearProviders();
         builder.SetMinimumLevel(options.LogLevel);
 
-        // Orleans infrastructure logging is filtered to its own level, matching the previous Serilog behaviour.
+        // Infrastructure logging filters to its own level
         builder.AddFilter("Orleans", options.LogLevelOrleans);
+        builder.AddFilter("Microsoft", options.LogLevelMicrosoft);
 
         if (options.LogToConsole)
         {

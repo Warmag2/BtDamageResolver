@@ -27,13 +27,10 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="appsettings.Release.json">
+    <None Update="appsettings.Debug.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Update="appsettings.Debug.json">
+    <None Update="appsettings.Release.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
