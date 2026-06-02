@@ -258,3 +258,43 @@ change). Re-verified against current code; no further change needed:
   acceptable. The DamageReports / Options tab keys (`DamageReportContainer.TimeStamp`,
   `PlayerOptions/GameOptions.TimeStamp`) likewise churn only on their own infrequent events.
 No code change made.
+
+---
+
+## B2. FormWeaponEntry / FormTextArea — DOM and binding fixes — DONE
+
+**FormWeaponEntry.razor** (B2 "each weapon row has 7 grid columns each wrapped in its own div"):
+Reviewed. The component is already flat — it emits 7 top-level grid cells directly (grid-column 1-7)
+with no `componentcontainer`/`componentrow` wrappers; the parent supplies the grid. The only remaining
+nesting is the `resolver_div_inputwrapper` inside the generic leaf pickers
+(FormNumberPickerDisplayOnly/FormComboBox/FormSelect). That wrapper is functional — it groups the
+display/edit element with the dropdown button and anchors the absolutely-positioned picker list — so it
+cannot be removed without breaking the picker. No change made; considered adequately flat.
+
+**FormTextArea.razor:2** (B2 "echoes @TextInternal inside the textarea body in addition to binding"):
+Fixed. Removed the `@TextInternal` body content from the `<textarea>` so the value is driven solely by
+`@bind="TextInternal"`. The body echo (plus its indentation/newlines) duplicated the bound value, polluted
+the initial textarea content with whitespace, and could desync from the bound value — a known Blazor
+anti-pattern. Build clean (0 errors).
+
+## Edit-propagation regression (5aa0df6) — ROOT CAUSE + FIX — DONE
+
+Root cause (found by manual Redis-queue debugging): `PlayerState` is a computed property over
+`GameState.Players[PlayerName]`, so every server push rebuilds the whole object graph (new GameState →
+new PlayerState → new UnitEntry instances). The editing components (`FormUnitEntry`) cache `UnitEntry`
+as a `[Parameter]`, only refreshed when the parent `FormGameState` re-renders. Commit 5aa0df6 removed the
+unconditional `OnPlayerUnitListUpdated` notify from the GameState setter, so `FormGameState` stopped
+re-rendering on pushes and stayed bound to orphaned objects — edits mutated stale copies and were lost
+when the (fresh) PlayerState was sent.
+
+Fix: `FormGameState` re-subscribed to a per-push event (`OnGameStateUpdated`) so it re-binds its child
+components to the freshly deserialized instances. Complementary optimization in the `UserStateController.GameState`
+setter: the unit-list rebuild + `NotifyGameUnitListUpdated`/`NotifyGameStateUpdated` calls were moved
+INSIDE the timestamp-acceptance `if`, so the editing tree only re-renders when a push actually replaces
+the held state (stale/duplicate pushes leave existing references intact and need no re-bind). Build clean.
+
+## B2. FormPaperDoll duplicated damage sum — DONE
+
+`FormPaperDoll.razor` recomputed `location.Value.SelectMany(l => l.Value).Sum()` on line 63 even though
+line 52 already stores it in `damageInLocation`. Replaced the line-63 recomputation with the existing
+`damageInLocation` local. Pure dedup, no behavior change. Build clean.

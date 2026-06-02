@@ -26,16 +26,12 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 ## B2. DOM / HTML structure (excessive nesting)
 
 - **Wrapper-div proliferation.** Every cell wrapped in `resolver_div_componentcontainer > resolver_div_componentrow > resolver_div_componentcell`, often 5-7 deep. Browser layout & style recalc scale with node count; hits ARM hard.
-- **`ComponentUnit.razor` max depth ~12 levels** (excluding `<svg>`).
-- **`FormWeaponEntry.razor`** — each weapon row has 7 grid columns, each wrapped in its own `<div class="resolver_div_componentcell">` (lines 18, 21, 24, 30, 34, 44, 54, 60). Many cells contain another `<div class="resolver_div_inputwrapper">` from `FormNumberPicker`/`FormNumberPickerDisplayOnly`. With 10 weapons × 10 units this multiplies into thousands of unnecessary nodes.
 - **`FormUnitEntry.razor`** (~280 lines) — every field is `componentrow > componentcell (label) + componentcell > FormX > inputwrapper > input` (5-6 deep × ~15 fields × N units). Should be flattened with CSS-grid auto-flow.
 - **`FormPaperDollMech.razor` SVG** — 8-11 `<g><polygon … onmousemove="…" onmouseout="…">` per paperdoll, repeated per damage report. Inline JS event attributes force the browser to parse handler strings. Could use CSS `:hover` + delegated tooltip handlers.
 - **10 near-identical `FormPaperDoll*` variants** — should share a base component with polygon list as data.
 - **Identical markup repeated rather than sub-componentised:**
   - Three modals at end of `FormUnitEntry.razor:209-279` — extract a `Modal` component.
   - The `componentrow > componentcell + componentcell` label/value pattern is repeated 80+ times — should be a `<LabelValue>` component.
-  - `FormPaperDoll.razor` `SelectMany(l => l.Value).Sum()` duplicated lines 52 and 63.
-- **`FormTextArea.razor:2`** echoes `@TextInternal` inside the `<textarea>` body in addition to binding — redundant content (also a known Blazor anti-pattern; can desync).
 - **`MainLayout` adds yet another wrapping div** (`<div class="resolver_content">`).
 - **`ContainerReorderableList`** wraps every item in `<div class="reorderableitem">` and, if `ShowDragHandle`, also in `componentrow > draghandle + componentcell` — three extra divs per item plus handlers.
 

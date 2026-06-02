@@ -124,19 +124,24 @@ public class UserStateController
         get => _gameState;
         set
         {
+            // Only accept and react to a push that actually replaces the held game state. A stale or duplicate
+            // push leaves the existing object graph (and the unit references the editing tree is bound to) intact,
+            // so there is nothing to re-bind or re-render and we can skip the notifications entirely.
             if (_gameState == null || value == null || _gameState.TimeStamp < value.TimeStamp)
             {
                 _gameState = value;
-            }
 
-            // The below method checks whether it is actually necessary to invoke UI refresh.
-            // Most of the time, this is not the case
-            if(UpdateUnitList())
-            {
-                NotifyGameUnitListUpdated();
-            }
+                // UpdateUnitList checks whether the identity-level unit list actually changed; most pushes only
+                // mutate values, so this is usually false and the heavier list-driven refresh is skipped.
+                if (UpdateUnitList())
+                {
+                    NotifyGameUnitListUpdated();
+                }
 
-            NotifyGameStateUpdated();
+                // The editing tree (FormGameState) listens to this to re-bind its child components to the freshly
+                // deserialized PlayerState/UnitEntry instances. Without it, edits would mutate orphaned objects.
+                NotifyGameStateUpdated();
+            }
         }
     }
 

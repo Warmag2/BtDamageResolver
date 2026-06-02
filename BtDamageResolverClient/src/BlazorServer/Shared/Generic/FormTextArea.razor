@@ -1,6 +1,4 @@
-﻿<textarea rows="10" cols="88" class="resolver_input resolver_input_text fullwidth @(_erraneousInput ? "error" : string.Empty) @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" disabled="@Disabled" @bind="TextInternal">
-    @TextInternal
-</textarea>
+<textarea rows="10" cols="88" class="resolver_input resolver_input_text fullwidth @(_erraneousInput ? "error" : string.Empty) @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")" disabled="@Disabled" @bind="TextInternal"></textarea>
 
 @code
 {

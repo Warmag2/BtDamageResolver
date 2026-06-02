@@ -81,9 +81,7 @@
         @foreach (var weaponBay in UnitEntry.WeaponBays)
         {
             <div class="resolver_div_componentcell">
-                @weaponBay.Arc
-                &mdash;
-                @weaponBay.Name
+                <b>@weaponBay.GetFormalName()</b>
             </div>
 
             <div class="resolver_div_componentgroup tablerows" style="grid-template-columns: auto 1fr; max-width: none;">
