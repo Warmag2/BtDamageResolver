@@ -2,8 +2,9 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
@@ -23,7 +24,7 @@ public class CommunicationService : GrainService, ICommunicationService
     /// Initializes a new instance of the <see cref="CommunicationService"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="communicationOptions">The communication options.</param>
+    /// <param name="configuration">The application configuration.</param>
     /// <param name="jsonSerializerOptions">JSON serializer options.</param>
     /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="grainFactory">The grain factory.</param>
@@ -32,7 +33,7 @@ public class CommunicationService : GrainService, ICommunicationService
     /// <param name="loggerFactory">The logger factory.</param>
     public CommunicationService(
         ILogger<CommunicationService> logger,
-        IOptions<CommunicationOptions> communicationOptions,
+        IConfiguration configuration,
         IOptions<JsonSerializerOptions> jsonSerializerOptions,
         DataHelper dataHelper,
         IGrainFactory grainFactory,
@@ -41,7 +42,7 @@ public class CommunicationService : GrainService, ICommunicationService
         ILoggerFactory loggerFactory) : base(grainId, silo, loggerFactory)
     {
         _logger = logger;
-        _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), jsonSerializerOptions, communicationOptions.Value.ConnectionString, dataHelper, grainFactory);
+        _serverToClientCommunicator = new ServerToClientCommunicator(loggerFactory.CreateLogger<ServerToClientCommunicator>(), jsonSerializerOptions, configuration.GetConnectionString(Settings.RedisConnectionStringName), dataHelper, grainFactory);
     }
 
     /// <inheritdoc />
