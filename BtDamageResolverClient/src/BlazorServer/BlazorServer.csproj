@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.447" />
-    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.447" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.448" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.448" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
     <PackageReference Include="NuGet.Packaging" Version="7.6.0" />
@@ -18,17 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="CommunicationSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CommunicationSettings.Release.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Include="CommunicationSettings.Debug.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="appsettings.Release.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

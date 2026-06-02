@@ -52,13 +52,10 @@ public class Startup
     /// For more information on how to configure your application, see https://go.microsoft.com/fwlink/?LinkID=398940.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    public static void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
-        var configuration = GetConfiguration("CommunicationSettings.json");
-
-        services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
-        services.Configure<CompressionOptions>(configuration.GetSection(Settings.CompressionOptionsBlockName));
-        services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
+        services.Configure<CompressionOptions>(Configuration.GetSection(Settings.CompressionOptionsBlockName));
+        services.Configure<FaemiyahLoggingOptions>(Configuration.GetSection(Settings.LoggingOptionsBlockName));
         services.Configure<CircuitOptions>(options =>
         {
             options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromHours(1);
@@ -73,7 +70,7 @@ public class Startup
             conf.AddFaemiyahLogging();
         });
 
-        services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(configuration["DataProtectionKeysPath"] ?? "/app/dpkeys/"));
+        services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(Configuration["DataProtectionKeysPath"] ?? "/app/dpkeys/"));
         services.AddRazorPages();
         services.AddServerSideBlazor();
         services.AddSignalR(options =>
@@ -144,16 +141,16 @@ public class Startup
         });
     }
 
-    private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider)
+    private RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider)
         where TType : class, IEntity<string>
     {
-        var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
+        var connectionString = Configuration.GetConnectionString(Settings.RedisConnectionStringName);
 
-        if (options != null)
+        if (!string.IsNullOrEmpty(connectionString))
         {
-            return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), options.Value.ConnectionString);
+            return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), connectionString);
         }
 
-        throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
+        throw new InvalidOperationException($"No 'Redis' connection string configured for entity repository of type {typeof(TType)}.");
     }
 }

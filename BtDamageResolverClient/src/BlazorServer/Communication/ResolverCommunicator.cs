@@ -6,8 +6,9 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Constants;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -21,7 +22,7 @@ public class ResolverCommunicator : IDisposable
     private readonly ILogger<ResolverCommunicator> _logger;
     private readonly IOptions<JsonSerializerOptions> _jsonSerializerOptions;
     private readonly DataHelper _dataHelper;
-    private readonly CommunicationOptions _communicationOptions;
+    private readonly string _redisConnectionString;
     private readonly HubConnection _hubConnection;
 
     private string _playerName;
@@ -33,15 +34,15 @@ public class ResolverCommunicator : IDisposable
     /// Initializes a new instance of the <see cref="ResolverCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="communicationOptions">The communication options.</param>
+    /// <param name="configuration">The application configuration.</param>
     /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
     /// <param name="dataHelper">The data compression helper.</param>
     /// <param name="hubConnection">The SignalR hub connection.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, HubConnection hubConnection)
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IConfiguration configuration, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, HubConnection hubConnection)
     {
         _logger = logger;
         _jsonSerializerOptions = jsonSerializerOptions;
-        _communicationOptions = communicationOptions.Value;
+        _redisConnectionString = configuration.GetConnectionString(Settings.RedisConnectionStringName);
         _dataHelper = dataHelper;
         _hubConnection = hubConnection;
     }
@@ -365,7 +366,7 @@ public class ResolverCommunicator : IDisposable
 
     private void Reset()
     {
-        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _communicationOptions.ConnectionString, _dataHelper, _hubConnection, _playerName);
+        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _redisConnectionString, _dataHelper, _hubConnection, _playerName);
     }
 
     private void SendErrorMessage(string errorMessage)
