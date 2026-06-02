@@ -117,11 +117,12 @@ internal static class Program
             .UseOrleans((context, siloBuilder) =>
             {
                 var configuration = context.Configuration;
-                var clusterOptions = new FaemiyahClusterOptions
-                {
-                    Invariant = configuration[$"{Settings.ClusterOptionsBlockName}:Invariant"],
-                    ConnectionString = configuration.GetConnectionString("Postgres")
-                };
+
+                // Built here (not from DI) because UseAdoNetClustering/AddGrainStorage run during the
+                // Orleans builder phase, before the DI container exists. The PostConfigure below mirrors
+                // ConnectionString onto the IOptions<FaemiyahClusterOptions> used by LoggingService at runtime.
+                var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>() ?? new FaemiyahClusterOptions();
+                clusterOptions.ConnectionString = configuration.GetConnectionString(Settings.PostgresConnectionStringName);
 
                 siloBuilder
                     .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(
@@ -162,7 +163,11 @@ internal static class Program
                     .Configure<EndpointOptions>(options =>
                     {
                         options.AdvertisedIPAddress = GetHostIp();
+
+                        // The socket used for silo-to-silo will bind to this endpoint
                         options.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, clientPort);
+
+                        // The socket used by the gateway will bind to this endpoint
                         options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, siloPort);
                     })
                     .AddGrainService<CommunicationService>()
@@ -172,7 +177,7 @@ internal static class Program
                         services.ConfigureJsonSerializerOptions();
                         services.Configure<CompressionOptions>(configuration.GetSection(Settings.CompressionOptionsBlockName));
                         services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
-                        services.PostConfigure<FaemiyahClusterOptions>(options => options.ConnectionString = configuration.GetConnectionString("Postgres"));
+                        services.PostConfigure<FaemiyahClusterOptions>(options => options.ConnectionString = configuration.GetConnectionString(Settings.PostgresConnectionStringName));
                         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
                         services.AddLogging(conf =>
                         {
@@ -224,10 +229,10 @@ internal static class Program
     private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider)
         where TType : class, IEntity<string>
     {
-        var connectionString = serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString("Redis");
+        var connectionString = serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString(Settings.RedisConnectionStringName);
         return !string.IsNullOrEmpty(connectionString)
             ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), connectionString)
-            : throw new InvalidOperationException($"No 'Redis' connection string configured for entity repository of type {typeof(TType)}.");
+            : throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured for entity repository of type {typeof(TType)}.");
     }
 
     private static ISiloBuilder AddGrainStorage(this ISiloBuilder siloHostBuilder, string name, FaemiyahClusterOptions clusterOptions)

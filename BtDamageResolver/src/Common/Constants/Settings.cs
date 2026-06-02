@@ -36,6 +36,16 @@ public static class Settings
     public const string CompressionOptionsBlockName = "CompressionOptions";
 
     /// <summary>
+    /// The name of the connection string for the Redis communication bus.
+    /// </summary>
+    public const string RedisConnectionStringName = "Redis";
+
+    /// <summary>
+    /// The name of the connection string for the Postgres database (Orleans clustering, grain storage, and logging).
+    /// </summary>
+    public const string PostgresConnectionStringName = "Postgres";
+
+    /// <summary>
     /// Maximum age of game entries in hours.
     /// </summary>
     public const int MaximumGameEntryAgeHours = 24;
