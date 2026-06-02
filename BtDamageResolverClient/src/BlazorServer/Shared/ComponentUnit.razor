@@ -80,9 +80,12 @@
     <div class="resolver_div_componentgroup">
         @foreach (var weaponBay in UnitEntry.WeaponBays)
         {
-            <div class="resolver_div_componentcell">
-                <b>@weaponBay.GetFormalName()</b>
-            </div>
+            @if (UnitEntry.WeaponBays.Count > 1)
+            {
+                <div class="resolver_div_componentcell">
+                    <b>@weaponBay.GetFormalName()</b>
+                </div>
+            }
 
             <div class="resolver_div_componentgroup tablerows" style="grid-template-columns: auto 1fr; max-width: none;">
                 <div class="resolver_div_componentrow">
