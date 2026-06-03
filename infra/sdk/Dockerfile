@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS base
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS base
 WORKDIR /app
 
 FROM base AS build

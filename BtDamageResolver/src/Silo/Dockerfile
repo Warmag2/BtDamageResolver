@@ -1,4 +1,5 @@
-﻿FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/runtime:10.0-alpine AS base
+RUN apk add --no-cache krb5-libs
 WORKDIR /app
 
 FROM resolversdk:latest AS build
