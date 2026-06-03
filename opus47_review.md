@@ -24,16 +24,6 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 - **No `ShouldRender()` overrides** anywhere except `FormNumber.razor:43` (`!_isBeingEdited`) and (now) `ComponentPlayerState`. Remaining components still re-render on every event/parameter change. Add render guards to the editable forms (`FormWeaponEntry`, `FormFiringSolution`, all `FormPaperDoll*` (10 files), `FormDamageReport`, `FormUnitEntry`). _(Read-only All Units path — `ComponentGameState`/`ComponentPlayerState`/`ComponentUnit`/`ComponentWeaponEntry` — done.)_
 
-## B3. SignalR / Blazor Server specifics
-
-- **Double-hop architecture (biggest single inefficiency).** The architecture is: server-side code (`ResolverCommunicator`) sends to Redis → `ClientToServerCommunicator` (Redis subscriber on the Blazor server) → **calls `_hubConnection.SendAsync`** back to the SignalR hub endpoint → `ClientHub` forwards to client. Each Redis message thus does an HTTP/WebSocket round-trip from the server *to itself* before reaching the browser.
-  - `Communication/ClientToServerCommunicator.cs:37,45,53,61,69,77,85,93` — all `_hubConnection.SendAsync(...)`.
-  - `Hubs/ClientHub.cs:17,23,29,35,41,47,53,59` — forwarder that just relays to `Clients.Client(connectionId)`.
-  - The whole `ClientHub` could be removed and the Redis subscriber could directly notify the Blazor circuit (e.g., via the singleton `UserStateController`/event aggregator).
-- **Per-render tooltip string.** The `data-tooltip-content` tooltip string is recomputed every render and inlined as a DOM attribute (`FormWeaponEntry.razor:13,18` and paper-doll regions).
-- **Large SignalR payloads.** `Startup.cs:67-68,81` sets `ApplicationMaxBufferSize`/`TransportMaxBufferSize`/`MaximumReceiveMessageSize` = 1 MB → implies large payloads. The whole `GameState` is serialized on every player update; combined with key=timestamp invalidating subtrees, every update re-renders a huge chunk of DOM and ships large diffs.
-- **`_dataHelper.Unpack<>` runs synchronously on the circuit thread** (`Pages/Index.razor:106, 112, 120, 126, 132, 138, 144`). Heavy decompress + JSON deserialize blocks the circuit, freezing UI on ARM.
-
 ## B4. C# code in components
 
 - **LINQ allocations in render paths:**

@@ -2,11 +2,12 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -21,7 +22,7 @@ public class ResolverCommunicator : IDisposable
     private readonly IOptions<JsonSerializerOptions> _jsonSerializerOptions;
     private readonly DataHelper _dataHelper;
     private readonly string _connectionString;
-    private readonly HubConnection _hubConnection;
+    private readonly ClientMessageDispatcher _dispatcher;
 
     private string _playerName;
     private Guid _authenticationToken;
@@ -35,14 +36,14 @@ public class ResolverCommunicator : IDisposable
     /// <param name="connectionString">The Redis connection string.</param>
     /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
     /// <param name="dataHelper">The data compression helper.</param>
-    /// <param name="hubConnection">The SignalR hub connection.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, string connectionString, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, HubConnection hubConnection)
+    /// <param name="dispatcher">The in-process dispatcher delivering events to the circuit.</param>
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, string connectionString, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, ClientMessageDispatcher dispatcher)
     {
         _logger = logger;
         _jsonSerializerOptions = jsonSerializerOptions;
         _connectionString = connectionString;
         _dataHelper = dataHelper;
-        _hubConnection = hubConnection;
+        _dispatcher = dispatcher;
     }
 
     /// <summary>
@@ -365,7 +366,7 @@ public class ResolverCommunicator : IDisposable
     private void Reset()
     {
         TeardownCommunicator();
-        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _connectionString, _dataHelper, _hubConnection, _playerName);
+        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _connectionString, _dataHelper, _dispatcher, _playerName);
     }
 
     /// <summary>
@@ -382,7 +383,9 @@ public class ResolverCommunicator : IDisposable
 
     private void SendErrorMessage(string errorMessage)
     {
-        _ = _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage)
-            .ContinueWith(t => _logger.LogError(t.Exception, "Failed to send error message to hub"), TaskContinuationOptions.OnlyOnFaulted);
+        // Route local errors through the same in-process dispatcher the server uses, so they reach the
+        // existing ErrorMessage handler in Index.razor and are surfaced to the user.
+        _ = _dispatcher.DispatchAsync(EventNames.ErrorMessage, _dataHelper.Pack(new ClientErrorEvent(errorMessage)))
+            .ContinueWith(t => _logger.LogError(t.Exception, "Failed to dispatch error message"), TaskContinuationOptions.OnlyOnFaulted);
     }
 }

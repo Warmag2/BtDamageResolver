@@ -554,3 +554,119 @@ O(items×children crossed) to exactly dragstart + drop (+ dragend). Reorder logi
 
 Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings). Visual drag/drop
 behavior to be confirmed by the user in-browser.
+
+## B3. Synchronous Unpack<> on circuit thread — ASSESSED, no change
+
+Claim was that `_dataHelper.Unpack<>` (LZMA/Brotli decompress + JSON deserialize) in the
+`_hubConnection.On<byte[]>` handlers (`Pages/Index.razor:106,112,120,126,132,138,144`) blocks the Blazor
+circuit and freezes the UI on ARM.
+
+Finding: the `HubConnection` is built with a plain `HubConnectionBuilder` (`Startup.cs:113-120`) with no
+captured `SynchronizationContext`, so these `On` callbacks run on the SignalR **client receive loop**
+(a thread-pool thread), not the Blazor render Dispatcher. Each handler does the `Unpack` there, mutates the
+scoped `UserStateController`, then calls `InvokeStateChange()` which marshals only `StateHasChanged` onto
+the Dispatcher. So decompress/deserialize does not directly block rendering; the two are sequential, not
+contending.
+
+Decision: do **not** wrap `Unpack` in `Task.Run`. It would not reduce CPU (the work is unavoidable and
+identical), and on the few-core ARM target parallelizing CPU-bound work yields no throughput gain while risking
+contention with rendering (which currently does not overlap the deserialize). The genuine CPU levers are
+payload size/frequency (the "large SignalR payloads" item) and the double-hop removal; this concern is folded
+into those.
+
+Noted out-of-scope: the handlers mutate scoped `UserStateController` from the receive-loop thread (off
+Dispatcher) — a pre-existing latent thread-safety smell, not addressed here.
+
+## B3. Per-render tooltip string recomputation — FIXED (FormWeaponEntry) / ASSESSED (paper dolls)
+
+`FormWeaponEntry` computed its `data-tooltip-content` via `GetTargetNumberText` on **every** render
+(an O(n^2) `Aggregate` string build over the calculation-log lines). This component re-renders on every
+weapon toggle/edit, yet the tooltip only changes when the unit's target-number data changes.
+
+Fix (`Shared/FormWeaponEntry.razor`): memoize the tooltip string on the existing `_targetNumberTimeStamp`
+(the same key that already gates `CheckRefresh`/re-render). New `GetCachedTooltipContent(AttackLog)` recomputes
+only when that timestamp changes; otherwise it returns the cached string. The cache is a single `string` field
+on the component instance (`@key`'d by `WeaponEntry.Id`), so it is GC'd with the component and holds at most
+one tooltip per on-screen weapon entry — strictly less allocation/GC churn than rebuilding every render, no leak.
+Also replaced the O(n^2) `Aggregate` concatenation with an O(n) `string.Concat(... Select(...))`.
+
+Paper-doll regions (`FormPaperDollRegion` → `FormPaperDoll.GetDamageText(Location)`) were assessed and left
+as-is: they operate on immutable damage-report data and only render when a new damage report arrives (the report
+views are `@key`'d by `DamageReportContainer.TimeStamp`), not on interactive churn, so eager per-render
+computation is acceptable. Their per-region LINQ is tracked separately under B4.
+
+Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings).
+
+## B3. Large SignalR payloads — partially optimized; protocol refactor declined
+
+Two sub-concerns:
+
+1. **Whole-GameState-per-update protocol (declined, by design).** Sending the entire `GameState` on every
+   update (rather than per-unit deltas) is a deliberate design choice: it is eventually consistent and
+   self-healing — a client that misses an update is corrected by the next one with no desync, and it cleanly
+   supports operations like unit reordering. Per-unit deltas would require a full client/server CRUD protocol
+   (AddOrUpdate/Delete per unit) and introduce a silent-desync failure mode when a listener misses a message.
+   Decision: keep whole-GameState; do not refactor.
+
+2. **Redundant per-recipient envelope serialization (FIXED).** `GameActor.DistributeGameStateToPlayers` already
+   builds the `GameState` once and `RedisServerToClientCommunicator.SendToMany` already **compresses** it once
+   (`DataHelper.Pack` outside the loop). However, the old loop then called `SendSingle` →
+   `SendEnvelope` per client, and each call re-ran `JsonSerializer.Serialize(envelope)` — which base64-encodes
+   the entire already-compressed payload into a fresh string — once per recipient. Since the envelope is identical
+   for all recipients, this was N× redundant.
+
+   Fix (`Api/ClientInterface/Communicators/RedisCommunicator.cs` + `RedisServerToClientCommunicator.cs`):
+   split `SendEnvelope` into `PublishToChannel(target, serializedEnvelope)` and added
+   `SendEnvelopeToMany(targets, envelope)` which serializes the envelope **once** and publishes the same payload
+   string to each channel. `SendToMany` now uses it. Wire format and per-client delivery are unchanged (each
+   client still receives the identical envelope JSON on its own Redis channel); only the redundant repeat
+   serialization is removed. CPU/allocation saved scales with (players − 1) per broadcast.
+
+The remaining client-side cost noted in the original bullet (`@key`=timestamp invalidating render subtrees) is
+intertwined with the known @key-churn behavior that prior regressions hinged on, and is out of scope here; the
+per-region paperdoll LINQ is tracked under B4.
+
+Build: server (Silo) builds (0 errors). BlazorServer unaffected.
+
+---
+
+## B3. Double-hop architecture removed (ClientHub / self-looping HubConnection eliminated)
+
+**Problem.** Inbound server→browser events took a redundant in-process hop. The Blazor server's
+`ClientToServerCommunicator` (a Redis subscriber, per-circuit) received each event off Redis and then called
+`_hubConnection.SendAsync(EventName, connectionId, data)` over a SignalR **client** `HubConnection` pointed at the
+Blazor server's *own* `/ClientHub`. `ClientHub` simply relayed it back (`Clients.Client(connectionId).SendAsync`) to
+the same `HubConnection`'s `.On<byte[]>` handlers in `Index.razor`. The whole `HubConnection`/`ClientHub` pair was an
+in-process message bus implemented as a self-looping WebSocket; `connectionId` was used solely for this self-routing
+(the server addresses circuits by playerId via the Redis channel, never by connectionId).
+
+**Fix.** Replaced the self-loop with a direct in-process dispatcher.
+- New `Communication/ClientMessageDispatcher.cs` (scoped per circuit): `On(name, Func<byte[],Task>)` / `Off(name)` /
+  `DispatchAsync(name, data)`. A `SemaphoreSlim(1,1)` gate serializes handler execution.
+- `ClientToServerCommunicator`: each `HandleX` now `await _dispatcher.DispatchAsync(EventNames.X, data)` instead of
+  `_hubConnection.SendAsync(...)`; `connectionId` dropped.
+- `ResolverCommunicator`: takes the dispatcher instead of `HubConnection`; `SendErrorMessage` now packs a
+  `ClientErrorEvent` and dispatches `EventNames.ErrorMessage` (previously it called a non-existent `ReceiveErrorMessage`
+  hub method, so local error messages were silently lost — this is now fixed and they reach the existing handler).
+- `Index.razor`: subscribes via `_dispatcher.On(...)` instead of `_hubConnection.On<byte[]>(...)`; removed
+  `_hubConnection.StartAsync()`; `DisposeAsync` now `Off`s each event (no hub to dispose).
+- `Startup.cs`: removed `AddScoped<ClientHub>()`, the `AddScoped<HubConnection>` factory, and
+  `MapHub<ClientHub>("/ClientHub")`; added `AddScoped<ClientMessageDispatcher>()`; rewired the `ResolverCommunicator`
+  factory to inject the dispatcher. Deleted `Hubs/ClientHub.cs`.
+
+**Why the serialization gate.** The client subscribes to two independent Redis queues — the player channel and the
+common `ClientStreamAddress` (used by `SendToAll`) — whose `OnMessage` loops can run concurrently. The old design
+funnelled both through the single `HubConnection` receive loop, so handlers (which mutate the scoped
+`UserStateController`) ran one-at-a-time. The `SemaphoreSlim` gate preserves exactly that ordering, so there is no new
+concurrency hazard. Handlers continue to run off the Blazor render dispatcher (as before), so no decompression/Unpack
+CPU is moved onto the render path — consistent with the CPU-over-memory priority.
+
+**Eliminated per inbound event:** one `HubConnection.SendAsync` WebSocket frame out + the `ClientHub` relay +
+one inbound WebSocket frame back (plus the SignalR client connection, its reconnect machinery, and the `/ClientHub`
+endpoint entirely).
+
+**Behavior change to note:** local (client-originated) error messages now actually display (the old path was a
+silent no-op against a missing hub method); `ClientErrorEvent(errorMessage)` leaves `InvalidUnitIds` null, identical
+to the server's own error path, which the handler already tolerates.
+
+Build: BlazorServer builds (0 errors; pre-existing 12 warnings unchanged).

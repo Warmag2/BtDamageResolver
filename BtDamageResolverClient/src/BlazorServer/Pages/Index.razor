@@ -9,13 +9,12 @@
 @using Faemiyah.BtDamageResolver.Api.Options
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication
-@using Microsoft.AspNetCore.SignalR.Client
 @inject CommonData _commonData
 @inject DataHelper _dataHelper
 @inject LocalStorage _localStorage
 @inject NavigationManager _navigationManager
 @inject ResolverCommunicator _resolverCommunicator
-@inject HubConnection _hubConnection;
+@inject ClientMessageDispatcher _dispatcher
 @inject UserStateController _userStateController
 
 <div class="resolver_div_errormessage">
@@ -66,7 +65,7 @@
 
     protected override void OnInitialized()
     {
-        _hubConnection.On<byte[]>(EventNames.ConnectionResponse, async (connectionResponseData) =>
+        _dispatcher.On(EventNames.ConnectionResponse, async (connectionResponseData) =>
         {
             var connectionResponse = _dataHelper.Unpack<ConnectionResponse>(connectionResponseData);
 
@@ -101,48 +100,55 @@
             InvokeStateChange();
         });
 
-        _hubConnection.On<byte[]>(EventNames.DamageReports, damageReportData =>
+        _dispatcher.On(EventNames.DamageReports, damageReportData =>
         {
             _userStateController.DamageReportContainer.AddRange(_dataHelper.Unpack<List<DamageReport>>(damageReportData));
             _userStateController.NotifyDamageReportsChanged();
+            return Task.CompletedTask;
         });
 
-        _hubConnection.On<byte[]>(EventNames.ErrorMessage, errorMessage =>
+        _dispatcher.On(EventNames.ErrorMessage, errorMessage =>
         {
             var errorEvent = _dataHelper.Unpack<ClientErrorEvent>(errorMessage);
             _errorMessage = errorEvent.ErrorMessage;
             _userStateController.InvalidUnitIds = errorEvent.InvalidUnitIds;
             InvokeStateChange();
+            return Task.CompletedTask;
         });
 
-        _hubConnection.On<byte[]>(EventNames.GameEntries, gameEntries =>
+        _dispatcher.On(EventNames.GameEntries, gameEntries =>
         {
             _userStateController.GameEntries = _dataHelper.Unpack<List<GameEntry>>(gameEntries).ToDictionary(g => g.GetName(), g => g);
             InvokeStateChange();
+            return Task.CompletedTask;
         });
 
-        _hubConnection.On<byte[]>(EventNames.GameOptions, gameOptionsData =>
+        _dispatcher.On(EventNames.GameOptions, gameOptionsData =>
         {
             _userStateController.GameOptions = _dataHelper.Unpack<GameOptions>(gameOptionsData);
             InvokeStateChange();
+            return Task.CompletedTask;
         });
 
-        _hubConnection.On<byte[]>(EventNames.GameState, gameStateData =>
+        _dispatcher.On(EventNames.GameState, gameStateData =>
         {
             _userStateController.GameState = _dataHelper.Unpack<GameState>(gameStateData);
             InvokeStateChange();
+            return Task.CompletedTask;
         });
 
-        _hubConnection.On<byte[]>(EventNames.PlayerOptions, playerOptionsData =>
+        _dispatcher.On(EventNames.PlayerOptions, playerOptionsData =>
         {
             _userStateController.PlayerOptions = _dataHelper.Unpack<PlayerOptions>(playerOptionsData);
             InvokeStateChange();
+            return Task.CompletedTask;
         });
 
-        _hubConnection.On<byte[]>(EventNames.TargetNumbers, targetNumberUpdateData =>
+        _dispatcher.On(EventNames.TargetNumbers, targetNumberUpdateData =>
         {
             _userStateController.RecordTargetNumberUpdates(_dataHelper.Unpack<List<TargetNumberUpdate>>(targetNumberUpdateData));
             // Not necessary to invoke state change on target number data
+            return Task.CompletedTask;
         });
 
         _userStateController.OnPlayerStateUpdated += SendPlayerState;
@@ -155,8 +161,6 @@
     {
         if (firstRender)
         {
-            await _hubConnection.StartAsync();
-
             var credentials = await _localStorage.GetUserCredentials();
 
             if (credentials != null)
@@ -196,16 +200,24 @@
         _formServer.LeaveGame();
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         _userStateController.OnPlayerStateUpdated -= SendPlayerState;
         _userStateController.OnGameOptionsUpdated -= SendGameOptions;
         _userStateController.OnPlayerOptionsUpdated -= SendPlayerOptions;
         _userStateController.OnDamageInstanceRequested -= SendDamageInstance;
+
+        _dispatcher.Off(EventNames.ConnectionResponse);
+        _dispatcher.Off(EventNames.DamageReports);
+        _dispatcher.Off(EventNames.ErrorMessage);
+        _dispatcher.Off(EventNames.GameEntries);
+        _dispatcher.Off(EventNames.GameOptions);
+        _dispatcher.Off(EventNames.GameState);
+        _dispatcher.Off(EventNames.PlayerOptions);
+        _dispatcher.Off(EventNames.TargetNumbers);
+
         _resolverCommunicator?.Dispose();
-        if (_hubConnection != null)
-        {
-            await _hubConnection.DisposeAsync();
-        }
+
+        return ValueTask.CompletedTask;
     }
 }

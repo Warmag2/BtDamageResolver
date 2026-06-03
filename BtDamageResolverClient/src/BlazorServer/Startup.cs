@@ -6,19 +6,16 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
-using Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
 using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -100,24 +97,16 @@ public class Startup
         services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
         services.AddSingleton<CommonData>();
         services.AddSingleton<DataHelper>();
-        services.AddScoped<ClientHub>();
         services.AddScoped<LocalStorage>();
+        services.AddScoped<ClientMessageDispatcher>();
         services.AddScoped(serviceProvider => new ResolverCommunicator(
             serviceProvider.GetRequiredService<ILogger<ResolverCommunicator>>(),
             Configuration.GetConnectionString(Settings.RedisConnectionStringName)
                 ?? throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured."),
             serviceProvider.GetRequiredService<IOptions<JsonSerializerOptions>>(),
             serviceProvider.GetRequiredService<DataHelper>(),
-            serviceProvider.GetRequiredService<HubConnection>()));
+            serviceProvider.GetRequiredService<ClientMessageDispatcher>()));
         services.AddScoped<UserStateController>();
-        services.AddScoped<HubConnection>(serviceProvider =>
-        {
-            var navigationManager = serviceProvider.GetRequiredService<NavigationManager>();
-            return new HubConnectionBuilder()
-            .WithAutomaticReconnect()
-                .WithUrl(navigationManager.ToAbsoluteUri("/ClientHub"))
-                .Build();
-        });
     }
 
     /// <summary>
@@ -148,7 +137,6 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapBlazorHub();
-            endpoints.MapHub<ClientHub>("/ClientHub");
             endpoints.MapFallbackToPage("/_Host");
         });
     }

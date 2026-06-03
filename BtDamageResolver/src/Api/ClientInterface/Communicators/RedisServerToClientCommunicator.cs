@@ -46,10 +46,7 @@ public abstract class RedisServerToClientCommunicator : RedisCommunicator, IServ
         where TType : class
     {
         var envelope = new Envelope(envelopeType, DataHelper.Pack(data));
-        foreach (var clientName in clientNames)
-        {
-            SendSingle(clientName, envelope);
-        }
+        SendEnvelopeToMany(clientNames, envelope);
     }
 
     /// <inheritdoc />

@@ -10,7 +10,7 @@
 
 @{
     var targetNumberUpdate = _userStateController.GetTargetNumberUpdateSingleWeapon(UnitEntry.Id, WeaponEntry.Id);
-    var tooltipContent = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
+    var tooltipContent = GetCachedTooltipContent(targetNumberUpdate?.CalculationLog);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
     var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName);
 }
@@ -71,6 +71,8 @@
     private WeaponState _weaponState;
     private string _weaponName;
     private DateTime _targetNumberTimeStamp;
+    private string _cachedTooltipContent;
+    private DateTime? _cachedTooltipKey;
 
     [Parameter]
     public WeaponBay WeaponBay { get; set; }
@@ -215,11 +217,26 @@
         UpdateWeaponEntry();
     }
 
+    // The tooltip string only changes when this unit's target-number data changes, so memoize it
+    // on the same timestamp that gates re-render instead of rebuilding it on every render.
+    private string GetCachedTooltipContent(AttackLog attackLog)
+    {
+        if (_cachedTooltipKey != _targetNumberTimeStamp)
+        {
+            _cachedTooltipContent = GetTargetNumberText(attackLog, false);
+            _cachedTooltipKey = _targetNumberTimeStamp;
+        }
+
+        return _cachedTooltipContent;
+    }
+
     private static string GetTargetNumberText(AttackLog attackLog, bool showAllLines)
     {
         if (attackLog != null && attackLog.Log.Any())
         {
-            return attackLog.Log.Where(entry => showAllLines || entry.Number != 0).Aggregate(string.Empty, (current, entry) => current + (entry + "<br>"));
+            return string.Concat(attackLog.Log
+                .Where(entry => showAllLines || entry.Number != 0)
+                .Select(entry => entry + "<br>"));
         }
 
         return "No target number calculation log available.";

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
@@ -114,9 +115,33 @@ public abstract class RedisCommunicator : IDisposable
     /// </remarks>
     protected void SendEnvelope(string target, Envelope data)
     {
+        PublishToChannel(target, JsonSerializer.Serialize(data, JsonSerializerOptions));
+    }
+
+    /// <summary>
+    /// Sends the same envelope to many communication endpoints, serializing it only once.
+    /// </summary>
+    /// <param name="targets">The targets where to send data.</param>
+    /// <param name="data">The data to send.</param>
+    /// <remarks>
+    /// The envelope is identical for every recipient, so it is serialized a single time and the resulting
+    /// payload (which base64-encodes the already-compressed data) is reused for each channel, rather than
+    /// re-serializing it once per target.
+    /// </remarks>
+    protected void SendEnvelopeToMany(IEnumerable<string> targets, Envelope data)
+    {
+        var serializedEnvelope = JsonSerializer.Serialize(data, JsonSerializerOptions);
+        foreach (var target in targets)
+        {
+            PublishToChannel(target, serializedEnvelope);
+        }
+    }
+
+    private void PublishToChannel(string target, string serializedEnvelope)
+    {
         var channel = new RedisChannel(target, RedisChannel.PatternMode.Literal);
         CheckChannelConnection(channel);
-        RedisSubscriber.Publish(channel, JsonSerializer.Serialize(data, JsonSerializerOptions), CommandFlags.FireAndForget);
+        RedisSubscriber.Publish(channel, serializedEnvelope, CommandFlags.FireAndForget);
     }
 
     /// <summary>
