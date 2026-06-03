@@ -26,7 +26,7 @@
 
     @foreach (var player in playerStateList)
     {
-        <ComponentPlayerState @key=@($"{player.PlayerId}") Player="@player" />
+        <ComponentPlayerState @key=@player.PlayerId Player="@player" />
     }
 }
 

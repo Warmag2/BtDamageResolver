@@ -11,7 +11,7 @@
         {
             @foreach (var player in _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator))
             {
-                <ComponentPlayerState @key=@($"{player.PlayerId}_{player.TimeStamp}") PlayerId="@player.PlayerId" />
+                <ComponentPlayerState @key=@player.PlayerId Player=@player />
             }
         }
         else
@@ -26,7 +26,7 @@
                 ContainerClass="resolver_div_componentlistcontainer"
                 OnChanged="OnUnitsReordered">
                 <ItemTemplate Context="unitEntry">
-                    <FormUnitEntry @key=@($"{unitEntry.Id}") UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" />
+                    <FormUnitEntry @key=@unitEntry.Id UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" />
                 </ItemTemplate>
             </ContainerReorderableList>
 

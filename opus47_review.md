@@ -26,12 +26,6 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 ## B6. Communication layer (Communication/, Logic/, Hubs/ClientHub.cs)
 
-- **`ResolverCommunicator.SendRequest` swallows exceptions** and re-emits another SignalR error message, potentially in a fast loop if the connection is bad.
-- **`Pages/Index.razor` `InvokeStateChange` per inbound packet** (lines 101, 115, 121, 127, 133, 139) — every Redis message triggers a re-render of the page-level component; combined with timestamp keys, every state update destroys & rebuilds the visible UI.
-- **`UserStateController.GameState` setter** (line 117) runs `UpdateUnitList` on every set, including the no-op rejection path (`_gameState.TimeStamp >= value.TimeStamp` at line 129).
-- **Inconsistent notification paths:** `GameOptions`/`PlayerOptions` setters (lines 92, 97) don't fire listeners; `Index.razor:127, 139` sets them directly → `OnGameOptionsUpdated`/`OnPlayerOptionsUpdated` don't fire on inbound updates, only on outbound user changes. Causes stale renders + extra refetches.
-- **`CommonData.GetSavedUnitNames` / `GetGameEntries`** (lines 418, 434) hit Redis per render of components using them inline as `Options="…"`. Move to cached state.
-
 ## B7. Miscellaneous Blazor
 
 - **`_Host.cshtml:21` — `ServerPrerendered`** prerenders the entire app twice (once SSR, once when interactive starts). Since almost everything is conditional on `IsConnectedToGame`, prerender adds no value. Consider `Server` mode.

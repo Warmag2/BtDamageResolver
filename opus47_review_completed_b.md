@@ -1023,3 +1023,54 @@ The two static tooltip target divs (Index.razor:58 `resolver_tooltip_paperdoll`,
 - Chose `async Task` (NOT `async void`): an initial `async void` version tripped SonarAnalyzer S3168 ("Return Task instead") and pushed the warning count 12 -> 13. Returning `Task` and fire-and-forgetting at the three call sites with `_ = SendErrorMessage(...)` (lines 73, 351, 359) keeps it idiomatic and restores the 12-warning baseline. The method fully handles its own exceptions, so the discarded Task never faults unobserved.
 
 **Build:** 0 errors, 12 warnings (baseline restored).
+## B6. SendRequest swallows exceptions / potential fast loop (NO-ACTION -- mischaracterization)
+
+**Item:** `ResolverCommunicator.SendRequest` swallows exceptions and re-emits another SignalR error message, potentially in a fast loop if the connection is bad.
+
+**Investigation:** `SendRequest<TRequest>` (ResolverCommunicator.cs:~337-353) checks auth, then `try { _clientToServerCommunicator.Send(requestType, request); } catch (Exception ex) { _ = SendErrorMessage(...); }`. `SendErrorMessage` dispatches via `_dispatcher.DispatchAsync(EventNames.ErrorMessage, ...)` -- an IN-PROCESS `ClientMessageDispatcher` (ClientMessageDispatcher.cs:50-66) that invokes the locally-registered handler in `Index.razor:110-117`, which only sets `_errorMessage` / `InvalidUnitIds` and calls `InvokeStateChange()`. There is NO network send on the error path.
+
+**Findings:**
+- "Re-emits another SignalR error message in a fast loop" is inaccurate: the re-emission is a local in-process event dispatch to the UI, not a SignalR/network send, and nothing re-invokes `SendRequest`. A failed request produces exactly ONE local error message + one re-render. There is no recursion and no automatic retry, so no loop -- one error per user-initiated failed request.
+- "Swallows exceptions" is the intended behavior: catch the send failure and surface a user-facing error (good UX). With the SendErrorMessage refactor, dispatch failures are also logged.
+
+**Decision (user-approved): NO-ACTION.** Error surfacing is local/in-process with no loop potential; the catch is appropriate.
+## B6. Index.razor InvokeStateChange per inbound packet + timestamp-key rebuild (RESOLVED -- hot-path keys already tight)
+
+**Item:** `Pages/Index.razor` `InvokeStateChange` per inbound packet (lines 101/115/121/127/133/139) -- every Redis message re-renders the page-level component; combined with timestamp keys, every state update destroys & rebuilds the visible UI.
+
+**Two parts:**
+
+1. **Per-packet InvokeStateChange (necessary).** The Index inbound handlers split: `DamageReports` uses a targeted `NotifyDamageReportsChanged()` (no full re-render) and `TargetNumbers` explicitly skips re-render; the rest (`ConnectionResponse`, `ErrorMessage`, `GameEntries`, `GameOptions`, `GameState`, `PlayerOptions`) call `InvokeStateChange()`. These are necessary update signals -- when `GameState` changes the bound UI must update. The damaging part was never the signal but the cascade into timestamp-keyed subtrees.
+
+2. **Timestamp-key destructive rebuild (already fixed for the hot path).** Audited every `@key` in the client. The EDITABLE hot path is fully STABLE-keyed -- no timestamps:
+   - `FormUnitEntry` -> `@key="{unitEntry.Id}"`; its per-field forms -> `{UnitEntry.Id}_Name`/`_Type`/`_Gunnery`/...
+   - `FormWeaponBay` -> `{weaponBay.Id}`; `FormWeaponEntry` -> `{weaponEntry.Id}`; `FormFiringSolution` -> `{weaponBay.Id}` (its target combo keys on `UnitListHash`, not a timestamp).
+   So editing your own units/weapons/armor no longer destroys & rebuilds subtrees.
+
+   Remaining timestamp keys are deliberate, infrequent refresh signals on non-hot boundaries:
+   - Read-only projections: `ComponentPlayerState.razor:12` / `ComponentUnit.razor:116` (All Units tab) and the spectator view `FormGameState.razor:14` (`{PlayerId}_{TimeStamp}`) -- recreate-on-change is the intended cheap refresh for a pure display.
+   - Coarse/infrequent: `Index.razor:42` `FormGameState` on `TurnTimeStamp` (once per turn); `Index.razor:54` `FormOptions` and `FormOptions.razor:91-103` `FormRadio` on options timestamps (rarely change).
+   - Damage reports: `Index.razor:50` / `FormGameState.razor:47` on `DamageReportContainer.TimeStamp`, now ALSO `ShouldRender`-gated.
+
+**Decision (user-confirmed): RESOLVED, no further action.** The "single largest win" (stable keys on the editable path) is already in place; the per-edit destructive rebuild is gone. The leftover timestamp keys fire only on turn/option changes, new reports, or read-only data updates -- not per edit -- and are justified. The per-packet `InvokeStateChange` is a necessary signal, mitigated by stable keys + the ShouldRender guards added across the read-only/paper-doll/damage-report subtrees. Optional-only: `Index.razor:42` `TurnTimeStamp` rebuild could be converted to ShouldRender+stable key, but it is coarse (once/turn), correctness-guaranteeing, and low value.
+## B6. GameState setter runs UpdateUnitList on no-op rejection path (ALREADY ADDRESSED)
+
+**Item:** `UserStateController.GameState` setter (line ~117) runs `UpdateUnitList` on every set, including the no-op rejection path (`_gameState.TimeStamp >= value.TimeStamp`).
+
+**Investigation:** The current setter (UserStateController.cs:122-155) guards the entire body with `if (_gameState == null || value == null || _gameState.TimeStamp < value.TimeStamp)`. `UpdateUnitList()` (line 145) is INSIDE that block. So when the incoming state is NOT newer (the rejection path), the whole block -- including `UpdateUnitList`, `NotifyGameUnitListUpdated`, and `NotifyGameStateUpdated` -- is skipped. The expensive work no longer runs on rejected pushes.
+
+**Findings:** This was resolved by the earlier game-state-guard work (the same change documented in debug_handoff_brief.md that also preserves the local player state when it is newer than the incoming one -- UserStateController.cs:131-139 -- fixing the deleted-unit "resurrection" bug). Additionally `UpdateUnitList` itself only fires the heavier list-driven refresh on a real identity-level change (count/new-key/PlayerId/Name/Type), returning false for value-only pushes. The review item describes pre-fix code.
+
+**Decision: ALREADY ADDRESSED.** No further action.
+## B6. Inconsistent notification paths for GameOptions / PlayerOptions (NO-ACTION)
+
+**Item:** `GameOptions`/`PlayerOptions` setters don't fire `OnGameOptionsUpdated`/`OnPlayerOptionsUpdated`; `Index.razor` sets them directly on inbound push -> events only fire on outbound user edits. Review claimed "stale renders + extra refetches."
+
+**Investigation:**
+- Outbound (user edits in FormOptions): the FormOptions handlers call `NotifyGameOptionsChanged()`/`NotifyPlayerOptionsChanged()` (UserStateController.cs:412-425), which stamp a fresh `TimeStamp` and fire the event. Index subscribes (`OnGameOptionsUpdated += SendGameOptions`, `OnPlayerOptionsUpdated += SendPlayerOptions`) to push the change to the server. FormDamageReports also subscribes to `OnPlayerOptionsUpdated` to re-render when display flags toggle.
+- Inbound (server push, Index.razor:128/142): sets the property directly + `InvokeStateChange()`. Firing the events here would call `SendGameOptions`/`SendPlayerOptions`, echoing the just-received options straight back to the server -- a wasteful round-trip loop. So NOT firing on inbound is deliberate and correct.
+- "Stale renders": FormOptions is keyed on `PlayerOptions.TimeStamp`/`GameOptions.TimeStamp` (Index.razor:54), so it rebuilds on inbound. FormDamageReports recomputes its signature in OnParametersSet->RefreshState (includes ShowOtherPlayers/ShowMovement flags), so the InvokeStateChange cascade refreshes it correctly even without the event.
+
+**ShouldRender guard considered and rejected as overengineering:** The user suggested a possible ShouldRender guard on FormOptions keyed on the options timestamps so it doesn't re-render while a player edits forces. But `ContainerTab` (ContainerTab.razor:3) wraps `@ChildContent` in `@if (TabIdentity == TabSelection && Enabled)` -- so FormOptions is ONLY in the render tree when the Options tab is actively selected. While a player edits forces they are on the Dashboard tab and FormOptions is not even instantiated. A guard would only save work in the narrow, transient window where a user sits on the Options tab while packets arrive, and the option subtree is small. Not worth the added complexity. The `@key` already rebuilds FormOptions cleanly when option timestamps change.
+
+**Decision: NO-ACTION.** The notification asymmetry is intentional/correct; the ShouldRender guard is overengineering given the tab gating.
