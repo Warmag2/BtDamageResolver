@@ -124,11 +124,20 @@ public class UserStateController
         get => _gameState;
         set
         {
-            // Only accept and react to a push that actually replaces the held game state. A stale or duplicate
-            // push leaves the existing object graph (and the unit references the editing tree is bound to) intact,
-            // so there is nothing to re-bind or re-render and we can skip the notifications entirely.
             if (_gameState == null || value == null || _gameState.TimeStamp < value.TimeStamp)
             {
+                // The incoming game state is newer overall, but it may have been published before our latest
+                // local optimistic edit. Preserve our own player state if it is newer or equal.
+                if (PlayerName != null &&
+                    _gameState?.Players != null &&
+                    value?.Players != null &&
+                    _gameState.Players.TryGetValue(PlayerName, out var localPlayerState) &&
+                    value.Players.TryGetValue(PlayerName, out var incomingPlayerState) &&
+                    localPlayerState.TimeStamp > incomingPlayerState.TimeStamp)
+                {
+                    value.Players[PlayerName] = localPlayerState;
+                }
+
                 _gameState = value;
 
                 // UpdateUnitList checks whether the identity-level unit list actually changed; most pushes only
