@@ -2,13 +2,13 @@
 
 @if (Path == null)
 {
-    <polygon fill="@FormPaperDoll.GetDamageColor(Location)" stroke="black" stroke-width="100" stroke-linejoin="@LineJoin" points="@Points"
-             onmousemove="ShowTooltip(event, 'resolver_tooltip_paperdoll', @FormPaperDoll.GetDamageText(Location));" onmouseout="HideTooltip('resolver_tooltip_paperdoll');" />
+    <polygon fill="@FillColor" stroke="black" stroke-width="100" stroke-linejoin="@LineJoin" points="@Points"
+             data-tooltip-id="resolver_tooltip_paperdoll" data-tooltip-content="@FormPaperDoll.GetDamageText(Location)" />
 }
 else
 {
-    <path fill="@FormPaperDoll.GetDamageColor(Location)" stroke="black" stroke-width="100" stroke-linejoin="@LineJoin" d="@Path"
-          onmousemove="ShowTooltip(event, 'resolver_tooltip_paperdoll', @FormPaperDoll.GetDamageText(Location));" onmouseout="HideTooltip('resolver_tooltip_paperdoll');" />
+    <path fill="@FillColor" stroke="black" stroke-width="100" stroke-linejoin="@LineJoin" d="@Path"
+          data-tooltip-id="resolver_tooltip_paperdoll" data-tooltip-content="@FormPaperDoll.GetDamageText(Location)" />
 }
 
 @code {
@@ -26,6 +26,11 @@ else
 
     [Parameter]
     public bool RoundJoin { get; set; }
+
+    [Parameter]
+    public string Fill { get; set; }
+
+    private string FillColor => Fill ?? FormPaperDoll.GetDamageColor(Location);
 
     private string LineJoin => RoundJoin ? "round" : null;
 }

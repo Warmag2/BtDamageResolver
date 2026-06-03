@@ -347,3 +347,32 @@ Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnin
 the rendered paperdolls is recommended (the only non-obvious risk is SVG-namespace rendering of the
 `<polygon>`/`<path>` through the component boundary — this is the standard Blazor SVG-child-component pattern
 and the namespace is resolved at DOM insertion by the physical parent `<svg>`).
+
+## B2. FormPaperDoll SVG inline-JS event attributes — DELEGATED HANDLERS
+
+Each interactive paper-doll shape carried inline `onmousemove="ShowTooltip(...)"` /
+`onmouseout="HideTooltip(...)"` attributes, forcing the browser to parse a handler string for every
+`<polygon>`/`<path>` across dozens of regions per damage report. CSS `:hover` already supplies the highlight
+recolour, but the tooltip needs cursor-following HTML content, so it cannot be pure CSS.
+
+Replaced the per-shape inline handlers with a single set of document-level delegated listeners
+(`wwwroot/js/Resolver.js`, appended IIFE). Shapes now declare `data-tooltip-id="resolver_tooltip_paperdoll"`
+and `data-tooltip-content="@FormPaperDoll.GetDamageText(Location)"`; the delegated `mouseover`/`mousemove`/
+`mouseout` listeners match `evt.target.closest("[data-tooltip-id]")`, populate the referenced tooltip div,
+and follow the cursor. `mousemove` re-reads `data-tooltip-content` and refreshes only when it changes,
+preserving the original live-update behaviour; `mouseout` uses a `relatedTarget`-contains guard; null guards
+throughout. Applied to `FormPaperDollRegion.razor` (both polygon and path branches) and
+`FormPaperDollTrooper.razor`.
+
+Intentionally left as-is: the global `ShowTooltip`/`HideTooltip` functions remain, because
+`FormWeaponEntry.razor` is a second consumer (via `resolver_tooltip_targetnumber` in `FormGameState.razor`)
+and does not carry `data-tooltip-id`, so the delegated listeners ignore it.
+
+Security hardening (behaviour change beyond pure refactor): `GetDamageText` previously wrapped its output in
+single quotes for the inline-JS string literal; those are removed for the data-attribute approach, and the
+user-entered firing-unit name is now `System.Net.WebUtility.HtmlEncode(...)`-encoded. The data-attribute
+path is strictly safer than the old inline JS (a name containing `'` could previously break out of the
+handler string), and the encoding renders any markup in a unit name as inert literal text.
+
+Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings). Visual verification of
+paper-doll tooltips is recommended (hover shows location + damage, follows the cursor, hides on leave).

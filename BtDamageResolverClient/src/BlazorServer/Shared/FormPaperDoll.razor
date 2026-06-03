@@ -175,15 +175,15 @@
                         .SelectMany(kvp => kvp.Value.Select(Damage => (kvp.Key, Damage)))
                         .ToList();
 
-                return $"'<b>{location}</b><br>{string.Join("<br>", damageOwnerPairs.Select(dop => $"{DamageReport.FiringUnitNames[dop.Key]} — {dop.Damage}"))}'";
+                return $"<b>{location}</b><br>{string.Join("<br>", damageOwnerPairs.Select(dop => $"{System.Net.WebUtility.HtmlEncode(DamageReport.FiringUnitNames[dop.Key])} — {dop.Damage}"))}";
             }
             else
             {
-                return $"'<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location].SelectMany(dc => dc.Value))}'";
+                return $"<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location].SelectMany(dc => dc.Value))}";
             }
         }
 
-        return $"'<b>{location}</b><br>0'";
+        return $"<b>{location}</b><br>0";
     }
 
     public string GetDamageColor(Location location)
