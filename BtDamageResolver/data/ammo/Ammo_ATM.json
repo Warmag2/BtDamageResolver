@@ -1,6 +1,7 @@
 ﻿[
   {
     "Name": "ATM3-SRM",
+    "AmmoProxyName": "SRM",
     "Damage": {
       "Short": 9
     },
@@ -19,6 +20,7 @@
   },
   {
     "Name": "ATM3-MRM",
+    "AmmoProxyName": "MRM",
     "Damage": {
       "Short": 6
     },
@@ -38,6 +40,7 @@
   },
   {
     "Name": "ATM3-LRM",
+    "AmmoProxyName": "LRM",
     "Damage": {
       "Short": 3
     },
@@ -57,6 +60,7 @@
   },
   {
     "Name": "ATM6-SRM",
+    "AmmoProxyName": "SRM",
     "Damage": {
       "Short": 18
     },
@@ -75,6 +79,7 @@
   },
   {
     "Name": "ATM6-MRM",
+    "AmmoProxyName": "MRM",
     "Damage": {
       "Short": 12
     },
@@ -94,6 +99,7 @@
   },
   {
     "Name": "ATM6-LRM",
+    "AmmoProxyName": "LRM",
     "Damage": {
       "Short": 6
     },
@@ -113,6 +119,7 @@
   },
     {
     "Name": "ATM9-SRM",
+    "AmmoProxyName": "SRM",
     "Damage": {
       "Short": 27
     },
@@ -131,6 +138,7 @@
   },
   {
     "Name": "ATM9-MRM",
+    "AmmoProxyName": "MRM",
     "Damage": {
       "Short": 18
     },
@@ -150,6 +158,7 @@
   },
   {
     "Name": "ATM9-LRM",
+    "AmmoProxyName": "LRM",
     "Damage": {
       "Short": 9
     },
@@ -169,6 +178,7 @@
   },
   {
     "Name": "ATM12-SRM",
+    "AmmoProxyName": "SRM",
     "Damage": {
       "Short": 36
     },
@@ -187,6 +197,7 @@
   },
   {
     "Name": "ATM12-MRM",
+    "AmmoProxyName": "MRM",
     "Damage": {
       "Short": 24
     },
@@ -206,6 +217,7 @@
   },
   {
     "Name": "ATM12-LRM",
+    "AmmoProxyName": "LRM",
     "Damage": {
       "Short": 12
     },

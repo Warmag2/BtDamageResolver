@@ -12,8 +12,10 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - resolverpostgres # Data source
-      - redis            # Communication bus
+      resolverpostgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure
 
   # Battletech Damage Resolver Client
@@ -31,7 +33,7 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - resolver    # No sense to start until the server is up
+      - resolver
     restart: on-failure
 
   # Data Importer
@@ -45,7 +47,8 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - resolver
+      redis:
+        condition: service_healthy
     restart: on-failure
 
   # Grafana
@@ -64,7 +67,8 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - resolverpostgres # Data source
+      resolverpostgres:
+        condition: service_healthy
     restart: on-failure
 
   # Postgresql
@@ -76,10 +80,16 @@ services:
       POSTGRES_DB: BtDamageResolver
       POSTGRES_USER: "${RESOLVER_USER:?err}"
       POSTGRES_PASSWORD: "${RESOLVER_PASSWORD:?err}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${RESOLVER_USER} -d BtDamageResolver"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 10s
     ports:
       - 65432:5432
     volumes:
-      - resolverpostgres-data:/var/lib/postgresql/18/docker
+      - postgres-data:/var/lib/postgresql/18/docker
     restart: on-failure
     networks:
       - resolvernet
@@ -90,6 +100,12 @@ services:
     image: resolverredis:latest
     environment:
       REDIS_PASSWORD: "${RESOLVER_PASSWORD:?err}"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 10s
     ports:
       - 63790:6379
     volumes:
@@ -103,6 +119,6 @@ networks:
 
 volumes:
   grafana-data:
-  resolverpostgres-data:
+  postgres-data:
   redis-data:
   resolverclient-dpkeys:
