@@ -227,7 +227,7 @@
 @if (_showModalLoad)
 {
     <ContainerModal Title="Load Unit" OnPrimary="ModalLoad" OnClose="ModalClose">
-        <FormComboBox Options="@_commonData.GetSavedUnitNames()" OnChanged="(string unitName) => OnLoadedUnitNameChanged(unitName)"></FormComboBox>
+        <FormComboBox Options="@_savedUnitNames" OnChanged="(string unitName) => OnLoadedUnitNameChanged(unitName)"></FormComboBox>
     </ContainerModal>
 }
 
@@ -509,6 +509,7 @@
     private bool _showModalLoad = false;
     private bool _showModalSave = false;
     private string _modalUnitName = string.Empty;
+    private SortedDictionary<string, string> _savedUnitNames = [];
 
     private void ShowModalDelete()
     {
@@ -517,6 +518,9 @@
 
     private void ShowModalLoad()
     {
+        // Fetch saved unit names from Redis once when the modal opens rather than on every
+        // re-render while it is open. Loading units is rare, so the snapshot is always current enough.
+        _savedUnitNames = _commonData.GetSavedUnitNames();
         _showModalLoad = true;
     }
 

@@ -12,7 +12,6 @@
     var targetNumberUpdate = _userStateController.GetTargetNumberUpdateSingleWeapon(UnitEntry.Id, WeaponEntry.Id);
     var tooltipContent = GetCachedTooltipContent(targetNumberUpdate?.CalculationLog);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
-    var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName);
 }
 
 <div class="resolver_div_componentcell resolver_div_targetnumber" style="grid-column: 1" data-tooltip-id="resolver_tooltip_targetnumber" data-tooltip-content="@tooltipContent">
@@ -54,7 +53,7 @@
 <div class="resolver_div_componentcell" style="grid-column: 6">
     @if (_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))
     {
-        <FormSelect @key=@($"{WeaponEntry.Id}_Ammo") Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
+        <FormSelect @key=@($"{WeaponEntry.Id}_Ammo") Options="@_commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName)" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
     }
 </div>
 <div class="resolver_div_componentcell resolver_div_buttongroup" style="grid-column: 7">

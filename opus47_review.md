@@ -36,9 +36,7 @@ Many findings are individually minor but compound on weak ARM hardware where eve
   - `FormDamageReports.razor:19` `singleTurnDamageReports.Value.GroupBy(...).ToList()` per render.
   - `FormDamageReportContainer.razor:7` `DamageReports[0].BlankCopy()` + merge loop in markup.
   - `ComponentWeaponEntry.razor:10-11` `GetTargetNumberUpdateSingleWeapon` lookup per render.
-  - `FormWeaponEntry.razor:11-16` similar + `_commonData.FormMapWeaponAmmo(...)` (CommonData.cs:544-546) returns a fresh `SortedDictionary` every render.
-  - `CommonData.cs:222, 297, 302-310` allocate new dictionaries per call; used per render per unit.
-  - `CommonData.cs:418` `GetSavedUnitNames` hits Redis (`_unitRepository.GetAllKeys()`) per render (used inline at `FormUnitEntry.razor:269`, `FormData.razor:77`).
+  - `FormWeaponEntry.razor:11-16` `GetTargetNumberUpdateSingleWeapon` lookup per render (similar to `ComponentWeaponEntry` above).
 - **`FormPaperDoll.razor:204-214` — `TranslateDamageToColor`** decimal arithmetic + `Math.Clamp` + `ToString("X2", …)` + string interpolation, per location per paperdoll per render.
 - **`UserStateController.cs:168`** — `UnitList` setter does `string.Join("-", _unitList.Select(...))` then `.Fnv1aHash64()` per replacement. `UpdateUnitList` (line 468) builds new `ConcurrentDictionary`, multiple LINQ scans; runs per inbound state.
 - **`UserStateController.cs:423-425`** — `DamageReportConcernsPlayer` uses `Exists` twice per damage report per render of `FormDamageReports`.

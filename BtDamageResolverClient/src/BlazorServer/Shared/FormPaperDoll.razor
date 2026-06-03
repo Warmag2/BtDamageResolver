@@ -159,6 +159,27 @@
     [Parameter]
     public DamageReport DamageReport { get; set; }
 
+    private DamagePaperDoll _lastRenderedPaperDoll;
+    private DamageReport _lastRenderedDamageReport;
+
+    // This component (and its paper doll variant + per-region children) is a pure projection of
+    // DamagePaperDoll + DamageReport with no internal interactive state. It lives on the DamageReports
+    // tab, which re-renders on every unrelated gamestate broadcast while it is open; skip those redundant
+    // renders — and the per-region damage colour/tooltip work they drive — unless one of the bound objects
+    // actually changes. New damage reports arrive as new object instances, so reference equality is the
+    // correct and cheapest signal.
+    protected override bool ShouldRender()
+    {
+        return !ReferenceEquals(_lastRenderedPaperDoll, DamagePaperDoll)
+            || !ReferenceEquals(_lastRenderedDamageReport, DamageReport);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        _lastRenderedPaperDoll = DamagePaperDoll;
+        _lastRenderedDamageReport = DamageReport;
+    }
+
     public bool AnyDamage(Location location)
     {
         return DamagePaperDoll.DamageCollection.ContainsKey(location);

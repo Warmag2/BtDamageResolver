@@ -222,15 +222,18 @@ public class CommonData
     /// <returns>A display map for cover options for the given unit type.</returns>
     public static Dictionary<string, Cover> FormMapCover(UnitType unitType)
     {
-        switch (unitType)
+        return CoverMapCache.GetOrAdd(unitType, static type =>
         {
-            case UnitType.Mech:
-            case UnitType.MechTripod:
-            case UnitType.MechQuad:
-                return new Dictionary<string, Cover> { { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right } };
-            default:
-                return new Dictionary<string, Cover> { { "None", Cover.None } };
-        }
+            switch (type)
+            {
+                case UnitType.Mech:
+                case UnitType.MechTripod:
+                case UnitType.MechQuad:
+                    return new Dictionary<string, Cover> { { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right } };
+                default:
+                    return new Dictionary<string, Cover> { { "None", Cover.None } };
+            }
+        });
     }
 
     /// <summary>
@@ -297,19 +300,22 @@ public class CommonData
     /// <returns>A map of valid stances for the given unit.</returns>
     public static Dictionary<string, Stance> FormMapStance(UnitType type)
     {
-        switch (type)
+        return StanceMapCache.GetOrAdd(type, static unitType =>
         {
-            case UnitType.BattleArmor:
-                return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
-            case UnitType.Infantry:
-                return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "DugIn", Stance.DugIn }, { "Prone", Stance.Prone }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
-            case UnitType.Mech:
-            case UnitType.MechTripod:
-            case UnitType.MechQuad:
-                return new Dictionary<string, Stance> { { "Normal", Stance.Normal }, { "Crouch", Stance.Crouch }, { "Prone", Stance.Prone } };
-            default:
-                return new Dictionary<string, Stance> { { "Normal", Stance.Normal } };
-        }
+            switch (unitType)
+            {
+                case UnitType.BattleArmor:
+                    return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
+                case UnitType.Infantry:
+                    return new Dictionary<string, Stance> { { "None", Stance.Normal }, { "DugIn", Stance.DugIn }, { "Prone", Stance.Prone }, { "Light", Stance.Light }, { "Hardened", Stance.Hardened }, { "Heavy", Stance.Heavy } };
+                case UnitType.Mech:
+                case UnitType.MechTripod:
+                case UnitType.MechQuad:
+                    return new Dictionary<string, Stance> { { "Normal", Stance.Normal }, { "Crouch", Stance.Crouch }, { "Prone", Stance.Prone } };
+                default:
+                    return new Dictionary<string, Stance> { { "Normal", Stance.Normal } };
+            }
+        });
     }
 
     /// <summary>
@@ -544,7 +550,7 @@ public class CommonData
     /// <returns>A map of weapon ammo types.</returns>
     public SortedDictionary<string, string> FormMapWeaponAmmo(string weaponName)
     {
-        return new SortedDictionary<string, string>(DictionaryWeapon[weaponName].Ammo.Keys.ToDictionary(k => k));
+        return WeaponAmmoMapCache.GetOrAdd(weaponName, name => new SortedDictionary<string, string>(DictionaryWeapon[name].Ammo.Keys.ToDictionary(k => k)));
     }
 
     /// <summary>
@@ -678,6 +684,12 @@ public class CommonData
     }
 
     private static readonly ConcurrentDictionary<(int Begin, int Interval, int End), List<PickBracket>> SimplePickBracketCache = new();
+
+    private static readonly ConcurrentDictionary<UnitType, Dictionary<string, Cover>> CoverMapCache = new();
+
+    private static readonly ConcurrentDictionary<UnitType, Dictionary<string, Stance>> StanceMapCache = new();
+
+    private static readonly ConcurrentDictionary<string, SortedDictionary<string, string>> WeaponAmmoMapCache = new();
 
     private static List<PickBracket> MakeSimplePickBrackets(int begin, int interval, int end)
     {

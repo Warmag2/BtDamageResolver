@@ -670,3 +670,40 @@ silent no-op against a missing hub method); `ClientErrorEvent(errorMessage)` lea
 to the server's own error path, which the handler already tolerates.
 
 Build: BlazorServer builds (0 errors; pre-existing 12 warnings unchanged).
+
+## B4 (partial). Per-render allocation/IO hot-path fixes (option-map memoization + saved-unit-names snapshot)
+
+**Scope.** Addresses the option-map allocation and per-render Redis bullets of B4. The remaining B4 items
+(damage-report render-path LINQ in `FormPaperDoll`/`FormDamageReport`/`FormDamageReports`, `TranslateDamageToColor`,
+`GetTargetNumberUpdateSingleWeapon`/`DamageReportConcernsPlayer` lookups, `UserStateController` UnitList/UpdateUnitList,
+`FormGameList` OrderByDescending, `FormRadio` Guid, sync-over-async `Connect`, `BaseFaemiyahComponent.InvokeStateChange`)
+remain open in `opus47_review.md`.
+
+**Problem.** Several option-map builders ran in editable-form render paths and allocated a fresh dictionary on every
+render:
+- `CommonData.FormMapWeaponAmmo(weaponName)` built a new `SortedDictionary` from `DictionaryWeapon[...].Ammo.Keys`
+  every render of every `FormWeaponEntry` (the hottest editable path — once per weapon per unit), and `FormWeaponEntry`
+  computed it unconditionally in its `@{ }` block even for weapons with no ammo (the value is only consumed inside
+  `@if (_commonData.WeaponHasAmmo(...))`).
+- `CommonData.FormMapCover(unitType)` / `CommonData.FormMapStance(type)` allocated a new `Dictionary` per call; used as
+  `FormRadio` `Options` in `FormFiringSolution` / `FormDamageInstance` / `FormUnitEntry`, i.e. per render per unit.
+- `CommonData.GetSavedUnitNames()` was bound inline as `FormComboBox Options` inside the `FormUnitEntry` Load modal
+  (`@if (_showModalLoad)`), so every re-render *while the modal was open* issued a Redis `GetAllKeys()` round-trip and
+  rebuilt the dictionary, also churning the combo box's `Options` identity.
+
+**Fix.**
+- Memoized `FormMapWeaponAmmo`, `FormMapCover`, `FormMapStance` behind `static ConcurrentDictionary` caches (keyed by
+  weapon name / `UnitType`), mirroring the existing `SimplePickBracketCache` / `_mapWeaponNames*` pattern. The cached
+  maps are immutable game-data projections and are consumed read-only as `Options` (same contract as the already-cached
+  `FormMapWeaponName`), so sharing a single instance is safe and additionally stabilizes the `Options` reference passed
+  to the form components.
+- `FormWeaponEntry`: removed the unconditional `var mapWeaponAmmo = ...` from the `@{ }` block and inlined the now-cheap
+  memoized call at the single `FormSelect` use site (only evaluated when the weapon has ammo). `CorrectAmmoForWeapon`
+  keeps calling the (now memoized) method.
+- `FormUnitEntry`: snapshot `GetSavedUnitNames()` into a `_savedUnitNames` field in `ShowModalLoad()` (when the modal
+  opens) and bind the field; the Redis read now happens once per modal open instead of once per render. Confirmed with
+  the user that a snapshot at open time is always current enough — loading units is rare (≈4–30× per match).
+  (`FormData.razor:77` also calls `GetSavedUnitNames()` but only from the event-driven `RefreshDataList`, not a render
+  path, so it was left unchanged.)
+
+Build: BlazorServer builds (0 errors; pre-existing 12 warnings unchanged).
