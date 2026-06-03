@@ -3,15 +3,6 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 
-@{
-    var combinedDamageReport = DamageReports[0].BlankCopy();
-
-    foreach (var damageReport in DamageReports)
-    {
-        combinedDamageReport.Merge(damageReport);
-    }
-}
-
 @if (DamageReports.Count > 1)
 {
     <div class="resolver_div_damagereportgroup">
@@ -23,7 +14,7 @@
         </div>
         @if (_combined)
         {
-            <FormDamageReport DamageReport=@combinedDamageReport></FormDamageReport>
+            <FormDamageReport DamageReport=@_combinedDamageReport></FormDamageReport>
         }
         else
         {
@@ -44,6 +35,8 @@ else
 @code
 {
     private bool _combined;
+    private List<DamageReport> _mergedSource;
+    private DamageReport _combinedDamageReport;
 
     [Parameter]
     public List<DamageReport> DamageReports { get; set; }
@@ -51,5 +44,24 @@ else
     protected override void OnParametersSet()
     {
         _combined = _userStateController.PlayerOptions?.ShowCombinedDamageReports ?? false;
+
+        // Build the merged "combined" report once per distinct source set instead of on every render.
+        // The parent hands us a fresh List each render (damageReports.ToList()) but the DamageReport
+        // instances inside are the stable objects stored in DamageReportContainer, so a reference-wise
+        // SequenceEqual tells us whether the underlying set actually changed. Caching also keeps the
+        // combined DamagePaperDoll instance stable, which lets FormPaperDoll's ShouldRender guard skip
+        // redundant re-renders in combined mode.
+        if (_mergedSource == null || !_mergedSource.SequenceEqual(DamageReports))
+        {
+            var combinedDamageReport = DamageReports[0].BlankCopy();
+
+            foreach (var damageReport in DamageReports)
+            {
+                combinedDamageReport.Merge(damageReport);
+            }
+
+            _combinedDamageReport = combinedDamageReport;
+            _mergedSource = DamageReports.ToList();
+        }
     }
 }

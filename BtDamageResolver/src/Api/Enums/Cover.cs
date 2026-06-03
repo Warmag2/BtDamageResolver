@@ -14,6 +14,11 @@ public enum Cover
     None,
 
     /// <summary>
+    /// Hull down cover (turret/weapons visible).
+    /// </summary>
+    HullDown,
+
+    /// <summary>
     /// Lower cover.
     /// </summary>
     Lower,

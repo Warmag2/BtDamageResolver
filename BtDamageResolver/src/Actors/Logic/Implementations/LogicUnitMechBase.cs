@@ -8,7 +8,6 @@ using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations;
 
@@ -22,12 +21,11 @@ public abstract class LogicUnitMechBase : LogicUnit
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="gameOptions">The game options.</param>
-    /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    protected LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
+    protected LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
     }
 
@@ -81,6 +79,7 @@ public abstract class LogicUnitMechBase : LogicUnit
     {
         switch (cover)
         {
+            case Cover.HullDown:
             case Cover.Lower:
                 switch (location)
                 {

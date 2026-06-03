@@ -149,6 +149,20 @@ public partial class LogicUnit
         int hitLocation;
         var ready = false;
 
+        if(cover == Cover.HullDown)
+        {
+            switch(Unit.Type)
+            {
+                // Magic value for hull down cover hits - always hit turret
+                case UnitType.VehicleHover:
+                case UnitType.VehicleTracked:
+                case UnitType.VehicleWheeled:
+                    return (10, Location.Turret);
+                default:
+                    break;
+            }
+        }
+
         do
         {
             hitLocation = paperDoll.LocationMapping.Keys.Count switch

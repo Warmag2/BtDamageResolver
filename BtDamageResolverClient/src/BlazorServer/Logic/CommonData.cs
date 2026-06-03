@@ -228,8 +228,13 @@ public class CommonData
             {
                 case UnitType.Mech:
                 case UnitType.MechTripod:
-                case UnitType.MechQuad:
                     return new Dictionary<string, Cover> { { "None", Cover.None }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right } };
+                case UnitType.MechQuad:
+                    return new Dictionary<string, Cover> { { "None", Cover.None }, { "HullDown", Cover.HullDown }, { "Lower", Cover.Lower }, { "Upper", Cover.Upper }, { "Left", Cover.Left }, { "Right", Cover.Right } };
+                case UnitType.VehicleHover:
+                case UnitType.VehicleTracked:
+                case UnitType.VehicleWheeled:
+                    return new Dictionary<string, Cover> { { "None", Cover.None }, { "HullDown", Cover.HullDown } };
                 default:
                     return new Dictionary<string, Cover> { { "None", Cover.None } };
             }

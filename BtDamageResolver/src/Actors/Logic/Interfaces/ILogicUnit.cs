@@ -246,7 +246,7 @@ public interface ILogicUnit
     (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry);
 
     /// <summary>
-    /// Calculates all heat buildup not related to weapon fire.
+    /// Calculates all heat build-up not related to weapon fire.
     /// </summary>
     /// <returns>A damage report with non-weapon heat information.</returns>
     Task<DamageReport> ResolveNonWeaponHeat();

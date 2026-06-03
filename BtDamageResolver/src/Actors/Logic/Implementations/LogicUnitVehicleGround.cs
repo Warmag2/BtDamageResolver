@@ -7,12 +7,11 @@ using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations;
 
 /// <summary>
-/// Abstract logic class for all ground vechicles and VTOLs.
+/// Abstract logic class for all ground vehicles and VTOLs.
 /// </summary>
 public abstract class LogicUnitVehicleGround : LogicUnitVehicle
 {
@@ -21,12 +20,11 @@ public abstract class LogicUnitVehicleGround : LogicUnitVehicle
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="gameOptions">The game options.</param>
-    /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="random">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    protected LogicUnitVehicleGround(ILogger<LogicUnitVehicleGround> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, repositoryProvider, random, unit)
+    protected LogicUnitVehicleGround(ILogger<LogicUnitVehicleGround> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, random, unit)
     {
     }
 

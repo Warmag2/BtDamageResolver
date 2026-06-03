@@ -5,7 +5,6 @@ using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract;
 
@@ -19,13 +18,29 @@ public class LogicUnitMechQuad : LogicUnitMechBase
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="gameOptions">The game options.</param>
-    /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    public LogicUnitMechQuad(ILogger<LogicUnitMechQuad> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider,  IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, repositoryProvider, resolverRandom, unit)
+    public LogicUnitMechQuad(ILogger<LogicUnitMechQuad> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider,  IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
+    }
+
+    /// <inheritdoc />
+    public override int GetCoverModifier(Cover cover)
+    {
+        switch (cover)
+        {
+            case Cover.HullDown:
+                return 3;
+            case Cover.Lower:
+            case Cover.Left:
+            case Cover.Right:
+            case Cover.Upper:
+                return 1;
+            default:
+                return 0;
+        }
     }
 
     /// <inheritdoc />

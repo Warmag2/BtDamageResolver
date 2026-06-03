@@ -9,12 +9,11 @@ using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations;
 
 /// <summary>
-/// Abstract logic class for all ground vechicles and VTOLs.
+/// Abstract logic class for all ground vehicles and VTOLs.
 /// </summary>
 public abstract class LogicUnitVehicle : LogicUnit
 {
@@ -23,12 +22,11 @@ public abstract class LogicUnitVehicle : LogicUnit
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="gameOptions">The game options.</param>
-    /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    protected LogicUnitVehicle(ILogger<LogicUnitVehicle> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
+    protected LogicUnitVehicle(ILogger<LogicUnitVehicle> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
     }
 
@@ -36,6 +34,18 @@ public abstract class LogicUnitVehicle : LogicUnit
     public override bool CanTakeMotiveHits()
     {
         return true;
+    }
+
+    /// <inheritdoc />
+    public override int GetCoverModifier(Cover cover)
+    {
+        switch (cover)
+        {
+            case Cover.HullDown:
+                return 2;
+            default:
+                return 0;
+        }
     }
 
     /// <inheritdoc />

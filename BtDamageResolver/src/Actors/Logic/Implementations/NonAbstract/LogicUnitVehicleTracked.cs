@@ -5,7 +5,6 @@ using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract;
 
@@ -24,7 +23,7 @@ public class LogicUnitVehicleTracked : LogicUnitVehicleGround
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    public LogicUnitVehicleTracked(ILogger<LogicUnitVehicleTracked> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, repositoryProvider, resolverRandom, unit)
+    public LogicUnitVehicleTracked(ILogger<LogicUnitVehicleTracked> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
     }
 

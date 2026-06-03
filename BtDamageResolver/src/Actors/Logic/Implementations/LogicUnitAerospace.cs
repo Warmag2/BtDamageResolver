@@ -12,7 +12,6 @@ using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations;
 
@@ -26,12 +25,11 @@ public abstract class LogicUnitAerospace : LogicUnit
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="gameOptions">The game options.</param>
-    /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    protected LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
+    protected LogicUnitAerospace(ILogger<LogicUnitAerospace> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
     }
 

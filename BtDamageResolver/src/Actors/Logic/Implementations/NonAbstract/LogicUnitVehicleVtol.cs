@@ -7,7 +7,6 @@ using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract;
 
@@ -21,13 +20,18 @@ public class LogicUnitVehicleVtol : LogicUnitVehicle
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="gameOptions">The game options.</param>
-    /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    public LogicUnitVehicleVtol(ILogger<LogicUnitVehicleVtol> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, repositoryProvider, resolverRandom, unit)
+    public LogicUnitVehicleVtol(ILogger<LogicUnitVehicleVtol> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
+    }
+
+    /// <inheritdoc />
+    public override int GetCoverModifier(Cover cover)
+    {
+        return 0;
     }
 
     /// <inheritdoc />
@@ -65,9 +69,9 @@ public class LogicUnitVehicleVtol : LogicUnitVehicle
         // Only one case for now
         if (location == Location.Propulsion)
         {
-            var returndedDamage = decimal.ToInt32(Math.Ceiling(damage / 10m));
-            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Damage after transformation into VTOL propulsion damage", returndedDamage));
-            return returndedDamage;
+            var returnedDamage = decimal.ToInt32(Math.Ceiling(damage / 10m));
+            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Damage after transformation into VTOL propulsion damage", returnedDamage));
+            return returnedDamage;
         }
 
         return damage;

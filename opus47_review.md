@@ -22,22 +22,18 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 ## B1. Render performance
 
-- **No `ShouldRender()` overrides** anywhere except `FormNumber.razor:43` (`!_isBeingEdited`) and (now) `ComponentPlayerState`. Remaining components still re-render on every event/parameter change. Add render guards to the editable forms (`FormWeaponEntry`, `FormFiringSolution`, all `FormPaperDoll*` (10 files), `FormDamageReport`, `FormUnitEntry`). _(Read-only All Units path — `ComponentGameState`/`ComponentPlayerState`/`ComponentUnit`/`ComponentWeaponEntry` — done.)_
+- **No `ShouldRender()` overrides** anywhere except `FormNumber.razor:43` (`!_isBeingEdited`), `ComponentPlayerState`, and (now) `FormPaperDoll` (guards the whole paper-doll subtree on `DamagePaperDoll`/`DamageReport` reference change). Remaining components still re-render on every event/parameter change. Add render guards to the editable forms (`FormWeaponEntry`, `FormFiringSolution`, `FormDamageReport`, `FormUnitEntry`). _(Read-only All Units path — `ComponentGameState`/`ComponentPlayerState`/`ComponentUnit`/`ComponentWeaponEntry` — done.)_
 
 ## B4. C# code in components
 
 - **LINQ allocations in render paths:**
-  - `FormPaperDoll.razor:52` `location.Value.SelectMany(l => l.Value).Sum()` per location per render (also lines 63, 193).
-  - `FormPaperDoll.razor:122` `SelectMany(...).SelectMany(...).GroupBy(...)` per render.
   - `FormDamageReport.razor:81` `SelectMany(...).SelectMany(...).Sum()` per render.
   - `FormDamageReport.razor:9,10` `UnitEntries.Exists(...)` twice on stable params.
   - `ComponentGameState.razor:7-10` materialises `spectatorList` per render.
   - `FormDamageReports.razor:16` `_damageReportsToShow.Reverse()` allocates per render.
   - `FormDamageReports.razor:19` `singleTurnDamageReports.Value.GroupBy(...).ToList()` per render.
-  - `FormDamageReportContainer.razor:7` `DamageReports[0].BlankCopy()` + merge loop in markup.
   - `ComponentWeaponEntry.razor:10-11` `GetTargetNumberUpdateSingleWeapon` lookup per render.
   - `FormWeaponEntry.razor:11-16` `GetTargetNumberUpdateSingleWeapon` lookup per render (similar to `ComponentWeaponEntry` above).
-- **`FormPaperDoll.razor:204-214` — `TranslateDamageToColor`** decimal arithmetic + `Math.Clamp` + `ToString("X2", …)` + string interpolation, per location per paperdoll per render.
 - **`UserStateController.cs:168`** — `UnitList` setter does `string.Join("-", _unitList.Select(...))` then `.Fnv1aHash64()` per replacement. `UpdateUnitList` (line 468) builds new `ConcurrentDictionary`, multiple LINQ scans; runs per inbound state.
 - **`UserStateController.cs:423-425`** — `DamageReportConcernsPlayer` uses `Exists` twice per damage report per render of `FormDamageReports`.
 - **Sync over async:** `Pages/Index.razor:164` calls `_formServer.Connect(credentials)` from `OnAfterRenderAsync` without awaiting; `Connect()` does sync Redis setup.

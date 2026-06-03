@@ -707,3 +707,65 @@ render:
   path, so it was left unchanged.)
 
 Build: BlazorServer builds (0 errors; pre-existing 12 warnings unchanged).
+
+## B1/B4 (partial). `ShouldRender` guard on the paper-doll subtree + cached combined damage report
+
+**Render trigger established.** The damage-report panel (`FormDamageReports` → `FormDamageReportContainer` →
+`FormDamageReport` → `FormPaperDoll` → N `FormPaperDollRegion`) lives under `<ContainerTab TabIdentity="DamageReports">`,
+which only emits its `ChildContent` while that tab is selected. While it *is* open, `Index` re-renders on every
+`GameState`/`PlayerOptions`/`GameOptions`/`GameEntries`/`Error`/`Connection` broadcast (it calls `StateHasChanged` in
+those handlers; **not** for `TargetNumbers`). A `GameState` broadcast fires whenever *any* player edits anything, so an
+unrelated player's edit cascaded a full re-render down to every `FormPaperDoll`, recomputing per-region damage colours
+and tooltip strings (`SelectMany`/`Sum`/`string.Join` per region) plus `TranslateDamageToColor` (decimal arithmetic +
+`ToString("X2")`) per region. The `@key` on `FormDamageReports` (`DamageReportContainer.TimeStamp`, ~once/turn) only
+governs instance reuse-vs-recreate, **not** whether the retained instance re-renders — so it did not prevent any of this.
+
+We chose a `ShouldRender` guard over memoizing the LINQ: it eliminates the redundant *re-render* entirely (and with it
+all the per-region work), which is strictly better than shrinking the cost of a render that should not happen.
+
+**Fix 1 — `FormPaperDoll.razor` (`ShouldRender` guard).** `FormPaperDoll` (and its paper-doll variants +
+`FormPaperDollRegion` children) is a pure projection of two `[Parameter]`s, `DamagePaperDoll` and `DamageReport`, with no
+internal interactive state. Added:
+```csharp
+protected override bool ShouldRender()
+    => !ReferenceEquals(_lastRenderedPaperDoll, DamagePaperDoll)
+       || !ReferenceEquals(_lastRenderedDamageReport, DamageReport);
+protected override void OnAfterRender(bool firstRender)
+{
+    _lastRenderedPaperDoll = DamagePaperDoll;
+    _lastRenderedDamageReport = DamageReport;
+}
+```
+Initial render is always forced; `OnAfterRender` records the rendered baseline so subsequent parent re-renders with the
+same two object references are skipped, taking the whole child subtree with them. Damage reports arrive as new
+deserialized instances, so reference equality is the correct, cheapest change signal. **Invariant relied upon:** a
+displayed `DamageReport`/`DamagePaperDoll` is not mutated in place after display (they are replaced wholesale per turn).
+
+**Fix 2 — `FormDamageReportContainer.razor` (cache the combined report).** Previously it rebuilt the merged report in the
+markup `@{ }` block on *every* render (`DamageReports[0].BlankCopy()` + `Merge` loop), and in combined mode handed
+`FormPaperDoll` a brand-new `DamagePaperDoll` instance each render — which would have defeated Fix 1's guard in that mode.
+Moved the merge into `OnParametersSet`, rebuilding only when the source set actually changes (reference-wise
+`SequenceEqual` against a `ToList()` snapshot of the previous `DamageReports`). The parent passes a fresh `List` each
+render but the `DamageReport` elements are the stable instances stored in `DamageReportContainer`, so within a turn the
+sequence is equal and the cached combined report (and its `DamagePaperDoll`) stays reference-stable; across turns the
+whole `FormDamageReports` is recreated via `@key`. Net: the merge now runs ~once per container per turn instead of every
+render, and combined mode benefits from Fix 1's guard.
+
+**Deliberately NOT done — guarding `FormDamageReport`.** With Fixes 1+2 the expensive paper-doll work is already guarded
+in both combined and split views. `FormDamageReport` still re-renders on unrelated broadcasts, but its own per-render cost
+is small (a couple of `List.Exists` + dict lookups + an `AttackLog.Log` string loop), and a reference-only guard there
+would (a) need a force-render flag for the attack-log visibility checkboxes (private `_logLineVisibility` + InvokeStateChange)
+and (b) freeze header bits derived from *live* `UnitList`/`PlayerState` (attacker/defender names, incoming/outgoing CSS) at
+their turn-creation values. Not worth the correctness risk. (Rubber-duck concurred.) Its B4 LINQ bullets
+(`FormDamageReport.razor:81`, `:9,10`) remain open in the review.
+
+**Flagged, pre-existing, NOT fixed here — `DamageReport.Merge` mutates source reports.** `Merge`
+(`Api/Entities/DamageReport.cs:157`) does `ConsumablesAttackers.Add(consumable.Key, consumable.Value)`, storing the
+source report's `Consumables` **by reference**; if a later merged report in the same target+phase group shares an
+attacker, line 153 `value.Merge(...)` then mutates that shared (source) `Consumables`. `DamagePaperDoll.Merge` (line 161)
+is worth auditing for the same aliasing. This bug is independent of this change — the old code ran the same merge on every
+render, so Fix 2 strictly *reduces* its frequency (to once/turn) rather than introducing it. Recommended separate fix:
+`...Add(consumable.Key, consumable.Value.Copy())` (and verify `DamagePaperDoll.Merge` deep-copies nested lists). Left for
+a dedicated correctness pass since `Merge` is a shared Api entity also used server-side.
+
+Build: BlazorServer builds (0 errors; pre-existing 12 warnings unchanged).

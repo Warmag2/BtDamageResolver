@@ -10,7 +10,6 @@ using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract;
 
@@ -24,12 +23,11 @@ public class LogicUnitInfantry : LogicUnitTrooper
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="gameOptions">The game options.</param>
-    /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="random">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    public LogicUnitInfantry(ILogger<LogicUnitInfantry> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, repositoryProvider, random, unit)
+    public LogicUnitInfantry(ILogger<LogicUnitInfantry> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, random, unit)
     {
     }
 
