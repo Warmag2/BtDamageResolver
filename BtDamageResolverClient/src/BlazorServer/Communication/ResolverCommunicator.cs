@@ -70,7 +70,7 @@ public class ResolverCommunicator : IDisposable
         }
         catch (Exception ex)
         {
-            SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
+            _ = SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
         }
     }
 
@@ -348,7 +348,7 @@ public class ResolverCommunicator : IDisposable
         }
         catch (Exception ex)
         {
-            SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
+            _ = SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
         }
     }
 
@@ -356,7 +356,7 @@ public class ResolverCommunicator : IDisposable
     {
         if (_authenticationToken == Guid.Empty)
         {
-            SendErrorMessage($"Tried to send a request of type {requestType}, but no server authentication is available");
+            _ = SendErrorMessage($"Tried to send a request of type {requestType}, but no server authentication is available");
             return false;
         }
 
@@ -381,11 +381,17 @@ public class ResolverCommunicator : IDisposable
         }
     }
 
-    private void SendErrorMessage(string errorMessage)
+    private async Task SendErrorMessage(string errorMessage)
     {
         // Route local errors through the same in-process dispatcher the server uses, so they reach the
         // existing ErrorMessage handler in Index.razor and are surfaced to the user.
-        _ = _dispatcher.DispatchAsync(EventNames.ErrorMessage, _dataHelper.Pack(new ClientErrorEvent(errorMessage)))
-            .ContinueWith(t => _logger.LogError(t.Exception, "Failed to dispatch error message"), TaskContinuationOptions.OnlyOnFaulted);
+        try
+        {
+            await _dispatcher.DispatchAsync(EventNames.ErrorMessage, _dataHelper.Pack(new ClientErrorEvent(errorMessage)));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to dispatch error message");
+        }
     }
 }

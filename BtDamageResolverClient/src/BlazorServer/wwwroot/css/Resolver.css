@@ -258,7 +258,7 @@ a, .btn-link {
     left: 0;
     height: 25px;
     width: 25px;
-    border: 1px solid var(--color_text_selected) !important;
+    border: 1px solid var(--color_text_selected);
 }
 
 /* On mouse-over, add a grey background color */
@@ -692,7 +692,6 @@ a, .btn-link {
     display: flex;
     margin: 0;
     padding: 0.1rem 0.25rem;
-    display: flex;
 }
 
 .resolver_div_componentgroup {
@@ -776,7 +775,6 @@ a, .btn-link {
     max-height: inherit;
     overflow: hidden;
     padding: 0.5rem 0.5rem;
-    font-weight: bold;
     font-family: "Lucida Console";
     text-transform: uppercase;
     font-weight: bold;

@@ -939,3 +939,87 @@ Deliberately left as-is.
 - Build: 0 errors, same 12-warning baseline.
 
 **Payoff:** The entire hidden lobby subtree (connection header, game-list table, sort) is removed from the per-packet render path during gameplay, strictly better than micro-optimizing the sort. Net code reduction (removed a field + the @ref). NEEDS in-browser verification: login (auto-connect from stored credentials), lobby game-list display + sort order, join a game (lobby disappears), leave a game (lobby reappears with fresh list), password-protected join modal.
+## FormRadio.razor:20 Guid-based radio group name (NO-ACTION)
+
+**Item:** `FormRadio.razor:20` per-instance `Guid.NewGuid().ToString().Replace("-", "")` for radio name; recreated each time key invalidates the component.
+
+**Investigation:** `_name` is a `readonly` FIELD INITIALIZER -- it runs exactly once per component instance construction, not per render. The cost is a single `Guid.NewGuid()` + `ToString()` + `Replace` per instance: negligible. A Guid is the correct mechanism here -- HTML radio buttons must share a `name` to behave as one group, and the name must be unique across different radio groups on the page; a Guid guarantees that.
+
+**Findings:** The review's "recreated each time key invalidates" framing is really pointing at INSTANCE CHURN driven by timestamp `@key`s, which is the separate Part B / B1 key concern (the single largest win). The Guid generation cost itself is not the problem; eliminating the churn (stable keys) is handled there. Replacing the Guid with a static `Interlocked`-incremented counter would save microseconds-per-instance and add cross-circuit-uniqueness reasoning for no meaningful benefit, and regenerating the name on recreation has no DOM-diff cost because the whole component is rebuilt anyway when its key changes.
+
+**Decision (user-approved): NO-ACTION.** Negligible per-instance cost; the underlying churn concern belongs to the B1 stable-key work, not here.
+## Tooltip strings rebuilt and inlined as DOM attributes per render (ALREADY ADDRESSED)
+
+**Item:** Tooltip strings are rebuilt and inlined as DOM attributes per render.
+
+**Investigation:** There are exactly two tooltip-string producers in the client:
+1. `FormPaperDollRegion.razor:6,11` -- `data-tooltip-content="@FormPaperDoll.GetDamageText(Location)"`. `GetDamageText` (FormPaperDoll.razor:188) does `SelectMany/ToList/string.Join` per region. This is now gated by `FormPaperDoll.ShouldRender` (FormPaperDoll.razor:171-175), which suppresses the ENTIRE paper-doll subtree (the FormPaperDoll* variant and its per-region children) unless `DamagePaperDoll`/`DamageReport` changes by reference. So `GetDamageText` no longer runs on the unrelated gamestate broadcasts that re-render the DamageReports tab.
+2. `FormWeaponEntry.razor:13,17` -- `data-tooltip-content="@tooltipContent"` where `tooltipContent = GetCachedTooltipContent(...)`. Already memoized via `_cachedTooltipContent`/`_cachedTooltipKey` keyed on `_targetNumberTimeStamp` (FormWeaponEntry.razor:221-229); the expensive `GetTargetNumberText` only runs when the unit's target-number data changes.
+
+The two static tooltip target divs (Index.razor:58 `resolver_tooltip_paperdoll`, FormGameState.razor:38 `resolver_tooltip_targetnumber`) are empty containers populated by JS (react-tooltip-style `data-tooltip-id` wiring) -- they carry no per-render strings.
+
+**Decision (user-approved): ALREADY ADDRESSED -- no new code.** Both tooltip-string producers were covered by prior completed items (FormPaperDoll ShouldRender guard; FormWeaponEntry tooltip memoization).
+## BaseFaemiyahComponent.InvokeStateChange fire-and-forget (NO-ACTION -- correct/idiomatic usage)
+
+**Item:** `BaseFaemiyahComponent.InvokeStateChange` (line 13) doesn`t await `InvokeAsync` -- fire-and-forget swallows exceptions.
+
+**What it is:** A convenience wrapper -- `protected void InvokeStateChange() => InvokeAsync(StateHasChanged);` -- to avoid typing `InvokeAsync(StateHasChanged)` at every event-handler subscription site.
+
+**Assessment (usage is correct):**
+- `InvokeAsync(StateHasChanged)` is the RIGHT call here because the events that call it (UserStateController events) are raised from BACKGROUND threads (the Redis/dispatcher message-processing threads in the communication layer), not the renderer`s synchronization context. `InvokeAsync` marshals `StateHasChanged` onto the renderer`s dispatcher -- exactly what a cross-thread render trigger requires. It is a safe superset of a bare `StateHasChanged()` (runs inline-ish when already on-context).
+- Not awaiting is acceptable for a render trigger: there is no need to block the handler until the render completes, and the callers are synchronous `void` delegates (`+= InvokeStateChange`) that cannot await. The textbook `await InvokeAsync(StateHasChanged)` form only matters inside an already-async method that needs to sequence post-render work -- not this use case.
+- Making it awaitable would force `async void` (callers are sync delegates), which is a worse anti-pattern. There is no logger in the base component, so adding real exception diagnostics would be disproportionate.
+- The only realistic fault of the discarded Task is `ObjectDisposedException` during a teardown race (event fires while the component is being disposed) -- benign and commonly ignored.
+
+**Decision (user-confirmed): NO-ACTION.** Correct, idiomatic Blazor cross-thread render trigger; the wrapper exists purely as an editing convenience and is used appropriately.
+## B5. CSS issues (whole section) -- trivial cleanups DONE; render-perf items NO-ACTION (perf-moot)
+
+**Context / decisive reframing (user):** The app is Blazor Server. The ARM box only HOSTS it -- server-side component rendering + SignalR DOM diffing happen on ARM, but the actual CSS layout/paint runs in each user`s browser on capable hardware (quad-core i7s, modern phones). User: "I care very little about CSS render performance because I have quad-core i7s and modern phones actually rendering the page." So the entire premise of B5 ("expensive on ARM browsers") does not apply -- the ARM constraint is about server-side C# render work (B1/B4), not browser paint.
+
+**DONE (safe trivial cleanups -- dead/duplicate declarations, valuable regardless of perf):**
+- `.resolver_div_componentblock` (Resolver.css ~691) declared `display: flex;` TWICE -> removed the duplicate.
+- `.resolver_div_unitname` (Resolver.css ~775) declared `font-weight: bold;` TWICE -> removed the duplicate.
+(Both are no-op duplicate property declarations; removing them changes no computed style. No build impact -- CSS is a static asset.)
+
+**NO-ACTION (perf-moot -- client-side paint on capable hardware; line numbers per the review, several were slightly off):**
+- Subgrid + nested grid (actual `subgrid` at lines 710 and 806, not 709/789). Load-bearing: `subgrid` is the mechanism aligning the label/input columns across `resolver_div_componentrow`s; removing it would break form-column alignment. Browser layout cost is borne client-side.
+- `display:inline-grid` + `display:flex` nesting "every cell triggers flex measurement" -- client-side layout, intentional structure.
+- Sibling/`:hover ~` selectors (e.g. `.resolver_label_toggleradio:hover input:checked ~ .resolver_span_toggleradio`) -- drive the toggle/reminder visuals; client-side style recalc on capable hardware.
+- `> *:not(...)` universal selector (line ~726) -- intentional layout rule; client-side match cost.
+- SVG `polygon:hover` recolor (~1002), drag-sentinel `transition` (~854), damage-card `box-shadow: inset` (~948/953), per-component font declarations (~763/882/901) -- all client-side paint, on capable hardware.
+
+**LOW-PRIORITY / non-perf (left as-is, not perf-related):**
+- `!important` overuse (lines ~267/323/369) -- specificity smell, not perf; changing it risks visual-specificity regressions for no perf benefit.
+- CSS file ~29 KB not minified -- a one-time static-asset download (browser-cached), not SignalR traffic; negligible under this hosting model.
+
+**Decision (user-directed): do trivial cleanups now, defer/close the rest.** Trivial duplicate removals applied; all CSS render-perf items closed as perf-moot given client-side rendering on capable hardware.
+## B6. Double-hop hub (ALREADY ADDRESSED -- see completed B3)
+
+**Item:** "Double-hop hub -- see B3 above."
+
+**Decision:** Already addressed. The double-hop architecture (ClientHub / self-looping HubConnection) was removed in prior completed work -- see "B3. Double-hop architecture removed (ClientHub / self-looping HubConnection eliminated)" in this completed log. No further action; cross-reference closed.
+## B6. ResolverCommunicator.Disconnect Redis subscription leak (ALREADY ADDRESSED)
+
+**Item:** `ResolverCommunicator.Disconnect` (line 89) sets `_clientToServerCommunicator = null` without `Stop()` -> Redis subscription leak.
+
+**Investigation:** Current code no longer nulls the field directly. `ResolverCommunicator.Disconnect` (ResolverCommunicator.cs:80-90) sends the Disconnect request then calls `TeardownCommunicator()`. `TeardownCommunicator` (375-382) calls `_clientToServerCommunicator.Dispose()` BEFORE setting it to null. `RedisCommunicator.Dispose(bool)` (RedisCommunicator.cs:237-250) unsubscribes `_listenedMessageQueue`, calls `RedisSubscriber.UnsubscribeAll()`, and disposes the `ConnectionMultiplexer`. So the Redis subscription + connection are fully released on disconnect.
+
+**Decision:** ALREADY ADDRESSED -- the prior completed B3 "Per-circuit Redis subscription churn / leak -- FIXED" work introduced `TeardownCommunicator` + the proper `Dispose` path. The review item describes pre-fix code. No further action.
+## B6. SendErrorMessage fire-and-forget continuation (REFACTORED to async/await)
+
+**Item:** `SendErrorMessage` fire-and-forget (line ~373) uses `_ = ...ContinueWith(...)` allocating a continuation. Use try/catch await in async method.
+
+**Context:** `SendErrorMessage` is called only from error paths (Connect catch, SendRequest catch, CheckAuthentication guard) -- all synchronous void contexts -- so the dispatch is necessarily fire-and-forget. The continuation only allocates when an error actually occurs (rare), so this is a clarity refactor, not a perf win (user chose to do it anyway).
+
+**Change (ResolverCommunicator.cs):**
+- Rewrote the body from `_ = _dispatcher.DispatchAsync(...).ContinueWith(t => _logger.LogError(t.Exception, ...), TaskContinuationOptions.OnlyOnFaulted);` to a try/catch await:
+  ```
+  private async Task SendErrorMessage(string errorMessage)
+  {
+      try { await _dispatcher.DispatchAsync(EventNames.ErrorMessage, _dataHelper.Pack(new ClientErrorEvent(errorMessage))); }
+      catch (Exception ex) { _logger.LogError(ex, "Failed to dispatch error message"); }
+  }
+  ```
+- Chose `async Task` (NOT `async void`): an initial `async void` version tripped SonarAnalyzer S3168 ("Return Task instead") and pushed the warning count 12 -> 13. Returning `Task` and fire-and-forgetting at the three call sites with `_ = SendErrorMessage(...)` (lines 73, 351, 359) keeps it idiomatic and restores the 12-warning baseline. The method fully handles its own exceptions, so the discarded Task never faults unobserved.
+
+**Build:** 0 errors, 12 warnings (baseline restored).

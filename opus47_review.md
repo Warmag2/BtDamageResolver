@@ -24,30 +24,8 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 - **No `ShouldRender()` overrides** anywhere except `FormNumber.razor:43` (`!_isBeingEdited`), `ComponentPlayerState`, and (now) `FormPaperDoll` (guards the whole paper-doll subtree on `DamagePaperDoll`/`DamageReport` reference change). Remaining components still re-render on every event/parameter change. Add render guards to the editable forms (`FormWeaponEntry`, `FormFiringSolution`, `FormDamageReport`, `FormUnitEntry`). _(Read-only All Units path — `ComponentGameState`/`ComponentPlayerState`/`ComponentUnit`/`ComponentWeaponEntry` — done.)_
 
-## B4. C# code in components
-
-- **`FormRadio.razor:20`** — per-instance `Guid.NewGuid().ToString().Replace("-", "")` for radio name; recreated each time key invalidates the component.
-- **Tooltip strings are rebuilt and inlined as DOM attributes per render.**
-- **`BaseFaemiyahComponent.InvokeStateChange`** (line 13) doesn't await `InvokeAsync` — fire-and-forget swallows exceptions.
-
-## B5. CSS issues (`wwwroot/css/Resolver.css`)
-
-- **Subgrid + nested grid (slow on ARM browsers).** Lines 709, 789 use `grid-template-columns: subgrid`; subgrid is significantly more expensive than flat grid, especially on older Blink/WebKit ARM builds. Combined with wrapper-div depth, every value change re-lays out nested subgrids.
-- **`display:inline-grid` + `display:flex` mixed.** `.resolver_div_componentblock` (line 690) declares `display: flex;` twice. `.resolver_div_componentgroup` inline-grid containing `componentrow` flex containing `componentcell` flex — every cell triggers flex measurement.
-- **Sibling/`:hover` selectors with `~`** (lines 196-229, 271-287): `.resolver_label_toggleradio:hover input:checked ~ .resolver_span_toggleradio` invalidates sibling style on hover. Cheap individually × hundreds of toggles → style recalc cost on every mouse move.
-- **`> *` universal selector** (line 725): `.resolver_div_componentgroup > *:not(.resolver_div_componentrow)` — expensive matching.
-- **`SVG polygon:hover` recolor** (line 1002) — forces repaint per polygon × dozens of paperdolls.
-- **`transition: height 0.1s, background-color 0.1s, outline-color 0.1s`** on every drag sentinel (line 854) — adds across many lists.
-- **`box-shadow: inset 0 0 0.5rem` on every damage report card** (lines 948, 953). Soft shadow blur is one of the most expensive paint operations on weak GPUs.
-- **Per-component font declarations** (`Lucida Console`/`Tahoma` lines 763, 882, 901) — minor font lookup per element.
-- **`!important` overuse** (lines 267, 323, 369) — indicates specificity fight; not perf but smell.
-- **CSS file is 29 KB and not minified.**
-
 ## B6. Communication layer (Communication/, Logic/, Hubs/ClientHub.cs)
 
-- **Double-hop hub** — see B3 above.
-- **`ResolverCommunicator.Disconnect` (line 89)** sets `_clientToServerCommunicator = null` without `Stop()` → Redis subscription leak.
-- **`SendErrorMessage` fire-and-forget** (line 373) uses `_ = ….ContinueWith(...)` allocating a continuation. Use `try/catch await` in async method.
 - **`ResolverCommunicator.SendRequest` swallows exceptions** and re-emits another SignalR error message, potentially in a fast loop if the connection is bad.
 - **`Pages/Index.razor` `InvokeStateChange` per inbound packet** (lines 101, 115, 121, 127, 133, 139) — every Redis message triggers a re-render of the page-level component; combined with timestamp keys, every state update destroys & rebuilds the visible UI.
 - **`UserStateController.GameState` setter** (line 117) runs `UpdateUnitList` on every set, including the no-op rejection path (`_gameState.TimeStamp >= value.TimeStamp` at line 129).
