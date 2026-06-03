@@ -63,29 +63,12 @@
 
 @if (_showModal)
 {
-    <div class="resolver_modal_background">
-        <div class="resolver_modal" id="passwordModal" role="dialog">
-            <!-- Modal Header -->
-            <div class="resolver_modal_header">
-                <h3 class="resolver_header">Password required</h3>
-                <button type="button" class="button_modal_close" @onclick="@ModalCancel">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="resolver_modal_body">
-                <label class="resolver_label_auth">
-                    Password:
-                    <input class="resolver_input resolver_input_text" type="password" @bind="_joinDialogGamePassword" />
-                </label>
-            </div>
-
-            <!-- Modal footer -->
-            <div class="resolver_modal_footer">
-                <button type="button" class="resolver_button" @onclick="@ModalCompleted">Submit</button>
-                <button type="button" class="resolver_button" @onclick="@ModalCancel">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <ContainerModal Title="Password required" OnPrimary="ModalCompleted" OnClose="ModalCancel">
+        <label class="resolver_label_auth">
+            Password:
+            <input class="resolver_input resolver_input_text" type="password" @bind="_joinDialogGamePassword" />
+        </label>
+    </ContainerModal>
 }
 
 @code

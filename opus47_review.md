@@ -27,7 +27,6 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 - **Wrapper-div proliferation.** Every cell wrapped in `resolver_div_componentcontainer > resolver_div_componentrow > resolver_div_componentcell`, often 5-7 deep. Browser layout & style recalc scale with node count; hits ARM hard.
 - **Identical markup repeated rather than sub-componentised:**
-  - Three modals at end of `FormUnitEntry.razor:209-279` — extract a `Modal` component.
   - The `componentrow > componentcell + componentcell` label/value pattern is repeated 80+ times — should be a `<LabelValue>` component.
 - **`MainLayout` adds yet another wrapping div** (`<div class="resolver_content">`).
 - **`ContainerReorderableList`** wraps every item in `<div class="reorderableitem">` and, if `ShowDragHandle`, also in `componentrow > draghandle + componentcell` — three extra divs per item plus handlers.
@@ -40,7 +39,7 @@ Many findings are individually minor but compound on weak ARM hardware where eve
   - The whole `ClientHub` could be removed and the Redis subscriber could directly notify the Blazor circuit (e.g., via the singleton `UserStateController`/event aggregator).
 - **Per-circuit Redis subscription churn / leak.** `ResolverCommunicator.Reset()` (`ResolverCommunicator.cs:368`) constructs a new `ClientToServerCommunicator` per Connect. `Disconnect()` (line 89) just nulls the reference without calling `Stop()` → previous Redis subscription leaks.
 - **Drag/drop handlers per item over SignalR.** `ContainerReorderableList` attaches six handlers per item (`@ondragstart`, `@ondragenter`, `@ondragend`, `@ondrop`, plus `:stopPropagation`). On Blazor Server, `@ondragenter` fires repeatedly during drag — each is a SignalR roundtrip. With 100+ items per page this floods the connection.
-- **`onmousemove`/`onmouseout` are inline JS (good — no round-trip)** but the markup embeds a per-render JSON-ish tooltip string in `data-tooltip-content` (`FormWeaponEntry.razor:18`) recomputed every render.
+- **Per-render tooltip string.** The `data-tooltip-content` tooltip string is recomputed every render and inlined as a DOM attribute (`FormWeaponEntry.razor:13,18` and paper-doll regions).
 - **Large SignalR payloads.** `Startup.cs:67-68,81` sets `ApplicationMaxBufferSize`/`TransportMaxBufferSize`/`MaximumReceiveMessageSize` = 1 MB → implies large payloads. The whole `GameState` is serialized on every player update; combined with key=timestamp invalidating subtrees, every update re-renders a huge chunk of DOM and ships large diffs.
 - **`_dataHelper.Unpack<>` runs synchronously on the circuit thread** (`Pages/Index.razor:106, 112, 120, 126, 132, 138, 144`). Heavy decompress + JSON deserialize blocks the circuit, freezing UI on ARM.
 - **`DisconnectedCircuitRetentionPeriod = 1 hour`** (`Startup.cs:63`) — keeps server memory holding stale circuits for an hour; pressure on small ARM hosts.
@@ -67,7 +66,7 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 - **`FormGameList.razor:50`** `OrderByDescending(...)` materialised via spread `[.. ...]` per `OnParametersSet`.
 - **`FormDamageReports.BuildDamageReportsToShow` (line 51)** — new `SortedDictionary`, `Reverse()` allocation, nested foreach — runs on every options update + every new damage report.
 - **`FormRadio.razor:20`** — per-instance `Guid.NewGuid().ToString().Replace("-", "")` for radio name; recreated each time key invalidates the component.
-- **JS interop overall light (good)** but tooltip strings are rebuilt and inlined as DOM attributes per render.
+- **Tooltip strings are rebuilt and inlined as DOM attributes per render.**
 - **`BaseFaemiyahComponent.InvokeStateChange`** (line 13) doesn't await `InvokeAsync` — fire-and-forget swallows exceptions.
 
 ## B5. CSS issues (`wwwroot/css/Resolver.css`)
@@ -100,7 +99,6 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 - **`_Host.cshtml:15`** imports full Bootstrap but uses very little of it.
 - **`FormFiringSolution.razor:25`** keys on `_userStateController.UnitListHash` → entire combobox subtree invalidates on any unit add/remove. Could be parameter-driven instead.
 - **`FormNumberPickerDisplayOnly.razor:81`** invokes both `OnChanged.InvokeAsync(value)` and `OnChangedWithHint.InvokeAsync((Hint, value))` even when only one is wired — allocates a `ValueTuple` for nothing.
-- **`Pages/Index.razor:58`** has a singleton tooltip div; multiple tooltip implementations live in different places (`FormGameState.razor:38`) — code duplication.
 - **`FormDamageReport.razor:87, 116`** iterates `FiringUnitIds` twice.
 - **`ComponentUnit.razor:30`** — `UnitEntry.Features.Any()` should be `.Count > 0` on `HashSet`.
 - **`FormPickSet.razor:60, 70`** uses `DateTime.Now` (local) inconsistently with `DateTime.UtcNow` used elsewhere.

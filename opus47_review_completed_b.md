@@ -376,3 +376,42 @@ handler string), and the encoding renders any markup in a unit name as inert lit
 
 Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings). Visual verification of
 paper-doll tooltips is recommended (hover shows location + damage, follows the cursor, hides on leave).
+
+### Follow-up finalization (tooltip mechanism unified)
+
+After the initial paper-doll conversion, the tooltip delegation was completed across the whole app:
+
+- `FormPaperDollRegion.razor` gained an optional `Fill` parameter (falls back to `GetDamageColor(Location)` when null). `FormPaperDollTrooper.razor` now routes through `FormPaperDollRegion` too, passing its index-based literal fill (`#FF0000` killed / `#E0E0E0` alive); the unused `<g id="Trooper">` wrapper was dropped. Every paper-doll variant now goes through the shared region component.
+- `FormWeaponEntry.razor:18` was migrated from inline `onmousemove="ShowTooltip(...)"`/`onmouseout="HideTooltip(...)"` to `data-tooltip-id="resolver_tooltip_targetnumber"` + `data-tooltip-content`, so it uses the same delegated listeners. The delegated `mousemove` re-reads `data-tooltip-content` each move, preserving live target-number updates.
+- The now-unused global `ShowTooltip`/`HideTooltip` functions were deleted from `Resolver.js`; a single document-level delegated IIFE is the sole tooltip mechanism (resolves the "multiple tooltip implementations / code duplication" item — two display divs remain, but one shared implementation drives both).
+- `Pages/_Host.cshtml:17` — added `asp-append-version="true"` to the `Resolver.js` `<script>` tag (matching `Resolver.css`). Without it, a cached `Resolver.js` is served after a deploy; this previously caused all tooltips to vanish until a hard refresh once the razor stopped emitting inline handlers.
+
+Still open (separate micro-perf note, not addressed here): the `data-tooltip-content` string is recomputed every render for paper-doll regions and `FormWeaponEntry`. This is inherent to the data-attribute approach and is left as a future optimisation.
+
+## B2. Repeated modal markup — SHARED ContainerModal COMPONENT EXTRACTED
+
+The modal dialog skeleton was hand-duplicated six times across three components, each ~20 lines of identical
+`resolver_modal_background > resolver_modal > header(title + × close) > body > footer(primary + Cancel)`
+markup:
+- `FormUnitEntry.razor` — Delete Unit, Save Unit, Load Unit
+- `FormTools.razor` — Kick Player, Move Unit to Player
+- `FormServer.razor` — Password required
+
+Extracted `Shared/Generic/ContainerModal.razor` (following the existing `Container*` convention for structural
+wrapper components). It renders the full background/header/body/footer chrome and exposes:
+- `Title` (string) — header text
+- `ChildContent` (RenderFragment) — modal body
+- `PrimaryText` (string, default `"Submit"`) — primary button label
+- `OnPrimary` (EventCallback) — primary button action
+- `OnClose` (EventCallback) — invoked by both the header `×` and the footer `Cancel` button
+
+All six call sites were converted to `<ContainerModal ...>body</ContainerModal>`, removing ~110 lines of
+duplicated markup. The Delete modal passes `PrimaryText="Delete"`; the rest use the `"Submit"` default.
+
+Dropped the stray `id="passwordModal"` that every modal carried — it is a copy-paste leftover (the same id
+appeared on all six modals, which is invalid duplicate-id HTML) and is not referenced by any CSS or JS
+(`wwwroot` grep clean). `role="dialog"` is preserved on the shared component.
+
+Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings). Visual verification
+recommended: open each dialog (unit Delete/Save/Load, Tools Kick/Move Unit, Server password-protected join)
+and confirm the header title, body, primary action, and both close paths (× and Cancel) behave as before.

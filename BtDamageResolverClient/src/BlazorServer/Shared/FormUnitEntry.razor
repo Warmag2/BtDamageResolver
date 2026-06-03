@@ -212,74 +212,23 @@
 
 @if (_showModalDelete)
 {
-    <div class="resolver_modal_background">
-        <div class="resolver_modal" id="passwordModal" role="dialog">
-            <!-- Modal Header -->
-            <div class="resolver_modal_header">
-                <h3 class="resolver_header">Delete Unit</h3>
-                <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="resolver_modal_body">
-                Really delete @UnitEntry.Name?
-            </div>
-
-            <!-- Modal footer -->
-            <div class="resolver_modal_footer">
-                <button type="button" class="resolver_button" @onclick=@(_ => OnDeleted.InvokeAsync(UnitEntry))>Delete</button>
-                <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <ContainerModal Title="Delete Unit" PrimaryText="Delete" OnPrimary="@(() => OnDeleted.InvokeAsync(UnitEntry))" OnClose="ModalClose">
+        Really delete @UnitEntry.Name?
+    </ContainerModal>
 }
 
 @if (_showModalSave)
 {
-    <div class="resolver_modal_background">
-        <div class="resolver_modal" role="dialog">
-            <!-- Modal Header -->
-            <div class="resolver_modal_header">
-                <h3 class="resolver_header">Save Unit</h3>
-                <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="resolver_modal_body">
-                Save unit @UnitEntry.Name to database?
-            </div>
-
-            <!-- Modal footer -->
-            <div class="resolver_modal_footer">
-                <button type="button" class="resolver_button" @onclick=@ModalSave>Submit</button>
-                <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <ContainerModal Title="Save Unit" OnPrimary="ModalSave" OnClose="ModalClose">
+        Save unit @UnitEntry.Name to database?
+    </ContainerModal>
 }
 
 @if (_showModalLoad)
 {
-    <div class="resolver_modal_background">
-        <div class="resolver_modal" role="dialog">
-            <!-- Modal Header -->
-            <div class="resolver_modal_header">
-                <h3 class="resolver_header">Load Unit</h3>
-                <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="resolver_modal_body">
-                <FormComboBox Options="@_commonData.GetSavedUnitNames()" OnChanged="(string unitName) => OnLoadedUnitNameChanged(unitName)"></FormComboBox>
-            </div>
-
-            <!-- Modal footer -->
-            <div class="resolver_modal_footer">
-                <button type="button" class="resolver_button" @onclick=@ModalLoad>Submit</button>
-                <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <ContainerModal Title="Load Unit" OnPrimary="ModalLoad" OnClose="ModalClose">
+        <FormComboBox Options="@_commonData.GetSavedUnitNames()" OnChanged="(string unitName) => OnLoadedUnitNameChanged(unitName)"></FormComboBox>
+    </ContainerModal>
 }
 
 @code {

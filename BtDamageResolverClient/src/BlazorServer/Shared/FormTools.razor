@@ -26,51 +26,17 @@
 
 @if (_showModalKick)
 {
-    <div class="resolver_modal_background">
-        <div class="resolver_modal" id="passwordModal" role="dialog">
-            <!-- Modal Header -->
-            <div class="resolver_modal_header">
-                <h3 class="resolver_header">Kick Player</h3>
-                <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="resolver_modal_body">
-                <FormComboBox Options="@_userStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
-            </div>
-
-            <!-- Modal footer -->
-            <div class="resolver_modal_footer">
-                <button type="button" class="resolver_button" @onclick=@Kick>Submit</button>
-                <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <ContainerModal Title="Kick Player" OnPrimary="Kick" OnClose="ModalClose">
+        <FormComboBox Options="@_userStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
+    </ContainerModal>
 }
 
 @if (_showModalMoveUnit)
 {
-    <div class="resolver_modal_background">
-        <div class="resolver_modal" id="passwordModal" role="dialog">
-            <!-- Modal Header -->
-            <div class="resolver_modal_header">
-                <h3 class="resolver_header">Move Unit to Player</h3>
-                <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="resolver_modal_body">
-                <FormComboBox Options="@_userStateController.GetUnitIds()" OnChanged="(Guid unitId) => OnUnitIdChanged(unitId)"></FormComboBox>
-                <FormComboBox Options="@_userStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
-            </div>
-
-            <!-- Modal footer -->
-            <div class="resolver_modal_footer">
-                <button type="button" class="resolver_button" @onclick=@MoveUnit>Submit</button>
-                <button type="button" class="resolver_button" @onclick="@ModalClose">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <ContainerModal Title="Move Unit to Player" OnPrimary="MoveUnit" OnClose="ModalClose">
+        <FormComboBox Options="@_userStateController.GetUnitIds()" OnChanged="(Guid unitId) => OnUnitIdChanged(unitId)"></FormComboBox>
+        <FormComboBox Options="@_userStateController.GetPlayerIds()" OnChanged="(string playerName) => OnPlayerNameChanged(playerName)"></FormComboBox>
+    </ContainerModal>
 }
 
 @code
