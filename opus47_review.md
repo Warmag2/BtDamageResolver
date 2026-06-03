@@ -24,51 +24,9 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 - **No `ShouldRender()` overrides** anywhere except `FormNumber.razor:43` (`!_isBeingEdited`), `ComponentPlayerState`, and (now) `FormPaperDoll` (guards the whole paper-doll subtree on `DamagePaperDoll`/`DamageReport` reference change). Remaining components still re-render on every event/parameter change. Add render guards to the editable forms (`FormWeaponEntry`, `FormFiringSolution`, `FormDamageReport`, `FormUnitEntry`). _(Read-only All Units path — `ComponentGameState`/`ComponentPlayerState`/`ComponentUnit`/`ComponentWeaponEntry` — done.)_
 
-## B6. Communication layer (Communication/, Logic/, Hubs/ClientHub.cs)
-
-## B7. Miscellaneous Blazor
-
-- **`_Host.cshtml:15`** imports full Bootstrap but uses very little of it.
-- **`FormFiringSolution.razor:25`** keys on `_userStateController.UnitListHash` → entire combobox subtree invalidates on any unit add/remove. Could be parameter-driven instead.
-- **`FormNumberPickerDisplayOnly.razor:81`** invokes both `OnChanged.InvokeAsync(value)` and `OnChangedWithHint.InvokeAsync((Hint, value))` even when only one is wired — allocates a `ValueTuple` for nothing.
-- **`FormDamageReport.razor:87, 116`** iterates `FiringUnitIds` twice.
-- **`ComponentUnit.razor:30`** — `UnitEntry.Features.Any()` should be `.Count > 0` on `HashSet`.
-- **`FormPickSet.razor:60, 70`** uses `DateTime.Now` (local) inconsistently with `DateTime.UtcNow` used elsewhere.
-
 ---
 
 # PART C — INFRA, BUILD, TESTS, CONFIG
-
-## C1. .NET versions & NuGet packages
-
-- **Mixed TFMs.** All BtDamageResolver projects target `net10.0` but `CompressionLzma/src/CompressionLzma/CompressionLzma.csproj:4` targets `net9.0`.
-- **No `global.json`** to pin SDK version, no `<RollForward>` policy → non-reproducible across machines.
-- **Mixed package family versions:** `Microsoft.Orleans.*` at `10.1.0` vs `Microsoft.Extensions.Hosting/Logging`/`Microsoft.AspNetCore.SignalR.Client` at `10.0.8`; `Microsoft.VisualStudio.Web.CodeGeneration.Design` at `10.0.2`. No central `Directory.Packages.props`.
-- **Stale dep:** `System.ComponentModel.Annotations 5.0.0` in `Api.csproj` is essentially superseded — remove.
-- **Heavy deps for client:** `NuGet.Packaging`/`NuGet.Protocol 7.6.0` in `BlazorServer.csproj` — confirm needed.
-- **Custom NuGets checked in:** `CustomNugets\*.nupkg` (seven versions `0.0.405`-`0.0.434` of `Api`/`Common`). Active is `0.0.440` → none match referenced version; repo bloat.
-- **Compiled binaries committed:** `BuildPipeline/BuildPipeline.dll`, `.exe`, `.runtimeconfig.json` with no source — opaque + Windows-only EXE in Git.
-- **No vulnerability/dependency scanning** (no `dotnet list package --vulnerable`, no Dependabot, no Renovate, no CodeQL).
-
-## C2. Project file / `Directory.Build.props`
-
-- `Directory.Build.props` is almost empty (only `SonarAnalyzer.CSharp`). Missing across the board:
-  - `<Nullable>enable</Nullable>` — no project enables NRT.
-  - `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`.
-  - `<AnalysisMode>`/`<AnalysisLevel>`.
-  - `<ImplicitUsings>enable</ImplicitUsings>`.
-  - `<LangVersion>latest</LangVersion>`.
-  - `<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>` — `.editorconfig` is advisory only.
-  - `<GenerateDocumentationFile>true</GenerateDocumentationFile>` — packaged NuGets ship without XML docs.
-  - Common metadata (`Authors`, `Company`, `Copyright`, `RepositoryUrl`, `PackageProjectUrl`) duplicated per project.
-- `Directory.Build.props:7` condition `$(MSBuildProjectExtension) == '.csproj'` is redundant.
-- `Api.csproj`/`Common.csproj` `<Copyright>Faemiyah 2020</Copyright>` — stale.
-- **Per-project boilerplate** — every Silo/Tool csproj duplicates `<None Update>` for `*.json` Debug-conditional copies.
-- `Tests.csproj` only references `Actors.csproj` → cannot test `Api`, `Common`, `Services`, `BlazorServer`, repositories etc. without rebuilding.
-- `Tests.csproj` lacks `coverlet.collector`/`coverlet.msbuild` → no coverage instrumentation.
-- `CompressionLzma.csproj` has empty `<Company />`, no `<PackageProjectUrl>`/`<Description>`; `RepositoryUrl` trailing slash inconsistent.
-- `Silo.csproj` puts `<ServerGarbageCollection>`/`<ConcurrentGarbageCollection>` as project properties — better as runtime config.
-- `BlazorServer.csproj` uses `<None Include="...">` (not `Update`); `appsettings.json` isn't referenced — relies on Web SDK conventions.
 
 ## C3. CI / build pipeline
 

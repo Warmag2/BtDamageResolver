@@ -1096,3 +1096,129 @@ The two static tooltip target divs (Index.razor:58 `resolver_tooltip_paperdoll`,
 **Verification:** Build clean. Needs a browser hard-refresh check of initial load -> login -> connect.
 
 **Decision: DONE.**
+## REGRESSION FIX. Disconnect left client stuck "connected" (removed teardown-on-disconnect)
+
+**Symptoms (reported after the FormServer conditional-render + B3 teardown work):**
+1. Clicking Disconnect did not update the lobby UI (FormServer) -- the Disconnect button stayed, login form never reappeared.
+2. Clicking Disconnect a second time threw a NullReferenceException.
+3. After disconnect, Ctrl-F5 (hard reload) auto-logged the user back in (stored credentials never cleared).
+
+**Root cause:** The B3/B6 leak-fix had added `TeardownCommunicator()` to `ResolverCommunicator.Disconnect()`, called synchronously right after sending the Disconnect request. The server's `PlayerActor.Disconnect` (PlayerActor.Connections.cs:86) DOES send back `ConnectionResponse(IsConnected=false)` over Redis, and the existing Index.razor handler (lines 88-100) is what performs the client-side cleanup: `SetAuthenticationToken(Guid.Empty)`, `IsConnectedToServer=false`, null GameState/PlayerName/options, `await _localStorage.RemoveUserCredentials()`, `InvokeStateChange()`. But `TeardownCommunicator()` disposed the Redis subscription before that response could arrive, so the handler never ran:
+- IsConnectedToServer stayed true -> FormServer never re-rendered to the login form (symptom 1).
+- RemoveUserCredentials never ran -> stored credentials persisted -> Index.OnAfterRenderAsync auto-connect re-logged in on reload (symptom 3).
+- The token was never cleared AND `_clientToServerCommunicator` was nulled -> a second Disconnect passed CheckAuthentication (stale token) then called `.Send` on the null communicator -> NRE (symptom 2).
+
+**Fix:** Removed `TeardownCommunicator()` from `Disconnect()` (ResolverCommunicator.cs). The communicator now stays alive after a user-initiated disconnect, so the server's `ConnectionResponse(false)` is received normally and the existing Index handler does the full cleanup. This fixes all three symptoms with no synthetic event needed, and the communicator is never nulled mid-session so the double-click NRE cannot occur.
+
+**Why this does NOT reintroduce the leak the earlier teardown guarded against:** the Redis subscription is still released on both relevant boundaries:
+- `Connect()` -> `Reset()` -> `TeardownCommunicator()` disposes the previous communicator before creating a new one (so connect/disconnect/connect cycles never accumulate subscriptions -- at most one live communicator per instance).
+- `Dispose(bool)` -> `TeardownCommunicator()` releases it when the ResolverCommunicator/circuit is torn down (page close).
+The only change is that the subscription stays alive during the idle *disconnected* window, which is bounded (one per instance) and reclaimed on the next Connect or on disposal -- not a leak. Supersedes the earlier "ALREADY ADDRESSED -- TeardownCommunicator in Disconnect" disposition for the Disconnect Redis-leak item.
+
+**Build:** 0 errors, 12 warnings (baseline). Rubber-duck consulted on an earlier synthetic-dispatch variant; the simpler "don't tear down on disconnect" approach (user-proposed) was chosen as strictly cleaner. NEEDS in-browser verification: connect -> Disconnect updates UI to login form; Ctrl-F5 after disconnect stays logged out; Disconnect cannot be double-clicked into an error; reconnect after disconnect still works.
+## B7. FormFiringSolution.razor:25 -- Target combobox keyed on UnitListHash (NO-ACTION)
+
+Item: The Target FormComboBox uses @key=@($"{WeaponBay.Id}_Target_{UnitListHash}"), so the entire combobox subtree invalidates on any unit add/remove/rename. Review suggested it "could be parameter-driven instead."
+
+Assessment: NO-ACTION (correct as-is).
+
+Reasoning:
+- FormComboBox computes its displayed text (SelectedOptionInternal) by reverse-mapping SelectedOption through Options ONLY in OnInitialized (FormComboBox.razor:174-181), then caches it in _selectedOption.
+- The Target list (GetTargetsForUnit) is built from the live UnitList, so its membership AND the displayed names change when units are added, removed, or renamed (UnitListHash folds in id:playerId:name -- UserStateController.cs:190).
+- Because the display text is cached in OnInitialized, the only way the combobox can refresh that text when the unit list changes is via @key churn. The other forms in this file (FormRadio/FormNumberPicker) key only on WeaponBay.Id because their options are static enums and never change.
+- Making it "parameter-driven" would require reworking FormComboBox to recompute SelectedOptionInternal in OnParametersSet whenever Options changes. That is risky (could recompute mid-edit while the user is typing) and contradicts the established leaf-component design (editable leaf forms deliberately cache in OnInitialized and rely on @key churn to refresh).
+- Cost of the current approach is negligible: unit add/remove/rename is rare (user: units loaded ~4-30x per match), and only this single combobox subtree is recreated, not the whole form.
+
+Decision: keep the UnitListHash key. User confirmed NO-ACTION.
+## B7. FormNumberPickerDisplayOnly.razor:81 -- invoke only the wired callback (DONE)
+
+Item: SelectedOptionInternal setter unconditionally called both OnChanged.InvokeAsync(value) and OnChangedWithHint.InvokeAsync((Hint, value)), even though each call site wires only one of the two callbacks. The unwired call still builds its argument (the (Hint, value) ValueTuple) before InvokeAsync short-circuits to Task.CompletedTask.
+
+Usage survey:
+- OnChanged wired (OnChangedWithHint unwired): FormUnitEntry.razor:150 (Heat), :156 (Penalty); FormWeaponEntry.razor:30 (Amount), :40 (Modifier).
+- OnChangedWithHint wired (OnChanged unwired): FormUnitEntry.razor:194 (AmmoUsage).
+So in every existing use exactly one callback is unwired.
+
+Fix: guard each invocation with HasDelegate so only the wired callback runs and the unwired branch does no argument construction.
+
+    set
+    {
+        _selectedOption = value;
+        HideSelectionBox();
+        if (OnChanged.HasDelegate)
+        {
+            OnChanged.InvokeAsync(value);
+        }
+
+        if (OnChangedWithHint.HasDelegate)
+        {
+            OnChangedWithHint.InvokeAsync((Hint, value));
+        }
+    }
+
+Notes:
+- (Hint, value) is a struct ValueTuple, so this was a stack construction rather than a GC allocation; the win is primarily clarity plus skipping a pointless EventCallback dispatch. Behavior is unchanged because InvokeAsync on a callback with HasDelegate==false already did nothing.
+- Curly braces used on the single-line bodies per repo convention.
+- Build: 0 errors / 12 warnings (unchanged baseline).
+
+Decision: DONE.
+## B7. FormDamageReport.razor:87,116 -- two foreach loops over FiringUnitIds (NO-ACTION)
+
+Item: The markup has two separate @foreach (var firingUnitId in DamageReport.FiringUnitIds) loops (lines 86 and 115), flagged as iterating FiringUnitIds twice.
+
+Assessment: NO-ACTION (correct as-is).
+
+Reasoning:
+- The two loops emit DISTINCT, separated DOM sections:
+  - Loop 1 (line 86): renders the "Attacker heat" rows (resolver_div_attackerheat), only for units with attackerConsumables.Heat > 0 and certain unit types.
+  - Loop 2 (line 115): renders the "Attacker ... spent <ammo>" rows (resolver_div_ammo), only for units whose AmmoUsage is non-empty.
+- Merging them into a single loop would interleave heat and ammo rows per-unit (heat[A], ammo[A], heat[B], ammo[B]) instead of the current grouped order (all heat rows, then all ammo rows). That is a visible layout change, so the refactor is NOT behavior-preserving.
+- FiringUnitIds is the set of attackers in a single damage report -- typically 1, occasionally a few. Iterating it twice is negligible CPU, and there is no allocation involved.
+
+Decision: keep both loops. User confirmed NO-ACTION.
+## B7. ComponentUnit.razor:30 -- Features.Any() -> .Count > 0 (ALREADY ADDRESSED)
+
+Item: UnitEntry.Features.Any() should be .Count > 0 on the HashSet.
+
+Assessment: ALREADY ADDRESSED. The current code at ComponentUnit.razor:27 already reads:
+
+    @if (UnitEntry.Features.Count > 0)
+
+There is no remaining .Any() call on Features in this file (only the @if at :27 and the @foreach at :33). The review line number (30) was stale; the guard now sits at line 27, presumably tidied during earlier B1 read-only-path work. No further change needed.
+
+Decision: ALREADY ADDRESSED, no action.
+## B7. _Host.cshtml:15 -- full Bootstrap import barely used (NO-ACTION)
+
+Item: _Host.cshtml imports css/bootstrap/bootstrap.min.css but the app uses very little of it.
+
+Investigation:
+- No Bootstrap component/utility classes are used in any .razor file (grep for btn/btn-primary/btn-link/container/row/col-/form-control/navbar/card/alert/badge/d-flex/mt-/mb-/px-/py- returned nothing). All styling uses custom resolver_* classes.
+- #blazor-error-ui and its .dismiss/.reload are styled in the custom Resolver.css, NOT by Bootstrap.
+- Resolver.css contains NO box-sizing declaration. bootstrap.min.css sets box-sizing: border-box on *, *::before, *::after. So Bootstrap's ONLY load-bearing contribution is the global border-box reset that the entire custom layout implicitly relies on.
+
+Assessment: NO-ACTION (keep Bootstrap).
+
+Reasoning:
+- Removing bootstrap.min.css would flip the global box model from border-box back to the browser default content-box, shifting every element in Resolver.css that combines an explicit width with padding/border -- an app-wide layout regression requiring full visual re-verification. High risk for a regression-sensitive project.
+- The only upside (a ~30KB cached stylesheet) is a client-side download/CSS cost, which the user has explicitly deprioritized ("I care very little about CSS render performance ... quad-core i7s and modern phones actually rendering the page"). The app is hosted on ARM but rendered on capable client hardware.
+- If ever revisited, the correct migration is: add an explicit `*, *::before, *::after { box-sizing: border-box; }` reset to Resolver.css, then drop Bootstrap, then re-verify the whole UI. Not worth it now.
+
+Decision: keep the Bootstrap import. User confirmed NO-ACTION.
+
+## B7. FormPickSet.razor:60,70 -- DateTime.Now -> DateTime.UtcNow (DONE)
+
+Item: AddEntry and DeleteEntry set _updateTimeStamp = DateTime.Now (local), inconsistent with DateTime.UtcNow used by sibling leaf components.
+
+Why it is a real bug, not just style:
+- _updateTimeStamp is compared against ComparisonTimeStamp to drive the "reminder" highlight: FormPickSet.razor:19 `class="... @(ComparisonTimeStamp > _updateTimeStamp ? "reminder" : "")"`.
+- ComparisonTimeStamp is fed from _userStateController.ComparisonTime, which is GameState.TurnTimeStamp (a server-generated UTC timestamp) or DateTime.MinValue (UserStateController.cs:267).
+- Sibling editable leaf components stamp their edit time in UTC, e.g. FormComboBox.razor:71 `_updateTimeStamp = DateTime.UtcNow;`.
+- Mixing local DateTime.Now (here, UTC+2/+3) with a UTC comparison timestamp skews the comparison by the timezone offset, so the reminder highlight can mis-fire (the locally-stamped edit looks hours "newer" than it is in UTC terms).
+
+Fix: both assignments changed to DateTime.UtcNow (lines 60 and 70).
+
+    _updateTimeStamp = DateTime.UtcNow;
+
+Build: 0 errors / 12 warnings (unchanged baseline).
+
+Decision: DONE. This closes Part B7 (and therefore all of Part B).

@@ -5,13 +5,7 @@
     <RootNamespace>Faemiyah.BtDamageResolver.Api</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.Api</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.457</Version>
-    <PackageProjectUrl>https://github.com/Warmag2/BtDamageResolver</PackageProjectUrl>
-    <Authors>Warma</Authors>
-    <Company>Faemiyah</Company>
-    <Product>BtDamageResolver</Product>
-    <Copyright>Faemiyah 2020</Copyright>
-    <RepositoryUrl>https://github.com/Warmag2/BtDamageResolver</RepositoryUrl>
+    <Version>0.0.458</Version>
     <Description>API classes and interfaces for BtDamageResolver. Needed to connect to and interface with a cluster.</Description>
   </PropertyGroup>
 
@@ -19,7 +13,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
     <PackageReference Include="SevenZip.Compression.Lzma" Version="0.0.14" />
     <PackageReference Include="StackExchange.Redis" Version="2.13.17" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

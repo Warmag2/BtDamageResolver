@@ -57,7 +57,7 @@
         {
             _containedItemNames.Add(item);
             OnChanged.InvokeAsync(ProduceOutputType());
-            _updateTimeStamp = DateTime.Now;
+            _updateTimeStamp = DateTime.UtcNow;
         }
     }
 
@@ -67,7 +67,7 @@
         {
             _containedItemNames.Remove(item);
             OnChanged.InvokeAsync(ProduceOutputType());
-            _updateTimeStamp = DateTime.Now;
+            _updateTimeStamp = DateTime.UtcNow;
         }
     }
 
