@@ -77,7 +77,7 @@
         
         <div class="resolver_div_componentrow">
             <div class="resolver_div_totaldamage">
-                Total damage to target: @DamageReport.DamagePaperDoll.DamageCollection.SelectMany(dc => dc.Value.SelectMany(l => l.Value)).Sum()
+                Total damage to target: @_totalDamageToTarget
             </div>
         </div>
 
@@ -175,6 +175,8 @@
 {
     private Dictionary<AttackLogEntryType, bool> _logLineVisibility;
     private bool _attackLogVisible;
+    private int _totalDamageToTarget;
+    private DamageReport _lastSummedDamageReport;
 
     [Parameter]
     public DamageReport DamageReport { get; set; }
@@ -183,6 +185,15 @@
     {
         _attackLogVisible = _userStateController.PlayerOptions?.ShowAttackLogByDefault ?? false;
         _logLineVisibility = _userStateController.GetAttackLogEntryVisibilityCopy();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!ReferenceEquals(_lastSummedDamageReport, DamageReport))
+        {
+            _lastSummedDamageReport = DamageReport;
+            _totalDamageToTarget = DamageReport.DamagePaperDoll.DamageCollection.SelectMany(dc => dc.Value.SelectMany(l => l.Value)).Sum();
+        }
     }
 
     public void Delete()

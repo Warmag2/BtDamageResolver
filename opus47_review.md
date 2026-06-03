@@ -27,18 +27,11 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 ## B4. C# code in components
 
 - **LINQ allocations in render paths:**
-  - `FormDamageReport.razor:81` `SelectMany(...).SelectMany(...).Sum()` per render.
-  - `FormDamageReport.razor:9,10` `UnitEntries.Exists(...)` twice on stable params.
-  - `ComponentGameState.razor:7-10` materialises `spectatorList` per render.
-  - `FormDamageReports.razor:16` `_damageReportsToShow.Reverse()` allocates per render.
-  - `FormDamageReports.razor:19` `singleTurnDamageReports.Value.GroupBy(...).ToList()` per render.
   - `ComponentWeaponEntry.razor:10-11` `GetTargetNumberUpdateSingleWeapon` lookup per render.
   - `FormWeaponEntry.razor:11-16` `GetTargetNumberUpdateSingleWeapon` lookup per render (similar to `ComponentWeaponEntry` above).
 - **`UserStateController.cs:168`** — `UnitList` setter does `string.Join("-", _unitList.Select(...))` then `.Fnv1aHash64()` per replacement. `UpdateUnitList` (line 468) builds new `ConcurrentDictionary`, multiple LINQ scans; runs per inbound state.
-- **`UserStateController.cs:423-425`** — `DamageReportConcernsPlayer` uses `Exists` twice per damage report per render of `FormDamageReports`.
 - **Sync over async:** `Pages/Index.razor:164` calls `_formServer.Connect(credentials)` from `OnAfterRenderAsync` without awaiting; `Connect()` does sync Redis setup.
 - **`FormGameList.razor:50`** `OrderByDescending(...)` materialised via spread `[.. ...]` per `OnParametersSet`.
-- **`FormDamageReports.BuildDamageReportsToShow` (line 51)** — new `SortedDictionary`, `Reverse()` allocation, nested foreach — runs on every options update + every new damage report.
 - **`FormRadio.razor:20`** — per-instance `Guid.NewGuid().ToString().Replace("-", "")` for radio name; recreated each time key invalidates the component.
 - **Tooltip strings are rebuilt and inlined as DOM attributes per render.**
 - **`BaseFaemiyahComponent.InvokeStateChange`** (line 13) doesn't await `InvokeAsync` — fire-and-forget swallows exceptions.

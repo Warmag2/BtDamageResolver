@@ -769,3 +769,105 @@ render, so Fix 2 strictly *reduces* its frequency (to once/turn) rather than int
 a dedicated correctness pass since `Merge` is a shared Api entity also used server-side.
 
 Build: BlazorServer builds (0 errors; pre-existing 12 warnings unchanged).
+
+---
+
+## B4 (partial). FormDamageReport total-damage sum cached per report
+
+**`FormDamageReport.razor:80` `Total damage to target` sum** was computed inline in markup as
+`DamageReport.DamagePaperDoll.DamageCollection.SelectMany(dc => dc.Value.SelectMany(l => l.Value)).Sum()`,
+iterating the entire damage collection (all locations × all attackers × all damage entries) on **every** render of
+the component. While the DamageReports tab is open, `FormDamageReport` re-renders on every `Index` StateHasChanged
+(any player edit broadcasts a GameState update), so this ran far more often than once/turn during rapid clicking.
+
+Fix: the sum is a **pure projection** of `DamageReport.DamagePaperDoll`, which is replaced wholesale per turn and never
+mutated in place. Moved the computation into `OnParametersSet`, gated on `!ReferenceEquals(_lastSummedDamageReport,
+DamageReport)`, caching into `_totalDamageToTarget`; markup now renders `@_totalDamageToTarget`. Recomputes only when a
+new report instance arrives. (OnParametersSet runs on every parent render, but the reference-equality gate skips the
+LINQ on the common no-change path; the value is set before the first render.)
+
+**Intentionally left live — the two `UnitEntries.Exists(...)` ownership checks (lines 8-9).** The original bullet
+(`FormDamageReport.razor:9,10`) called these "on stable params", but they read `_userStateController.PlayerState.UnitEntries`,
+which is **live** state — the user can add/delete units mid-turn, changing `attackingUnitOwnedByYou`/`defendingUnitOwnedByYou`
+and the derived header strings (and the incoming/outgoing CSS class) without a new `DamageReport`. Caching them on the report
+reference would reintroduce exactly the staleness risk that made us skip a full `ShouldRender` guard on this component. They are
+O(units) over a small list (4-30 units), twice — cheap. Left in the per-render `@{ }` block by design. Marked discussed.
+
+Build: BlazorServer builds (0 errors; pre-existing 12 warnings unchanged).
+---
+
+## B4 (no-action). ComponentGameState spectatorList — discussed, intentionally left as-is
+
+`ComponentGameState.razor:8,10` builds `playerStateList` (lazy `Where`, enumerated once — already optimal) and
+`spectatorList` (`Where(IsSpectator).Select(PlayerId).ToList()`). Reviewed and **deliberately not changed**: this component
+subscribes only to `OnGameStateUpdated`, so it re-renders ~once per player edit (not on every event), and the data is tiny
+(`GameState.Players` = players in one match, typically <10). Materialising a short spectator-id list is negligible next to
+rendering the `ComponentPlayerState` children below it. Caching it would require change-detection against `GameState`, adding
+state and regression surface for zero measurable gain — a bad trade. `spectatorList[^1]` (line 23) is safely guarded by
+`.Any()`. No-action.
+
+---
+
+## B4. FormDamageReports — full subtree gated with ShouldRender via a live broad signature; markup LINQ precomputed
+
+**Problem.** `FormDamageReports` is `@key`'d on `DamageReportContainer.TimeStamp` (Index.razor:49, FormGameState.razor:47),
+so the whole component is recreated whenever damage reports change and the container contents are fixed for an instance's
+lifetime. Yet the component re-renders on every `Index` StateHasChanged while its tab is open (parent re-render ⇒
+`OnParametersSet`). The old code called `BuildDamageReportsToShow()` unconditionally from `OnParametersSet` (full filter over
+all reports across all turns, calling `DamageReportConcernsPlayer` per report) AND the markup additionally did
+`_damageReportsToShow.Reverse()` + per-turn `GroupBy(...)` + per-group `.ToList()`, then re-rendered the entire subtree
+(accordions → `FormDamageReportContainer` → `FormDamageReport` → `FormPaperDoll`). All of this ran on every gamestate
+broadcast (i.e. constantly during rapid clicking), even though the result almost never changes between container versions.
+
+**Why a naive cache/relocation doesn't help.** Moving the markup LINQ into `BuildDamageReportsToShow` alone is a no-op for
+CPU, because `BuildDamageReportsToShow` already ran every render via `OnParametersSet`. The win requires *gating*.
+
+**Why the gate's signature must be broad (not a `DamageReport`-reference guard).** The subtree renders from **live** state, not
+just the (fixed) reports: the filter depends on `PlayerOptions.ShowOtherPlayersDamageReports`/`ShowMovementDamageReports`,
+`PlayerState.IsSpectator`, and `PlayerState.UnitEntries` (via `DamageReportConcernsPlayer`); and `FormDamageReport` headers
+depend on the global `UnitList` (`UnitList[id].PlayerId`). `PlayerState` is a computed property off `GameState`, so these can
+change on any gamestate update. A guard keyed only on the report set would go stale.
+
+**Fix.** A single `ShouldRender` gate driven by one signature read **live from everything the whole subtree renders
+from**, so when nothing relevant changed we neither rebuild nor re-render the subtree: `(DamageReportContainer.TimeStamp,
+hasPlayerState, ShowOtherPlayersDamageReports, ShowMovementDamageReports, IsSpectator, ownUnitIdHash, globalUnitListHash,
+OnlyNewest)`. `RefreshState()` (called from `OnParametersSet` and the data-change events) compares the signature; on change it
+sets `_shouldRender = true` and rebuilds `_damageReportsToShow`, otherwise `ShouldRender()` returns false and the entire
+subtree (accordions → `FormDamageReportContainer` → `FormDamageReport` → `FormPaperDoll`) is skipped. The same rebuild is
+folded into this one gate — there is no separate cache.
+
+Two distinct unit signals are both included on purpose: `ownUnitIdHash` is a `HashCode` over the player's own
+`PlayerState.UnitEntries[].Id`, read live (no round-trip lag) — this is the **filter** input (`DamageReportConcernsPlayer`).
+`globalUnitListHash` is `UserStateController.UnitListHash` (`unitId:playerId:unitName` over all players) — this is needed
+because `FormDamageReport` **headers** derive from live global `UnitList` (`UnitList[id].PlayerId`), the exact reason we
+declined to guard `FormDamageReport` directly earlier; folding the global hash into the parent gate keeps those headers
+correct. Critically, editing weapons/armor/firing-solution fields (the bulk of rapid clicking) changes **neither**
+`DamageReportContainer.TimeStamp` **nor** `UnitListHash`, so the damage-report subtree is now fully skipped on those events;
+only unit rename/add/remove, spectator/option toggles, or new damage reports trigger a re-render.
+
+`BuildDamageReportsToShow` also precomputes the reversed + grouped display structure once
+(`List<(int Turn, List<List<DamageReport>> ReportGroups)>`), so the markup does no `Reverse`/`GroupBy`/`ToList` per render.
+Dropped the inner `DamageReports.Reverse()` in the build (proven no-op: source and `result` are both `SortedDictionary`,
+re-sorted ascending; display order comes from the outer `filtered.Reverse()`).
+
+**Accepted thin edge (user-approved).** `FormDamageReport` line 90 calls `GetUnitType(firingUnitId)`; unit type is not part of
+`UnitListHash` (which hashes the unit *name*), so a unit-type change with an unchanged name could be momentarily missed by the
+gate. Considered negligible (a unit-type edit normally changes other signature inputs too) and explicitly accepted.
+
+**Side benefits.** The precomputed per-group lists are stable instances across renders, which strengthens the
+`FormDamageReportContainer` combined-report cache (its `SequenceEqual` check). Also resolves the related B4 bullet
+`UserStateController.cs:423-425` (`DamageReportConcernsPlayer` double-`Exists` "per render of FormDamageReports") — it now runs
+only on a real rebuild.
+
+**Behavior preserved.** Identical display ordering (turns newest-first; groups in `GroupBy` first-occurrence order), identical
+empty/`OnlyNewest` semantics (a turn that filters to zero still yields an empty accordion). No `@key` added on
+`ContainerAccordion`/`FormDamageReportContainer` — positional reconciliation and the accordion's init-time `Enabled` read are
+unchanged from the original; the accordion's open/close is internal local state, so skipping a parent render never disturbs it
+(`ContainerAccordion.razor:15,28` — `_enabled` set once in `OnInitialized`, toggled by its own `@onclick`). `Delete` and
+attack-log-checkbox interactions still work: `DamageReportContainer.Remove` bumps `TimeStamp` (so the gate fires), and the
+attack-log checkbox re-renders `FormDamageReport` via its own `StateHasChanged` (a child's self-render is not gated by the
+parent's `ShouldRender`). Rubber-duck consulted on the plan.
+
+Build: BlazorServer builds (0 errors; pre-existing 12 warnings unchanged). Needs in-browser verification: both damage-report
+tabs (full list + "only newest"), spectator view, show-other-players / show-movement toggles, and unit add/remove while the
+damage tab is open.
