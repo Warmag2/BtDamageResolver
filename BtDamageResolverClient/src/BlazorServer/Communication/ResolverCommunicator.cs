@@ -86,7 +86,6 @@ public class ResolverCommunicator : IDisposable
                 AuthenticationToken = _authenticationToken,
                 PlayerName = _playerName
             });
-        TeardownCommunicator();
     }
 
     /// <summary>
