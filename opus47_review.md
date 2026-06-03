@@ -26,12 +26,6 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 ## B4. C# code in components
 
-- **LINQ allocations in render paths:**
-  - `ComponentWeaponEntry.razor:10-11` `GetTargetNumberUpdateSingleWeapon` lookup per render.
-  - `FormWeaponEntry.razor:11-16` `GetTargetNumberUpdateSingleWeapon` lookup per render (similar to `ComponentWeaponEntry` above).
-- **`UserStateController.cs:168`** — `UnitList` setter does `string.Join("-", _unitList.Select(...))` then `.Fnv1aHash64()` per replacement. `UpdateUnitList` (line 468) builds new `ConcurrentDictionary`, multiple LINQ scans; runs per inbound state.
-- **Sync over async:** `Pages/Index.razor:164` calls `_formServer.Connect(credentials)` from `OnAfterRenderAsync` without awaiting; `Connect()` does sync Redis setup.
-- **`FormGameList.razor:50`** `OrderByDescending(...)` materialised via spread `[.. ...]` per `OnParametersSet`.
 - **`FormRadio.razor:20`** — per-instance `Guid.NewGuid().ToString().Replace("-", "")` for radio name; recreated each time key invalidates the component.
 - **Tooltip strings are rebuilt and inlined as DOM attributes per render.**
 - **`BaseFaemiyahComponent.InvokeStateChange`** (line 13) doesn't await `InvokeAsync` — fire-and-forget swallows exceptions.

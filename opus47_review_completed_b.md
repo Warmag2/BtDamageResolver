@@ -871,3 +871,71 @@ parent's `ShouldRender`). Rubber-duck consulted on the plan.
 Build: BlazorServer builds (0 errors; pre-existing 12 warnings unchanged). Needs in-browser verification: both damage-report
 tabs (full list + "only newest"), spectator view, show-other-players / show-movement toggles, and unit add/remove while the
 damage tab is open.
+---
+
+## B4 (no-action). GetTargetNumberUpdateSingleWeapon lookup — discussed, already optimal
+
+`ComponentWeaponEntry.razor:10` and `FormWeaponEntry.razor:12` call
+`_userStateController.GetTargetNumberUpdateSingleWeapon(unitId, weaponEntryId)` in the render block. The original bullet flagged
+this as a per-render "LINQ allocation", but the method is two O(1) `Dictionary.TryGetValue` lookups with no allocation
+(UserStateController.cs:502-510). Both components are already render-gated: each has a `CheckRefresh` subscribed to
+`OnTargetNumbersUpdated` that calls `InvokeStateChange` only when *this unit's* target-number timestamp actually changed
+(not on every target-number packet), and `FormWeaponEntry` additionally memoizes the tooltip string on that same timestamp
+(`GetCachedTooltipContent`). The remaining O(1) lookup on the (already-rare) renders is negligible. No-action.
+---
+
+## B4 (no-action). UnitList setter hash / UpdateUnitList allocation — discussed, deliberately left as-is
+
+`UserStateController.cs` runs `UpdateUnitList()` from the `GameState` setter on every inbound game state (line 145). The
+original bullet flagged (a) the `UnitList` setter's `string.Join(...).Fnv1aHash64()` and (b) the per-inbound
+`ConcurrentDictionary` rebuild + LINQ scans.
+
+(a) is **already gated**: the `UnitList` setter (and thus the hash) only runs when `UpdateUnitList` detects a real identity
+change — `UnitList.Count != newUnitList.Count`, a new key (`newUnitList.Any(u => !UnitList.ContainsKey(u.Key))`), or a changed
+`PlayerId`/`Name`/`Type` (lines 535-551). Value-only pushes (the common case during rapid editing) return `false` and never
+touch the hash.
+
+(b) The residual is a bounded `ConcurrentDictionary` rebuild (+ N tuples, N = total units ~8-60) and an `Any(...)` scan per
+inbound state, discarded on the no-change path. Eliminating it requires reworking the change-detection to compare against the
+existing `UnitList` before allocating — but `GameState`/`UpdateUnitList` is the most regression-prone code in the app (the
+recent identity-retention, double-hop, and unit-reappearance fixes all live here, and the method carries an explicit "Be
+careful about this optimization" warning). The reward (a small bounded allocation a few times/sec) does not justify the risk.
+Deliberately left as-is.
+## Sync-over-async: Index.razor:164 Connect() (NO-ACTION)
+
+**Item:** `Pages/Index.razor:164` calls `_formServer.Connect(credentials)` from `OnAfterRenderAsync` without awaiting; `Connect()` does sync Redis setup.
+
+**Investigation:**
+- `Index.OnAfterRenderAsync(firstRender)` does `var credentials = await _localStorage.GetUserCredentials();` then, if non-null, `_formServer.Connect(credentials)`.
+- `FormServer.Connect` -> `ResolverCommunicator.Connect` (void): sets `_playerName`, calls `Reset()`, then `_clientToServerCommunicator.Send(RequestNames.Connect, ...)`.
+- `Reset()` -> `TeardownCommunicator()` + `new ClientToServerCommunicator(...)`. The base `RedisCommunicator` constructor (RedisCommunicator.cs:78-79) does the blocking `ConnectionMultiplexer.Connect(_connectionString)` + `Subscribe()`.
+
+**Findings:**
+1. The "sync-over-async" label is inaccurate. `Connect()` is plain `void`; nothing is blocked-on (no `.Result`/`.Wait()` on a Task). It simply runs synchronously inline -- there is no Task being sync-waited, so the classic sync-over-async deadlock risk does not apply.
+2. Cannot convert the lifecycle method to the sync `OnAfterRender(bool)`: line 164 is a genuine `await _localStorage.GetUserCredentials()` (Blazored.LocalStorage JS interop, inherently async -- reading browser localStorage from a Server circuit has no synchronous equivalent). The async method is legitimate and necessary.
+3. The only real residual is the blocking `ConnectionMultiplexer.Connect` inside the synchronous Connect path. It is a ONE-TIME cost at login (not a per-render/per-edit recurring cost, which is this review's focus). If Redis is local it is negligible; the only downside is a briefly frozen circuit if Redis is slow/unreachable (rare).
+4. A proper async fix is disproportionately invasive: the blocking call lives in a CONSTRUCTOR in the shared `Api` project (`RedisCommunicator`), used by BOTH client and server (Orleans Silo constructs these too). Going async would require `ConnectAsync` + moving connection setup out of the ctor into an async init/factory, then cascading `async Task` up through `ResolverCommunicator.Connect` and `FormServer.Connect` -- touching the comm layer just refactored for the double-hop removal. High regression risk for a one-time operation.
+
+**Decision (user-approved): NO-ACTION.** The item is a mischaracterization (no Task is sync-waited) plus a one-time blocking-connect whose proper fix is an invasive shared-comm-layer async refactor not justified by a once-per-login cost.
+## FormGameList.razor:50 sort + hidden FormServer re-rendering on every packet (FIXED via conditional render)
+
+**Item:** `FormGameList.razor:50` `OrderByDescending(...)` materialised via spread `[.. ...]` per `OnParametersSet`.
+
+**Investigation (the real issue was broader than the sort):**
+- `FormGameList` is used only inside `FormServer` (the connected-but-not-in-game lobby branch), receiving `Games="@_userStateController.GameEntries.Values.ToList()"`. The sort itself is over a handful of `GameEntry` rows -- trivial CPU.
+- KEY FINDING: `VisualStyleController.HideElement(bool)` returns only `"display:none"` (VisualStyleController.cs:18). It is a CSS hide, NOT a conditional (`@if`) removal. So while in-game, the whole `FormServer` subtree under `Index.razor:26` was still being rendered into the render tree and re-rendered on EVERY Index re-render (i.e. every inbound packet), even though invisible. `FormServer` has no `ShouldRender` override and is a child of `Index`, so it re-rendered whenever Index did. That meant the hidden lobby's `FormGameList` re-sorted the game list and rebuilt its table rows on every packet during gameplay -- pointless work on the hot path.
+
+**Fix (user-proposed conditional render; rubber-duck-reviewed, no blocking issues):**
+- `Index.razor:26-28`: replaced the CSS-hidden `<div style="@HideElement(IsConnectedToGame)">...<FormServer @ref="_formServer"/>...</div>` with a conditional block: `@if (!_userStateController.IsConnectedToGame) { <div class="resolver_div_componentcontainer"><FormServer @key="_userStateController.PlayerName"></FormServer></div> }`. While in-game, `FormServer` is now removed from the render tree entirely (not merely hidden), so it -- and the `FormGameList` sort/table -- are no longer rebuilt per packet.
+- Dropped the `@ref="_formServer"` coupling: `FormServer.Connect` and `FormServer.LeaveGame` are pure delegations to the injected `ResolverCommunicator` (FormServer.razor:86-89, 101-104), which `Index` already injects. So:
+  - Removed the `private FormServer _formServer;` field.
+  - `Index.razor:168` (OnAfterRenderAsync firstRender auto-connect): `_formServer.Connect(credentials)` -> `_resolverCommunicator.Connect(credentials)`.
+  - `Index.razor:200` (LeaveGame, called while in-game): `_formServer.LeaveGame()` -> `_resolverCommunicator.LeaveGame()`. This was the snag with a naive `@if` (the ref would be null in-game); calling the communicator directly avoids it.
+
+**Why safe:**
+- `FormServer` is now disposed when joining a game and recreated when leaving. `FormServer.Dispose()` unsubscribes `OnGameEntriesReceived`; `OnInitialized()` re-subscribes and calls `RefreshGameList()` (fetches only when `!IsConnectedToGame`) on return to lobby -- behaviorally correct (fresh game list on returning to lobby).
+- `JoinGame`/`Connect`/`LeaveGame` are synchronous void delegations with no pending continuation inside `FormServer`, so disposing it after `IsConnectedToGame` flips is fine.
+- `FormServer`'s own internal `<FormCredentials OnSubmit="@Connect">` login form is unchanged.
+- Build: 0 errors, same 12-warning baseline.
+
+**Payoff:** The entire hidden lobby subtree (connection header, game-list table, sort) is removed from the per-packet render path during gameplay, strictly better than micro-optimizing the sort. Net code reduction (removed a field + the @ref). NEEDS in-browser verification: login (auto-connect from stored credentials), lobby game-list display + sort order, join a game (lobby disappears), leave a game (lobby reappears with fresh list), password-protected join modal.

@@ -23,9 +23,10 @@
     </verbatim>
 </div>
 
-<div class="resolver_div_componentcontainer" style="@VisualStyleController.HideElement(_userStateController.IsConnectedToGame)">
-    <FormServer @key="_userStateController.PlayerName" @ref="_formServer"></FormServer>
-</div>
+@if (!_userStateController.IsConnectedToGame)
+{
+    <FormServer @key="_userStateController.PlayerName"></FormServer>
+}
 
 <ContainerTabSelector Enabled="@_userStateController.IsConnectedToGame" SelectedTab="@_selectedTab" TabNames="@_tabs" OnTabSelected="@SelectTab">
     <div class="resolver_div_tab resolver_style_alignright">
@@ -58,7 +59,6 @@
 
 @code
 {
-    private FormServer _formServer;
     private readonly List<string> _tabs = new() { "Data", "Dashboard", "AllUnits", "DamageReports", "Options" };
     private string _selectedTab = "Dashboard";
     private string _errorMessage;
@@ -165,7 +165,7 @@
 
             if (credentials != null)
             {
-                _formServer.Connect(credentials);
+                _resolverCommunicator.Connect(credentials);
             }
         }
     }
@@ -197,7 +197,7 @@
 
     private void LeaveGame()
     {
-        _formServer.LeaveGame();
+        _resolverCommunicator.LeaveGame();
     }
 
     public ValueTask DisposeAsync()
