@@ -28,7 +28,6 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 
 ## B7. Miscellaneous Blazor
 
-- **`_Host.cshtml:21` — `ServerPrerendered`** prerenders the entire app twice (once SSR, once when interactive starts). Since almost everything is conditional on `IsConnectedToGame`, prerender adds no value. Consider `Server` mode.
 - **`_Host.cshtml:15`** imports full Bootstrap but uses very little of it.
 - **`FormFiringSolution.razor:25`** keys on `_userStateController.UnitListHash` → entire combobox subtree invalidates on any unit add/remove. Could be parameter-driven instead.
 - **`FormNumberPickerDisplayOnly.razor:81`** invokes both `OnChanged.InvokeAsync(value)` and `OnChangedWithHint.InvokeAsync((Hint, value))` even when only one is wired — allocates a `ValueTuple` for nothing.

@@ -1074,3 +1074,25 @@ The two static tooltip target divs (Index.razor:58 `resolver_tooltip_paperdoll`,
 **ShouldRender guard considered and rejected as overengineering:** The user suggested a possible ShouldRender guard on FormOptions keyed on the options timestamps so it doesn't re-render while a player edits forces. But `ContainerTab` (ContainerTab.razor:3) wraps `@ChildContent` in `@if (TabIdentity == TabSelection && Enabled)` -- so FormOptions is ONLY in the render tree when the Options tab is actively selected. While a player edits forces they are on the Dashboard tab and FormOptions is not even instantiated. A guard would only save work in the narrow, transient window where a user sits on the Options tab while packets arrive, and the option subtree is small. Not worth the added complexity. The `@key` already rebuilds FormOptions cleanly when option timestamps change.
 
 **Decision: NO-ACTION.** The notification asymmetry is intentional/correct; the ShouldRender guard is overengineering given the tab gating.
+## B6. CommonData.GetSavedUnitNames / GetGameEntries hit Redis per render (NO-ACTION)
+
+**Item:** `GetSavedUnitNames` / `GetGameEntries` (CommonData.cs:430/446) hit the repository per render of components binding them inline as `Options="..."`.
+
+**Investigation:**
+- `GetSavedUnitNames` was ALREADY addressed in earlier B-part work (see entry above): FormUnitEntry snapshots it into `_savedUnitNames` in `ShowModalLoad()` (only when the Load modal opens), and FormData calls it only from the event-driven `RefreshDataList`, never a render path.
+- `GetGameEntries` (FormServer.razor:110) is called only from `RefreshGameList()`, whose ONLY caller is `FormServer.OnInitialized` (line 83). It is not in a render body or render-path method. So it runs exactly once per FormServer instantiation, to seed the initial lobby list.
+- The FormServer render body reads `_userStateController.GameEntries.Values` (an in-memory dictionary), not `GetGameEntries()`. Subsequent updates arrive via the inbound `GameEntries` server push (Index.razor:121), which writes the in-memory dict directly + InvokeStateChange -- no repository hit.
+- Additionally, FormServer is now only in the render tree when `!IsConnectedToGame` (the conditional-render change made earlier), so even its OnInitialized only runs in the lobby.
+
+**Decision: NO-ACTION.** Both methods are mischaracterized as "per render": GetSavedUnitNames already snapshotted, GetGameEntries called once at lobby init. This closes Part B6.
+## B7. _Host.cshtml render-mode ServerPrerendered -> Server (DONE)
+
+**Item:** `_Host.cshtml:21` uses `render-mode="ServerPrerendered"`, which renders the whole app twice (static prerender pass + interactive circuit pass). Since almost everything is gated on `IsConnectedToGame`, prerender adds no value.
+
+**Analysis:** With ServerPrerendered the component tree renders once as static HTML during the initial HTTP response, then a fresh instance renders again when the SignalR circuit connects (the prerendered instance is discarded). `Index.OnInitialized` (registers all the dispatcher handlers) thus runs for a throwaway prerender pass too. The pre-connection UI is just a login prompt (everything else is conditional on connection state), so the prerendered HTML is near-empty -- the faster-first-paint benefit of prerendering does not apply here.
+
+**Change:** `render-mode="ServerPrerendered"` -> `render-mode="Server"` (_Host.cshtml:21). The app now renders only once the interactive circuit is established, removing the throwaway prerender + init pass. Minor first-paint difference (brief blank/loading until the WebSocket connects).
+
+**Verification:** Build clean. Needs a browser hard-refresh check of initial load -> login -> connect.
+
+**Decision: DONE.**
