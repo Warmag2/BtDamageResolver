@@ -85,7 +85,7 @@ public class ResolverCommunicator : IDisposable
                 AuthenticationToken = _authenticationToken,
                 PlayerName = _playerName
             });
-        _clientToServerCommunicator = null;
+        TeardownCommunicator();
     }
 
     /// <summary>
@@ -326,7 +326,7 @@ public class ResolverCommunicator : IDisposable
         {
             if (dispose)
             {
-                _clientToServerCommunicator?.Stop();
+                TeardownCommunicator();
             }
 
             disposed = true;
@@ -364,7 +364,20 @@ public class ResolverCommunicator : IDisposable
 
     private void Reset()
     {
+        TeardownCommunicator();
         _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _connectionString, _dataHelper, _hubConnection, _playerName);
+    }
+
+    /// <summary>
+    /// Disposes the current client-to-server communicator (if any), releasing its Redis subscription and connection.
+    /// </summary>
+    private void TeardownCommunicator()
+    {
+        if (_clientToServerCommunicator != null)
+        {
+            _clientToServerCommunicator.Dispose();
+            _clientToServerCommunicator = null;
+        }
     }
 
     private void SendErrorMessage(string errorMessage)

@@ -59,6 +59,12 @@ public class Startup
         services.Configure<CircuitOptions>(options =>
         {
             options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromHours(1);
+
+            // Each retained disconnected circuit keeps its scoped Redis subscription alive and
+            // continues processing its game's messages, so this cap bounds background CPU as well
+            // as memory. Raised to 256 to allow many simultaneously-paused phone clients to reconnect
+            // to their existing circuit within the retention window.
+            options.DisconnectedCircuitMaxRetained = 256;
         })
         .Configure<HttpConnectionDispatcherOptions>(options =>
         {

@@ -23,13 +23,6 @@ Many findings are individually minor but compound on weak ARM hardware where eve
 ## B1. Render performance
 
 - **No `ShouldRender()` overrides** anywhere except `FormNumber.razor:43` (`!_isBeingEdited`) and (now) `ComponentPlayerState`. Remaining components still re-render on every event/parameter change. Add render guards to the editable forms (`FormWeaponEntry`, `FormFiringSolution`, all `FormPaperDoll*` (10 files), `FormDamageReport`, `FormUnitEntry`). _(Read-only All Units path — `ComponentGameState`/`ComponentPlayerState`/`ComponentUnit`/`ComponentWeaponEntry` — done.)_
-## B2. DOM / HTML structure (excessive nesting)
-
-- **Wrapper-div proliferation.** Every cell wrapped in `resolver_div_componentcontainer > resolver_div_componentrow > resolver_div_componentcell`, often 5-7 deep. Browser layout & style recalc scale with node count; hits ARM hard.
-- **Identical markup repeated rather than sub-componentised:**
-  - The `componentrow > componentcell + componentcell` label/value pattern is repeated 80+ times — should be a `<LabelValue>` component.
-- **`MainLayout` adds yet another wrapping div** (`<div class="resolver_content">`).
-- **`ContainerReorderableList`** wraps every item in `<div class="reorderableitem">` and, if `ShowDragHandle`, also in `componentrow > draghandle + componentcell` — three extra divs per item plus handlers.
 
 ## B3. SignalR / Blazor Server specifics
 
@@ -37,12 +30,9 @@ Many findings are individually minor but compound on weak ARM hardware where eve
   - `Communication/ClientToServerCommunicator.cs:37,45,53,61,69,77,85,93` — all `_hubConnection.SendAsync(...)`.
   - `Hubs/ClientHub.cs:17,23,29,35,41,47,53,59` — forwarder that just relays to `Clients.Client(connectionId)`.
   - The whole `ClientHub` could be removed and the Redis subscriber could directly notify the Blazor circuit (e.g., via the singleton `UserStateController`/event aggregator).
-- **Per-circuit Redis subscription churn / leak.** `ResolverCommunicator.Reset()` (`ResolverCommunicator.cs:368`) constructs a new `ClientToServerCommunicator` per Connect. `Disconnect()` (line 89) just nulls the reference without calling `Stop()` → previous Redis subscription leaks.
-- **Drag/drop handlers per item over SignalR.** `ContainerReorderableList` attaches six handlers per item (`@ondragstart`, `@ondragenter`, `@ondragend`, `@ondrop`, plus `:stopPropagation`). On Blazor Server, `@ondragenter` fires repeatedly during drag — each is a SignalR roundtrip. With 100+ items per page this floods the connection.
 - **Per-render tooltip string.** The `data-tooltip-content` tooltip string is recomputed every render and inlined as a DOM attribute (`FormWeaponEntry.razor:13,18` and paper-doll regions).
 - **Large SignalR payloads.** `Startup.cs:67-68,81` sets `ApplicationMaxBufferSize`/`TransportMaxBufferSize`/`MaximumReceiveMessageSize` = 1 MB → implies large payloads. The whole `GameState` is serialized on every player update; combined with key=timestamp invalidating subtrees, every update re-renders a huge chunk of DOM and ships large diffs.
 - **`_dataHelper.Unpack<>` runs synchronously on the circuit thread** (`Pages/Index.razor:106, 112, 120, 126, 132, 138, 144`). Heavy decompress + JSON deserialize blocks the circuit, freezing UI on ARM.
-- **`DisconnectedCircuitRetentionPeriod = 1 hour`** (`Startup.cs:63`) — keeps server memory holding stale circuits for an hour; pressure on small ARM hosts.
 
 ## B4. C# code in components
 

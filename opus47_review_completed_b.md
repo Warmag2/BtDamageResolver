@@ -415,3 +415,142 @@ appeared on all six modals, which is invalid duplicate-id HTML) and is not refer
 Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings). Visual verification
 recommended: open each dialog (unit Delete/Save/Load, Tools Kick/Move Unit, Server password-protected join)
 and confirm the header title, body, primary action, and both close paths (× and Cancel) behave as before.
+
+## B2. LabelValue component (label/value pattern repeated 80+ times) — ASSESSED, NO CHANGE
+
+Considered extracting the `componentrow > componentcell + componentcell` label/value pattern into a shared
+`<LabelValue>` component. Decided against it — it provides no performance benefit and was judged not to
+improve readability.
+
+Reasoning (Blazor Server specifics):
+- **No DOM reduction.** `<LabelValue>` would render the identical `componentrow > cell + cell` markup, so
+  node count is unchanged. The B2 "excessive nesting" concern is about browser layout/style-recalc scaling
+  with node count; this extraction does not reduce nodes and therefore yields nothing there.
+- **Slightly higher render cost, not lower.** Each child component is a render boundary with its own
+  `ComponentState`, lifecycle, and per-render parameter-diffing. Replacing 80+ inline fragments with 80+
+  component instances adds bookkeeping/allocations; inline markup is part of the parent render tree and is
+  cheaper.
+- **The only win would be a `ShouldRender()` skip** on unchanged rows, but it does not pay off here: these
+  rows live inside components that already churn via `@key`; a row whose value changed re-renders anyway; and
+  Blazor still parameter-diffs each child to decide to skip, which for a 3-node fragment costs more than it
+  saves. It would also require capturing previous parameter values (added complexity for no measurable gain).
+
+The dominant performance levers in this app are elsewhere (whole-`GameState` serialization + `@key` subtree
+invalidation, already tracked separately), not trivial label/value pairs. No code change made.
+
+## B2. MainLayout wrapping div — ALREADY RESOLVED (no action needed)
+
+The review flagged `MainLayout` adding an extra `<div class="resolver_content">` wrapper. This no longer
+exists: `Shared/MainLayout.razor` is now just `@inherits LayoutComponentBase` + `@Body`, and the
+`resolver_content` class is absent from the entire project (grep of `wwwroot` and all components is clean).
+The wrapper was removed in earlier work, so there is nothing left to do. No code change made.
+
+## B2. ContainerReorderableList wrapper divs — ASSESSED, NO CHANGE (functional)
+
+The review flagged `ContainerReorderableList` wrapping every item in an extra `reorderableitem` div plus, when
+`ShowDragHandle` is set, a `componentrow > draghandle + componentcell`. Assessed against the current
+implementation (which has since been reworked with a sentinel drop-target and drag-over states):
+
+- `resolver_div_reorderableitem` is **functional, not gratuitous** — it is the draggable/drop-target element
+  carrying all the `@ondragstart/@ondragenter/@ondragend/@ondrop` handlers and the `--dropover` visual state.
+  It cannot be removed without losing drag-and-drop.
+- The non-handle path renders `@ItemTemplate` directly inside that single wrapper — already minimal.
+- The `componentrow > draghandle + cell` only appears in `ShowDragHandle` mode and exists to lay out the ⠿
+  drag handle beside the content; the handle is the drag trigger in that mode, so it is required for the UX.
+
+The only further reduction would be merging the grid-row layout onto `resolver_div_reorderableitem` itself to
+drop one div in handle mode — but that element already juggles `draggable`, the drag handlers, the
+`--dropover` modifier, `ItemClass`, and `ItemClassSelector`; overlaying `display:grid` row semantics risks the
+drag/drop visuals. Not worth the regression risk for one saved div in one mode.
+
+Used in 3 places (FormGameState unit list + FormUnitEntry weapon bays with handles; FormWeaponBay weapons
+without). The higher-value concern for this component — per-item drag handlers each causing a SignalR
+round-trip during drag — is tracked separately under B3 and is unrelated to DOM nesting. No code change made.
+
+## B2. Wrapper-div proliferation (general) — COVERED BY SPECIFIC ITEMS
+
+The umbrella concern (`resolver_div_componentcontainer > resolver_div_componentrow > resolver_div_componentcell`
+nesting 5-7 deep) was addressed by working through every concrete instance under B2 rather than a broad
+sweep, which the subgrid CSS system actively resists (`.resolver_div_componentgroup > *:not(.resolver_div_componentrow)`
+forces full-width, blocking a naive auto-flow flatten without shared CSS changes).
+
+Concrete instances resolved/assessed:
+- ComponentUnit — flattened to `componentgroup > componentrow > cell` (committed and tested).
+- FormWeaponEntry — already emits direct grid cells (no container/row wrappers).
+- FormUnitEntry — assessed already conforming to the tested ComponentUnit pattern; deeper flatten declined.
+- 10 FormPaperDoll* variants — consolidated into the shared `FormPaperDollRegion`, dropping unused `<g>` wrappers.
+- 6 modal blocks — consolidated into `ContainerModal`.
+- LabelValue extraction — assessed; no DOM reduction and a net render-cost increase, so declined.
+- MainLayout `resolver_content` wrapper — already removed in earlier work.
+- ContainerReorderableList wrappers — functional (drag/drop + handle layout), not removable.
+
+No further broad DOM surgery is warranted: the remaining nesting is the deliberate subgrid layout system, and
+flattening it wholesale would require shared CSS changes with broad regression risk for negligible node savings.
+Closed as covered.
+
+## B3. Per-circuit Redis subscription churn / leak — FIXED
+
+`ResolverCommunicator` opened a fresh `ClientToServerCommunicator` on every Connect (`Reset()` calls `new`,
+and the base `RedisCommunicator` constructor immediately `Start()`s — opening a `ConnectionMultiplexer` and a
+Redis subscription). The old communicator was never released: `Reset()` overwrote the field without disposing
+the previous instance, and `Disconnect()` simply set it to `null`. Each connect/disconnect cycle therefore
+leaked a live Redis connection plus subscription that kept receiving and processing messages. Even the
+class-level `Dispose` only called `Stop()` (which `CloseAsync()`es but does not dispose the multiplexer).
+
+Fix (`Communication/ResolverCommunicator.cs`): added a null-safe `TeardownCommunicator()` helper that
+`Dispose()`s the current communicator (the base `Dispose` unsubscribes and disposes the multiplexer) and
+nulls the field. It is now called:
+- in `Reset()` before constructing the replacement communicator,
+- in `Disconnect()` (replacing the bare `_clientToServerCommunicator = null;`), after the disconnect request is sent,
+- in `Dispose(bool)` (replacing the previous `Stop()` call, which left the multiplexer undisposed).
+
+`Dispose()` is used rather than `Stop()` because the old communicator is never restarted (a new instance is
+always created), and the base `Dispose` is null-guarded so it is safe to call even if already torn down.
+
+Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings).
+
+## B3. DisconnectedCircuitMaxRetained raised to 256 (+ deferred CPU fix documented) — DONE
+
+Set `options.DisconnectedCircuitMaxRetained = 256;` in the `Configure<CircuitOptions>` block
+(`Startup.cs`), alongside the existing `DisconnectedCircuitRetentionPeriod = 1 hour` (kept
+deliberately — phone users idle legitimately mid-game during movement/fire decisions).
+
+Key finding documented in the code comment: because `ResolverCommunicator` / `ClientToServerCommunicator`
+/ `HubConnection` / `UserStateController` are **scoped** (`Startup.cs:103-107`), a retained disconnected
+circuit keeps its Redis subscription alive and continues deserializing + forwarding its game's messages to a
+dead connection. So this cap bounds background **CPU**, not just memory. User accepted the cost (will scale
+hardware if user count grows); a full reload (Ctrl-F5) sidesteps it by creating a fresh circuit that re-requests
+game state.
+
+The proper "make retention CPU-free" fix (a `CircuitHandler` that pauses the Redis subscription on
+disconnect and resumes + refetches state on reconnect) is deferred and captured as a standalone task in
+`task_disconnected_circuit_redis.md` — it is regression-prone (stale-state-on-reconnect) and overlaps the
+double-hop architecture item, so it will be attempted later.
+
+Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings).
+
+## B3. Drag/drop dragenter SignalR flooding — FIXED
+
+`ContainerReorderableList` drove its drag visuals (`--dragging` on the container, `--dropover` on the
+hovered item/sentinel) from **server** state (`_draggedIndex`/`_dragOverIndex`/`_dragOverSentinel`).
+Every `@ondragenter` was therefore a SignalR roundtrip plus a full-list re-render to move the highlight, and
+because `dragenter` bubbles from the child elements inside each item it re-fired many times for the same
+index. With 100+ items (e.g. weapon lists) this floods the circuit on ARM.
+
+Fix: the drag *visuals* are now handled entirely client-side by a delegated, capture-phase IIFE in
+`wwwroot/js/Resolver.js` (same delegation pattern as the tooltip handler). It tracks a single
+`activeContainer` (so nested reorderable lists — the unit list contains per-unit weapon lists — never clobber
+each other), adds `--dragging` on `dragstart`, moves the scoped `--dropover` on `dragenter`, and clears
+everything on `drop`/`dragend`. Listeners use the **capture** phase so the existing
+`@ondragstart/@ondragend/@ondrop :stopPropagation` modifiers (needed for the nested-list drop logic) cannot
+block them.
+
+`ContainerReorderableList.razor` now keeps only the data operations on the server: `@ondragstart` →
+`StartDrag` (records source index), `@ondrop` → `Drop` (reorders using server `_draggedIndex` + captured
+target index), `@ondragend` → `CancelDrag`. The `@ondragenter`/`@ondragleave` handlers, the
+`--dragging`/`--dropover` class bindings, and the `_dragOverIndex`/`_dragOverSentinel` fields +
+`SetDragOver`/`SetDragOverSentinel` methods were removed. Per whole drag, roundtrips drop from
+O(items×children crossed) to exactly dragstart + drop (+ dragend). Reorder logic is unchanged.
+
+Build: `dotnet build` of BlazorServer succeeds (0 errors, 12 pre-existing warnings). Visual drag/drop
+behavior to be confirmed by the user in-browser.

@@ -1,15 +1,13 @@
 @typeparam TItem
 
-<div class="resolver_div_reorderablelistcontainer @ContainerClass @(_draggedIndex.HasValue ? "resolver_div_reorderablelistcontainer--dragging" : string.Empty)" ondragover="event.preventDefault();">
+<div class="resolver_div_reorderablelistcontainer @ContainerClass" ondragover="event.preventDefault();">
     @for (var i = 0; i < Items.Count; i++)
     {
         var capturedIndex = i;
-        <div class="resolver_div_reorderableitem @(ShowDragHandle ? string.Empty : "draggable") @ItemClass @(_dragOverIndex == capturedIndex ? "resolver_div_reorderableitem--dropover" : string.Empty) @(ItemClassSelector?.Invoke(Items[capturedIndex]) ?? string.Empty)"
+        <div class="resolver_div_reorderableitem @(ShowDragHandle ? string.Empty : "draggable") @ItemClass @(ItemClassSelector?.Invoke(Items[capturedIndex]) ?? string.Empty)"
              draggable="@(ShowDragHandle ? "false" : "true")"
              @ondragstart="() => StartDrag(capturedIndex)"
              @ondragstart:stopPropagation="true"
-             @ondragenter="() => SetDragOver(capturedIndex)"
-             @ondragenter:stopPropagation="true"
              @ondragend="CancelDrag"
              @ondragend:stopPropagation="true"
              @ondrop="() => Drop(capturedIndex)"
@@ -33,11 +31,7 @@
             }
         </div>
     }
-    <div class="resolver_div_reorderablesentinel @(_dragOverSentinel ? "resolver_div_reorderablesentinel--dropover" : string.Empty)"
-         @ondragenter="SetDragOverSentinel"
-         @ondragenter:stopPropagation="true"
-         @ondragleave="() => _dragOverSentinel = false"
-         @ondragleave:stopPropagation="true"
+    <div class="resolver_div_reorderablesentinel"
          @ondrop="() => Drop(Items.Count)"
          @ondrop:stopPropagation="_draggedIndex.HasValue"
          ondragover="event.preventDefault();">
@@ -47,8 +41,6 @@
 @code
 {
     private int? _draggedIndex;
-    private int? _dragOverIndex;
-    private bool _dragOverSentinel;
 
     [Parameter]
     public IList<TItem> Items { get; set; }
@@ -74,33 +66,11 @@
     private void StartDrag(int index)
     {
         _draggedIndex = index;
-        _dragOverIndex = null;
-        _dragOverSentinel = false;
-    }
-
-    private void SetDragOver(int index)
-    {
-        if (_draggedIndex.HasValue)
-        {
-            _dragOverIndex = index;
-            _dragOverSentinel = false;
-        }
-    }
-
-    private void SetDragOverSentinel()
-    {
-        if (_draggedIndex.HasValue)
-        {
-            _dragOverIndex = null;
-            _dragOverSentinel = true;
-        }
     }
 
     private void CancelDrag()
     {
         _draggedIndex = null;
-        _dragOverIndex = null;
-        _dragOverSentinel = false;
     }
 
     private void Drop(int targetIndex)
@@ -122,7 +92,5 @@
         }
 
         _draggedIndex = null;
-        _dragOverIndex = null;
-        _dragOverSentinel = false;
     }
 }
