@@ -1,11 +1,10 @@
-﻿namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Enums
+﻿namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Enums;
+
+public enum ResolverTab
 {
-    public enum ResolverTab
-    {
-        Data,
-        Dashboard,
-        AllUnits,
-        DamageReports,
-        Options
-    }
+    Data,
+    Dashboard,
+    AllUnits,
+    DamageReports,
+    Options
 }

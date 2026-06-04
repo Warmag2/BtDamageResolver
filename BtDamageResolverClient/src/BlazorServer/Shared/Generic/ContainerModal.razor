@@ -9,13 +9,13 @@
             @ChildContent
         </div>
 
-        <div class="resolver_modal_footer">
-            @if (OnPrimary.HasDelegate)
-            {
+        @if (OnPrimary.HasDelegate)
+        {
+            <div class="resolver_modal_footer">
                 <button type="button" class="resolver_button" @onclick="OnPrimary">@PrimaryText</button>
-            }
-            <button type="button" class="resolver_button" @onclick="OnClose">Cancel</button>
-        </div>
+                <button type="button" class="resolver_button" @onclick="OnClose">Cancel</button>
+            </div>
+        }
     </div>
 </div>
 
