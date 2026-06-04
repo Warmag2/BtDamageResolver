@@ -51,6 +51,24 @@ services:
         condition: service_healthy
     restart: on-failure
 
+  # Data Exporter
+  resolverdataexporter:
+    profiles: ["export"]
+    container_name: resolverdataexporter
+    hostname: resolverdataexporter
+    image: resolverdataexporter:latest
+    environment:
+      DOTNET_ENVIRONMENT: Release
+      ConnectionStrings__Redis: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+    networks:
+      - resolvernet
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./export:/app/data
+    restart: on-failure
+
   # Grafana
   grafana:
     container_name: grafana
