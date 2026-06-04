@@ -66,8 +66,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./export:/app/data
-    restart: on-failure
+      - ../BtDamageResolver/data/unit:/app/data
 
   # Grafana
   grafana:
