@@ -27,7 +27,7 @@ else
 @code
 {
     private List<(int Turn, List<List<DamageReport>> ReportGroups)> _damageReportsToShow = new();
-    private (DateTime Container, bool HasPlayerState, bool ShowOther, bool ShowMovement, bool IsSpectator, int OwnUnitSignature, long GlobalUnitHash, bool OnlyNewest)? _lastSignature;
+    private (DateTime ContainerTimeStamp, bool? SpectatorStatus, bool ShowOther, bool ShowMovement, long GlobalUnitHash, bool OnlyNewest)? _lastSignature;
     private bool _shouldRender = true;
 
     [Parameter]
@@ -52,19 +52,15 @@ else
 
     // Single gate driving both the rebuild and ShouldRender. The signature captures everything the whole
     // subtree renders from: the (fixed-per-version) report set via DamageReportContainer.TimeStamp, the
-    // display options, the player's spectator status, the player's own unit ids (filter input, read live so
-    // local edits have no lag), and the global UnitListHash (other players' unit names/ids used in
-    // FormDamageReport headers). When nothing relevant changed we neither rebuild nor re-render the subtree.
+    // display options, the player's spectator status, and the global UnitListHash.
     private void RefreshState()
     {
         var playerState = _userStateController.PlayerState;
         var signature = (
             _userStateController.DamageReportContainer?.TimeStamp ?? default,
-            playerState is not null,
+            playerState?.IsSpectator,
             _userStateController.PlayerOptions?.ShowOtherPlayersDamageReports ?? false,
             _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false,
-            playerState?.IsSpectator ?? false,
-            ComputeUnitSignature(playerState),
             _userStateController.UnitListHash,
             OnlyNewest);
 
@@ -88,22 +84,6 @@ else
         }
 
         return false;
-    }
-
-    private static int ComputeUnitSignature(PlayerState playerState)
-    {
-        if (playerState?.UnitEntries == null)
-        {
-            return 0;
-        }
-
-        var hash = new HashCode();
-        foreach (var unit in playerState.UnitEntries)
-        {
-            hash.Add(unit.Id);
-        }
-
-        return hash.ToHashCode();
     }
 
     private void BuildDamageReportsToShow()

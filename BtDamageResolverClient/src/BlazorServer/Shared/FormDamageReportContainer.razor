@@ -45,12 +45,8 @@ else
     {
         _combined = _userStateController.PlayerOptions?.ShowCombinedDamageReports ?? false;
 
-        // Build the merged "combined" report once per distinct source set instead of on every render.
-        // The parent hands us a fresh List each render (damageReports.ToList()) but the DamageReport
-        // instances inside are the stable objects stored in DamageReportContainer, so a reference-wise
-        // SequenceEqual tells us whether the underlying set actually changed. Caching also keeps the
-        // combined DamagePaperDoll instance stable, which lets FormPaperDoll's ShouldRender guard skip
-        // redundant re-renders in combined mode.
+        // Recreation guard that allows FormPaperDoll's ShouldRender guard skip redundant re-renders in combined mode,
+        // as the combined damage report's identity is preserved if the source damage reports haven't changed.
         if (_mergedSource == null || !_mergedSource.SequenceEqual(DamageReports))
         {
             var combinedDamageReport = DamageReports[0].BlankCopy();
