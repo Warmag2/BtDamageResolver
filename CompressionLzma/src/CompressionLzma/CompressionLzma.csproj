@@ -6,11 +6,16 @@
     <AssemblyName>SevenZip.Compression.LZMA</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>A small nuget package containing the LZMA compression and decompression files from 7-Zip libraries and accompanied with a simple in-memory compression helper class for simplified usage.</Description>
-	<Version>0.0.14</Version>
+	<Version>0.0.15</Version>
     <Copyright>Igor Pavlov</Copyright>
     <Authors>Igor Pavlov</Authors>
     <Company />
     <Product>7-Zip</Product>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>
