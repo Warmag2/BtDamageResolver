@@ -15,15 +15,6 @@ internal class ExpressionTests
     private const decimal Epsilon = 0.000000000001m;
 
     /// <summary>
-    /// Test setup.
-    /// </summary>
-    [SetUp]
-    public void Setup()
-    {
-        // Nothing to be done
-    }
-
-    /// <summary>
     /// Test for true token validity.
     /// </summary>
     /// <param name="input">The token to test.</param>

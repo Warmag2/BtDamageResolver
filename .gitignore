@@ -160,8 +160,5 @@ __pycache__/
 # Docker-Compose environment
 infra/.env
 
-# Possible sensitive resource files
-infra/dpkeys/
-
 # Debug settings containing password data
 *.Debug.json

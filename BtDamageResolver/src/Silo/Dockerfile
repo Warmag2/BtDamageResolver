@@ -4,7 +4,7 @@ WORKDIR /app
 
 FROM resolversdk:latest AS build
 WORKDIR /build
-COPY ["src/", "src/"]
+COPY ["BtDamageResolver/src/", "src/"]
 WORKDIR "/build/src/Silo"
 RUN dotnet publish "Silo.csproj" -c Release -o /app/publish
 

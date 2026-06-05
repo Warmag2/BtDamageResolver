@@ -141,17 +141,6 @@ internal static class Program
                         options.NumMissedTableIAmAliveLimit = 1;
                         options.NumVotesForDeathDeclaration = 1;
                     })
-                    .Configure<SiloMessagingOptions>(options =>
-                    {
-                        options.MaxRequestProcessingTime = TimeSpan.FromSeconds(15);
-                        options.SystemResponseTimeout = TimeSpan.FromSeconds(15);
-                    })
-                    .Configure<MessagingOptions>(options =>
-                    {
-                        options.DropExpiredMessages = true;
-                        options.ResponseTimeout = TimeSpan.FromSeconds(15);
-                        options.ResponseTimeoutWithDebugger = TimeSpan.FromMinutes(15);
-                    })
                     .UseAdoNetClustering(options =>
                     {
                         options.Invariant = "Npgsql";

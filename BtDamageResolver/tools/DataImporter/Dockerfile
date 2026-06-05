@@ -3,15 +3,14 @@ WORKDIR /app
 
 FROM resolversdk:latest AS build
 WORKDIR /build
-COPY ["src/", "src/"]
-COPY ["tools/", "tools/"]
+COPY ["BtDamageResolver/src/", "src/"]
+COPY ["BtDamageResolver/tools/", "tools/"]
 WORKDIR "/build/tools/DataImporter"
 RUN dotnet publish "DataImporter.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --chown=app:app --from=build /app/publish .
-COPY --chown=app:app ["data/", "data/"]
-COPY --chown=app:app importdata.sh .
+COPY --chown=app:app ["BtDamageResolver/data/", "data/"]
 USER app
-CMD ["sh", "importdata.sh"]
+CMD ["dotnet", "DataImporter.dll", "import", "-s", "*.json", "-f", "./data/"]

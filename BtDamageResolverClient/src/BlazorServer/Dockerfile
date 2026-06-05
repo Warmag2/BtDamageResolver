@@ -3,7 +3,7 @@ WORKDIR /app
 
 FROM resolversdk:latest AS build
 WORKDIR /build
-COPY ["src/", "src/"]
+COPY ["BtDamageResolverClient/src/", "src/"]
 WORKDIR "/build/src/BlazorServer"
 RUN dotnet publish "BlazorServer.csproj" -c Release -o /app/publish
 
@@ -12,4 +12,5 @@ WORKDIR /app
 COPY --chown=app:app --from=build /app/publish .
 RUN mkdir -p /app/dpkeys && chown app:app /app/dpkeys
 USER app
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "BlazorServer.dll"]

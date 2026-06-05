@@ -84,7 +84,6 @@ public class Startup
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
                 Environments.Production,
                 StringComparison.OrdinalIgnoreCase);
-            options.MaximumReceiveMessageSize = 1048576;
         });
         services.ConfigureJsonSerializerOptions();
         services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
