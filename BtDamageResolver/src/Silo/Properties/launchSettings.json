@@ -3,7 +3,7 @@
     "Silo": {
       "commandName": "Project",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "DEBUG"
+        "DOTNET_ENVIRONMENT": "Development"
       }
     }
   }

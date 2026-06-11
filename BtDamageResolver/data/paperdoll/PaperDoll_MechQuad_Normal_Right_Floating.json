@@ -1,5 +1,5 @@
 {
-  "Type": "Mech",
+  "Type": "MechQuad",
   "AttackType": "Normal",
   "Direction": "Right",
   "Rules": [ "FloatingCritical" ], 

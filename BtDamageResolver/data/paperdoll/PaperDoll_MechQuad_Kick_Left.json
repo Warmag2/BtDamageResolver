@@ -1,5 +1,5 @@
 {
-  "Type": "Mech",
+  "Type": "MechQuad",
   "AttackType": "Kick",
   "Direction": "Left",
   "LocationMapping": {

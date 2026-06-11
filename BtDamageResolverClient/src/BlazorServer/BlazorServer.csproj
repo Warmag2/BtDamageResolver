@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.461" />
-    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.461" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.462" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.462" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.8" />
   </ItemGroup>
 
@@ -18,7 +18,7 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="appsettings.Debug.json">
+    <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.Release.json">
