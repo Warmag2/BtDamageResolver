@@ -61,7 +61,7 @@ public class Startup
             // continues processing its game's messages, so this cap bounds background CPU as well
             // as memory. Raised to 256 to allow many simultaneously-paused phone clients to reconnect
             // to their existing circuit within the retention window.
-            options.DisconnectedCircuitMaxRetained = 256;
+            options.DisconnectedCircuitMaxRetained = 128;
         })
         .Configure<HttpConnectionDispatcherOptions>(options =>
         {
