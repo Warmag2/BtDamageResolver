@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
+using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -186,5 +188,26 @@ public abstract class LogicUnitMechBase : LogicUnit
         {
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Threat roll does not result in a critical hit"));
         }
+    }
+
+    /// <inheritdoc />
+    protected override AttackType TransformAttackType(ILogicUnit target, AttackType attackType, List<WeaponFeature> weaponFeatures)
+    {
+        // Mechs making melee attacks against crouched units do damage from a punch table
+        if ((weaponFeatures.Contains(WeaponFeature.MeleeKick) ||
+            weaponFeatures.Contains(WeaponFeature.MeleeCharge) ||
+            weaponFeatures.Contains(WeaponFeature.Melee))
+            && target.Unit.Stance == Stance.Crouch)
+        {
+            switch (target.Unit.Type)
+            {
+                case UnitType.Mech:
+                case UnitType.MechTripod:
+                case UnitType.MechQuad:
+                    return AttackType.Punch;
+            }
+        }
+
+        return attackType;
     }
 }

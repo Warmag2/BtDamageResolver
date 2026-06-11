@@ -3,8 +3,8 @@
   "AttackType": "Kick",
   "Direction": "Rear",
   "LocationMapping": {
-    "1": [ "RightLeg" ],
-    "2": [ "LeftLeg" ]
+    "1": [ "RearRightLeg" ],
+    "2": [ "RearLeftLeg" ]
   },
   "CriticalDamageMapping": {
     "1": "None",

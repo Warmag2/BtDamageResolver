@@ -118,6 +118,7 @@ public partial class LogicUnit
 
         var transformedAttackType = TransformAttackType(target, attackType, weaponFeatures);
 
+        // Infantry, BattleArmor and Buildings have no different locations to hit, so all directions are treated as front
         var transformedDirection = target.Unit.Type is UnitType.Infantry or UnitType.BattleArmor or UnitType.Building ? Direction.Front : direction;
 
         // Get alterative paperdolls based on rules

@@ -1,10 +1,10 @@
 {
   "Type": "Mech",
   "AttackType": "Kick",
-  "Direction": "Rear",
+  "Direction": "Front",
   "LocationMapping": {
-    "1": [ "RightLeg" ],
-    "2": [ "LeftLeg" ]
+    "1": [ "FrontRightLeg" ],
+    "2": [ "FrontLeftLeg" ]
   },
   "CriticalDamageMapping": {
     "1": "None",

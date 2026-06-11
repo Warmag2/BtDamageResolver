@@ -1,0 +1,32 @@
+{
+  "Type": "Mech",
+  "AttackType": "Normal",
+  "Direction": "Front",
+  "Rules": [ "FloatingCritical" ],
+  "LocationMapping": {
+    "2": [ "Reroll" ],
+    "3": [ "FrontRightLeg" ],
+    "4": [ "FrontRightLeg" ],
+    "5": [ "RearRightLeg" ],
+    "6": [ "RightTorso" ],
+    "7": [ "CenterTorso" ],
+    "8": [ "LeftTorso" ],
+    "9": [ "RearLeftLeg" ],
+    "10": [ "FrontLeftLeg" ],
+    "11": [ "FrontLeftLeg" ],
+    "12": [ "Head" ]
+  },
+  "CriticalDamageMapping": {
+    "2": "Critical",
+    "3": "None",
+    "4": "None",
+    "5": "None",
+    "6": "None",
+    "7": "None",
+    "8": "None",
+    "9": "None",
+    "10": "None",
+    "11": "None",
+    "12": "None"
+  }
+} 

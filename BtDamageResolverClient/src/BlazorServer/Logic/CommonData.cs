@@ -64,9 +64,19 @@ public class CommonData
         // Pre-bake lists used to generate options
         DictionaryUnitType = new List<UnitType>
         {
-            UnitType.Building, UnitType.AerospaceCapital, UnitType.AerospaceDropshipAerodyne, UnitType.AerospaceDropshipSpheroid, UnitType.AerospaceFighter, UnitType.BattleArmor,
-            UnitType.Infantry, UnitType.Mech, UnitType.VehicleTracked, UnitType.VehicleWheeled,
-            UnitType.VehicleHover, UnitType.VehicleVtol
+            UnitType.AerospaceCapital,
+            UnitType.AerospaceDropshipAerodyne,
+            UnitType.AerospaceDropshipSpheroid,
+            UnitType.AerospaceFighter,
+            UnitType.BattleArmor,
+            UnitType.Building,
+            UnitType.Infantry,
+            UnitType.Mech,
+            UnitType.MechQuad,
+            UnitType.VehicleHover,
+            UnitType.VehicleTracked,
+            UnitType.VehicleVtol,
+            UnitType.VehicleWheeled
         }.ToDictionary(u => u.ToString());
         MapMovementAmount = new Dictionary<string, int>
         {
