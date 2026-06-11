@@ -13,7 +13,7 @@
     "8": [ "CenterTorso" ],
     "9": [ "LeftTorso" ],
     "10": [ "FrontLeftLeg" ],
-    "11": [ "FrontRightLeg" ],
+    "11": [ "RearLeftLeg" ],
     "12": [ "Head" ]
   },
   "CriticalDamageMapping": {
