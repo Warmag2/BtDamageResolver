@@ -217,4 +217,10 @@ public abstract class LogicUnitMechBase : LogicUnit
 
         return attackType;
     }
+
+    /// <inheritdoc />
+    protected override Location TransformLocation(Location location)
+    {
+        return Location.Structure;
+    }
 }

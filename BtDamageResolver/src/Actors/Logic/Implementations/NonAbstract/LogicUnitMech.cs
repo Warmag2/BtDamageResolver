@@ -31,10 +31,4 @@ public class LogicUnitMech : LogicUnitMechBase
     {
         return PaperDollType.Mech;
     }
-
-    /// <inheritdoc />
-    protected override Location TransformLocation(Location location)
-    {
-        return Location.Structure;
-    }
 }
