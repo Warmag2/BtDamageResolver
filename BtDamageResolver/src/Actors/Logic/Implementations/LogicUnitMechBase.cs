@@ -173,8 +173,15 @@ public abstract class LogicUnitMechBase : LogicUnit
 
         // Simulate arms and legs being able to be blown off
         if (criticalThreatRoll == 12 &&
-            (location == Location.LeftArm || location == Location.LeftLeg ||
-             location == Location.RightArm || location == Location.RightLeg))
+            (location == Location.Head ||
+             location == Location.LeftArm ||
+             location == Location.LeftLeg ||
+             location == Location.RightArm ||
+             location == Location.RightLeg ||
+             location == Location.FrontLeftLeg ||
+             location == Location.FrontRightLeg ||
+             location == Location.RearLeftLeg ||
+             location == Location.RearRightLeg))
         {
             damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())), transformedDamage, location));

@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Quad Mechs
 - HullDown cover for vehicles.
 - Div-based UI layout and much better draggable items.
 - Spectator mode.
@@ -88,6 +89,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- Head critical on a roll of 12 is actually BlownOff
 - Ammo displays were nonsense and separate between Artemis/Indirect, for example.
 - When starting up, user needs to wait for the import task to finish before using client.
 - Units were not displayed correctly on first page refresh after overdraw fixes.
