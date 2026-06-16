@@ -25,22 +25,50 @@ public class PlayerOptions
     public Dictionary<AttackLogEntryType, bool> AttackLogEntryVisibility { get; set; }
 
     /// <summary>
+    /// Should the attack log be visible by default.
+    /// </summary>
+    public bool DamageReportsCombine { get; set; }
+
+    /// <summary>
+    /// Should the attack log be visible by default.
+    /// </summary>
+    public bool DamageReportsShowAttackLog { get; set; }
+
+    /// <summary>
+    /// Should also damage reports concerning the unit's own movement be shown.
+    /// </summary>
+    /// <remarks>
+    /// This is simply clutter so it is disabled by default.
+    /// </remarks>
+    public bool DamageReportsShowMovement { get; set; }
+
+    /// <summary>
+    /// Should also damage reports concerning other players be displayed.
+    /// </summary>
+    public bool DamageReportsShowOtherPlayers { get; set; } = true;
+
+    /// <summary>
+    /// Should damage reports show a damage summary instead of an exact list.
+    /// </summary>
+    public bool DamageReportsShowSummary { get; set; } = true;
+
+    /// <summary>
     /// Should damage reports be expanded on the main screen by default.
     /// </summary>
     /// <remarks>
     /// <b>True</b> by default.
     /// </remarks>
-    public bool DashboardShowDamageReportsByDefault { get; set; } = true;
+    public bool DashboardShowDamageReports { get; set; } = true;
 
     /// <summary>
     /// Should the damage request generator be expanded on the main screen by default.
     /// </summary>
-    public bool DashboardShowDamageRequestsByDefault { get; set; }
+    public bool DashboardShowDamageRequests { get; set; }
 
     /// <summary>
     /// Should the tools be expanded by default.
     /// </summary>
-    public bool DashboardShowToolsByDefault { get; set; }
+    public bool DashboardShowTools { get; set; }
 
     /// <summary>
     /// Highlight fields on units, which have not been altered since last turn.
@@ -49,29 +77,6 @@ public class PlayerOptions
     /// <b>True</b> by default.
     /// </remarks>
     public bool HighlightUnalteredFields { get; set; } = true;
-
-    /// <summary>
-    /// Should the attack log be visible by default.
-    /// </summary>
-    public bool ShowAttackLogByDefault { get; set; }
-
-    /// <summary>
-    /// Should the attack log be visible by default.
-    /// </summary>
-    public bool ShowCombinedDamageReports { get; set; }
-
-    /// <summary>
-    /// Should also damage reports concerning the unit's own movement be shown.
-    /// </summary>
-    /// <remarks>
-    /// This is simply clutter so it is disabled by default.
-    /// </remarks>
-    public bool ShowMovementDamageReports { get; set; }
-
-    /// <summary>
-    /// Should also damage reports concerning other players be displayed.
-    /// </summary>
-    public bool ShowOtherPlayersDamageReports { get; set; } = true;
 
     /// <summary>
     /// The update timestamp.

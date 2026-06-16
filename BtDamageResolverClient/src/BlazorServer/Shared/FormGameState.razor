@@ -60,9 +60,9 @@
 
     protected override void OnInitialized()
     {
-        _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
-        _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
-        _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
+        _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowTools ?? false;
+        _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReports ?? true;
+        _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequests ?? false;
         _userStateController.OnGameStateUpdated += InvokeStateChange;
     }
 

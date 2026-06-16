@@ -183,12 +183,12 @@ public abstract class LogicUnitMechBase : LogicUnit
              location == Location.RearLeftLeg ||
              location == Location.RearRightLeg))
         {
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
+            damageReport.DamagePaperDoll.RecordDamage(damageOwnerId, new DamageEntry(inducingDamage, location, CriticalThreatType.Normal, CriticalDamageType.BlownOff));
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())), transformedDamage, location));
         }
         else if (criticalDamageTable.Mapping[criticalThreatRoll].Exists(c => c != CriticalDamageType.None))
         {
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
+            damageReport.DamagePaperDoll.RecordDamage(damageOwnerId, DamageEntry.CreateList(inducingDamage, location, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]));
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, transformedDamage, location));
         }
         else

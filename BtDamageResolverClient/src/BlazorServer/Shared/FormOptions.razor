@@ -20,9 +20,9 @@
         </h3>
 
         <div class="resolver_div_options">
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.DashboardShowToolsByDefault" OnChanged="@OnToolVisibilityChanged">Tools</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.DashboardShowDamageRequestsByDefault" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.DashboardShowDamageReportsByDefault" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.DashboardShowTools" OnChanged="@OnToolVisibilityChanged">Tools</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.DashboardShowDamageRequests" OnChanged="@OnDamageRequestVisibilityChanged">Damage requests</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.DashboardShowDamageReports" OnChanged="@OnDamageReportVisibilityChanged">Damage reports</FormCheckbox>
         </div>
 
         <h3 class="resolver_header">
@@ -30,10 +30,11 @@
         </h3>
 
         <div class="resolver_div_options">
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowAttackLogByDefault" OnChanged="@OnAttackLogVisibilityChanged">Attack logs</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowCombinedDamageReports" OnChanged="@OnCombinedDamageReportsVisibilityChanged">Combine damage reports when possible</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowMovementDamageReports" OnChanged="@OnMovementDamageReportsVisibilityChanged">Unit movement damage reports</FormCheckbox>
-            <FormCheckbox Checked="@_userStateController.PlayerOptions.ShowOtherPlayersDamageReports" OnChanged="@OnOtherPlayerDamageReportsVisibilityChanged">Other players' damage reports</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.DamageReportsShowAttackLog" OnChanged="@OnAttackLogVisibilityChanged">Attack logs</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.DamageReportsCombine" OnChanged="@OnCombinedDamageReportsVisibilityChanged">Combine damage reports when possible</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.DamageReportsShowMovement" OnChanged="@OnMovementDamageReportsVisibilityChanged">Unit movement damage reports</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.DamageReportsShowOtherPlayers" OnChanged="@OnOtherPlayerDamageReportsVisibilityChanged">Other players' damage reports</FormCheckbox>
+            <FormCheckbox Checked="@_userStateController.PlayerOptions.DamageReportsShowSummary" OnChanged="@OnDamageReportsSummaryChanged">Damage summary</FormCheckbox>
         </div>
 
         <h3 class="resolver_header">
@@ -124,63 +125,72 @@
 
     private void OnAttackLogVisibilityChanged(bool attackLogVisibility)
     {
-        if (_userStateController.PlayerOptions.ShowAttackLogByDefault != attackLogVisibility)
+        if (_userStateController.PlayerOptions.DamageReportsShowAttackLog != attackLogVisibility)
         {
-            _userStateController.PlayerOptions.ShowAttackLogByDefault = attackLogVisibility;
+            _userStateController.PlayerOptions.DamageReportsShowAttackLog = attackLogVisibility;
             NotifyPlayerOptionsChanged();
         }
     }
 
     private void OnCombinedDamageReportsVisibilityChanged(bool combinedDamageReportsVisibility)
     {
-        if (_userStateController.PlayerOptions.ShowCombinedDamageReports != combinedDamageReportsVisibility)
+        if (_userStateController.PlayerOptions.DamageReportsCombine != combinedDamageReportsVisibility)
         {
-            _userStateController.PlayerOptions.ShowCombinedDamageReports = combinedDamageReportsVisibility;
+            _userStateController.PlayerOptions.DamageReportsCombine = combinedDamageReportsVisibility;
             NotifyPlayerOptionsChanged();
         }
     }
 
     private void OnToolVisibilityChanged(bool toolVisibility)
     {
-        if (_userStateController.PlayerOptions.DashboardShowToolsByDefault != toolVisibility)
+        if (_userStateController.PlayerOptions.DashboardShowTools != toolVisibility)
         {
-            _userStateController.PlayerOptions.DashboardShowToolsByDefault = toolVisibility;
+            _userStateController.PlayerOptions.DashboardShowTools = toolVisibility;
             NotifyPlayerOptionsChanged();
         }
     }
 
     private void OnDamageRequestVisibilityChanged(bool damageRequestVisibility)
     {
-        if (_userStateController.PlayerOptions.DashboardShowDamageRequestsByDefault != damageRequestVisibility)
+        if (_userStateController.PlayerOptions.DashboardShowDamageRequests != damageRequestVisibility)
         {
-            _userStateController.PlayerOptions.DashboardShowDamageRequestsByDefault = damageRequestVisibility;
+            _userStateController.PlayerOptions.DashboardShowDamageRequests = damageRequestVisibility;
             NotifyPlayerOptionsChanged();
         }
     }
 
     private void OnDamageReportVisibilityChanged(bool damageReportVisibility)
     {
-        if (_userStateController.PlayerOptions.DashboardShowDamageReportsByDefault != damageReportVisibility)
+        if (_userStateController.PlayerOptions.DashboardShowDamageReports != damageReportVisibility)
         {
-            _userStateController.PlayerOptions.DashboardShowDamageReportsByDefault = damageReportVisibility;
+            _userStateController.PlayerOptions.DashboardShowDamageReports = damageReportVisibility;
+            NotifyPlayerOptionsChanged();
+        }
+    }
+
+    private void OnDamageReportsSummaryChanged(bool damageReportsShowSummary)
+    {
+        if (_userStateController.PlayerOptions.DamageReportsShowSummary != damageReportsShowSummary)
+        {
+            _userStateController.PlayerOptions.DamageReportsShowSummary = damageReportsShowSummary;
             NotifyPlayerOptionsChanged();
         }
     }
 
     private void OnMovementDamageReportsVisibilityChanged(bool damageReportVisibility)
     {
-        if (_userStateController.PlayerOptions.ShowMovementDamageReports != damageReportVisibility)
+        if (_userStateController.PlayerOptions.DamageReportsShowMovement != damageReportVisibility)
         {
-            _userStateController.PlayerOptions.ShowMovementDamageReports = damageReportVisibility;
+            _userStateController.PlayerOptions.DamageReportsShowMovement = damageReportVisibility;
             NotifyPlayerOptionsChanged();
         }
     }
 
     private void OnOtherPlayerDamageReportsVisibilityChanged(bool damageReportVisibility)
     {
-        if (_userStateController.PlayerOptions.ShowOtherPlayersDamageReports != damageReportVisibility)
+        if (_userStateController.PlayerOptions.DamageReportsShowOtherPlayers != damageReportVisibility)
         {
-            _userStateController.PlayerOptions.ShowOtherPlayersDamageReports = damageReportVisibility;
+            _userStateController.PlayerOptions.DamageReportsShowOtherPlayers = damageReportVisibility;
             NotifyPlayerOptionsChanged();
         }
     }

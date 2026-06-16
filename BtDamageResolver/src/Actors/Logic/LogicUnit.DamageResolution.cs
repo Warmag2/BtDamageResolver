@@ -30,7 +30,7 @@ public partial class LogicUnit
             // Unfortunately we still have to do transformations at this point, as certain locations and armor types receive damage differently
             var transformedDamage = TransformDamageAmountBasedOnLocation(damageReport, damageOwnerId, location, damagePacket.Damage);
 
-            damageReport.DamagePaperDoll.RecordDamage(location, damageOwnerId, transformedDamage);
+            damageReport.DamagePaperDoll.RecordDamage(damageOwnerId, new DamageEntry(transformedDamage, location));
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Damage, damageOwnerId, transformedDamage, location));
 
             foreach (var specialDamageEntry in damagePacket.SpecialDamageEntries)
@@ -64,7 +64,7 @@ public partial class LogicUnit
                                 // Critical damage threats coming from special damage (AP Ammo, Retractable Blade) never do multiple critical effects. Take the first.
                                 // Direct critical damage threats should always succeed, regardless of damage threshold. Give a very high damage amount.
                                 var criticalDamageType = criticalDamageTable.Mapping[specialDamageEntryCriticalThreatRoll][0];
-                                damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, damagePacket.Damage, CriticalThreatType.Normal, criticalDamageType);
+                                damageReport.DamagePaperDoll.RecordDamage(damageOwnerId, new DamageEntry(damagePacket.Damage, location, CriticalThreatType.Normal, criticalDamageType));
                                 damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, criticalDamageType.ToString(), 0, location));
                             }
                             else
@@ -74,7 +74,7 @@ public partial class LogicUnit
 
                             break;
                         default:
-                            damageReport.DamagePaperDoll.RecordSpecialDamage(location, damageOwnerId, specialDamageEntry);
+                            damageReport.DamagePaperDoll.RecordDamage(damageOwnerId, new DamageEntry(int.Parse(specialDamageEntry.Data), location, specialDamageEntry.Type));
                             damageReport.Log(new AttackLogEntry(AttackLogEntryType.SpecialDamage, damageOwnerId, specialDamageEntry.Type.ToString(), int.Parse(specialDamageEntry.Data), location));
                             break;
                     }

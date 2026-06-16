@@ -43,7 +43,7 @@ else
 
     protected override void OnParametersSet()
     {
-        _combined = _userStateController.PlayerOptions?.ShowCombinedDamageReports ?? false;
+        _combined = _userStateController.PlayerOptions?.DamageReportsCombine ?? false;
 
         // Recreation guard that allows FormPaperDoll's ShouldRender guard skip redundant re-renders in combined mode,
         // as the combined damage report's identity is preserved if the source damage reports haven't changed.

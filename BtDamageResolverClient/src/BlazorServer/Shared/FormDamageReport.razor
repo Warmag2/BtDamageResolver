@@ -183,7 +183,7 @@
 
     protected override void OnInitialized()
     {
-        _attackLogVisible = _userStateController.PlayerOptions?.ShowAttackLogByDefault ?? false;
+        _attackLogVisible = _userStateController.PlayerOptions?.DamageReportsShowAttackLog ?? false;
         _logLineVisibility = _userStateController.GetAttackLogEntryVisibilityCopy();
     }
 
@@ -192,7 +192,7 @@
         if (!ReferenceEquals(_lastSummedDamageReport, DamageReport))
         {
             _lastSummedDamageReport = DamageReport;
-            _totalDamageToTarget = DamageReport.DamagePaperDoll.DamageCollection.SelectMany(dc => dc.Value.SelectMany(l => l.Value)).Sum();
+            _totalDamageToTarget = DamageReport.DamagePaperDoll.DamageCollection.SelectMany(dc => dc.Value).Where(dc => !dc.IsCritical && !dc.IsSpecial).Sum(dc => dc.DamageAmount);
         }
     }
 

@@ -95,7 +95,7 @@ public abstract class LogicUnitAerospace : LogicUnit
         if (criticalThreatRoll > 7)
         {
             var aerospaceCriticalHitRoll = ResolverRandom.D26();
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]);
+            damageReport.DamagePaperDoll.RecordDamage(damageOwnerId, DamageEntry.CreateList(inducingDamage, location, CriticalThreatType.DamageThreshold, criticalDamageTable.Mapping[aerospaceCriticalHitRoll]));
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, damageOwnerId, "Aerospace critical hit roll", aerospaceCriticalHitRoll));
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, string.Join(", ", criticalDamageTable.Mapping[aerospaceCriticalHitRoll].Select(c => c.ToString())), transformedDamage, location));
         }

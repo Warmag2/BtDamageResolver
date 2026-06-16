@@ -59,8 +59,8 @@ else
         var signature = (
             _userStateController.DamageReportContainer?.TimeStamp ?? default,
             playerState?.IsSpectator,
-            _userStateController.PlayerOptions?.ShowOtherPlayersDamageReports ?? false,
-            _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false,
+            _userStateController.PlayerOptions?.DamageReportsShowOtherPlayers ?? false,
+            _userStateController.PlayerOptions?.DamageReportsShowMovement ?? false,
             _userStateController.UnitListHash,
             OnlyNewest);
 
@@ -88,8 +88,8 @@ else
 
     private void BuildDamageReportsToShow()
     {
-        var showOtherPlayers = _userStateController.PlayerOptions?.ShowOtherPlayersDamageReports ?? false;
-        var showMovement = _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false;
+        var showOtherPlayers = _userStateController.PlayerOptions?.DamageReportsShowOtherPlayers ?? false;
+        var showMovement = _userStateController.PlayerOptions?.DamageReportsShowMovement ?? false;
         var filtered = new SortedDictionary<int, List<DamageReport>>();
 
         if (!_userStateController.DamageReportContainer.IsEmpty())

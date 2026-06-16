@@ -3,7 +3,7 @@
 
 <div class="resolver_div_paperdoll_image_trooper">
     @{
-        _totalDamage = DamageReport.DamagePaperDoll.DamageCollection.ContainsKey(Location.Trooper) ? DamageReport.DamagePaperDoll.DamageCollection[Location.Trooper].SelectMany(l => l.Value).Sum() : 0;
+        _totalDamage = FormPaperDoll.AnyDamage(Location.Trooper) ? FormPaperDoll.LocationDamages[Location.Trooper] : 0;
     }
     @for (int ii = 0; ii < DamageReport.InitialTroopers; ii++)
     {
