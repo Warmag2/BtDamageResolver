@@ -1,4 +1,5 @@
-﻿@using System.Globalization
+﻿@inherits BaseFaemiyahComponent
+@using System.Globalization
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
@@ -48,13 +49,18 @@
         }
     </div>
 
-    <div class="resolver_div_damagereport">
-        @if (_userStateController.PlayerOptions?.DamageReportsShowSummary ?? true)
+    <div class="resolver_div_damagereport clickable" @onclick="@OnSummaryToggle">
+        <div class="resolver_div_damagereporttoggleheader">
+            <span>@(_showSummary ? "Damage Summary" : "Damage detail")</span>
+            <span class="toggleicon">⇅</span>
+        </div>
+        @if (_showSummary)
         {
             @foreach (var location in DamagePaperDoll.Locations)
             {
-                var damageInLocation = LocationsWithDamage[location].Sum(odp => odp.DamageEntry.DamageAmount);
+                var damageInLocation = LocationsWithDamage[location].Where(odp => !odp.DamageEntry.IsCritical && !odp.DamageEntry.IsSpecial).Sum(odp => odp.DamageEntry.DamageAmount);
                 var criticalDamageEntries = LocationsWithDamage[location].Where(odp => odp.DamageEntry.IsCritical).Select(odp => odp.DamageEntry).ToList();
+                var specialDamageEntries = LocationsWithDamage[location].Where(odp => odp.DamageEntry.IsSpecial).Select(odp => odp.DamageEntry).ToList();
                 
                 <div class="damageentry">
                     <b>@location</b>
@@ -66,6 +72,12 @@
                         <br />
                         @(criticalDamageEntry.ToString())
                     }
+
+                    @foreach (var specialDamageEntry in specialDamageEntries)
+                    {
+                        <br />
+                        @(specialDamageEntry.ToString())
+                    }
                 </div>
             }
         }
@@ -74,9 +86,15 @@
             foreach (var (damageOwnerId, damageEntry) in DamagePaperDoll.DamageCollection.SelectMany(kvp => kvp.Value.Select(entity => (kvp.Key, entity))).ToList())
             {
                 <div class="damageentry">
-                    @DamageReport.FiringUnitNames[damageOwnerId]
-                    &emdash;
-                    @(damageEntry.ToString(true))
+                    @if (IsCombinedDamageReport)
+                    {
+                        @DamageReport.FiringUnitNames[damageOwnerId]
+                        <text>&mdash;</text>
+                    }
+
+                    <b>@damageEntry.Location</b>
+                    &mdash;
+                    @($"{damageEntry}")
                 </div>
             }
         }
@@ -92,7 +110,9 @@
 
     private DamagePaperDoll _lastRenderedPaperDoll;
     private DamageReport _lastRenderedDamageReport;
+    private bool _lastRenderedShowSummary;
     private bool _isCombinedDamageReport;
+    private bool _showSummary;
     private readonly Dictionary<Location, List<(Guid OwnerId, DamageEntry DamageEntry)>> _locationsWithDamage = new();
     private readonly Dictionary<Location, int> _locationDamages = new();
 
@@ -109,11 +129,13 @@
     protected override bool ShouldRender()
     {
         return !ReferenceEquals(_lastRenderedPaperDoll, DamagePaperDoll)
-            || !ReferenceEquals(_lastRenderedDamageReport, DamageReport);
+            || !ReferenceEquals(_lastRenderedDamageReport, DamageReport)
+            || _lastRenderedShowSummary != _showSummary;
     }
 
     protected override void OnParametersSet()
     {
+        _showSummary = _userStateController.PlayerOptions?.DamageReportsShowSummary ?? true;
         _isCombinedDamageReport = DamageReport.FiringUnitIds.Count > 1;
 
         _locationsWithDamage.Clear();
@@ -130,6 +152,7 @@
     {
         _lastRenderedPaperDoll = DamagePaperDoll;
         _lastRenderedDamageReport = DamageReport;
+        _lastRenderedShowSummary = _showSummary;
     }
 
     public bool AnyDamage(Location location)
@@ -179,5 +202,11 @@
         var white = decimal.ToInt32(Math.Clamp((damageScalingMax - scaledDamage * 2) / damageScalingMax, 0m, 1m)*255m).ToString("X2", NumberFormatInfo.InvariantInfo);
 
         return $"#{red}{white}{white}";
+    }
+
+    private void OnSummaryToggle()
+    {
+        _showSummary = !_showSummary;
+        InvokeStateChange();
     }
 }

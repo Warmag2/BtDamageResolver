@@ -5,7 +5,7 @@
     <RootNamespace>Faemiyah.BtDamageResolver.Api</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.Api</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.465</Version>
+    <Version>0.0.467</Version>
     <Description>API classes and interfaces for BtDamageResolver. Needed to connect to and interface with a cluster.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>

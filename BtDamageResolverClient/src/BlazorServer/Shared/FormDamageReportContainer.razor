@@ -14,14 +14,14 @@
         </div>
         @if (_combined)
         {
-            <FormDamageReport DamageReport=@_combinedDamageReport></FormDamageReport>
+            <FormDamageReport AllowDelete="false" DamageReport=@_combinedDamageReport></FormDamageReport>
         }
         else
         {
             <div class="resolver_div_damagereportgroupcontent">
                 @foreach (var damageReport in DamageReports)
                 {
-                    <FormDamageReport DamageReport=@damageReport></FormDamageReport>
+                    <FormDamageReport AllowDelete="true" DamageReport=@damageReport></FormDamageReport>
                 }
             </div>
         }
@@ -29,7 +29,7 @@
 }
 else
 {
-    <FormDamageReport DamageReport=@DamageReports[0]></FormDamageReport>
+    <FormDamageReport AllowDelete="true" DamageReport=@DamageReports[0]></FormDamageReport>
 }
 
 @code

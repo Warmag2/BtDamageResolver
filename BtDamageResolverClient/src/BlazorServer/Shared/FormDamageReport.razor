@@ -64,9 +64,12 @@
                 </b>
             </span>
         </div>
-        <div class="resolver_div_componentcell">
-            <button class="resolver_button resolver_button_delete" @onclick="Delete">X</button>
-        </div>
+        @if (AllowDelete)
+        {
+            <div class="resolver_div_componentcell">
+                <button class="resolver_button resolver_button_delete" @onclick="Delete">X</button>
+            </div>
+        }
     </div>
 
         <div class="resolver_div_componentrow">
@@ -177,6 +180,9 @@
     private bool _attackLogVisible;
     private int _totalDamageToTarget;
     private DamageReport _lastSummedDamageReport;
+
+    [Parameter]
+    public bool AllowDelete { get; set; } = true;
 
     [Parameter]
     public DamageReport DamageReport { get; set; }

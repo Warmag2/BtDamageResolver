@@ -68,6 +68,7 @@ a, .btn-link {
     --color_text_hover: #000000;
     --color_bg_hover_selected: #7080B1;
     --color_text_hover_selected: #FFFFFF;
+    --color_bg_clickable_hover: #EAF0FF;
     --color_bg_disabled: #D4D0C8;
     --color_text_disabled: #808080;
     --color_bg_disabled_selected: #8D8D8D;
@@ -970,6 +971,31 @@ a, .btn-link {
 
 .resolver_div_damagereport {
     padding: 0.5rem;
+}
+
+.resolver_div_damagereport.clickable {
+    cursor: pointer;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.resolver_div_damagereport.clickable:hover {
+    background-color: var(--color_bg_clickable_hover);
+}
+
+.resolver_div_damagereporttoggleheader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+    padding-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--color_outline_base);
+}
+
+.resolver_div_damagereporttoggleheader .toggleicon {
+    opacity: 0.6;
+    font-weight: normal;
 }
 
 .resolver_div_damagereport.damageentry { padding: 0.5rem; }

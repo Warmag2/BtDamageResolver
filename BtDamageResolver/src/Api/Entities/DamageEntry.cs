@@ -117,16 +117,6 @@ public class DamageEntry
     /// <inheritdoc />
     public override string ToString()
     {
-        return ToString(true);
-    }
-
-    /// <summary>
-    /// Print a comprehensive string representation of this damage entry, optionally including the location.
-    /// </summary>
-    /// <param name="includeLocation">Include location in the representation.</param>
-    /// <returns>The string representation of the damage entry.</returns>
-    public string ToString(bool includeLocation)
-    {
         if (IsCritical)
         {
             switch (CriticalType)
@@ -159,16 +149,16 @@ public class DamageEntry
         {
             if (DamageAmount != 0)
             {
-                return $"<b>{SpecialType}</b> &emdash; {DamageAmount}";
+                return $"{SpecialType} — {DamageAmount}";
             }
             else
             {
-                return $"<b>{SpecialType}</b>";
+                return $"{SpecialType}";
             }
         }
         else
         {
-            return includeLocation ? $"<b>{Location}</b> &emdash; {DamageAmount}" : $"{DamageAmount}";
+            return $"{DamageAmount}";
         }
     }
 }
