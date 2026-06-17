@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Individual damage list mode in addition to the damage summary (see player options)
 - Quad Mechs
 - HullDown cover for vehicles.
 - Div-based UI layout and much better draggable items.
