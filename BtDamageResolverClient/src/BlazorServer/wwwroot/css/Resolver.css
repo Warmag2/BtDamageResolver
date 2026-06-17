@@ -983,9 +983,8 @@ a, .btn-link {
 }
 
 .resolver_div_damagereporttoggleheader {
-    font-weight: bold;
-    text-transform: capitalize;
-    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
     padding-bottom: 0.2rem;
     margin-bottom: 0.25rem;
     border-bottom: 1px solid var(--color_outline_base);
