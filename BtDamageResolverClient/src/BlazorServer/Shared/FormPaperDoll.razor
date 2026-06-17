@@ -51,8 +51,7 @@
 
     <div class="resolver_div_damagereport clickable" @onclick="@OnSummaryToggle">
         <div class="resolver_div_damagereporttoggleheader">
-            <span>@(_showSummary ? "Damage Summary" : "Damage detail")</span>
-            <span class="toggleicon">⇅</span>
+            ⇅ &nbsp; @(_showSummary ? "Damage Summary" : "Damage detail")
         </div>
         @if (_showSummary)
         {

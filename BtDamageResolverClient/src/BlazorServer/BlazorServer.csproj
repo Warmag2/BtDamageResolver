@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.467" />
     <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.467" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.9" />
   </ItemGroup>
 
   <ItemGroup>
