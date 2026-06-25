@@ -1,0 +1,65 @@
+{
+    "Features": [
+        "CommandUnit",
+        "ImprovedCommunications",
+        "JettisonableWeapon",
+        "WeakHeadArmor"
+    ],
+    "JumpJets": 0,
+    "Sinks": 34,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 85,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER PPC"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Melee Kick"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Battlemaster BLR-3M-DC"
+}

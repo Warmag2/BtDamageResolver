@@ -1,0 +1,56 @@
+{
+    "Features": [
+        "EasyToMaintain",
+        "Rugged",
+        "StabilizedWeapons"
+    ],
+    "JumpJets": 0,
+    "Sinks": 14,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 65,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-10"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-10"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Crusader CRD-4K"
+}

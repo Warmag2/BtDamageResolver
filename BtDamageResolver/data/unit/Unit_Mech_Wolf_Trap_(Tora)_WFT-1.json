@@ -1,0 +1,40 @@
+{
+    "Features": [],
+    "JumpJets": 0,
+    "Sinks": 10,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 45,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Slug",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LBX AC/10"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-10"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Wolf Trap (Tora) WFT-1"
+}

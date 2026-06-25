@@ -1,0 +1,51 @@
+{
+    "Features": [
+        "ImprovedCommunications",
+        "Rugged",
+        "Searchlight",
+        "Stable"
+    ],
+    "JumpJets": 0,
+    "Sinks": 36,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 70,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER PPC"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Warhammer WHM-7M-DC"
+}

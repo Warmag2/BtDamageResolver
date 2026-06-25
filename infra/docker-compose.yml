@@ -65,7 +65,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ../BtDamageResolver/data/unit:/app/data
+      - ./paskaa:/app/data
 
   # Grafana
   grafana:

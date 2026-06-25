@@ -1,0 +1,52 @@
+{
+    "Features": [
+        "Stable"
+    ],
+    "JumpJets": 5,
+    "Sinks": 20,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 50,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Ammo": "Slug",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan LBX AC/10"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Huntsman B"
+}

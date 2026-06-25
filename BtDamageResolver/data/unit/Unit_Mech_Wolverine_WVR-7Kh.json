@@ -1,0 +1,50 @@
+{
+    "Features": [
+        "CommandUnit",
+        "ExtendedTorsoTwist",
+        "ImprovedCommunications",
+        "JettisonableWeapon",
+        "ProtectedActuators"
+    ],
+    "JumpJets": 5,
+    "Sinks": 26,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 55,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Small Pulse Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-6"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Melee Hatchet"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Wolverine WVR-7Kh"
+}

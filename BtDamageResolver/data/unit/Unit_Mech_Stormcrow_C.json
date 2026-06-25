@@ -1,39 +1,41 @@
 {
     "Features": [
-        "Cowl",
-        "ExposedActuators"
+        "Stable"
     ],
-    "JumpJets": 6,
-    "Sinks": 22,
+    "JumpJets": 0,
+    "Sinks": 20,
     "Speed": 6,
     "Type": "Mech",
-    "Tonnage": 50,
+    "Tonnage": 55,
     "Troopers": 1,
     "WeaponBays": [
         {
             "Arc": "Default",
             "Weapons": [
                 {
-                    "Ammo": "Normal",
+                    "Ammo": "Slug",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "PPC"
+                    "WeaponName": "Clan LBX AC/10"
                 },
                 {
-                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "PPC"
+                    "WeaponName": "Clan Large Pulse Laser"
                 },
                 {
-                    "Ammo": "Normal",
                     "Amount": 1,
                     "Modifier": 0,
-                    "WeaponName": "SRM-6"
+                    "WeaponName": "Clan Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Medium Pulse Laser"
                 }
             ],
             "Name": "Default"
         }
     ],
-    "Name": "Uziel  UZL-MK1"
+    "Name": "Stormcrow C"
 }

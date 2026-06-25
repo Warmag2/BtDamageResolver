@@ -1,0 +1,47 @@
+{
+    "Features": [
+        "NarrowLowProfile"
+    ],
+    "JumpJets": 0,
+    "Sinks": 26,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 65,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Rapid",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/10"
+                },
+                {
+                    "Ammo": "Rapid",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/10"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Cauldron Born D"
+}
