@@ -65,7 +65,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./paskaa:/app/data
+      - ./tmp:/app/data
 
   # Grafana
   grafana:
