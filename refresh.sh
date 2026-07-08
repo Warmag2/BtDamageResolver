@@ -11,6 +11,6 @@ docker build --tag resolverdataimporter -f ../BtDamageResolver/tools/DataImporte
 docker build --tag resolverdataexporter -f ../BtDamageResolver/tools/DataExporter/Dockerfile ../
 docker build --tag resolverclient -f ../BtDamageResolverClient/src/BlazorServer/Dockerfile ../
 
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 cd ..
