@@ -1,0 +1,41 @@
+{
+    "Features": [
+        "TargetingAntiAir"
+    ],
+    "JumpJets": 0,
+    "Sinks": 11,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 45,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "AC/10"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Melee Hatchet"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Hatchetman HCT-3F"
+}
