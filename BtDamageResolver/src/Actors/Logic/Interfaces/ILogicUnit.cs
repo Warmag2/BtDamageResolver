@@ -102,9 +102,10 @@ public interface ILogicUnit
     /// <summary>
     /// Gets the modifier to hit resolution from unit stance.
     /// </summary>
+    /// <param name="weapon">The weapon being fired.</param>
     /// <param name="distance">The distance to target.</param>
     /// <returns>The modifier to hit resolution from unit stance.</returns>
-    int GetStanceModifier(int distance);
+    int GetStanceModifier(Weapon weapon, int distance);
 
     /// <summary>
     /// Gets the modifier to hit resolution from unit type.

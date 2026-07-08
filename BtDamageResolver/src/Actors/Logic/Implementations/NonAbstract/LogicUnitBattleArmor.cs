@@ -7,6 +7,7 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
@@ -38,7 +39,7 @@ public class LogicUnitBattleArmor : LogicUnitTrooper
     }
 
     /// <inheritdoc />
-    public override int GetStanceModifier(int distance)
+    public override int GetStanceModifier(Weapon weapon, int distance)
     {
         switch (Unit.Stance)
         {

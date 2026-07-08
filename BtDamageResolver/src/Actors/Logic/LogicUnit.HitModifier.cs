@@ -39,7 +39,7 @@ public abstract partial class LogicUnit
             ("Hit modifier from unit targeting computer", GetTargetingComputerModifier(weapon)),
             ("Hit modifier from unit type", target.GetUnitTypeModifier()),
             ("Hit modifier from cover", target.GetCoverModifier(weaponBay.FiringSolution.Cover)),
-            ("Hit modifier from target stance", target.GetStanceModifier(weaponBay.FiringSolution.Distance)),
+            ("Hit modifier from target stance", target.GetStanceModifier(weapon, weaponBay.FiringSolution.Distance)),
             ("Hit modifier from movement direction", target.GetMovementDirectionModifier(weaponBay.FiringSolution.Direction)),
             ("Hit modifier from target movement class", GetMovementClassModifier(target, weapon)),
             ("Hit modifier from target movement amount", GetMovementModifierBase(target, weapon)),
@@ -100,7 +100,7 @@ public abstract partial class LogicUnit
     }
 
     /// <inheritdoc />
-    public virtual int GetStanceModifier(int distance)
+    public virtual int GetStanceModifier(Weapon weapon, int distance)
     {
         return 0;
     }
