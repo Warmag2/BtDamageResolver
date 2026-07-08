@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
-using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
@@ -59,12 +59,18 @@ public abstract class LogicUnitMechBase : LogicUnit
     }
 
     /// <inheritdoc />
-    public override int GetStanceModifier(int distance)
+    public override int GetStanceModifier(Weapon weapon, int distance)
     {
         switch (Unit.Stance)
         {
             // Prone mechs are easier to hit at point-blank range and harder to hit at any other range
             case Stance.Prone:
+                // Prone mechs cannot be punched in melee
+                if (!weapon.HasFeature(WeaponFeature.MeleeDfa, out var _) && weapon.AttackType is AttackType.Punch)
+                {
+                    return LogicConstants.InvalidTargetNumber;
+                }
+
                 if (distance <= 1)
                 {
                     return -1;
@@ -195,27 +201,6 @@ public abstract class LogicUnitMechBase : LogicUnit
         {
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Threat roll does not result in a critical hit"));
         }
-    }
-
-    /// <inheritdoc />
-    protected override AttackType TransformAttackType(ILogicUnit target, AttackType attackType, List<WeaponFeature> weaponFeatures)
-    {
-        // Mechs making melee attacks against crouched units do damage from a punch table
-        if ((weaponFeatures.Contains(WeaponFeature.MeleeKick) ||
-            weaponFeatures.Contains(WeaponFeature.MeleeCharge) ||
-            weaponFeatures.Contains(WeaponFeature.Melee))
-            && target.Unit.Stance == Stance.Crouch)
-        {
-            switch (target.Unit.Type)
-            {
-                case UnitType.Mech:
-                case UnitType.MechTripod:
-                case UnitType.MechQuad:
-                    return AttackType.Punch;
-            }
-        }
-
-        return attackType;
     }
 
     /// <inheritdoc />

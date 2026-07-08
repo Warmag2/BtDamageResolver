@@ -62,19 +62,23 @@ public partial class LogicUnit
     /// <returns>The transformed attack type.</returns>
     protected virtual AttackType TransformAttackType(ILogicUnit target, AttackType attackType, List<WeaponFeature> weaponFeatures)
     {
-        // Melee attacks that are not kicks or punches use normal attack tables
-        var transformedAttackType = attackType == AttackType.Melee ? AttackType.Normal : attackType;
-
         var targetType = target.Unit.Type;
+        var transformedAttackType = attackType;
 
         // Punch and kick tables only exist for mechs, revert to normal for all other target types
+        // Special handling for mechs
         switch (targetType)
         {
             case UnitType.Mech:
             case UnitType.MechTripod:
             case UnitType.MechQuad:
-                // Punches and kicks to prone or crouched mechs can hit anywhere
-                if (target.Unit.Stance is Stance.Prone or Stance.Crouch)
+                // Melee attacks against crouched mechs hit punch table
+                if ((attackType == AttackType.Melee || attackType == AttackType.Kick) && target.Unit.Stance is Stance.Crouch)
+                {
+                    transformedAttackType = AttackType.Punch;
+                }
+
+                if (weaponFeatures.Contains(WeaponFeature.MeleeDfa) && target.Unit.Stance is Stance.Prone)
                 {
                     transformedAttackType = AttackType.Normal;
                 }
@@ -83,6 +87,12 @@ public partial class LogicUnit
             default:
                 transformedAttackType = AttackType.Normal;
                 break;
+        }
+
+        // Melee attacks that are not kicks or punches use normal attack tables
+        if (transformedAttackType == AttackType.Melee)
+        {
+            transformedAttackType = AttackType.Normal;
         }
 
         return transformedAttackType;
@@ -118,14 +128,57 @@ public partial class LogicUnit
 
         var transformedAttackType = TransformAttackType(target, attackType, weaponFeatures);
 
-        // Infantry, BattleArmor and Buildings have no different locations to hit, so all directions are treated as front
-        var transformedDirection = target.Unit.Type is UnitType.Infantry or UnitType.BattleArmor or UnitType.Building ? Direction.Front : direction;
+        var transformedDirection = TransformDirection(target, weaponFeatures, direction);
 
+        List<Rule> transformedRules = TransformRules(target, gameOptions, transformedAttackType);
+
+        return PaperDoll.GetIdFromProperties(transformedTargetType, transformedAttackType, transformedDirection, transformedRules);
+    }
+
+    /// <summary>
+    /// Transform direction based on target properties and weapon features.
+    /// </summary>
+    /// <param name="target">The target unit.</param>
+    /// <param name="weaponFeatures">The weapon features.</param>
+    /// <param name="direction">The direction of the attack.</param>
+    /// <returns>The transformed direction.</returns>
+    private static Direction TransformDirection(ILogicUnit target, List<WeaponFeature> weaponFeatures, Direction direction)
+    {
+        switch (target.Unit.Type)
+        {
+            case UnitType.BattleArmor:
+            case UnitType.Building:
+            case UnitType.Infantry:
+                direction = Direction.Front;
+                break;
+            case UnitType.Mech:
+            case UnitType.MechTripod:
+            case UnitType.MechQuad:
+                // Melee DFA against prone mechs hits the back of the mech
+                if (weaponFeatures.Contains(WeaponFeature.MeleeDfa) && target.Unit.Stance is Stance.Prone)
+                {
+                    direction = Direction.Rear;
+                }
+                break;
+        }
+
+        return direction;
+    }
+
+    /// <summary>
+    /// Transform rules based on target properties and attack type.
+    /// </summary>
+    /// <param name="target">The target unit logic.</param>
+    /// <param name="gameOptions">The game options.</param>
+    /// <param name="attackType">The attack type.</param>
+    /// <returns>The transformed rules.</returns>
+    private static List<Rule> TransformRules(ILogicUnit target, GameOptions gameOptions, AttackType attackType)
+    {
         // Get alterative paperdolls based on rules
         var transformedRules = new List<Rule>();
 
         // Floating critical may only apply to mechs
-        if (gameOptions.Rules[Rule.FloatingCritical] && transformedAttackType == AttackType.Normal)
+        if (gameOptions.Rules[Rule.FloatingCritical] && attackType == AttackType.Normal)
         {
             switch (target.Unit.Type)
             {
@@ -151,6 +204,6 @@ public partial class LogicUnit
             }
         }
 
-        return PaperDoll.GetIdFromProperties(transformedTargetType, transformedAttackType, transformedDirection, transformedRules);
+        return transformedRules;
     }
 }
