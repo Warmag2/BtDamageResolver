@@ -18,7 +18,7 @@ else
         <ContainerAccordion Enabled=@_userStateController.DamageReportContainer.Visible(displayTurn.Turn) Title=@($"Turn {displayTurn.Turn}")>
             @foreach (var reportGroup in displayTurn.ReportGroups)
             {
-                <FormDamageReportContainer DamageReports=@reportGroup></FormDamageReportContainer>
+                <FormDamageReportContainer @key=@(string.Join(",", reportGroup.Select(r => r.Id))) DamageReports=@reportGroup></FormDamageReportContainer>
             }
         </ContainerAccordion>
     }

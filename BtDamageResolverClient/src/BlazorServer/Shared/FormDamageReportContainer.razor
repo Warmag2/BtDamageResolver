@@ -35,6 +35,7 @@ else
 @code
 {
     private bool _combined;
+    private bool _combinedInitialized;
     private List<DamageReport> _mergedSource;
     private DamageReport _combinedDamageReport;
 
@@ -43,7 +44,14 @@ else
 
     protected override void OnParametersSet()
     {
-        _combined = _userStateController.PlayerOptions?.DamageReportsCombine ?? false;
+        // Only seed the combined state from player options once. Rebuilding the parent report list
+        // (e.g. when new damage reports arrive) re-runs OnParametersSet on persisted containers, so
+        // resetting here would discard the user's manual Combine/Split choice.
+        if (!_combinedInitialized)
+        {
+            _combined = _userStateController.PlayerOptions?.DamageReportsCombine ?? false;
+            _combinedInitialized = true;
+        }
 
         // Recreation guard that allows FormPaperDoll's ShouldRender guard skip redundant re-renders in combined mode,
         // as the combined damage report's identity is preserved if the source damage reports haven't changed.
