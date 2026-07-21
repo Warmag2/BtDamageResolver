@@ -20,17 +20,12 @@
     <input class="resolver_input resolver_input_text fullwidth @(extraClass)" type="text" disabled="@Disabled" @bind="SelectedOptionInternal" @oninput="AdjustOptionList" @onfocus="ShowComboBoxItems" @onfocusout="CheckHideComboBoxItems" @onkeypress="@(e => CheckForClose(e))">
 
     <div class="resolver_div_combobox fullwidth" style="@VisualStyleController.HideElement(_comboBoxItemsHidden)">
-        @foreach (var key in Options.Select(o => o.Key))
+        @if (!_comboBoxItemsHidden)
         {
-            var optionToSelect = $"{key}";
-            var hide = !key.Contains(_searchString, StringComparison.InvariantCultureIgnoreCase);
-            if (key.Equals(SelectedOptionInternal))
+            @foreach (var key in Options.Where(o => o.Key.Contains(_searchString, StringComparison.InvariantCultureIgnoreCase)).Select(o => o.Key))
             {
-                <div class="resolver_div_comboboxitem active" style="@VisualStyleController.HideElement(hide)" @onmouseover="SuppressOutOfFocus" @onmouseout="UnSuppressOutOfFocus" @onclick="@(e => SelectOptionImmediate(optionToSelect))">@key</div>
-            }
-            else
-            {
-                <div class="resolver_div_comboboxitem" style="@VisualStyleController.HideElement(hide)" @onmouseover="SuppressOutOfFocus" @onmouseout="UnSuppressOutOfFocus" @onclick="@(e => SelectOptionImmediate(optionToSelect))">@key</div>
+                var optionToSelect = $"{key}";
+                <div class="resolver_div_comboboxitem @(key.Equals(SelectedOptionInternal) ? "active" : string.Empty)" @onmouseover="SuppressOutOfFocus" @onmouseout="UnSuppressOutOfFocus" @onclick="@(e => SelectOptionImmediate(optionToSelect))">@key</div>
             }
         }
     </div>

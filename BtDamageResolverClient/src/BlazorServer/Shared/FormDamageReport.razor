@@ -3,7 +3,6 @@
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
-@implements IDisposable
 
 @{
     var attackingUnitOwnedByYou = _userStateController.PlayerState.UnitEntries.Exists(u => DamageReport.FiringUnitIds.Contains(u.Id));
@@ -65,94 +64,94 @@
                 </b>
             </span>
         </div>
-        <div class="resolver_div_componentcell">
-            <button class="resolver_button resolver_button_delete" @onclick="Delete">X</button>
+        @if (AllowDelete)
+        {
+            <div class="resolver_div_componentcell">
+                <button class="resolver_button resolver_button_delete" @onclick="Delete">X</button>
+            </div>
+        }
+    </div>
+
+    <div class="resolver_div_componentrow">
+        <div class="resolver_div_componentcell resolver_div_phase">
+            <b>φ</b> @DamageReport.Phase
+        </div>
+        <div class="resolver_div_componentcell resolver_div_totaldamage">
+            Total damage: &nbsp; <b>@_totalDamageToTarget</b>
         </div>
     </div>
 
-        <div class="resolver_div_componentrow">
-            <div class="resolver_div_phase">
-                Phase: <b>@DamageReport.Phase</b>
-            </div>
-        </div>
+    <FormPaperDoll DamagePaperDoll="@DamageReport.DamagePaperDoll" DamageReport="@DamageReport"></FormPaperDoll>
         
-        <div class="resolver_div_componentrow">
-            <div class="resolver_div_totaldamage">
-                Total damage to target: @DamageReport.DamagePaperDoll.DamageCollection.SelectMany(dc => dc.Value.SelectMany(l => l.Value)).Sum()
-            </div>
-        </div>
-
-        <FormPaperDoll DamagePaperDoll="@DamageReport.DamagePaperDoll" DamageReport="@DamageReport"></FormPaperDoll>
-        
-        @foreach (var firingUnitId in DamageReport.FiringUnitIds)
+    @foreach (var firingUnitId in DamageReport.FiringUnitIds)
+    {
+        @if (DamageReport.ConsumablesAttackers.TryGetValue(firingUnitId, out var attackerConsumables) && attackerConsumables.Heat > 0)
         {
-            @if (DamageReport.ConsumablesAttackers.TryGetValue(firingUnitId, out var attackerConsumables) && attackerConsumables.Heat > 0)
+            @switch (_userStateController.GetUnitType(firingUnitId))
             {
-                @switch (_userStateController.GetUnitType(firingUnitId))
-                {
-                    case UnitType.AerospaceFighter:
-                    case UnitType.Mech:
-                    case UnitType.MechTripod:
-                    case UnitType.MechQuad:
-                        <div class="resolver_div_componentrow">
-                            <div class="resolver_div_attackerheat">
-                                @if (DamageReport.FiringUnitIds.Count > 1)
-                                {
-                                    <b>Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):</b>
-                                }
-                                else
-                                {
-                                    <b>Attacker heat:</b> 
-                                }
-
-                                @(attackerConsumables.Heat)
-                            </div>
-                        </div>
-                    break;
-                }
-            }
-        }
-        
-        @foreach (var firingUnitId in DamageReport.FiringUnitIds)
-        {
-            @if (DamageReport.ConsumablesAttackers.TryGetValue(firingUnitId, out var attackerConsumables) && attackerConsumables.AmmoUsage.Any())
-            {
-                <div class="resolver_div_componentrow">
-                    @foreach (var ammoExpenditureItem in attackerConsumables.AmmoUsage)
-                    {
-                        <div class="resolver_div_ammo">
+                case UnitType.AerospaceFighter:
+                case UnitType.Mech:
+                case UnitType.MechTripod:
+                case UnitType.MechQuad:
+                    <div class="resolver_div_componentrow">
+                        <div class="resolver_div_attackerheat">
                             @if (DamageReport.FiringUnitIds.Count > 1)
                             {
-                                <b>Attacker (@DamageReport.FiringUnitNames[firingUnitId]) spent @ammoExpenditureItem.Key:</b>
+                                <b>Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):</b>
                             }
                             else
                             {
-                                <b>Attacker spent @ammoExpenditureItem.Key:</b>
+                                <b>Attacker heat:</b> 
                             }
-                            @ammoExpenditureItem.Value
+
+                            @(attackerConsumables.Heat)
                         </div>
-                    }
-                </div>
+                    </div>
+                break;
             }
         }
+    }
         
-        @if (DamageReport.ConsumablesDefender.AmmoUsage.Any())
+    @foreach (var firingUnitId in DamageReport.FiringUnitIds)
+    {
+        @if (DamageReport.ConsumablesAttackers.TryGetValue(firingUnitId, out var attackerConsumables) && attackerConsumables.AmmoUsage.Any())
         {
             <div class="resolver_div_componentrow">
-                @foreach (var ammoExpenditureItem in DamageReport.ConsumablesDefender.AmmoUsage)
+                @foreach (var ammoExpenditureItem in attackerConsumables.AmmoUsage)
                 {
                     <div class="resolver_div_ammo">
-                        Defender <b>@ammoExpenditureItem.Key</b> ammo spent: <b>@ammoExpenditureItem.Value</b>
+                        @if (DamageReport.FiringUnitIds.Count > 1)
+                        {
+                            <b>Attacker (@DamageReport.FiringUnitNames[firingUnitId]) spent @ammoExpenditureItem.Key:</b>
+                        }
+                        else
+                        {
+                            <b>Attacker spent @ammoExpenditureItem.Key:</b>
+                        }
+                        @ammoExpenditureItem.Value
                     </div>
                 }
             </div>
         }
+    }
+        
+    @if (DamageReport.ConsumablesDefender.AmmoUsage.Any())
+    {
+        <div class="resolver_div_componentrow">
+            @foreach (var ammoExpenditureItem in DamageReport.ConsumablesDefender.AmmoUsage)
+            {
+                <div class="resolver_div_ammo">
+                    Defender <b>@ammoExpenditureItem.Key</b> ammo spent: <b>@ammoExpenditureItem.Value</b>
+                </div>
+            }
+        </div>
+    }
 
     <ContainerAccordion Enabled="@_attackLogVisible" Title="Attack log">
         <div class="resolver_div_options">
             @foreach (var attackLogEntryType in _logLineVisibility)
             {
-                <FormCheckbox Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
+                <FormCheckbox @key="@attackLogEntryType.Key" Checked="@attackLogEntryType.Value" OnChanged="@(e => OnAttackLogEntryVisibilityChanged(attackLogEntryType.Key, e))">@attackLogEntryType.Key</FormCheckbox>
             }
         </div>
 
@@ -176,15 +175,28 @@
 {
     private Dictionary<AttackLogEntryType, bool> _logLineVisibility;
     private bool _attackLogVisible;
+    private int _totalDamageToTarget;
+    private DamageReport _lastSummedDamageReport;
+
+    [Parameter]
+    public bool AllowDelete { get; set; } = true;
 
     [Parameter]
     public DamageReport DamageReport { get; set; }
 
     protected override void OnInitialized()
     {
-        _attackLogVisible = _userStateController.PlayerOptions?.ShowAttackLogByDefault ?? false;
+        _attackLogVisible = _userStateController.PlayerOptions?.DamageReportsShowAttackLog ?? false;
         _logLineVisibility = _userStateController.GetAttackLogEntryVisibilityCopy();
-        _userStateController.OnDamageReportsUpdated += InvokeStateChange;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!ReferenceEquals(_lastSummedDamageReport, DamageReport))
+        {
+            _lastSummedDamageReport = DamageReport;
+            _totalDamageToTarget = DamageReport.DamagePaperDoll.DamageCollection.SelectMany(dc => dc.Value).Where(dc => !dc.IsCritical && !dc.IsSpecial).Sum(dc => dc.DamageAmount);
+        }
     }
 
     public void Delete()
@@ -200,10 +212,5 @@
             _logLineVisibility[attackLogEntryType] = entryVisibility;
             InvokeStateChange();
         }
-    }
-
-    public void Dispose()
-    {
-        _userStateController.OnDamageReportsUpdated -= InvokeStateChange;
     }
 }

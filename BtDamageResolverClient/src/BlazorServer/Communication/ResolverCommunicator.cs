@@ -2,12 +2,12 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
+using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Requests.Prototypes;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
-using Faemiyah.BtDamageResolver.Common.Options;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -21,8 +21,8 @@ public class ResolverCommunicator : IDisposable
     private readonly ILogger<ResolverCommunicator> _logger;
     private readonly IOptions<JsonSerializerOptions> _jsonSerializerOptions;
     private readonly DataHelper _dataHelper;
-    private readonly CommunicationOptions _communicationOptions;
-    private readonly HubConnection _hubConnection;
+    private readonly string _connectionString;
+    private readonly ClientMessageDispatcher _dispatcher;
 
     private string _playerName;
     private Guid _authenticationToken;
@@ -33,17 +33,17 @@ public class ResolverCommunicator : IDisposable
     /// Initializes a new instance of the <see cref="ResolverCommunicator"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="communicationOptions">The communication options.</param>
+    /// <param name="connectionString">The Redis connection string.</param>
     /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
     /// <param name="dataHelper">The data compression helper.</param>
-    /// <param name="hubConnection">The SignalR hub connection.</param>
-    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, IOptions<CommunicationOptions> communicationOptions, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, HubConnection hubConnection)
+    /// <param name="dispatcher">The in-process dispatcher delivering events to the circuit.</param>
+    public ResolverCommunicator(ILogger<ResolverCommunicator> logger, string connectionString, IOptions<JsonSerializerOptions> jsonSerializerOptions, DataHelper dataHelper, ClientMessageDispatcher dispatcher)
     {
         _logger = logger;
         _jsonSerializerOptions = jsonSerializerOptions;
-        _communicationOptions = communicationOptions.Value;
+        _connectionString = connectionString;
         _dataHelper = dataHelper;
-        _hubConnection = hubConnection;
+        _dispatcher = dispatcher;
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public class ResolverCommunicator : IDisposable
         }
         catch (Exception ex)
         {
-            SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
+            _ = SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
         }
     }
 
@@ -86,7 +86,6 @@ public class ResolverCommunicator : IDisposable
                 AuthenticationToken = _authenticationToken,
                 PlayerName = _playerName
             });
-        _clientToServerCommunicator = null;
     }
 
     /// <summary>
@@ -327,7 +326,7 @@ public class ResolverCommunicator : IDisposable
         {
             if (dispose)
             {
-                _clientToServerCommunicator?.Stop();
+                TeardownCommunicator();
             }
 
             disposed = true;
@@ -348,7 +347,7 @@ public class ResolverCommunicator : IDisposable
         }
         catch (Exception ex)
         {
-            SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
+            _ = SendErrorMessage($"Error while trying to send data to server. Reason: {ex.Message}");
         }
     }
 
@@ -356,7 +355,7 @@ public class ResolverCommunicator : IDisposable
     {
         if (_authenticationToken == Guid.Empty)
         {
-            SendErrorMessage($"Tried to send a request of type {requestType}, but no server authentication is available");
+            _ = SendErrorMessage($"Tried to send a request of type {requestType}, but no server authentication is available");
             return false;
         }
 
@@ -365,12 +364,33 @@ public class ResolverCommunicator : IDisposable
 
     private void Reset()
     {
-        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _communicationOptions.ConnectionString, _dataHelper, _hubConnection, _playerName);
+        TeardownCommunicator();
+        _clientToServerCommunicator = new ClientToServerCommunicator(_logger, _jsonSerializerOptions, _connectionString, _dataHelper, _dispatcher, _playerName);
     }
 
-    private void SendErrorMessage(string errorMessage)
+    /// <summary>
+    /// Disposes the current client-to-server communicator (if any), releasing its Redis subscription and connection.
+    /// </summary>
+    private void TeardownCommunicator()
     {
-        _ = _hubConnection.SendAsync("ReceiveErrorMessage", _hubConnection.ConnectionId, errorMessage)
-            .ContinueWith(t => _logger.LogError(t.Exception, "Failed to send error message to hub"), TaskContinuationOptions.OnlyOnFaulted);
+        if (_clientToServerCommunicator != null)
+        {
+            _clientToServerCommunicator.Dispose();
+            _clientToServerCommunicator = null;
+        }
+    }
+
+    private async Task SendErrorMessage(string errorMessage)
+    {
+        // Route local errors through the same in-process dispatcher the server uses, so they reach the
+        // existing ErrorMessage handler in Index.razor and are surfaced to the user.
+        try
+        {
+            await _dispatcher.DispatchAsync(EventNames.ErrorMessage, _dataHelper.Pack(new ClientErrorEvent(errorMessage)));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to dispatch error message");
+        }
     }
 }

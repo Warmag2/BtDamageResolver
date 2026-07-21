@@ -21,6 +21,8 @@ public enum Location
     LeftLeg,
     RightLeg,
     CenterLeg,
+    FrontLeftLeg,
+    FrontRightLeg,
     RearLeftLeg,
     RearRightLeg,
     Left,

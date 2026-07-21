@@ -10,12 +10,11 @@
 
 @{
     var targetNumberUpdate = _userStateController.GetTargetNumberUpdateSingleWeapon(UnitEntry.Id, WeaponEntry.Id);
-    var tooltipContent = GetTargetNumberText(targetNumberUpdate?.CalculationLog, false);
+    var tooltipContent = GetCachedTooltipContent(targetNumberUpdate?.CalculationLog);
     var targetNumber = targetNumberUpdate?.TargetNumber <= 12 ? $"{targetNumberUpdate.TargetNumber}" : "N/A";
-    var mapWeaponAmmo = _commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName);
 }
 
-<div class="resolver_div_componentcell resolver_div_targetnumber" style="grid-column: 1" data-tooltip-content="@tooltipContent" onmousemove="ShowTooltip(event, 'resolver_tooltip_targetnumber', this.dataset.tooltipContent);" onmouseout="HideTooltip('resolver_tooltip_targetnumber');">
+<div class="resolver_div_componentcell resolver_div_targetnumber" style="grid-column: 1" data-tooltip-id="resolver_tooltip_targetnumber" data-tooltip-content="@tooltipContent">
     <b>@(targetNumber)</b>
 </div>
 <div style="grid-column: 2">
@@ -28,7 +27,7 @@
     }
     else
     {
-        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Amount") BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="(int amount) => OnWeaponAmountChanged(amount)" />
+        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Amount") BracketCreatorDelegate="@CommonData.FormPickBracketsWeaponAmount" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Amount" Disabled="@Disabled" OnChanged="@OnWeaponAmountChanged" />
     }
 </div>
 <div class="resolver_div_componentcell @(VisualStyleController.GetWeaponModifierHidden(UnitEntry) && WeaponEntry.Modifier == 0 ? "resolver_div_hidden" : string.Empty)" style="grid-column: 4">
@@ -38,7 +37,7 @@
     }
     else
     {
-        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Modifier") BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="(int modifier) => OnWeaponModifierChanged(modifier)" />
+        <FormNumberPickerDisplayOnly @key=@($"{WeaponEntry.Id}_Modifier") BracketCreatorDelegate="@CommonData.FormPickBracketsModifier" StyleSelectorDelegate="@((_) => "resolver_status_transparent")" NumberToDisplay="@WeaponEntry.Modifier" DisplayNumberPrefix="true" Disabled="@Disabled" OnChanged="@OnWeaponModifierChanged" />
     }
 </div>
 <div class="resolver_div_componentcell" style="grid-column: 5">
@@ -54,7 +53,7 @@
 <div class="resolver_div_componentcell" style="grid-column: 6">
     @if (_commonData.WeaponHasAmmo(WeaponEntry.WeaponName))
     {
-        <FormSelect @key=@($"{WeaponEntry.Id}_Ammo") Options="@mapWeaponAmmo" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
+        <FormSelect @key=@($"{WeaponEntry.Id}_Ammo") Options="@_commonData.FormMapWeaponAmmo(WeaponEntry.WeaponName)" SelectedOption="@WeaponEntry.Ammo" Disabled="@Disabled" OnChanged="(string ammoName) => OnWeaponAmmoChanged(ammoName)"></FormSelect>
     }
 </div>
 <div class="resolver_div_componentcell resolver_div_buttongroup" style="grid-column: 7">
@@ -70,6 +69,9 @@
     private int _weaponModifier;
     private WeaponState _weaponState;
     private string _weaponName;
+    private DateTime _targetNumberTimeStamp;
+    private string _cachedTooltipContent;
+    private DateTime? _cachedTooltipKey;
 
     [Parameter]
     public WeaponBay WeaponBay { get; set; }
@@ -97,10 +99,23 @@
         _weaponModifier = WeaponEntry.Modifier;
         _weaponState = WeaponEntry.State;
         _weaponName = WeaponEntry.WeaponName;
-        _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
+        _targetNumberTimeStamp = _userStateController.GetTargetNumberUpdate(UnitEntry.Id)?.TimeStamp ?? DateTime.MinValue;
+        _userStateController.OnTargetNumbersUpdated += CheckRefresh;
         if (CorrectAmmoForWeapon(_weaponName))
         {
             UpdateWeaponEntry();
+        }
+    }
+
+    // Only re-render when the target number update for THIS unit actually changed,
+    // rather than on every global target number packet.
+    private void CheckRefresh()
+    {
+        var timeStamp = _userStateController.GetTargetNumberUpdate(UnitEntry.Id)?.TimeStamp ?? DateTime.MinValue;
+        if (timeStamp != _targetNumberTimeStamp)
+        {
+            _targetNumberTimeStamp = timeStamp;
+            InvokeStateChange();
         }
     }
 
@@ -201,11 +216,26 @@
         UpdateWeaponEntry();
     }
 
+    // The tooltip string only changes when this unit's target-number data changes, so memoize it
+    // on the same timestamp that gates re-render instead of rebuilding it on every render.
+    private string GetCachedTooltipContent(AttackLog attackLog)
+    {
+        if (_cachedTooltipKey != _targetNumberTimeStamp)
+        {
+            _cachedTooltipContent = GetTargetNumberText(attackLog, false);
+            _cachedTooltipKey = _targetNumberTimeStamp;
+        }
+
+        return _cachedTooltipContent;
+    }
+
     private static string GetTargetNumberText(AttackLog attackLog, bool showAllLines)
     {
         if (attackLog != null && attackLog.Log.Any())
         {
-            return attackLog.Log.Where(entry => showAllLines || entry.Number != 0).Aggregate(string.Empty, (current, entry) => current + (entry + "<br>"));
+            return string.Concat(attackLog.Log
+                .Where(entry => showAllLines || entry.Number != 0)
+                .Select(entry => entry + "<br>"));
         }
 
         return "No target number calculation log available.";
@@ -213,6 +243,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnTargetNumbersUpdated -= InvokeStateChange;
+        _userStateController.OnTargetNumbersUpdated -= CheckRefresh;
     }
 }

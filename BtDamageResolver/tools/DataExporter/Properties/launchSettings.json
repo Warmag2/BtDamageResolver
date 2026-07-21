@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DataExporter": {
+      "commandName": "Project",
+      "commandLineArgs": "unit"
+    }
+  }
+}

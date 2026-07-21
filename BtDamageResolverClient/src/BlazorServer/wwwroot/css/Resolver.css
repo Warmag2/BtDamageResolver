@@ -68,6 +68,7 @@ a, .btn-link {
     --color_text_hover: #000000;
     --color_bg_hover_selected: #7080B1;
     --color_text_hover_selected: #FFFFFF;
+    --color_bg_clickable_hover: #EAF0FF;
     --color_bg_disabled: #D4D0C8;
     --color_text_disabled: #808080;
     --color_bg_disabled_selected: #8D8D8D;
@@ -101,12 +102,6 @@ a, .btn-link {
     --color_text_status_critical: #000000;
     --color_bg_status_ammo_normal: #F0E0B0;
     --color_text_status_ammo_normal: #403020;
-}
-
-.resolver_content { width: 100%; }
-
-@media only screen and (min-width: 1024px) {
-    .resolver_content { padding: 1rem; }
 }
 
 .resolver_div_errormessage {
@@ -264,7 +259,7 @@ a, .btn-link {
     left: 0;
     height: 25px;
     width: 25px;
-    border: 1px solid var(--color_text_selected) !important;
+    border: 1px solid var(--color_text_selected);
 }
 
 /* On mouse-over, add a grey background color */
@@ -687,11 +682,17 @@ a, .btn-link {
     color: var(--color_text_error);
 }
 
+/* Unit card (All Units view): stack name / stats / weapon groups vertically without wrapper rows */
+.resolver_div_unitcard {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
 .resolver_div_componentblock {
     display: flex;
     margin: 0;
     padding: 0.1rem 0.25rem;
-    display: flex;
 }
 
 .resolver_div_componentgroup {
@@ -739,6 +740,22 @@ a, .btn-link {
     padding: 0.1rem 0.3rem;
 }
 
+.resolver_div_componentcell_label {
+}
+
+.resolver_div_componentcell_content {
+    min-width: 10rem;
+}
+
+.resolver_div_estimate {
+    padding-left: 0.5rem;
+}
+
+.resolver_div_estimate_header {
+    margin-left: 0.5rem;
+    font-weight: bold;
+}
+
 .resolver_div_unitid
 {
     margin-top: 0.2rem;
@@ -759,7 +776,6 @@ a, .btn-link {
     max-height: inherit;
     overflow: hidden;
     padding: 0.5rem 0.5rem;
-    font-weight: bold;
     font-family: "Lucida Console";
     text-transform: uppercase;
     font-weight: bold;
@@ -955,6 +971,28 @@ a, .btn-link {
 
 .resolver_div_damagereport {
     padding: 0.5rem;
+}
+
+.resolver_div_damagereport.clickable {
+    cursor: pointer;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.resolver_div_damagereport.clickable:hover {
+    background-color: var(--color_bg_clickable_hover);
+}
+
+.resolver_div_damagereporttoggleheader {
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    padding-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--color_outline_base);
+}
+
+.resolver_div_damagereporttoggleheader .toggleicon {
+    opacity: 0.6;
+    font-weight: normal;
 }
 
 .resolver_div_damagereport.damageentry { padding: 0.5rem; }

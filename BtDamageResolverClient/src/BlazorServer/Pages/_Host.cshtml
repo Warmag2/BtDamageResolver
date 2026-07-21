@@ -1,8 +1,15 @@
 ﻿@page "/"
 @namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Reflection
 @{
     Layout = null;
+
+    // _framework/blazor.server.js cannot use asp-append-version (it is not a physical wwwroot
+    // file), so bust the browser cache with the client assembly's build time. This forces a
+    // refetch after every deploy, preventing a stale framework script from silently breaking
+    // the interactive circuit while initial render still appears to work.
+    var frameworkCacheBust = System.IO.File.GetLastWriteTimeUtc(Assembly.GetExecutingAssembly().Location).Ticks;
 }
 
 <!DOCTYPE html>
@@ -14,7 +21,7 @@
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/Resolver.css" rel="stylesheet" asp-append-version="true" />
-    <script type="text/javascript" src="js/Resolver.js"></script>
+    <script type="text/javascript" src="js/Resolver.js" asp-append-version="true"></script>
 </head>
 <body>
     <app>
@@ -32,6 +39,6 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <script src="_framework/blazor.server.js"></script>
+    <script src="_framework/blazor.server.js?v=@frameworkCacheBust"></script>
 </body>
 </html>

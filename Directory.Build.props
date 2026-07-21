@@ -1,10 +1,16 @@
 ﻿<Project>
+
+  <PropertyGroup>
+    <Authors>Warma</Authors>
+    <Company>Faemiyah</Company>
+    <Product>BtDamageResolver</Product>
+    <Copyright>Faemiyah 2020-2026</Copyright>
+    <RepositoryUrl>https://github.com/Warmag2/BtDamageResolver</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Warmag2/BtDamageResolver</PackageProjectUrl>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference
-      Include="SonarAnalyzer.CSharp"
-      Version="10.26.0.140279"
-      PrivateAssets="all"
-      Condition="$(MSBuildProjectExtension) == '.csproj'"
-    />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.27.0.140913" PrivateAssets="all" />
   </ItemGroup>
+
 </Project>

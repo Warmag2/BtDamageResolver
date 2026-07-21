@@ -5,25 +5,21 @@
     <RootNamespace>Faemiyah.BtDamageResolver.Common</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.Common</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.440</Version>
-    <PackageProjectUrl>https://github.com/Warmag2/BtDamageResolver</PackageProjectUrl>
-    <Company>Faemiyah</Company>
-    <Product>BtDamageResolver</Product>
-    <Authors>Warma</Authors>
-    <Copyright>Faemiyah 2020</Copyright>
-    <RepositoryUrl>https://github.com/Warmag2/BtDamageResolver</RepositoryUrl>
+    <Version>0.0.467</Version>
     <Description>Common helper methods and classes for BtDamageResolver.
 Useful if you want to build your own client.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
-    <PackageReference Include="Serilog" Version="4.3.1" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.9" />
   </ItemGroup>
 
 </Project>

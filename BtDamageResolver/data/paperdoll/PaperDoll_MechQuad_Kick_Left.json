@@ -1,0 +1,13 @@
+{
+  "Type": "MechQuad",
+  "AttackType": "Kick",
+  "Direction": "Left",
+  "LocationMapping": {
+    "1": [ "FrontLeftLeg" ],
+    "2": [ "RearLeftLeg" ]
+  },
+  "CriticalDamageMapping": {
+    "1": "None",
+    "2": "None"
+  }
+}

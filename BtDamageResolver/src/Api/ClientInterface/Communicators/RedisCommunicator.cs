@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
@@ -12,7 +14,7 @@ namespace Faemiyah.BtDamageResolver.Api.ClientInterface.Communicators;
 /// <summary>
 /// Base Redis implementation of a communicator.
 /// </summary>
-public abstract class RedisCommunicator
+public abstract class RedisCommunicator : IDisposable
 {
     /// <summary>
     /// The common client stream address.
@@ -107,12 +109,39 @@ public abstract class RedisCommunicator
     /// </summary>
     /// <param name="target">The target where to send data.</param>
     /// <param name="data">The data to send.</param>
-    /// <returns>The number of clients the message was delivered to.</returns>
-    protected long SendEnvelope(string target, Envelope data)
+    /// <remarks>
+    /// Messages are published with <see cref="CommandFlags.FireAndForget"/>, so the publish does not
+    /// wait for, and cannot report, the number of subscribers that received it.
+    /// </remarks>
+    protected void SendEnvelope(string target, Envelope data)
+    {
+        PublishToChannel(target, JsonSerializer.Serialize(data, JsonSerializerOptions));
+    }
+
+    /// <summary>
+    /// Sends the same envelope to many communication endpoints, serializing it only once.
+    /// </summary>
+    /// <param name="targets">The targets where to send data.</param>
+    /// <param name="data">The data to send.</param>
+    /// <remarks>
+    /// The envelope is identical for every recipient, so it is serialized a single time and the resulting
+    /// payload (which base64-encodes the already-compressed data) is reused for each channel, rather than
+    /// re-serializing it once per target.
+    /// </remarks>
+    protected void SendEnvelopeToMany(IEnumerable<string> targets, Envelope data)
+    {
+        var serializedEnvelope = JsonSerializer.Serialize(data, JsonSerializerOptions);
+        foreach (var target in targets)
+        {
+            PublishToChannel(target, serializedEnvelope);
+        }
+    }
+
+    private void PublishToChannel(string target, string serializedEnvelope)
     {
         var channel = new RedisChannel(target, RedisChannel.PatternMode.Literal);
         CheckChannelConnection(channel);
-        return RedisSubscriber.Publish(channel, JsonSerializer.Serialize(data, JsonSerializerOptions), CommandFlags.FireAndForget);
+        RedisSubscriber.Publish(channel, serializedEnvelope, CommandFlags.FireAndForget);
     }
 
     /// <summary>
@@ -126,18 +155,13 @@ public abstract class RedisCommunicator
     }
 
     /// <summary>
-    /// Send a message to a single client and display warnings if necessary.
+    /// Send a message to a single client.
     /// </summary>
     /// <param name="clientName">The target where to send data.</param>
     /// <param name="envelope">The data to send.</param>
     protected void SendSingle(string clientName, Envelope envelope)
     {
-        var clientCount = SendEnvelope(clientName, envelope);
-
-        if (clientCount != 0)
-        {
-            Logger.LogWarning("Number of clients receiving targeted message with target {Target} was {Count} instead of 1 as expected.", clientName, clientCount);
-        }
+        SendEnvelope(clientName, envelope);
     }
 
     /// <summary>
@@ -161,8 +185,31 @@ public abstract class RedisCommunicator
     {
         RedisSubscriber = _redisConnectionMultiplexer.GetSubscriber();
         _listenedMessageQueue = RedisSubscriber.Subscribe(_listenTarget);
-        _listenedMessageQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonSerializer.Deserialize<Envelope>(channelMessage.Message.ToString(), JsonSerializerOptions)).ConfigureAwait(false));
+        _listenedMessageQueue.OnMessage(ProcessChannelMessage);
         SubscribeAdditional();
+    }
+
+    /// <summary>
+    /// Deserializes and processes a single channel message, logging any unhandled exception.
+    /// </summary>
+    /// <param name="channelMessage">The raw channel message.</param>
+    /// <returns>A task which completes when the message has been processed.</returns>
+    /// <remarks>
+    /// <see cref="ChannelMessageQueue.OnMessage(Func{ChannelMessage, Task})"/> observes the returned task only to
+    /// serialize processing; it does not surface faults. Without this guard any exception thrown while handling a
+    /// message would be silently swallowed (effectively <c>async void</c>), so we catch and log here.
+    /// </remarks>
+    protected async Task ProcessChannelMessage(ChannelMessage channelMessage)
+    {
+        try
+        {
+            var envelope = JsonSerializer.Deserialize<Envelope>(channelMessage.Message.ToString(), JsonSerializerOptions);
+            await RunProcessorMethod(envelope).ConfigureAwait(false);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Unhandled exception while processing a message on channel {Channel}.", channelMessage.Channel.ToString());
+        }
     }
 
     /// <summary>
@@ -174,5 +221,31 @@ public abstract class RedisCommunicator
         _listenedMessageQueue.Unsubscribe();
         _listenedMessageQueue = null;
         RedisSubscriber = null;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases the Redis resources held by this communicator.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> when called from <see cref="Dispose()"/>.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposing)
+        {
+            return;
+        }
+
+        _listenedMessageQueue?.Unsubscribe();
+        _listenedMessageQueue = null;
+        RedisSubscriber?.UnsubscribeAll();
+        RedisSubscriber = null;
+        _redisConnectionMultiplexer?.Dispose();
+        _redisConnectionMultiplexer = null;
     }
 }

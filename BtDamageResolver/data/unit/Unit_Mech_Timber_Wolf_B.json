@@ -1,0 +1,48 @@
+{
+    "Features": [
+        "TargetingMediumRange",
+        "WeakHeadArmor"
+    ],
+    "JumpJets": 0,
+    "Sinks": 30,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 75,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Gauss Rifle"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Large Pulse Laser"
+                },
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan LRM-10"
+                },
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-4"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Small Pulse Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Timber Wolf B"
+}

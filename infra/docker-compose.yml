@@ -6,14 +6,16 @@ services:
     hostname: resolver
     image: resolver:latest
     environment:
-      RESOLVER_ENVIRONMENT: Release
-      ClusterOptions__ConnectionString: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=orleansdb;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
-      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+      DOTNET_ENVIRONMENT: Release
+      ConnectionStrings__Postgres: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=resolverpostgres;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
+      ConnectionStrings__Redis: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     networks:
       - resolvernet
     depends_on:
-      - orleansdb   # Data source
-      - redis       # Communication bus
+      resolverpostgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure
 
   # Battletech Damage Resolver Client
@@ -23,8 +25,7 @@ services:
     image: resolverclient:latest
     environment:
       ASPNETCORE_ENVIRONMENT: Release
-      RESOLVER_ENVIRONMENT: Release
-      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+      ConnectionStrings__Redis: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     ports:
       - 8787:8080
     volumes:
@@ -32,7 +33,7 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - resolver    # No sense to start until the server is up
+      - resolver
     restart: on-failure
 
   # Data Importer
@@ -41,13 +42,30 @@ services:
     hostname: resolverdataimporter
     image: resolverdataimporter:latest
     environment:
-      RESOLVER_ENVIRONMENT: Release
-      CommunicationOptions__ConnectionString: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+      DOTNET_ENVIRONMENT: Release
+      ConnectionStrings__Redis: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     networks:
       - resolvernet
     depends_on:
-      - resolver
-    restart: on-failure
+      redis:
+        condition: service_healthy
+
+  # Data Exporter
+  resolverdataexporter:
+    profiles: ["export"]
+    container_name: resolverdataexporter
+    hostname: resolverdataexporter
+    image: resolverdataexporter:latest
+    environment:
+      DOTNET_ENVIRONMENT: Release
+      ConnectionStrings__Redis: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
+    networks:
+      - resolvernet
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./tmp:/app/data
 
   # Grafana
   grafana:
@@ -65,22 +83,29 @@ services:
     networks:
       - resolvernet
     depends_on:
-      - orleansdb # Data source
+      resolverpostgres:
+        condition: service_healthy
     restart: on-failure
 
-  # Postgresql (for Orleans)
-  orleansdb:
-    container_name: orleansdb
-    hostname: orleansdb
-    image: orleansdb:latest
+  # Postgresql
+  resolverpostgres:
+    container_name: resolverpostgres
+    hostname: resolverpostgres
+    image: resolverpostgres:latest
     environment:
       POSTGRES_DB: BtDamageResolver
       POSTGRES_USER: "${RESOLVER_USER:?err}"
       POSTGRES_PASSWORD: "${RESOLVER_PASSWORD:?err}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d BtDamageResolver"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 10s
     ports:
       - 65432:5432
     volumes:
-      - orleansdb-data:/var/lib/postgresql/18/docker
+      - postgres-data:/var/lib/postgresql/18/docker
     restart: on-failure
     networks:
       - resolvernet
@@ -91,6 +116,12 @@ services:
     image: resolverredis:latest
     environment:
       REDIS_PASSWORD: "${RESOLVER_PASSWORD:?err}"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 10s
     ports:
       - 63790:6379
     volumes:
@@ -99,12 +130,11 @@ services:
       - resolvernet
     restart: on-failure
 
-
 networks:
   resolvernet:
 
 volumes:
   grafana-data:
-  orleansdb-data:
+  postgres-data:
   redis-data:
   resolverclient-dpkeys:

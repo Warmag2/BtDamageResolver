@@ -3,10 +3,11 @@
     "Name": "LBX AC/2",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "AC-Single",
+      "Slug": "AC-Slug",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 4
@@ -32,10 +33,11 @@
     "Name": "LBX AC/5",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "AC-Single",
+      "Slug": "AC-Slug",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 8
@@ -61,10 +63,11 @@
     "Name": "LBX AC/10",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "AC-Single",
+      "Slug": "AC-Slug",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 11
@@ -90,10 +93,11 @@
     "Name": "LBX AC/20",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "AC-Single",
+      "Slug": "AC-Slug",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 20
@@ -119,10 +123,11 @@
     "Name": "Clan LBX AC/2",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "AC-Single",
+      "Slug": "AC-Slug",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 4
@@ -148,10 +153,11 @@
     "Name": "Clan LBX AC/5",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "AC-Single",
+      "Slug": "AC-Slug",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 8
@@ -177,10 +183,11 @@
     "Name": "Clan LBX AC/10",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "AC-Single",
+      "Slug": "AC-Slug",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 11
@@ -206,10 +213,11 @@
     "Name": "Clan LBX AC/20",
     "Type": "Ballistic",
     "Ammo": {
-      "Slug": "AC-Single",
+      "Slug": "AC-Slug",
       "Cluster": "AC-LBXCluster"
     },
     "AmmoDefault": "Slug",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 20

@@ -96,7 +96,7 @@ public abstract class RedisClientToServerCommunicator : RedisCommunicator, IClie
     protected override void SubscribeAdditional()
     {
         var listenedClientQueue = RedisSubscriber.Subscribe(new RedisChannel(ClientStreamAddress, RedisChannel.PatternMode.Literal));
-        listenedClientQueue.OnMessage(async channelMessage => await RunProcessorMethod(JsonSerializer.Deserialize<Envelope>(channelMessage.Message.ToString(), JsonSerializerOptions)).ConfigureAwait(false));
+        listenedClientQueue.OnMessage(ProcessChannelMessage);
 
         base.SubscribeAdditional();
     }

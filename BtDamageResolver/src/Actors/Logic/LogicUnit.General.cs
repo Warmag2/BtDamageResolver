@@ -35,7 +35,7 @@ public partial class LogicUnit
                 continue;
             }
 
-            var hitCalclulationDamageReport = new DamageReport
+            var hitCalculationDamageReport = new DamageReport
             {
                 Phase = weapon.UsePhase,
                 DamagePaperDoll = GetDamagePaperDoll(target, AttackType.Normal, weaponBay.FiringSolution.Direction, weapon.SpecialFeatures.Select(w => w.Type).ToList()),
@@ -46,9 +46,9 @@ public partial class LogicUnit
                 InitialTroopers = target.Unit.Troopers
             };
 
-            var combatAction = ResolveHit(hitCalclulationDamageReport, target, primaryTargetArc, isPrimaryTarget, weapon, weaponBay, weaponEntry);
+            var combatAction = ResolveHit(hitCalculationDamageReport, target, primaryTargetArc, isPrimaryTarget, weapon, weaponBay, weaponEntry);
 
-            damageReportCombatActionPairs.Add((hitCalclulationDamageReport, combatAction));
+            damageReportCombatActionPairs.Add((hitCalculationDamageReport, combatAction));
         }
 
         // Add damage resolution to damage reports based on combat actions
@@ -99,7 +99,7 @@ public partial class LogicUnit
 
         foreach (var weaponEntry in weaponBay.Weapons.Where(w => w.State == WeaponState.Active))
         {
-            weapons.Add((await FormWeapon(weaponEntry), weaponEntry));
+            weapons.Add((FormWeapon(weaponEntry), weaponEntry));
         }
 
         return weapons;

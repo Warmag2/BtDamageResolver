@@ -284,38 +284,49 @@ public static class CollectionExtensions
     }
 
     /// <summary>
-    /// Insert objects to a location-guid -separated list.
+    /// Insert object to a guid -separated list.
     /// </summary>
-    /// <typeparam name="TEntity">The type of the entity in the location-owner separated list.</typeparam>
+    /// <typeparam name="TEntity">The type of the entity in the guid separated list.</typeparam>
     /// <param name="ownerId">The owner of the special damage entries.</param>
     /// <param name="location">The location to insert to.</param>
     /// <param name="entries">The special damage entries to insert.</param>
-    public static void Insert<TEntity>(this Dictionary<Location, Dictionary<Guid, List<TEntity>>> input, Location location, Guid ownerId, List<TEntity> objects)
+    public static void Insert<TEntity>(this Dictionary<Guid, List<TEntity>> input, Guid ownerId, TEntity obj)
     {
-        if (input.TryGetValue(location, out var ownerList))
+        if (input.TryGetValue(ownerId, out var ownerList))
         {
-            if (ownerList.TryGetValue(ownerId, out var damageList))
-            {
-                damageList.AddRange(objects);
-            }
-            else
-            {
-                ownerList.Add(ownerId, [.. objects]);
-            }
+            ownerList.Add(obj);
         }
         else
         {
-            input.Add(location, new Dictionary<Guid, List<TEntity>> { { ownerId, [.. objects] } });
+            input.Add(ownerId, [obj]);
         }
     }
 
     /// <summary>
-    /// Insert objects to a location-guid -separated list.
+    /// Insert objects to a guid -separated list.
     /// </summary>
-    /// <typeparam name="TEntity">The type of the entity in the location-owner separated list.</typeparam>
+    /// <typeparam name="TEntity">The type of the entity in the guid separated list.</typeparam>
     /// <param name="ownerId">The owner of the special damage entries.</param>
     /// <param name="location">The location to insert to.</param>
     /// <param name="entries">The special damage entries to insert.</param>
+    public static void Insert<TEntity>(this Dictionary<Guid, List<TEntity>> input, Guid ownerId, List<TEntity> objects)
+    {
+        if (input.TryGetValue(ownerId, out var ownerList))
+        {
+            ownerList.AddRange(objects);
+        }
+        else
+        {
+            input.Add(ownerId, objects);
+        }
+    }
+
+    /// <summary>
+    /// Insert values to a dictionary.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key in the dictionary.</typeparam>
+    /// <param name="key">The key of the value to insert.</param>
+    /// <param name="value">The value to insert.</param>
     public static void Insert<TKey>(this Dictionary<TKey, int> input, TKey key, int value)
     {
         if (input.TryGetValue(key, out var existingValue))
@@ -329,19 +340,16 @@ public static class CollectionExtensions
     }
 
     /// <summary>
-    /// Merge objects in location-guid separated lists.
+    /// Merge objects in a guid separated lists.
     /// </summary>
-    /// <typeparam name="TEntity">The type of the entity in the location-owner separated list.</typeparam>
-    /// <param name="input"></param>
-    /// <param name="target"></param>
-    public static void Merge<TEntity>(this Dictionary<Location, Dictionary<Guid, List<TEntity>>> input, Dictionary<Location, Dictionary<Guid, List<TEntity>>> target)
+    /// <typeparam name="TEntity">The type of the entity in the guid separated list.</typeparam>
+    /// <param name="input">The input dictionary.</param>
+    /// <param name="target">The target dictionary to merge from.</param>
+    public static void Merge<TEntity>(this Dictionary<Guid, List<TEntity>> input, Dictionary<Guid, List<TEntity>> target)
     {
         foreach (var locationEntry in target)
         {
-            foreach (var ownerEntry in locationEntry.Value)
-            {
-                input.Insert(locationEntry.Key, ownerEntry.Key, ownerEntry.Value);
-            }
+            input.Insert(locationEntry.Key, locationEntry.Value);
         }
     }
 }

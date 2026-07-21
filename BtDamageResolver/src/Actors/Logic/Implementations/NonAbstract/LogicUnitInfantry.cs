@@ -7,10 +7,10 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations.NonAbstract;
 
@@ -24,12 +24,11 @@ public class LogicUnitInfantry : LogicUnitTrooper
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="gameOptions">The game options.</param>
-    /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="random">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    public LogicUnitInfantry(ILogger<LogicUnitInfantry> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, grainFactory, mathExpression, repositoryProvider, random, unit)
+    public LogicUnitInfantry(ILogger<LogicUnitInfantry> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom random, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, random, unit)
     {
     }
 
@@ -40,7 +39,7 @@ public class LogicUnitInfantry : LogicUnitTrooper
     }
 
     /// <inheritdoc />
-    public override int GetStanceModifier(int distance)
+    public override int GetStanceModifier(Weapon weapon, int distance)
     {
         switch (Unit.Stance)
         {
@@ -149,7 +148,7 @@ public class LogicUnitInfantry : LogicUnitTrooper
     /// <inheritdoc />
     protected override async Task<int> ResolveTotalOutgoingDamage(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)
     {
-        return await RapidFireWrapper(damageReport, target, combatAction, ResolveTotalOutgoingDamageInternalInfantry(damageReport, target, combatAction));
+        return await RapidFireWrapper(damageReport, target, combatAction, () => ResolveTotalOutgoingDamageInternalInfantry(damageReport, target, combatAction));
     }
 
     private async Task<int> ResolveTotalOutgoingDamageInternalInfantry(DamageReport damageReport, ILogicUnit target, CombatAction combatAction)

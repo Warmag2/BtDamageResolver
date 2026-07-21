@@ -10,6 +10,7 @@
     "Troopers": 1,
     "WeaponBays": [
         {
+            "Arc": "Default",
             "Weapons": [
                 {
                     "Ammo": "Normal",

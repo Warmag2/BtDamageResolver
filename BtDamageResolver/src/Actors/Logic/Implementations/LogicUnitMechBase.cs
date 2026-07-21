@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
+using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Options;
 using Microsoft.Extensions.Logging;
-using Orleans;
 
 namespace Faemiyah.BtDamageResolver.Actors.Logic.Implementations;
 
@@ -22,12 +23,11 @@ public abstract class LogicUnitMechBase : LogicUnit
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="gameOptions">The game options.</param>
-    /// <param name="grainFactory">The grain factory.</param>
     /// <param name="mathExpression">The math expression parser.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="resolverRandom">The random number generator.</param>
     /// <param name="unit">The unit.</param>
-    protected LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IGrainFactory grainFactory, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
+    protected LogicUnitMechBase(ILogger<LogicUnitMechBase> logger, GameOptions gameOptions, IMathExpression mathExpression, RepositoryProvider repositoryProvider, IResolverRandom resolverRandom, UnitEntry unit) : base(logger, gameOptions, mathExpression, repositoryProvider, resolverRandom, unit)
     {
     }
 
@@ -59,12 +59,18 @@ public abstract class LogicUnitMechBase : LogicUnit
     }
 
     /// <inheritdoc />
-    public override int GetStanceModifier(int distance)
+    public override int GetStanceModifier(Weapon weapon, int distance)
     {
         switch (Unit.Stance)
         {
             // Prone mechs are easier to hit at point-blank range and harder to hit at any other range
             case Stance.Prone:
+                // Prone mechs cannot be punched in melee
+                if (!weapon.HasFeature(WeaponFeature.MeleeDfa, out var _) && weapon.AttackType is AttackType.Punch)
+                {
+                    return LogicConstants.InvalidTargetNumber;
+                }
+
                 if (distance <= 1)
                 {
                     return -1;
@@ -81,6 +87,7 @@ public abstract class LogicUnitMechBase : LogicUnit
     {
         switch (cover)
         {
+            case Cover.HullDown:
             case Cover.Lower:
                 switch (location)
                 {
@@ -172,20 +179,33 @@ public abstract class LogicUnitMechBase : LogicUnit
 
         // Simulate arms and legs being able to be blown off
         if (criticalThreatRoll == 12 &&
-            (location == Location.LeftArm || location == Location.LeftLeg ||
-             location == Location.RightArm || location == Location.RightLeg))
+            (location == Location.Head ||
+             location == Location.LeftArm ||
+             location == Location.LeftLeg ||
+             location == Location.RightArm ||
+             location == Location.RightLeg ||
+             location == Location.FrontLeftLeg ||
+             location == Location.FrontRightLeg ||
+             location == Location.RearLeftLeg ||
+             location == Location.RearRightLeg))
         {
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, CriticalDamageType.BlownOff);
+            damageReport.DamagePaperDoll.RecordDamage(damageOwnerId, new DamageEntry(inducingDamage, location, CriticalThreatType.Normal, CriticalDamageType.BlownOff));
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, string.Join(", ", criticalDamageTable.Mapping[criticalThreatRoll].Select(c => c.ToString())), transformedDamage, location));
         }
         else if (criticalDamageTable.Mapping[criticalThreatRoll].Exists(c => c != CriticalDamageType.None))
         {
-            damageReport.DamagePaperDoll.RecordCriticalDamage(location, damageOwnerId, inducingDamage, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]);
+            damageReport.DamagePaperDoll.RecordDamage(damageOwnerId, DamageEntry.CreateList(inducingDamage, location, CriticalThreatType.Normal, criticalDamageTable.Mapping[criticalThreatRoll]));
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Critical, damageOwnerId, transformedDamage, location));
         }
         else
         {
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, damageOwnerId, "Threat roll does not result in a critical hit"));
         }
+    }
+
+    /// <inheritdoc />
+    protected override Location TransformLocation(Location location)
+    {
+        return Location.Structure;
     }
 }

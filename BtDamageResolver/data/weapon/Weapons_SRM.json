@@ -4,9 +4,11 @@
     "Type": "Missile",
     "Ammo": {
       "Normal": "MissileHoming",
+      "Inferno": "MissileHoming+Inferno",
       "Artemis": "MissileHoming+Artemis"
     },
     "AmmoDefault": "Normal",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 2
@@ -34,9 +36,11 @@
     "Type": "Missile",
     "Ammo": {
       "Normal": "MissileHoming",
+      "Inferno": "MissileHoming+Inferno",
       "Artemis": "MissileHoming+Artemis"
     },
     "AmmoDefault": "Normal",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 4
@@ -64,9 +68,11 @@
     "Type": "Missile",
     "Ammo": {
       "Normal": "MissileHoming",
+      "Inferno": "MissileHoming+Inferno",
       "Artemis": "MissileHoming+Artemis"
     },
     "AmmoDefault": "Normal",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Damage": {
       "Short": 6

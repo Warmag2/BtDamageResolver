@@ -3,18 +3,15 @@ TODO: Damage tracking.
 
 	Open UI Issues
 
-[FEATURE] Table-based UI layout is very slow and frowned upon these days - move to the current millennium and change everything to well-mannered <div>s.
 [FEATURE] Move adding/deleting buttons around so that they are not outside the visual components they need to delete and/or not in strange places.
 
 	Open Bugs
 
-[BUG] Experienced some issues with weather effects. Needs further investigation.
-
-[BUG] When starting up, user needs to wait for the import task to finish before using client. A very minor inconvenience, so WONTFIX for now.
-
 [BUG] In multiplayer use, switching unit type with active invalid type properties puts the UI in a state where it is not obvious how one should proceed. Remote updates will reset the unit visual state into the last known good state, while depending on event order, user memory may still end up with the invalid state and user is unable to send updates. Easy to fix badly, but very difficult to fix properly, as a whole feature where the backend is able to demands specific state changes from the frontend is necessary.
 
 		Could not reproduce
+
+[BUG] Experienced some issues with weather effects. Needs further investigation.
 
 [BUG] Attacker heat is displayed for units other than Mech/AerospaceF
 [COMMENT]: Can't find bug. Heat is displayed only for units which can take and produce heat. Need reproduction steps.

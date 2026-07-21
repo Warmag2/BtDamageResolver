@@ -1,15 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Constants;
+using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Faemiyah.BtDamageResolver.Services.Database;
 using Faemiyah.BtDamageResolver.Services.Events;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orleans.Concurrency;
 using Orleans.Runtime;
 
 namespace Faemiyah.BtDamageResolver.Services;
@@ -17,16 +18,14 @@ namespace Faemiyah.BtDamageResolver.Services;
 /// <summary>
 /// Provides stateful logging methods for grains.
 /// </summary>
-[Reentrant]
 public class LoggingService : GrainService, ILoggingService
 {
-    private const int LoggingDelayMilliseconds = 15000; // Check for logs to write 4 times a minute
-
     private readonly ILogger<LoggingService> _logger;
     private readonly FaemiyahLoggingOptions _loggingOptions;
     private readonly LoggingRepository _loggingRepository;
     private readonly ConcurrentQueue<GameLogEntry> _gameLogEntries;
     private readonly ConcurrentQueue<PlayerLogEntry> _playerLogEntries;
+    private readonly int _loggingIntervalMilliseconds;
     private CancellationTokenSource _cancellationTokenSource;
     private Task _writeLoopTask;
 
@@ -34,24 +33,25 @@ public class LoggingService : GrainService, ILoggingService
     /// Initializes a new instance of the <see cref="LoggingService"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="clusterOptions">The cluster options.</param>
     /// <param name="loggingOptions">The logging options.</param>
+    /// <param name="connectionString">The database connection string.</param>
     /// <param name="grainId">The grain ID.</param>
     /// <param name="silo">The silo.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     public LoggingService(
         ILogger<LoggingService> logger,
-        IOptions<FaemiyahClusterOptions> clusterOptions,
         IOptions<FaemiyahLoggingOptions> loggingOptions,
+        [FromKeyedServices(Settings.PostgresConnectionStringName)] string connectionString,
         GrainId grainId,
         Silo silo,
         ILoggerFactory loggerFactory) : base(grainId, silo, loggerFactory)
     {
         _logger = logger;
         _loggingOptions = loggingOptions.Value;
+        _loggingIntervalMilliseconds = _loggingOptions.LoggingIntervalMilliseconds > 0 ? _loggingOptions.LoggingIntervalMilliseconds : 15000;
         _gameLogEntries = new ConcurrentQueue<GameLogEntry>();
         _playerLogEntries = new ConcurrentQueue<PlayerLogEntry>();
-        _loggingRepository = new LoggingRepository(loggerFactory.CreateLogger<LoggingRepository>(), clusterOptions.Value);
+        _loggingRepository = new LoggingRepository(loggerFactory.CreateLogger<LoggingRepository>(), connectionString);
     }
 
     /// <inheritdoc />
@@ -108,8 +108,8 @@ public class LoggingService : GrainService, ILoggingService
             {
                 if (_gameLogEntries.IsEmpty && _playerLogEntries.IsEmpty)
                 {
-                    _logger.LogDebug("LoggingService has nothing to do, sleeping for {Delay} milliseconds.", LoggingDelayMilliseconds);
-                    await Task.Delay(LoggingDelayMilliseconds, cancellationToken);
+                    _logger.LogDebug("LoggingService has nothing to do, sleeping for {Delay} milliseconds.", _loggingIntervalMilliseconds);
+                    await Task.Delay(_loggingIntervalMilliseconds, cancellationToken);
                 }
                 else
                 {
@@ -135,7 +135,7 @@ public class LoggingService : GrainService, ILoggingService
                 _logger.LogError(ex, "Unexpected exception in log write loop. Retrying after delay.");
                 try
                 {
-                    await Task.Delay(LoggingDelayMilliseconds, cancellationToken);
+                    await Task.Delay(_loggingIntervalMilliseconds, cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {

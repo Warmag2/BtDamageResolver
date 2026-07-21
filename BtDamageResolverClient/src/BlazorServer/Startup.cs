@@ -6,19 +6,16 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
-using Faemiyah.BtDamageResolver.Client.BlazorServer.Hubs;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -52,15 +49,19 @@ public class Startup
     /// For more information on how to configure your application, see https://go.microsoft.com/fwlink/?LinkID=398940.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    public static void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
-        var configuration = GetConfiguration("CommunicationSettings.json");
-
-        services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
-        services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
+        services.Configure<CompressionOptions>(Configuration.GetSection(Settings.CompressionOptionsBlockName));
+        services.Configure<FaemiyahLoggingOptions>(Configuration.GetSection(Settings.LoggingOptionsBlockName));
         services.Configure<CircuitOptions>(options =>
         {
             options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromHours(1);
+
+            // Each retained disconnected circuit keeps its scoped Redis subscription alive and
+            // continues processing its game's messages, so this cap bounds background CPU as well
+            // as memory. Raised to 256 to allow many simultaneously-paused phone clients to reconnect
+            // to their existing circuit within the retention window.
+            options.DisconnectedCircuitMaxRetained = 128;
         })
         .Configure<HttpConnectionDispatcherOptions>(options =>
         {
@@ -72,13 +73,17 @@ public class Startup
             conf.AddFaemiyahLogging();
         });
 
-        services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(configuration["DataProtectionKeysPath"] ?? "/app/dpkeys/"));
+        services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(Configuration["DataProtectionKeysPath"] ?? "/app/dpkeys/"));
         services.AddRazorPages();
         services.AddServerSideBlazor();
         services.AddSignalR(options =>
         {
-            options.EnableDetailedErrors = true;
-            options.MaximumReceiveMessageSize = 1048576;
+            // Detailed SignalR errors echo server-side exception messages to the client, so only
+            // enable them outside of Production to avoid leaking internal details.
+            options.EnableDetailedErrors = !string.Equals(
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+                Environments.Production,
+                StringComparison.OrdinalIgnoreCase);
         });
         services.ConfigureJsonSerializerOptions();
         services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
@@ -91,18 +96,16 @@ public class Startup
         services.AddSingleton<IEntityRepository<Weapon, string>>(GetRedisEntityRepository<Weapon>);
         services.AddSingleton<CommonData>();
         services.AddSingleton<DataHelper>();
-        services.AddScoped<ClientHub>();
         services.AddScoped<LocalStorage>();
-        services.AddScoped<ResolverCommunicator>();
+        services.AddScoped<ClientMessageDispatcher>();
+        services.AddScoped(serviceProvider => new ResolverCommunicator(
+            serviceProvider.GetRequiredService<ILogger<ResolverCommunicator>>(),
+            Configuration.GetConnectionString(Settings.RedisConnectionStringName)
+                ?? throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured."),
+            serviceProvider.GetRequiredService<IOptions<JsonSerializerOptions>>(),
+            serviceProvider.GetRequiredService<DataHelper>(),
+            serviceProvider.GetRequiredService<ClientMessageDispatcher>()));
         services.AddScoped<UserStateController>();
-        services.AddScoped<HubConnection>(serviceProvider =>
-        {
-            var navigationManager = serviceProvider.GetRequiredService<NavigationManager>();
-            return new HubConnectionBuilder()
-            .WithAutomaticReconnect()
-                .WithUrl(navigationManager.ToAbsoluteUri("/ClientHub"))
-                .Build();
-        });
     }
 
     /// <summary>
@@ -133,21 +136,20 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapBlazorHub();
-            endpoints.MapHub<ClientHub>("/ClientHub");
             endpoints.MapFallbackToPage("/_Host");
         });
     }
 
-    private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider)
+    private RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider)
         where TType : class, IEntity<string>
     {
-        var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
+        var connectionString = Configuration.GetConnectionString(Settings.RedisConnectionStringName);
 
-        if (options != null)
+        if (!string.IsNullOrEmpty(connectionString))
         {
-            return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), options.Value.ConnectionString);
+            return new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), connectionString);
         }
 
-        throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
+        throw new InvalidOperationException($"No 'Redis' connection string configured for entity repository of type {typeof(TType)}.");
     }
 }

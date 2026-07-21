@@ -13,7 +13,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc/>
-    public async Task<(decimal Estimate, int Max)> ProjectHeat(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry)
+    public (decimal Estimate, int Max) ProjectHeat(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry)
     {
         var hitChance = GetHitChanceForTargetNumber(targetNumber);
 
@@ -24,7 +24,7 @@ public partial class LogicUnit
 
         int heatGenerated;
 
-        var weapon = await FormWeapon(weaponEntry);
+        var weapon = FormWeapon(weaponEntry);
 
         heatGenerated = weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry)
             ? MathExpression.Parse(rapidFeatureEntry.Data) * ResolveHeatForSingleHit(weapon, rangeBracket)
@@ -101,7 +101,7 @@ public partial class LogicUnit
     {
         if (!combatAction.ActionHappened)
         {
-            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"Combat action was canceled for {combatAction.Weapon.Name} and no heat will be generated"));
+            hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Information, Unit.Id, $"Combat action was cancelled for {combatAction.Weapon.Name} and no heat will be generated"));
             return;
         }
 
@@ -111,18 +111,18 @@ public partial class LogicUnit
             return;
         }
 
-        var calculatedSingleHitheat = ResolveHeatForSingleHit(combatAction.Weapon, combatAction.RangeBracket);
+        var calculatedSingleHitHeat = ResolveHeatForSingleHit(combatAction.Weapon, combatAction.RangeBracket);
         int heat;
 
         if (combatAction.Weapon.HasFeature(WeaponFeature.Rapid, out var rapidFeatureEntry))
         {
             var multiplier = MathExpression.Parse(rapidFeatureEntry.Data);
-            heat = calculatedSingleHitheat * multiplier;
+            heat = calculatedSingleHitHeat * multiplier;
             hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, $"{combatAction.Weapon.Name} rate of fire multiplier for heat", multiplier));
         }
         else
         {
-            heat = calculatedSingleHitheat;
+            heat = calculatedSingleHitHeat;
         }
 
         hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.Heat, Unit.Id, combatAction.Weapon.Name, heat));
@@ -137,10 +137,13 @@ public partial class LogicUnit
     /// Aerospace units may have weapon bays where certain versions of weapons fire for different ranges and produce different amounts of heat.
     /// </remarks>
     /// <param name="weapon">The weapon to resolve heat for.</param>
-    /// <param name="rangeBracket">The range bracket to resolve heat for.</param>
+    /// <param name="rangeBracket">The range bracket to resolve heat for. Intentionally ignored in the base implementation; see remarks.</param>
     /// <returns>The heat produced.</returns>
     protected virtual int ResolveHeatForSingleHit(Weapon weapon, RangeBracket rangeBracket)
     {
+        // NOTE: rangeBracket is intentionally ignored here. For non-aerospace actions, heat is range-independent.
+        // Indexing by rangeBracket here would possibly return 0 for Medium/Long/etc. -ranged hits and produce wrong
+        // heat values. Only LogicUnitAerospace (and capital-ship logic) overrides this and uses rangeBracket.
         return weapon.Heat[RangeBracket.Short];
     }
 }

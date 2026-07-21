@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DataImporter": {
+      "commandName": "Project",
+      "commandLineArgs": "import -s *.json -f ..\\..\\..\\..\\..\\data",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+}

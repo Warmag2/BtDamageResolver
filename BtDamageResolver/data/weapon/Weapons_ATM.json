@@ -8,6 +8,7 @@
       "LRM": "ATM3-LRM"
     },
     "AmmoDefault": "SRM",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Heat": {
       "Short": 2
@@ -48,6 +49,7 @@
       "LRM": "ATM9-LRM"
     },
     "AmmoDefault": "SRM",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Heat": {
       "Short": 6
@@ -68,6 +70,7 @@
       "LRM": "ATM12-LRM"
     },
     "AmmoDefault": "SRM",
+    "MultiAmmo": true,
     "AttackType": "Normal",
     "Heat": {
       "Short": 8

@@ -3,7 +3,6 @@ using AwesomeAssertions;
 using Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 using Faemiyah.BtDamageResolver.Api;
 using NUnit.Framework;
-using static Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver.ExpressionExtensions;
 
 namespace Faemiyah.BtDamageResolver.Tests;
 
@@ -14,15 +13,6 @@ namespace Faemiyah.BtDamageResolver.Tests;
 internal class ExpressionTests
 {
     private const decimal Epsilon = 0.000000000001m;
-
-    /// <summary>
-    /// Test setup.
-    /// </summary>
-    [SetUp]
-    public void Setup()
-    {
-        // Nothing to be done
-    }
 
     /// <summary>
     /// Test for true token validity.
@@ -40,7 +30,7 @@ internal class ExpressionTests
         // Arrange
 
         // Act
-        var result = input.IsToken();
+        var result = Expression.IsToken(input);
 
         // Assert
         result.Should().BeTrue();
@@ -62,7 +52,7 @@ internal class ExpressionTests
         // Arrange
 
         // Act
-        var result = input.IsToken();
+        var result = Expression.IsToken(input);
 
         // Assert
         result.Should().BeFalse();

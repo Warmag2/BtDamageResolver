@@ -15,7 +15,7 @@ using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
 using Faemiyah.BtDamageResolver.Common.Logging;
-using Faemiyah.BtDamageResolver.Common.Options;
+using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Faemiyah.BtDamageResolver.Services;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -111,16 +111,22 @@ internal static class Program
 
     private static IHost CreateSilo()
     {
-        var (clientPort, siloPort) = GetSiloPortConfigurationFromEnvironment();
-        var configuration = GetConfiguration("SiloSettings.json");
-        var clusterOptions = configuration.GetSection(Settings.ClusterOptionsBlockName).Get<FaemiyahClusterOptions>();
+        //var (clientPort, siloPort) = GetSiloPortConfigurationFromEnvironment();
 
         var siloHostBuilder = Host.CreateDefaultBuilder()
-            .ConfigureAppConfiguration((_, config) => config.AddConfiguration(configuration))
-            .UseOrleans(siloBuilder =>
+            .UseOrleans((context, siloBuilder) =>
             {
+                var configuration = context.Configuration;
+                var postgresConnectionString = configuration.GetConnectionString(Settings.PostgresConnectionStringName);
+                if (string.IsNullOrEmpty(postgresConnectionString))
+                {
+                    throw new InvalidOperationException($"No '{Settings.PostgresConnectionStringName}' connection string configured.");
+                }
+
                 siloBuilder
-                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver")));
+                    .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(
+                        isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver"),
+                        jsonSerializerOptions: CreateJsonSerializerOptions()));
                 siloBuilder
                     .Configure<ClusterOptions>(options =>
                     {
@@ -135,41 +141,30 @@ internal static class Program
                         options.NumMissedTableIAmAliveLimit = 1;
                         options.NumVotesForDeathDeclaration = 1;
                     })
-                    .Configure<SiloMessagingOptions>(options =>
-                    {
-                        options.MaxRequestProcessingTime = TimeSpan.FromSeconds(15);
-                        options.SystemResponseTimeout = TimeSpan.FromSeconds(15);
-                    })
-                    .Configure<MessagingOptions>(options =>
-                    {
-                        options.DropExpiredMessages = true;
-                        options.ResponseTimeout = TimeSpan.FromSeconds(15);
-                        options.ResponseTimeoutWithDebugger = TimeSpan.FromMinutes(15);
-                    })
                     .UseAdoNetClustering(options =>
                     {
-                        options.Invariant = clusterOptions?.Invariant;
-                        options.ConnectionString = clusterOptions?.ConnectionString;
+                        options.Invariant = "Npgsql";
+                        options.ConnectionString = postgresConnectionString;
                     })
-                    .AddGrainStorage(Settings.ActorStateStoreName, clusterOptions)
-                    .AddGrainStorage(Settings.SessionStateStoreName, clusterOptions)
+                    .AddGrainStorage(Settings.ActorStateStoreName, postgresConnectionString)
+                    .AddGrainStorage(Settings.SessionStateStoreName, postgresConnectionString)
                     .Configure<EndpointOptions>(options =>
                     {
                         options.AdvertisedIPAddress = GetHostIp();
 
                         // The socket used for silo-to-silo will bind to this endpoint
-                        options.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, clientPort);
+                        //options.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, clientPort);
 
                         // The socket used by the gateway will bind to this endpoint
-                        options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, siloPort);
+                        //options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, siloPort);
                     })
                     .AddGrainService<CommunicationService>()
                     .AddGrainService<LoggingService>()
                     .ConfigureServices(services =>
                     {
+                        services.AddKeyedSingleton<string>(Settings.PostgresConnectionStringName, postgresConnectionString);
                         services.ConfigureJsonSerializerOptions();
-                        services.Configure<CommunicationOptions>(configuration.GetSection(Settings.CommunicationOptionsBlockName));
-                        services.Configure<FaemiyahClusterOptions>(configuration.GetSection(Settings.ClusterOptionsBlockName));
+                        services.Configure<CompressionOptions>(configuration.GetSection(Settings.CompressionOptionsBlockName));
                         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
                         services.AddLogging(conf =>
                         {
@@ -178,6 +173,13 @@ internal static class Program
                         });
                         services.Configure<ConsoleLifetimeOptions>(opt => opt.SuppressStatusMessages = true);
                         services.AddSingleton<ICommunicationServiceClient, CommunicationServiceClient>();
+                        services.AddSingleton(serviceProvider => new ServerToClientCommunicator(
+                            serviceProvider.GetRequiredService<ILogger<ServerToClientCommunicator>>(),
+                            serviceProvider.GetRequiredService<IOptions<JsonSerializerOptions>>(),
+                            serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString(Settings.RedisConnectionStringName)
+                                ?? throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured."),
+                            serviceProvider.GetRequiredService<DataHelper>(),
+                            serviceProvider.GetRequiredService<IGrainFactory>()));
                         services.AddSingleton<IHasher, FaemiyahPasswordHasher>();
                         services.AddSingleton<ILoggingServiceClient, LoggingServiceClient>();
                         services.AddSingleton<ILogicUnitFactory, LogicUnitFactory>();
@@ -221,18 +223,18 @@ internal static class Program
     private static RedisEntityRepository<TType> GetRedisEntityRepository<TType>(IServiceProvider serviceProvider)
         where TType : class, IEntity<string>
     {
-        var options = serviceProvider.GetService<IOptions<CommunicationOptions>>();
-        return options != null
-            ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), options.Value.ConnectionString)
-            : throw new InvalidOperationException($"Unable to resolve options class providing connection string for entity repository of type {typeof(TType)}.");
+        var connectionString = serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString(Settings.RedisConnectionStringName);
+        return !string.IsNullOrEmpty(connectionString)
+            ? new RedisEntityRepository<TType>(serviceProvider.GetService<ILogger<RedisEntityRepository<TType>>>(), serviceProvider.GetService<IOptions<JsonSerializerOptions>>(), connectionString)
+            : throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured for entity repository of type {typeof(TType)}.");
     }
 
-    private static ISiloBuilder AddGrainStorage(this ISiloBuilder siloHostBuilder, string name, FaemiyahClusterOptions clusterOptions)
+    private static ISiloBuilder AddGrainStorage(this ISiloBuilder siloHostBuilder, string name, string connectionString)
     {
         siloHostBuilder.AddAdoNetGrainStorage(name, options =>
         {
-            options.Invariant = clusterOptions.Invariant;
-            options.ConnectionString = clusterOptions.ConnectionString;
+            options.Invariant = Settings.PostgresInvariantName;
+            options.ConnectionString = connectionString;
         });
 
         return siloHostBuilder;

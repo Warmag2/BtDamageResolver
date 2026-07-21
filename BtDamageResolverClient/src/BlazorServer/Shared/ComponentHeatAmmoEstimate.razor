@@ -1,58 +1,77 @@
 ﻿@inherits BaseFaemiyahComponent
 @using Faemiyah.BtDamageResolver.Api.Entities
+@using Faemiyah.BtDamageResolver.Api.Constants
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 @implements IDisposable
 
 @{
-    var targetNumberUpdate = _userStateController.GetTargetNumberUpdate(Unit.Id);
+    var targetNumberUpdate = _userStateController.GetTargetNumberUpdate(UnitEntry.Id);
 }
 
 @if (targetNumberUpdate != null)
 {
-    <div>
-        @if (targetNumberUpdate.HeatWorstCase > 0)
+    @if (targetNumberUpdate.HeatWorstCase > 0)
+    {
+        <div class="resolver_div_estimate resolver_div_estimate_header">
+            Projected heat:
+        </div>
+        <div class="resolver_div_estimate">
+            @targetNumberUpdate.HeatEstimate.ToString(DisplayConstants.NumberFormat)
+            @if (targetNumberUpdate.HeatEstimate != targetNumberUpdate.HeatWorstCase)
+            {
+                @($" ({targetNumberUpdate.HeatWorstCase})")
+            }
+            &rarr;
+            @((targetNumberUpdate.HeatEstimate + UnitEntry.Consumables.Heat - UnitEntry.Sinks).ToString(DisplayConstants.NumberFormat))
+        </div>
+    }
+
+    @if (targetNumberUpdate.AmmoEstimate.Any())
+    {
+        <div class="resolver_div_estimate resolver_div_estimate_header">
+            Projected ammo usage:
+        </div>
+        foreach (var item in targetNumberUpdate.AmmoEstimate)
         {
-            <div>
-                Projected heat: @targetNumberUpdate.HeatEstimate
-                @if (targetNumberUpdate.HeatEstimate != targetNumberUpdate.HeatWorstCase)
+            <div class="resolver_div_estimate">
+                @($"{item.Key}: {item.Value.ToString(DisplayConstants.NumberFormat)}")
+                @if (targetNumberUpdate.AmmoWorstCase[item.Key] != targetNumberUpdate.AmmoEstimate[item.Key])
                 {
-                    @($" ({targetNumberUpdate.HeatWorstCase})")
+                    @($" ({targetNumberUpdate.AmmoWorstCase[item.Key]})")
                 }
             </div>
         }
-
-        @if (targetNumberUpdate.AmmoEstimate.Any())
-        {
-            <div>
-                Projected ammo usage:
-            </div>
-            foreach (var item in targetNumberUpdate.AmmoEstimate)
-            {
-                <div>
-                    @($"{item.Key}: {item.Value}")
-                    @if (targetNumberUpdate.AmmoWorstCase[item.Key] != targetNumberUpdate.AmmoEstimate[item.Key])
-                    {
-                        @($" ({targetNumberUpdate.AmmoWorstCase[item.Key]})")
-                    }
-                </div>
-            }
-        }
-    </div>
+    }
 }
 
 @code
 {
+    private DateTime _targetNumberTimeStamp;
+
     [Parameter]
-    public UnitEntry Unit { get; set; }
+    public UnitEntry UnitEntry { get; set; }
 
     protected override void OnInitialized()
     {
-        _userStateController.OnTargetNumbersUpdated += InvokeStateChange;
+        _targetNumberTimeStamp = _userStateController.GetTargetNumberUpdate(UnitEntry.Id)?.TimeStamp ?? DateTime.MinValue;
+        _userStateController.OnTargetNumbersUpdated += CheckRefresh;
+    }
+
+    // Only re-render when the target number update for THIS unit actually changed,
+    // rather than on every global target number packet.
+    private void CheckRefresh()
+    {
+        var timeStamp = _userStateController.GetTargetNumberUpdate(UnitEntry.Id)?.TimeStamp ?? DateTime.MinValue;
+        if (timeStamp != _targetNumberTimeStamp)
+        {
+            _targetNumberTimeStamp = timeStamp;
+            InvokeStateChange();
+        }
     }
 
     public void Dispose()
     {
-        _userStateController.OnTargetNumbersUpdated -= InvokeStateChange;
+        _userStateController.OnTargetNumbersUpdated -= CheckRefresh;
     }
 }

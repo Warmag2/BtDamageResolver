@@ -38,12 +38,7 @@ public abstract class RedisServerToClientCommunicator : RedisCommunicator, IServ
     public void SendToAll<TType>(string envelopeType, TType data)
         where TType : class
     {
-        var clientCount = SendEnvelope(ClientStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
-
-        if (clientCount == 0)
-        {
-            Logger.LogWarning("SendEnvelope delivered a global message of type {EnvelopeType} to zero clients.", envelopeType);
-        }
+        SendEnvelope(ClientStreamAddress, new Envelope(envelopeType, DataHelper.Pack(data)));
     }
 
     /// <inheritdoc />
@@ -51,10 +46,7 @@ public abstract class RedisServerToClientCommunicator : RedisCommunicator, IServ
         where TType : class
     {
         var envelope = new Envelope(envelopeType, DataHelper.Pack(data));
-        foreach (var clientName in clientNames)
-        {
-            SendSingle(clientName, envelope);
-        }
+        SendEnvelopeToMany(clientNames, envelope);
     }
 
     /// <inheritdoc />
@@ -123,7 +115,7 @@ public abstract class RedisServerToClientCommunicator : RedisCommunicator, IServ
                 await HandleGetGameStateRequest(envelope.Data, envelope.CorrelationId);
                 break;
             case RequestNames.GetPlayerOptions:
-                await HandleGetGameOptionsRequest(envelope.Data, envelope.CorrelationId);
+                await HandleGetPlayerOptionsRequest(envelope.Data, envelope.CorrelationId);
                 break;
             case RequestNames.ForceReady:
                 await HandleForceReadyRequest(envelope.Data, envelope.CorrelationId);

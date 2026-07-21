@@ -14,6 +14,7 @@
     "Troopers": 1,
     "WeaponBays": [
         {
+            "Arc": "Default",
             "Weapons": [
                 {
                     "Amount": 1,

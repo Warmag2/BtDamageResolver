@@ -1,4 +1,5 @@
 ﻿* text auto
+*.sh text eol=lf
 *.cdr -text
 *.exe -text
 *.dll -text

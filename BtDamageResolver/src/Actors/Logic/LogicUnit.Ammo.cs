@@ -12,7 +12,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc/>
-    public async Task<(decimal Estimate, int Max)> ProjectAmmo(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry)
+    public (decimal Estimate, int Max) ProjectAmmo(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry)
     {
         var hitChance = GetHitChanceForTargetNumber(targetNumber);
 
@@ -20,7 +20,7 @@ public partial class LogicUnit
 
         // This can only be a single weapon or a multiplied weapon.
         // No need to loop through different ammo usages in the bay.
-        var weapon = await FormWeapon(weaponEntry);
+        var weapon = FormWeapon(weaponEntry);
 
         if (!weapon.UsesAmmo || hitChance == 0m)
         {
@@ -75,8 +75,17 @@ public partial class LogicUnit
     /// <param name="weapon">The weapon to apply ammo usage from.</param>
     protected void SpendAmmo(DamageReport damageReport, Weapon weapon)
     {
-        var ammoName = $"{weapon.Name} {weapon.AppliedAmmo}";
+        string ammoName;
         var ammoUsed = 1;
+
+        if (!weapon.MultiAmmo)
+        {
+            ammoName = weapon.Name;
+        }
+        else
+        {
+            ammoName = weapon.AmmoProxyName == null ? $"{weapon.Name} {weapon.AppliedAmmo}" : $"{weapon.Name} {weapon.AmmoProxyName}";
+        }
 
         if (weapon.Instances > 1)
         {

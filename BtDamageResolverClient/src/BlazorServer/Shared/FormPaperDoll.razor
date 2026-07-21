@@ -1,7 +1,7 @@
-﻿@using System.Globalization
+﻿@inherits BaseFaemiyahComponent
+@using System.Globalization
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Enums
-@using Faemiyah.BtDamageResolver.Api.Extensions
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 
@@ -28,6 +28,9 @@
             case PaperDollType.Mech:
                 <FormPaperDollMech FormPaperDoll="@this" />
                 break;
+            case PaperDollType.MechQuad:
+                <FormPaperDollMechQuad FormPaperDoll="@this" />
+                break;
             case PaperDollType.BattleArmor:
                 <FormPaperDollBattleArmor FormPaperDoll="@this" DamageReport="@DamageReport" />
                 break;
@@ -46,105 +49,53 @@
         }
     </div>
 
-    <div class="resolver_div_damagereport">
-        @foreach (var location in DamagePaperDoll.DamageCollection)
+    <div class="resolver_div_damagereport clickable" @onclick="@OnSummaryToggle">
+        <div class="resolver_div_damagereporttoggleheader">
+            <b>@(_showSummary ? "Damage Summary" : "Damage detail")</b>
+            &nbsp;
+            ⇅
+        </div>
+        @if (_showSummary)
         {
-            var damageInLocation = location.Value.SelectMany(l => l.Value).Sum();
-            var criticalDamagePresent = DamagePaperDoll.DamageCollectionCritical.ContainsKey(location.Key);
-
-            if (damageInLocation > 0 || criticalDamagePresent)
+            @foreach (var location in DamagePaperDoll.Locations)
             {
+                var damageInLocation = LocationsWithDamage[location].Where(odp => !odp.DamageEntry.IsCritical && !odp.DamageEntry.IsSpecial).Sum(odp => odp.DamageEntry.DamageAmount);
+                var criticalDamageEntries = LocationsWithDamage[location].Where(odp => odp.DamageEntry.IsCritical).Select(odp => odp.DamageEntry).ToList();
+                var specialDamageEntries = LocationsWithDamage[location].Where(odp => odp.DamageEntry.IsSpecial).Select(odp => odp.DamageEntry).ToList();
+                
                 <div class="damageentry">
-                    <b>@location.Key</b>
-                    
-                    @if (damageInLocation > 0)
+                    <b>@location</b>
+                    <br />
+                    @damageInLocation
+                
+                    @foreach (var criticalDamageEntry in criticalDamageEntries)
                     {
                         <br />
-                        @location.Value.SelectMany(l => l.Value).Sum()
+                        @(criticalDamageEntry.ToString())
                     }
 
-                    @if (criticalDamagePresent)
+                    @foreach (var specialDamageEntry in specialDamageEntries)
                     {
-                        foreach (var criticalDamageEntryList in DamagePaperDoll.DamageCollectionCritical[location.Key])
-                        {
-                            foreach (var criticalDamageEntry in criticalDamageEntryList.Value)
-                            {
-                                <br />
-
-                                if (DamageReport.FiringUnitIds.Count > 1 && DamageReport.FiringUnitNames.ContainsKey(criticalDamageEntryList.Key))
-                                {
-                                    @(DamageReport.FiringUnitNames[criticalDamageEntryList.Key] + " — ")
-                                }
-
-                                switch (criticalDamageEntry.Type)
-                                {
-                                    case CriticalDamageType.Critical:
-                                        @("Critical hit")
-                                        break;
-                                    case CriticalDamageType.Immobilized:
-                                        @("Immobilized")
-                                        break;
-                                    case CriticalDamageType.HeavyMotive:
-                                        @("Heavy motive damage")
-                                        break;
-                                    case CriticalDamageType.LightMotive:
-                                        @("Light motive damage")
-                                        break;
-                                    case CriticalDamageType.ModerateMotive:
-                                        @("Moderate motive damage")
-                                        break;
-                                    case CriticalDamageType.LimbBlownOff:
-                                        @("Limb blown off")
-                                        break;
-                                    default:
-                                        switch (criticalDamageEntry.ThreatType)
-                                        {
-                                            case CriticalThreatType.DamageThreshold:
-                                                @($"Critical threat to: {criticalDamageEntry.Type} (Threshold {criticalDamageEntry.InducingDamage})")
-                                                break;
-                                            case CriticalThreatType.Normal:
-                                                @($"Critical damage to: {criticalDamageEntry.Type} ({criticalDamageEntry.InducingDamage})")
-                                                break;
-                                            default:
-                                                @($"Unknown critical threat type: {criticalDamageEntry.ThreatType}")
-                                                break;
-                                        }
-
-                                        break;
-                                }
-                            }
-                        }
+                        <br />
+                        @(specialDamageEntry.ToString())
                     }
                 </div>
             }
         }
-
-        @foreach (var specialDamageEntryGroup in DamagePaperDoll.DamageCollectionSpecial.SelectMany(p => p.Value).SelectMany(p => p.Value).GroupBy(s => s.Type))
+        else
         {
-            if (specialDamageEntryGroup.Key == SpecialDamageType.PilotingSkillRoll)
+            foreach (var (damageOwnerId, damageEntry) in DamagePaperDoll.DamageCollection.SelectMany(kvp => kvp.Value.Select(entity => (kvp.Key, entity))).ToList())
             {
-                foreach (var value in specialDamageEntryGroup)
-                {
-                    <div class="damageentry">
-                        <b>
-                            @specialDamageEntryGroup.Key
-                        </b>
-                        &rarr;
-                        <b>
-                            @(int.TryParse(value.Data, out var parsedValue) ? parsedValue.ToStringExplicit() : value.Data)
-                        </b>
-                    </div>
-                }
-            }
-            else {
                 <div class="damageentry">
-                    <b>
-                        @specialDamageEntryGroup.Key
-                    </b>
-                    &rarr;
-                    <b>
-                        @specialDamageEntryGroup.Sum(s => int.TryParse(s.Data, out var v) ? v : 0)
-                    </b>
+                    @if (IsCombinedDamageReport)
+                    {
+                        @DamageReport.FiringUnitNames[damageOwnerId]
+                        <text>&mdash;</text>
+                    }
+
+                    <b>@damageEntry.Location</b>
+                    &mdash;
+                    @($"{damageEntry}")
                 </div>
             }
         }
@@ -152,45 +103,86 @@
 </div>
 
 @code {
-
     [Parameter]
     public DamagePaperDoll DamagePaperDoll { get; set; }
 
     [Parameter]
     public DamageReport DamageReport { get; set; }
 
+    private DamagePaperDoll _lastRenderedPaperDoll;
+    private DamageReport _lastRenderedDamageReport;
+    private bool _lastRenderedShowSummary;
+    private bool _isCombinedDamageReport;
+    private bool _showSummary;
+    private readonly Dictionary<Location, List<(Guid OwnerId, DamageEntry DamageEntry)>> _locationsWithDamage = new();
+    private readonly Dictionary<Location, int> _locationDamages = new();
+
+    public bool IsCombinedDamageReport => _isCombinedDamageReport;
+    public Dictionary<Location, List<(Guid OwnerId, DamageEntry DamageEntry)>> LocationsWithDamage => _locationsWithDamage;
+    public Dictionary<Location, int> LocationDamages => _locationDamages;
+
+    // This component (and its paper doll variant + per-region children) is a pure projection of
+    // DamagePaperDoll + DamageReport with no internal interactive state. It lives on the DamageReports
+    // tab, which re-renders on every unrelated gamestate broadcast while it is open; skip those redundant
+    // renders — and the per-region damage colour/tooltip work they drive — unless one of the bound objects
+    // actually changes. New damage reports arrive as new object instances, so reference equality is the
+    // correct and cheapest signal.
+    protected override bool ShouldRender()
+    {
+        return !ReferenceEquals(_lastRenderedPaperDoll, DamagePaperDoll)
+            || !ReferenceEquals(_lastRenderedDamageReport, DamageReport)
+            || _lastRenderedShowSummary != _showSummary;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _showSummary = _userStateController.PlayerOptions?.DamageReportsShowSummary ?? true;
+        _isCombinedDamageReport = DamageReport.FiringUnitIds.Count > 1;
+
+        _locationsWithDamage.Clear();
+        _locationDamages.Clear();
+
+        foreach (var location in DamagePaperDoll.Locations)
+        {
+            LocationsWithDamage.Add(location, DamagePaperDoll.DamageCollection.SelectMany(kvp => kvp.Value.Select(entity => (kvp.Key, entity))).Where(odp => odp.entity.Location == location).ToList());
+            LocationDamages.Add(location, LocationsWithDamage[location].Sum(odp => odp.DamageEntry.DamageAmount));
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        _lastRenderedPaperDoll = DamagePaperDoll;
+        _lastRenderedDamageReport = DamageReport;
+        _lastRenderedShowSummary = _showSummary;
+    }
+
     public bool AnyDamage(Location location)
     {
-        return DamagePaperDoll.DamageCollection.ContainsKey(location);
+        return LocationsWithDamage.ContainsKey(location);
     }
 
     public string GetDamageText(Location location)
     {
-        if(DamagePaperDoll.DamageCollection.ContainsKey(location))
+        if(LocationsWithDamage.ContainsKey(location))
         {
-            if (DamageReport.FiringUnitIds.Count > 1)
+            if (IsCombinedDamageReport)
             {
-                var damageOwnerPairs =
-                    DamagePaperDoll.DamageCollection[location]
-                        .SelectMany(kvp => kvp.Value.Select(Damage => (kvp.Key, Damage)))
-                        .ToList();
-
-                return $"'<b>{location}</b><br>{string.Join("<br>", damageOwnerPairs.Select(dop => $"{DamageReport.FiringUnitNames[dop.Key]} — {dop.Damage}"))}'";
+                return $"<b>{location}</b><br>{string.Join("<br>", LocationsWithDamage[location].Select(dep => $"{System.Net.WebUtility.HtmlEncode(DamageReport.FiringUnitNames[dep.OwnerId])} — {dep.DamageEntry}"))}";
             }
             else
             {
-                return $"'<b>{location}</b><br>{string.Join("<br>", DamagePaperDoll.DamageCollection[location].SelectMany(dc => dc.Value))}'";
+                return $"<b>{location}</b><br>{string.Join("<br>", LocationsWithDamage[location].Select(dep => dep.DamageEntry.ToString()))}";
             }
         }
 
-        return $"'<b>{location}</b><br>0'";
+        return $"<b>{location}</b><br>0";
     }
 
     public string GetDamageColor(Location location)
     {
-        if (DamagePaperDoll.DamageCollection.ContainsKey(location))
+        if (LocationsWithDamage.ContainsKey(location))
         {
-            var damage = DamagePaperDoll.DamageCollection[location].SelectMany(l => l.Value).Sum();
+            var damage = LocationsWithDamage[location].Sum(odp => odp.DamageEntry.DamageAmount);
 
             if (damage > 0)
             {
@@ -211,5 +203,11 @@
         var white = decimal.ToInt32(Math.Clamp((damageScalingMax - scaledDamage * 2) / damageScalingMax, 0m, 1m)*255m).ToString("X2", NumberFormatInfo.InvariantInfo);
 
         return $"#{red}{white}{white}";
+    }
+
+    private void OnSummaryToggle()
+    {
+        _showSummary = !_showSummary;
+        InvokeStateChange();
     }
 }

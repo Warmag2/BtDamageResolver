@@ -102,9 +102,10 @@ public interface ILogicUnit
     /// <summary>
     /// Gets the modifier to hit resolution from unit stance.
     /// </summary>
+    /// <param name="weapon">The weapon being fired.</param>
     /// <param name="distance">The distance to target.</param>
     /// <returns>The modifier to hit resolution from unit stance.</returns>
-    int GetStanceModifier(int distance);
+    int GetStanceModifier(Weapon weapon, int distance);
 
     /// <summary>
     /// Gets the modifier to hit resolution from unit type.
@@ -140,7 +141,7 @@ public interface ILogicUnit
     /// <param name="rangeBracket">The range bracket to calculate the projection for.</param>
     /// <param name="weaponEntry">The weapon entry to calculate projection for.</param>
     /// <returns>A tuple containing the estimated and maximum ammo usage.</returns>
-    Task<(decimal Estimate, int Max)> ProjectAmmo(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry);
+    (decimal Estimate, int Max) ProjectAmmo(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry);
 
     /// <summary>
     /// Calculates projected heat generation for weapon.
@@ -149,7 +150,7 @@ public interface ILogicUnit
     /// <param name="rangeBracket">The range bracket to calculate the projection for.</param>
     /// <param name="weaponEntry">The weapon entry to calculate the projection for.</param>
     /// <returns>A tuple containing the estimated and maximum heat generation.</returns>
-    Task<(decimal Estimate, int Max)> ProjectHeat(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry);
+    (decimal Estimate, int Max) ProjectHeat(int targetNumber, RangeBracket rangeBracket, WeaponEntry weaponEntry);
 
     /// <summary>
     /// Transforms a cluster roll based on unit type and possible other properties.
@@ -243,10 +244,10 @@ public interface ILogicUnit
     /// <param name="weaponBay">The weapon bay the weapon is in.</param>
     /// <param name="weaponEntry">The weapon entry used.</param>
     /// <returns>A tuple with the hit modifier and the range bracket.</returns>
-    Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry);
+    (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry);
 
     /// <summary>
-    /// Calculates all heat buildup not related to weapon fire.
+    /// Calculates all heat build-up not related to weapon fire.
     /// </summary>
     /// <returns>A damage report with non-weapon heat information.</returns>
     Task<DamageReport> ResolveNonWeaponHeat();

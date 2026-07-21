@@ -3,15 +3,6 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 
-@{
-    var combinedDamageReport = DamageReports[0].BlankCopy();
-
-    foreach (var damageReport in DamageReports)
-    {
-        combinedDamageReport.Merge(damageReport);
-    }
-}
-
 @if (DamageReports.Count > 1)
 {
     <div class="resolver_div_damagereportgroup">
@@ -23,14 +14,14 @@
         </div>
         @if (_combined)
         {
-            <FormDamageReport DamageReport=@combinedDamageReport></FormDamageReport>
+            <FormDamageReport AllowDelete="false" DamageReport=@_combinedDamageReport></FormDamageReport>
         }
         else
         {
             <div class="resolver_div_damagereportgroupcontent">
                 @foreach (var damageReport in DamageReports)
                 {
-                    <FormDamageReport DamageReport=@damageReport></FormDamageReport>
+                    <FormDamageReport AllowDelete="true" DamageReport=@damageReport></FormDamageReport>
                 }
             </div>
         }
@@ -38,18 +29,43 @@
 }
 else
 {
-    <FormDamageReport DamageReport=@DamageReports[0]></FormDamageReport>
+    <FormDamageReport AllowDelete="true" DamageReport=@DamageReports[0]></FormDamageReport>
 }
 
 @code
 {
     private bool _combined;
+    private bool _combinedInitialized;
+    private List<DamageReport> _mergedSource;
+    private DamageReport _combinedDamageReport;
 
     [Parameter]
     public List<DamageReport> DamageReports { get; set; }
 
     protected override void OnParametersSet()
     {
-        _combined = _userStateController.PlayerOptions?.ShowCombinedDamageReports ?? false;
+        // Only seed the combined state from player options once. Rebuilding the parent report list
+        // (e.g. when new damage reports arrive) re-runs OnParametersSet on persisted containers, so
+        // resetting here would discard the user's manual Combine/Split choice.
+        if (!_combinedInitialized)
+        {
+            _combined = _userStateController.PlayerOptions?.DamageReportsCombine ?? false;
+            _combinedInitialized = true;
+        }
+
+        // Recreation guard that allows FormPaperDoll's ShouldRender guard skip redundant re-renders in combined mode,
+        // as the combined damage report's identity is preserved if the source damage reports haven't changed.
+        if (_mergedSource == null || !_mergedSource.SequenceEqual(DamageReports))
+        {
+            var combinedDamageReport = DamageReports[0].BlankCopy();
+
+            foreach (var damageReport in DamageReports)
+            {
+                combinedDamageReport.Merge(damageReport);
+            }
+
+            _combinedDamageReport = combinedDamageReport;
+            _mergedSource = DamageReports.ToList();
+        }
     }
 }

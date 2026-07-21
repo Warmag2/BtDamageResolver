@@ -1,0 +1,33 @@
+{
+    "Features": [
+        "BattleFists",
+        "Rugged"
+    ],
+    "JumpJets": 5,
+    "Sinks": 17,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 55,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-15"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Shadow Hawk SHD-2K"
+}

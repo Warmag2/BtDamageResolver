@@ -13,12 +13,12 @@
 }
 else
 {
-    @foreach (var singleTurnDamageReports in _damageReportsToShow.Reverse())
+    @foreach (var displayTurn in _damageReportsToShow)
     {
-        <ContainerAccordion Enabled=@_userStateController.DamageReportContainer.Visible(singleTurnDamageReports.Key) Title=@($"Turn {singleTurnDamageReports.Key}")>
-            @foreach (var damageReports in singleTurnDamageReports.Value.GroupBy(dr => $"{dr.TargetUnitId}-{dr.Phase}"))
+        <ContainerAccordion Enabled=@_userStateController.DamageReportContainer.Visible(displayTurn.Turn) Title=@($"Turn {displayTurn.Turn}")>
+            @foreach (var reportGroup in displayTurn.ReportGroups)
             {
-                <FormDamageReportContainer DamageReports=@damageReports.ToList()></FormDamageReportContainer>
+                <FormDamageReportContainer @key=@(string.Join(",", reportGroup.Select(r => r.Id))) DamageReports=@reportGroup></FormDamageReportContainer>
             }
         </ContainerAccordion>
     }
@@ -26,7 +26,9 @@ else
 
 @code
 {
-    private SortedDictionary<int, List<DamageReport>> _damageReportsToShow = new();
+    private List<(int Turn, List<List<DamageReport>> ReportGroups)> _damageReportsToShow = new();
+    private (DateTime ContainerTimeStamp, bool? SpectatorStatus, bool ShowOther, bool ShowMovement, long GlobalUnitHash, bool OnlyNewest)? _lastSignature;
+    private bool _shouldRender = true;
 
     [Parameter]
     public bool OnlyNewest { get; set; }
@@ -39,52 +41,100 @@ else
 
     protected override void OnParametersSet()
     {
-        BuildDamageReportsToShow();
+        RefreshState();
     }
 
     private void OnDataChanged()
     {
-        BuildDamageReportsToShow();
+        RefreshState();
         InvokeStateChange();
+    }
+
+    // Single gate driving both the rebuild and ShouldRender. The signature captures everything the whole
+    // subtree renders from: the (fixed-per-version) report set via DamageReportContainer.TimeStamp, the
+    // display options, the player's spectator status, and the global UnitListHash.
+    private void RefreshState()
+    {
+        var playerState = _userStateController.PlayerState;
+        var signature = (
+            _userStateController.DamageReportContainer?.TimeStamp ?? default,
+            playerState?.IsSpectator,
+            _userStateController.PlayerOptions?.DamageReportsShowOtherPlayers ?? false,
+            _userStateController.PlayerOptions?.DamageReportsShowMovement ?? false,
+            _userStateController.UnitListHash,
+            OnlyNewest);
+
+        if (_lastSignature == signature)
+        {
+            return;
+        }
+
+        _lastSignature = signature;
+        _shouldRender = true;
+        BuildDamageReportsToShow();
+    }
+
+    protected override bool ShouldRender()
+    {
+        if (_shouldRender)
+        {
+            _shouldRender = false;
+
+            return true;
+        }
+
+        return false;
     }
 
     private void BuildDamageReportsToShow()
     {
-        var showOtherPlayers = _userStateController.PlayerOptions?.ShowOtherPlayersDamageReports ?? false;
-        var showMovement = _userStateController.PlayerOptions?.ShowMovementDamageReports ?? false;
-        var result = new SortedDictionary<int, List<DamageReport>>();
+        var showOtherPlayers = _userStateController.PlayerOptions?.DamageReportsShowOtherPlayers ?? false;
+        var showMovement = _userStateController.PlayerOptions?.DamageReportsShowMovement ?? false;
+        var filtered = new SortedDictionary<int, List<DamageReport>>();
 
         if (!_userStateController.DamageReportContainer.IsEmpty())
         {
             if (OnlyNewest)
             {
                 var last = _userStateController.DamageReportContainer.DamageReports.Last();
-                result.Add(last.Key, new());
+                filtered.Add(last.Key, new());
                 foreach (var damageReport in last.Value)
                 {
                     if ((_userStateController.PlayerState?.IsSpectator == true || showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport)) &&
                         (showMovement || damageReport.Phase != Phase.Movement))
                     {
-                        result[last.Key].Add(damageReport);
+                        filtered[last.Key].Add(damageReport);
                     }
                 }
             }
             else
             {
-                foreach (var singleTurnDamageReports in _userStateController.DamageReportContainer.DamageReports.Reverse())
+                foreach (var singleTurnDamageReports in _userStateController.DamageReportContainer.DamageReports)
                 {
                     var turn = singleTurnDamageReports.Key;
-                    result.Add(turn, new());
+                    filtered.Add(turn, new());
                     foreach (var damageReport in singleTurnDamageReports.Value)
                     {
                         if ((_userStateController.PlayerState?.IsSpectator == true || showOtherPlayers || _userStateController.DamageReportConcernsPlayer(damageReport)) &&
                             (showMovement || damageReport.Phase != Phase.Movement))
                         {
-                            result[turn].Add(damageReport);
+                            filtered[turn].Add(damageReport);
                         }
                     }
                 }
             }
+        }
+
+        var result = new List<(int Turn, List<List<DamageReport>> ReportGroups)>(filtered.Count);
+        foreach (var singleTurnDamageReports in filtered.Reverse())
+        {
+            var groups = new List<List<DamageReport>>();
+            foreach (var group in singleTurnDamageReports.Value.GroupBy(damageReport => $"{damageReport.TargetUnitId}-{damageReport.Phase}"))
+            {
+                groups.Add(group.ToList());
+            }
+
+            result.Add((singleTurnDamageReports.Key, groups));
         }
 
         _damageReportsToShow = result;

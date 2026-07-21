@@ -1,0 +1,36 @@
+@using Faemiyah.BtDamageResolver.Api.Enums
+
+@if (Path == null)
+{
+    <polygon fill="@FillColor" stroke="black" stroke-width="100" stroke-linejoin="@LineJoin" points="@Points"
+             data-tooltip-id="resolver_tooltip_paperdoll" data-tooltip-content="@FormPaperDoll.GetDamageText(Location)" />
+}
+else
+{
+    <path fill="@FillColor" stroke="black" stroke-width="100" stroke-linejoin="@LineJoin" d="@Path"
+          data-tooltip-id="resolver_tooltip_paperdoll" data-tooltip-content="@FormPaperDoll.GetDamageText(Location)" />
+}
+
+@code {
+    [Parameter]
+    public FormPaperDoll FormPaperDoll { get; set; }
+
+    [Parameter]
+    public Location Location { get; set; }
+
+    [Parameter]
+    public string Points { get; set; }
+
+    [Parameter]
+    public string Path { get; set; }
+
+    [Parameter]
+    public bool RoundJoin { get; set; }
+
+    [Parameter]
+    public string Fill { get; set; }
+
+    private string FillColor => Fill ?? FormPaperDoll.GetDamageColor(Location);
+
+    private string LineJoin => RoundJoin ? "round" : null;
+}

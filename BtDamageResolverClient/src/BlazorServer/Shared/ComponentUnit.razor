@@ -2,130 +2,121 @@
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
 @inject UserStateController _userStateController
 
-<div class="resolver_div_componentcontainer">
-    <div class="resolver_div_componentrow">
-        <div class="resolver_div_componentcell resolver_div_unitname">
-            @UnitEntry.Name
-        </div>
+<div class="resolver_div_componentcontainer resolver_div_unitcard">
+    <div class="resolver_div_componentcell resolver_div_unitname">
+        @UnitEntry.Name
     </div>
 
-    <div class="resolver_div_componentrow">
-        <div class="resolver_div_componentgroup tablerows">
+    <div class="resolver_div_componentgroup tablerows">
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_componentcell">Type</div>
+            <div class="resolver_div_componentcell">@UnitEntry.Type</div>
+        </div>
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_componentcell">Gunnery/Piloting</div>
+            <div class="resolver_div_componentcell">@UnitEntry.Gunnery / @UnitEntry.Piloting</div>
+        </div>
+        <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetTonnageHidden(UnitEntry.Type)))">
+            <div class="resolver_div_componentcell">Tonnage</div>
+            <div class="resolver_div_componentcell">@UnitEntry.Tonnage</div>
+        </div>
+        <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetTroopersHidden(UnitEntry.Type)))">
+            <div class="resolver_div_componentcell">Troopers</div>
+            <div class="resolver_div_componentcell">@UnitEntry.Troopers</div>
+        </div>
+        @if (UnitEntry.Features.Count > 0)
+        {
             <div class="resolver_div_componentrow">
-                <div class="resolver_div_componentcell">Type</div>
-                <div class="resolver_div_componentcell">@UnitEntry.Type</div>
-            </div>
-            <div class="resolver_div_componentrow">
-                <div class="resolver_div_componentcell">Gunnery/Piloting</div>
-                <div class="resolver_div_componentcell">@UnitEntry.Gunnery / @UnitEntry.Piloting</div>
-            </div>
-            <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetTonnageHidden(UnitEntry.Type)))">
-                <div class="resolver_div_componentcell">Tonnage</div>
-                <div class="resolver_div_componentcell">@UnitEntry.Tonnage</div>
-            </div>
-            <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetTroopersHidden(UnitEntry.Type)))">
-                <div class="resolver_div_componentcell">Troopers</div>
-                <div class="resolver_div_componentcell">@UnitEntry.Troopers</div>
-            </div>
-            @if (UnitEntry.Features.Any())
-            {
-                <div class="resolver_div_componentrow">
-                    <div class="resolver_div_componentcell">Features</div>
-                    <div class="resolver_div_componentcell">
-                        <div class="resolver_div_pickset">
-                            @foreach (var feature in UnitEntry.Features)
-                            {
-                                <div class="resolver_div_unitinformation_data">
-                                    @($"{feature}")
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
-
-            <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
-                <div class="resolver_div_componentcell">Dissipation</div>
-                <div class="resolver_div_componentcell">@UnitEntry.Sinks</div>
-            </div>
-            <div class="resolver_div_componentrow">
-                <div class="resolver_div_componentcell">Movement</div>
+                <div class="resolver_div_componentcell">Features</div>
                 <div class="resolver_div_componentcell">
-                    @UnitEntry.Speed/@((int)Math.Ceiling((decimal)UnitEntry.Speed * 1.5m))/@UnitEntry.JumpJets
-                    &mdash;
-                    @UnitEntry.MovementClass
-                    &mdash;
-                    @UnitEntry.Movement
-                </div>
-            </div>
-            <div class="resolver_div_componentrow">
-                <div class="resolver_div_componentcell">Stance</div>
-                <div class="resolver_div_componentcell">@UnitEntry.Stance</div>
-            </div>
-            @if (UnitEntry.Narced || UnitEntry.Tagged)
-            {
-                <div class="resolver_div_componentrow">
-                    <div class="resolver_div_componentcell">Conditions</div>
-                    <div class="resolver_div_componentcell">
-                        @if (UnitEntry.Narced)
+                    <div class="resolver_div_pickset">
+                        @foreach (var feature in UnitEntry.Features)
                         {
-                            <div class="resolver_div_unitinformation_data">Narced</div>
-                        }
-                        @if (UnitEntry.Tagged)
-                        {
-                            <div class="resolver_div_unitinformation_data">Tagged</div>
+                            <div class="resolver_div_unitinformation_data">
+                                @($"{feature}")
+                            </div>
                         }
                     </div>
                 </div>
-            }
+            </div>
+        }
+
+        <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetSinksHidden(UnitEntry.Type)))">
+            <div class="resolver_div_componentcell">Dissipation</div>
+            <div class="resolver_div_componentcell">@UnitEntry.Sinks</div>
         </div>
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_componentcell">Movement</div>
+            <div class="resolver_div_componentcell">
+                @UnitEntry.Speed/@((int)Math.Ceiling((decimal)UnitEntry.Speed * 1.5m))/@UnitEntry.JumpJets
+                &mdash;
+                @UnitEntry.MovementClass
+                &mdash;
+                @UnitEntry.Movement
+            </div>
+        </div>
+        <div class="resolver_div_componentrow">
+            <div class="resolver_div_componentcell">Stance</div>
+            <div class="resolver_div_componentcell">@UnitEntry.Stance</div>
+        </div>
+        @if (UnitEntry.Narced || UnitEntry.Tagged)
+        {
+            <div class="resolver_div_componentrow">
+                <div class="resolver_div_componentcell">Conditions</div>
+                <div class="resolver_div_componentcell">
+                    @if (UnitEntry.Narced)
+                    {
+                        <div class="resolver_div_unitinformation_data">Narced</div>
+                    }
+                    @if (UnitEntry.Tagged)
+                    {
+                        <div class="resolver_div_unitinformation_data">Tagged</div>
+                    }
+                </div>
+            </div>
+        }
     </div>
 
-    <div class="resolver_div_componentrow">
-        <div class="resolver_div_componentgroup">
-            @foreach (var weaponBay in UnitEntry.WeaponBays)
+    <div class="resolver_div_componentgroup">
+        @foreach (var weaponBay in UnitEntry.WeaponBays)
+        {
+            @if (UnitEntry.WeaponBays.Count > 1)
             {
-                <div class="resolver_div_unit resolver_div_componentcell">
-                    @weaponBay.Arc
-                    &mdash;
-                    @weaponBay.Name
-                </div>
-
-                <div class="resolver_div_unit resolver_div_componentcell">
-                    <div class="resolver_div_componentgroup tablerows" style="grid-template-columns: auto 1fr; max-width: none;">
-                        <div class="resolver_div_componentrow">
-                            <div class="resolver_div_componentcell">Target</div>
-                            <div class="resolver_div_componentcell">@_userStateController.GetUnitName(weaponBay.FiringSolution.Target)</div>
-                        </div>
-                        <div class="resolver_div_componentrow">
-                            <div class="resolver_div_componentcell">Modifier</div>
-                            <div class="resolver_div_componentcell">@weaponBay.FiringSolution.AttackModifier</div>
-                        </div>
-                        <div class="resolver_div_componentrow">
-                            <div class="resolver_div_componentcell">Distance</div>
-                            <div class="resolver_div_componentcell">@weaponBay.FiringSolution.Distance</div>
-                        </div>
-                        <div class="resolver_div_componentrow">
-                            <div class="resolver_div_componentcell">Facing</div>
-                            <div class="resolver_div_componentcell">@weaponBay.FiringSolution.Direction</div>
-                        </div>
-                        <div class="resolver_div_componentrow">
-                            <div class="resolver_div_componentcell">Cover</div>
-                            <div class="resolver_div_componentcell">@weaponBay.FiringSolution.Cover</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="resolver_div_unit resolver_div_componentcell">
-                    <div class="resolver_div_componentgroup" style="grid-template-columns: repeat(5, auto); max-width: none;">
-                        @foreach (var weaponEntry in weaponBay.Weapons)
-                        {
-                            <ComponentWeaponEntry @key=@($"{weaponEntry.Id}_{weaponEntry.TimeStamp}") Unit=@UnitEntry WeaponEntry=@weaponEntry></ComponentWeaponEntry>
-                        }
-                    </div>
+                <div class="resolver_div_componentcell">
+                    <b>@weaponBay.GetFormalName()</b>
                 </div>
             }
-        </div>
+
+            <div class="resolver_div_componentgroup tablerows" style="grid-template-columns: auto 1fr; max-width: none;">
+                <div class="resolver_div_componentrow">
+                    <div class="resolver_div_componentcell">Target</div>
+                    <div class="resolver_div_componentcell">@_userStateController.GetUnitName(weaponBay.FiringSolution.Target)</div>
+                </div>
+                <div class="resolver_div_componentrow">
+                    <div class="resolver_div_componentcell">Modifier</div>
+                    <div class="resolver_div_componentcell">@weaponBay.FiringSolution.AttackModifier</div>
+                </div>
+                <div class="resolver_div_componentrow">
+                    <div class="resolver_div_componentcell">Distance</div>
+                    <div class="resolver_div_componentcell">@weaponBay.FiringSolution.Distance</div>
+                </div>
+                <div class="resolver_div_componentrow">
+                    <div class="resolver_div_componentcell">Facing</div>
+                    <div class="resolver_div_componentcell">@weaponBay.FiringSolution.Direction</div>
+                </div>
+                <div class="resolver_div_componentrow">
+                    <div class="resolver_div_componentcell">Cover</div>
+                    <div class="resolver_div_componentcell">@weaponBay.FiringSolution.Cover</div>
+                </div>
+            </div>
+
+            <div class="resolver_div_componentgroup" style="grid-template-columns: repeat(5, auto); max-width: none;">
+                @foreach (var weaponEntry in weaponBay.Weapons)
+                {
+                    <ComponentWeaponEntry @key=@($"{weaponEntry.Id}_{weaponEntry.TimeStamp}") Unit=@UnitEntry WeaponEntry=@weaponEntry></ComponentWeaponEntry>
+                }
+            </div>
+        }
     </div>
 </div>
 

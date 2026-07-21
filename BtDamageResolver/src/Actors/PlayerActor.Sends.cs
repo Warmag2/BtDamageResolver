@@ -78,7 +78,7 @@ public partial class PlayerActor
 
             if (!validationResult.IsValid)
             {
-                errorMessageStringBuilder.AppendLine($"Unit {unit} has the following errors: {validationResult}");
+                errorMessageStringBuilder.AppendLine($"Unit {unit.Name} ({unit.Id}) has the following errors: {validationResult}");
                 unitsWithErrors.Add(unit.Id);
                 _logger.LogWarning("Player {PlayerId} is sending invalid data for unit {UnitId}. Reason: {ValidationResult}", this.GetPrimaryKeyString(), unit.Id, validationResult);
             }

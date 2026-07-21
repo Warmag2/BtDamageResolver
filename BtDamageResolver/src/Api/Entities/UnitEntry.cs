@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
@@ -272,6 +273,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
         return new UnitEntry
         {
             Consumables = Consumables.Copy(),
+            Evading = Evading,
             Features = Features.Copy(),
             Gunnery = Gunnery,
             Id = id,
@@ -283,6 +285,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
             Piloting = Piloting,
             Sinks = Sinks,
             Speed = Speed,
+            Stance = Stance,
             StaticDataHidden = StaticDataHidden,
             Tagged = Tagged,
             TimeStamp = DateTime.UtcNow,
@@ -304,6 +307,7 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
         JumpJets = unit.JumpJets;
         Sinks = unit.Sinks;
         Speed = unit.Speed;
+        TimeStamp = DateTime.UtcNow;
         Tonnage = unit.Tonnage;
         Troopers = unit.Troopers;
         Type = unit.Type;
@@ -335,9 +339,15 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
 
     private static string GenerateName(string name)
     {
-        var numbersAtEndOfString = name.AsEnumerable().Reverse().TakeWhile(char.IsNumber).Reverse().ToArray();
+        var numbersAtEndOfString = name.AsEnumerable().Reverse().TakeWhile(char.IsAsciiDigit).Reverse().ToArray();
 
-        return numbersAtEndOfString.Length != 0 ? $"{name.TrimEnd(numbersAtEndOfString)}{int.Parse(string.Concat(numbersAtEndOfString)) + 1}" : $"{name} 2";
+        if (numbersAtEndOfString.Length == 0)
+        {
+            return $"{name} 2";
+        }
+
+        var nextNumber = int.Parse(string.Concat(numbersAtEndOfString), CultureInfo.InvariantCulture) + 1;
+        return $"{name.TrimEnd(numbersAtEndOfString)}{nextNumber.ToString(CultureInfo.InvariantCulture)}";
     }
 
     private int GetCurrentSpeedInternal(bool accountForHeat = true)

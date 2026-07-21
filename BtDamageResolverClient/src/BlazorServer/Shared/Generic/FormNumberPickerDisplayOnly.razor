@@ -77,8 +77,15 @@
         {
             _selectedOption = value;
             HideSelectionBox();
-            OnChanged.InvokeAsync(value);
-            OnChangedWithHint.InvokeAsync((Hint, value));
+            if (OnChanged.HasDelegate)
+            {
+                OnChanged.InvokeAsync(value);
+            }
+
+            if (OnChangedWithHint.HasDelegate)
+            {
+                OnChangedWithHint.InvokeAsync((Hint, value));
+            }
         }
     }
 

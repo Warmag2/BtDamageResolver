@@ -1,0 +1,57 @@
+{
+    "Features": [
+        "CommandUnit",
+        "DirectionalTorsoMount",
+        "ExposedWeaponLinkage",
+        "HyperExtendingActuators",
+        "ImprovedCommunications",
+        "NarrowLowProfile"
+    ],
+    "JumpJets": 4,
+    "Sinks": 30,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 75,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER PPC"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Large Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Small Pulse Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Marauder MAD-5D-DC"
+}

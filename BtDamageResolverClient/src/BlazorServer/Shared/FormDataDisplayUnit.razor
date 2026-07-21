@@ -1,9 +1,9 @@
 ﻿@using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
+@using System.Text.Json
 @using Microsoft.Extensions.Options
-@using Newtonsoft.Json
 @inject CommonData _commonData
-@inject IOptions<JsonSerializerSettings> _jsonSerializerSettings
+@inject IOptions<JsonSerializerOptions> _jsonSerializerOptions
 
 @if (_unit != null)
 {
@@ -101,20 +101,9 @@
 
     @if (_showModalExport)
     {
-        <div class="resolver_modal_background">
-            <div class="resolver_modal" role="dialog">
-                <!-- Modal Header -->
-                <div class="resolver_modal_header">
-                    <h3 class="resolver_header">Exported Unit Data</h3>
-                    <button type="button" class="button_modal_close" @onclick="@ModalClose">&times;</button>
-                </div>
-
-                <!-- Modal body -->
-                <div class="resolver_modal_body">
-                    <FormTextArea Text="@JsonConvert.SerializeObject(_unit, _jsonSerializerSettings.Value)" ComparisonTimeStamp="@DateTime.MinValue" Disabled="@false" OnChanged="_ => { }"></FormTextArea>
-                </div>
-            </div>
-        </div>
+        <ContainerModal Title="Exported Unit Data" OnClose="ModalClose">
+            <FormTextArea Text="@JsonSerializer.Serialize(_unit, _jsonSerializerOptions.Value)" ComparisonTimeStamp="@DateTime.MinValue" Disabled="@false" OnChanged="_ => { }"></FormTextArea>
+        </ContainerModal>
     }
 }
 

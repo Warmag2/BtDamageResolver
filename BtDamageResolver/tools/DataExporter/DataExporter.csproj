@@ -8,12 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.9" />
     <PackageReference Include="Microsoft.Orleans.Client" Version="10.1.0" />
     <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="10.1.0" />
     <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.1.0" />
     <PackageReference Include="Microsoft.Orleans.Serialization.SystemTextJson" Version="10.1.0" />
-    <PackageReference Include="Npgsql" Version="10.0.2" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,16 +23,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="DataExporterSettings.json">
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DataExporterSettings.Release.json">
+    <None Update="appsettings.Release.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Update="DataExporterSettings.Debug.json">
+    <None Update="appsettings.Debug.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

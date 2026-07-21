@@ -1,0 +1,31 @@
+{
+  "Type": "MechQuad",
+  "AttackType": "Normal",
+  "Direction": "Left",
+  "LocationMapping": {
+    "2": [ "LeftTorso" ],
+    "3": [ "RearLeftLeg" ],
+    "4": [ "FrontLeftLeg" ],
+    "5": [ "FrontLeftLeg" ],
+    "6": [ "RearLeftLeg" ],
+    "7": [ "LeftTorso" ],
+    "8": [ "CenterTorso" ],
+    "9": [ "RightTorso" ],
+    "10": [ "FrontRightLeg" ],
+    "11": [ "RearRightLeg" ],
+    "12": [ "Head" ]
+  },
+  "CriticalDamageMapping": {
+    "2": "Critical",
+    "3": "None",
+    "4": "None",
+    "5": "None",
+    "6": "None",
+    "7": "None",
+    "8": "None",
+    "9": "None",
+    "10": "None",
+    "11": "None",
+    "12": "None"
+  }
+}

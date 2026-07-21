@@ -6,14 +6,18 @@ A combat resolver for the classic Battletech boardgame
 
 Youtube video: https://www.youtube.com/watch?v=27BzMTPgLZc
 
-TODO: Write something actually useful here.
+BtDamageResolver is a multiplayer web tool for resolving combat damage in the classic BattleTech tabletop boardgame. A shared game state lets multiple players in the same game see each other's units and the resulting damage reports in real time, so the whole table can follow through a combat round without doing any dice rolling or table referencing by hand.
+
+Players define their units, weapons and firing solutions, and the resolver computes attacks against shared targets -- rolling to hit, determining hit locations, applying damage and through-armor criticals and motive hits. The outcome of the weapons and melee phases are presented on per-unit paper dolls, from which users can apply the damage to their paper unit sheets, which are still required for play.
+
+The system is built as an Orleans silo (the `BtDamageResolver` server, which holds the game logic and state) plus a Blazor Server web client (`BtDamageResolverClient`), backed by PostgreSQL for Orleans clustering/state and Redis for entity data, with Grafana for dashboards. The whole stack runs from docker-compose as described below.
 
 ## Building BtDamageResolver
 
 ### Creating and running the docker images
 
 * Pull this repository into a Linux/Unix server with docker support installed
-* Go to the `BtDamageResolverInfrastructure` folder found in repository root
+* Go to the `infra` folder found in repository root
 * Copy or rename the `.env_sample` file to just `.env`
 * Type a secure password into the password environment variable in the `.env` file
 * Go back to repository root

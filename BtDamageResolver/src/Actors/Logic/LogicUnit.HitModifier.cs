@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -16,126 +15,48 @@ public abstract partial class LogicUnit
     private static readonly int[] MovementModifierArray = [0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6];
 
     /// <inheritdoc/>
-    public async Task<(int TargetNumber, RangeBracket RangeBracket)> ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry)
+    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry)
     {
-        return ResolveHitModifier(attackLog, target, primaryTargetArc, isPrimaryTarget, await FormWeapon(weaponEntry), weaponBay, weaponEntry);
+        return ResolveHitModifier(attackLog, target, primaryTargetArc, isPrimaryTarget, FormWeapon(weaponEntry), weaponBay, weaponEntry);
     }
 
     /// <inheritdoc />
     public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry)
     {
-        var modifierBase = weapon.AttackType == AttackType.Normal ? Unit.Gunnery : Unit.Piloting;
-
-        // NOTE: In this method, the damageReport may be null, as the target number calculation does not need a damage log. Everywhere else, it must exist.
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Base hit modifier", modifierBase));
-
-        var modifierMultiTarget = GetMultiTargetModifier(primaryTargetArc, isPrimaryTarget, weapon, weaponBay);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from multiple targets", modifierMultiTarget));
-
-        var modifierHeat = Unit.GetHeatAttackPenalty();
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from heat effects", modifierHeat));
-
-        var modifierPenalty = GetPenaltyModifier();
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from EMP effects", modifierPenalty));
-
-        var modifierFiringSolution = GetFiringSolutionModifier(weaponBay.FiringSolution);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from firing solution", modifierFiringSolution));
-
         var rangeBracket = GetRangeBracket(weapon, weaponBay);
-        var modifierRange = GetRangeModifier(rangeBracket);
-        modifierRange += GetMinimumRangeModifier(weapon, weaponBay);
 
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from range", modifierRange));
+        var modifiers = new (string Label, int Value)[]
+        {
+            ("Base hit modifier", weapon.AttackType == AttackType.Normal ? Unit.Gunnery : Unit.Piloting),
+            ("Hit modifier from multiple targets", GetMultiTargetModifier(primaryTargetArc, isPrimaryTarget, weapon, weaponBay)),
+            ("Hit modifier from heat effects", Unit.GetHeatAttackPenalty()),
+            ("Hit modifier from EMP effects", GetPenaltyModifier()),
+            ("Hit modifier from firing solution", GetFiringSolutionModifier(weaponBay.FiringSolution)),
+            ("Hit modifier from range", GetRangeModifier(rangeBracket) + GetMinimumRangeModifier(weapon, weaponBay)),
+            ("Hit modifier from target armor", GetArmorModifier(rangeBracket, target)),
+            ("Hit modifier from weapon properties", GetWeaponModifier(weapon)),
+            ("Hit modifier from weapon entry properties", weaponEntry.Modifier),
+            ("Hit modifier from unit targeting computer", GetTargetingComputerModifier(weapon)),
+            ("Hit modifier from unit type", target.GetUnitTypeModifier()),
+            ("Hit modifier from cover", target.GetCoverModifier(weaponBay.FiringSolution.Cover)),
+            ("Hit modifier from target stance", target.GetStanceModifier(weapon, weaponBay.FiringSolution.Distance)),
+            ("Hit modifier from movement direction", target.GetMovementDirectionModifier(weaponBay.FiringSolution.Direction)),
+            ("Hit modifier from target movement class", GetMovementClassModifier(target, weapon)),
+            ("Hit modifier from target movement amount", GetMovementModifierBase(target, weapon)),
+            ("Hit modifier from target evasion", GetEvasionModifier(target)),
+            ("Hit modifier from own movement", GetOwnMovementModifier()),
+            ("Hit modifier from own evasion", GetOwnEvasionModifier(weapon)),
+            ("Hit modifier from weapon features", target.GetFeatureModifier(weapon)),
+            ("Hit modifier from weather effects", GetWeatherModifier(weapon)),
+            ("Hit modifier from unit quirks", GetQuirkModifier(target, weapon)),
+        };
 
-        var modifierArmor = GetArmorModifier(rangeBracket, target);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target armor", modifierArmor));
-
-        var modifierWeapon = GetWeaponModifier(weapon);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from weapon properties", modifierWeapon));
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from weapon entry properties", weaponEntry.Modifier));
-
-        var modifierTargetingComputer = GetTargetingComputerModifier(weapon);
-
-        attackLog.Append(new AttackLogEntry (AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from unit targeting computer", modifierTargetingComputer));
-
-        var modifierUnitType = target.GetUnitTypeModifier();
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from unit type", modifierUnitType));
-
-        var modifierCover = target.GetCoverModifier(weaponBay.FiringSolution.Cover);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from cover", modifierCover));
-
-        var modifierStance = target.GetStanceModifier(weaponBay.FiringSolution.Distance);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target stance", modifierStance));
-
-        var modifierMovementDirection = target.GetMovementDirectionModifier(weaponBay.FiringSolution.Direction);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from movement direction", modifierMovementDirection));
-
-        var modifierMovementClass = GetMovementClassModifier(target, weapon);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target movement class", modifierMovementClass));
-
-        var modifierMovement = GetMovementModifierBase(target, weapon);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target movement amount", modifierMovement));
-
-        var modifierEvasion = GetEvasionModifier(target);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from target evasion", modifierEvasion));
-
-        var modifierOwnMovement = GetOwnMovementModifier();
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from own movement", modifierOwnMovement));
-
-        var modifierOwnEvasion = GetOwnEvasionModifier(weapon);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from own evasion", modifierOwnEvasion));
-
-        var modifierFeatures = target.GetFeatureModifier(weapon);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from weapon features", modifierFeatures));
-
-        var modifierWeather = GetWeatherModifier(weapon);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from weather effects", modifierWeather));
-
-        var modifierQuirks = GetQuirkModifier(target, weapon);
-
-        attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Hit modifier from unit quirks", modifierQuirks));
-
-        var modifierTotal =
-            modifierBase +
-            modifierMultiTarget +
-            modifierHeat +
-            modifierPenalty +
-            modifierFiringSolution +
-            modifierRange +
-            modifierArmor +
-            modifierWeapon +
-            weaponEntry.Modifier +
-            modifierTargetingComputer +
-            modifierUnitType +
-            modifierCover +
-            modifierStance +
-            modifierMovementDirection +
-            modifierMovementClass +
-            modifierMovement +
-            modifierEvasion +
-            modifierOwnMovement +
-            modifierOwnEvasion +
-            modifierFeatures +
-            modifierWeather +
-            modifierQuirks;
+        var modifierTotal = 0;
+        foreach (var (label, value) in modifiers)
+        {
+            attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, label, value));
+            modifierTotal += value;
+        }
 
         attackLog.Append(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Target number", modifierTotal));
 
@@ -179,7 +100,7 @@ public abstract partial class LogicUnit
     }
 
     /// <inheritdoc />
-    public virtual int GetStanceModifier(int distance)
+    public virtual int GetStanceModifier(Weapon weapon, int distance)
     {
         return 0;
     }

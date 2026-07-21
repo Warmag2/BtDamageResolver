@@ -30,6 +30,9 @@ public static class VisualStyleController
             case UnitType.Mech:
             case UnitType.MechTripod:
             case UnitType.MechQuad:
+            case UnitType.VehicleHover:
+            case UnitType.VehicleTracked:
+            case UnitType.VehicleWheeled:
                 return false;
             default:
                 return true;

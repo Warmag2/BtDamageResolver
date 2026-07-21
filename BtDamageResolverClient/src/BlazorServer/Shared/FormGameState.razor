@@ -11,7 +11,7 @@
         {
             @foreach (var player in _userStateController.GameState.Players.Values.Where(p => !p.IsSpectator))
             {
-                <ComponentPlayerState @key=@($"{player.PlayerId}_{player.TimeStamp}") PlayerId="@player.PlayerId" />
+                <ComponentPlayerState @key=@player.PlayerId Player=@player />
             }
         }
         else
@@ -26,7 +26,7 @@
                 ContainerClass="resolver_div_componentlistcontainer"
                 OnChanged="OnUnitsReordered">
                 <ItemTemplate Context="unitEntry">
-                    <FormUnitEntry @key=@($"{unitEntry.Id}") UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" />
+                    <FormUnitEntry @key=@unitEntry.Id UnitEntry=@unitEntry OnDeleted="@OnUnitDeleted" OnLoad="@OnUnitLoad" />
                 </ItemTemplate>
             </ContainerReorderableList>
 
@@ -44,11 +44,11 @@
     </ContainerAccordion>
 
     <ContainerAccordion Enabled="@_sectionEnabledDamageReports" Title="Damage reports">
-        <FormDamageReports OnlyNewest="true"></FormDamageReports>
+        <FormDamageReports @key=@($"{_userStateController.IsConnectedToGame}") OnlyNewest="true"></FormDamageReports>
     </ContainerAccordion>
 
     <ContainerAccordion Enabled="@_sectionEnabledTools" Title="Tools">
-        <FormTools @key="@_userStateController.GameState?.TimeStamp"></FormTools>
+        <FormTools></FormTools>
     </ContainerAccordion>
 }
 
@@ -60,10 +60,10 @@
 
     protected override void OnInitialized()
     {
-        _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowToolsByDefault ?? false;
-        _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReportsByDefault ?? true;
-        _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequestsByDefault ?? false;
-        _userStateController.OnPlayerUnitListUpdated += InvokeStateChange;
+        _sectionEnabledTools = _userStateController.PlayerOptions?.DashboardShowTools ?? false;
+        _sectionEnabledDamageReports = _userStateController.PlayerOptions?.DashboardShowDamageReports ?? true;
+        _sectionEnabledDamageRequests = _userStateController.PlayerOptions?.DashboardShowDamageRequests ?? false;
+        _userStateController.OnGameStateUpdated += InvokeStateChange;
     }
 
     private void AddUnit()
@@ -95,6 +95,6 @@
 
     public void Dispose()
     {
-        _userStateController.OnPlayerUnitListUpdated -= InvokeStateChange;
+        _userStateController.OnGameStateUpdated -= InvokeStateChange;
     }
 }

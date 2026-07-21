@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Extensions;
-using Faemiyah.BtDamageResolver.Common.Options;
 using Faemiyah.BtDamageResolver.Services.Events;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -19,18 +18,25 @@ namespace Faemiyah.BtDamageResolver.Services.Database;
 /// </summary>
 public class LoggingRepository
 {
+    /// <summary>
+    /// Upper bound on the number of entries retained in a queue across write failures.
+    /// If a write fails while the backlog is already at or above this size, the failed batch is
+    /// dropped instead of re-enqueued, bounding memory use when the database is unavailable for a long time.
+    /// </summary>
+    private const int MaxRetainedLogEntries = 50000;
+
     private readonly ILogger<LoggingRepository> _logger;
-    private readonly FaemiyahClusterOptions _clusterOptions;
+    private readonly string _connectionString;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoggingRepository"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
-    /// <param name="clusterOptions">The cluster options.</param>
-    public LoggingRepository(ILogger<LoggingRepository> logger, FaemiyahClusterOptions clusterOptions)
+    /// <param name="connectionString">The database connection string.</param>
+    public LoggingRepository(ILogger<LoggingRepository> logger, string connectionString)
     {
         _logger = logger;
-        _clusterOptions = clusterOptions;
+        _connectionString = connectionString;
     }
 
     /// <summary>
@@ -41,6 +47,8 @@ public class LoggingRepository
     /// <returns>A task which finishes when the entries have been written.</returns>
     /// <remarks>
     /// Requires ResolverLogGame.GameId and ResolverLogPlayer.PlayerId to be BIGINT columns.
+    /// All entries are written in a single pipelined <see cref="NpgsqlBatch"/> inside one transaction,
+    /// so a write either fully succeeds or fully fails (the whole batch is re-enqueued on failure, never duplicated).
     /// </remarks>
     public async Task WriteLogEntries<T>(ConcurrentQueue<T> entries)
     {
@@ -52,42 +60,48 @@ public class LoggingRepository
 
         try
         {
-            await using var connection = new NpgsqlConnection(_clusterOptions.ConnectionString);
+            await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
             await using var transaction = await connection.BeginTransactionAsync();
+            await using var sqlBatch = new NpgsqlBatch(connection, transaction);
 
             foreach (var entry in batch)
             {
-                await using var cmd = BuildCommand(entry, connection, transaction);
-                await cmd.ExecuteNonQueryAsync();
+                sqlBatch.BatchCommands.Add(BuildBatchCommand(entry));
             }
 
+            await sqlBatch.ExecuteNonQueryAsync();
             await transaction.CommitAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failure writing {Count} {Type} log entries. Re-enqueuing.", batch.Count, typeof(T).Name);
-            foreach (var entry in batch)
+            if (entries.Count >= MaxRetainedLogEntries)
             {
-                entries.Enqueue(entry);
+                _logger.LogError(ex, "Failure writing {Count} {Type} log entries. Backlog already at {Backlog}; dropping this batch to bound memory.", batch.Count, typeof(T).Name, entries.Count);
+            }
+            else
+            {
+                _logger.LogError(ex, "Failure writing {Count} {Type} log entries. Re-enqueuing for retry.", batch.Count, typeof(T).Name);
+                foreach (var entry in batch)
+                {
+                    entries.Enqueue(entry);
+                }
             }
         }
     }
 
-    private static NpgsqlCommand BuildCommand<T>(T entry, NpgsqlConnection connection, NpgsqlTransaction transaction) =>
+    private static NpgsqlBatchCommand BuildBatchCommand<T>(T entry) =>
         entry switch
         {
-            GameLogEntry g => BuildGameLogCommand(g, connection, transaction),
-            PlayerLogEntry p => BuildPlayerLogCommand(p, connection, transaction),
+            GameLogEntry g => BuildGameLogCommand(g),
+            PlayerLogEntry p => BuildPlayerLogCommand(p),
             _ => throw new ArgumentException($"Unknown log entry type: {typeof(T).Name}")
         };
 
-    private static NpgsqlCommand BuildGameLogCommand(GameLogEntry entry, NpgsqlConnection connection, NpgsqlTransaction transaction)
+    private static NpgsqlBatchCommand BuildGameLogCommand(GameLogEntry entry)
     {
-        var cmd = new NpgsqlCommand(
-            "INSERT INTO ResolverLogGame (EventTime, GameId, ActionType, ActionData) VALUES (@timeStamp, @gameId, @actionType, @actionData)",
-            connection,
-            transaction);
+        var cmd = new NpgsqlBatchCommand(
+            "INSERT INTO ResolverLogGame (EventTime, GameId, ActionType, ActionData) VALUES (@timeStamp, @gameId, @actionType, @actionData)");
         cmd.Parameters.AddWithValue("timeStamp", entry.TimeStamp);
         cmd.Parameters.AddWithValue("gameId", entry.GameId.Fnv1aHash64());
         cmd.Parameters.AddWithValue("actionType", (int)entry.ActionType);
@@ -95,12 +109,10 @@ public class LoggingRepository
         return cmd;
     }
 
-    private static NpgsqlCommand BuildPlayerLogCommand(PlayerLogEntry entry, NpgsqlConnection connection, NpgsqlTransaction transaction)
+    private static NpgsqlBatchCommand BuildPlayerLogCommand(PlayerLogEntry entry)
     {
-        var cmd = new NpgsqlCommand(
-            "INSERT INTO ResolverLogPlayer (EventTime, PlayerId, ActionType, ActionData) VALUES (@timeStamp, @playerId, @actionType, @actionData)",
-            connection,
-            transaction);
+        var cmd = new NpgsqlBatchCommand(
+            "INSERT INTO ResolverLogPlayer (EventTime, PlayerId, ActionType, ActionData) VALUES (@timeStamp, @playerId, @actionType, @actionData)");
         cmd.Parameters.AddWithValue("timeStamp", entry.TimeStamp);
         cmd.Parameters.AddWithValue("playerId", entry.PlayerId.Fnv1aHash64());
         cmd.Parameters.AddWithValue("actionType", (int)entry.ActionType);

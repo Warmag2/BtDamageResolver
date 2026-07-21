@@ -26,6 +26,11 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     public string AmmoDefault { get; set; }
 
     /// <summary>
+    /// If this weapon's ammo is used, what is the ammo name that gets spent.
+    /// </summary>
+    public string AmmoProxyName { get; set; }
+
+    /// <summary>
     /// Attack type of the weapon. Basically normal or various melee attacks.
     /// </summary>
     public AttackType AttackType { get; set; }
@@ -95,6 +100,11 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
     /// Only applies for multiplied weapons. Never set this explicitly, use the Multiply method instead.
     /// </remarks>
     public int Instances { get; set; } = 1;
+
+    /// <summary>
+    /// Can this weapon use multiple different ammo types at the same time. If this is false, the weapon always spends ammo that is considered to be named after itself.
+    /// </summary>
+    public bool MultiAmmo { get; set; }
 
     /// <summary>
     /// Dictionary of range bracket values.
@@ -188,6 +198,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
         var applyTarget = Copy();
 
         applyTarget.AppliedAmmo = ammo.Name;
+        applyTarget.AmmoProxyName = ammo.AmmoProxyName;
 
         if (ammo.ClusterBonus != null)
         {
@@ -287,6 +298,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
         {
             Ammo = Ammo.Copy(),
             AmmoDefault = AmmoDefault,
+            AmmoProxyName = AmmoProxyName,
             AppliedAmmo = AppliedAmmo,
             AttackType = AttackType,
             ClusterBonus = ClusterBonus.Copy(),
@@ -298,6 +310,7 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
             Heat = Heat,
             HitModifier = HitModifier,
             Instances = Instances,
+            MultiAmmo = MultiAmmo,
             Name = Name,
             Range = Range.Copy(),
             RangeAerospace = RangeAerospace,

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,19 +21,25 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
 {
     private readonly ILogger<CachedEntityRepository<TEntity, TKey>> _logger;
     private readonly IEntityRepository<TEntity, TKey> _repository;
-    private readonly Dictionary<TKey, TEntity> _cache;
+    private readonly ConcurrentDictionary<TKey, TEntity> _cache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CachedEntityRepository{TEntity, TKey}"/> class.
     /// </summary>
     /// <param name="logger">The logging interface.</param>
     /// <param name="repository">The repository to cache.</param>
+    /// <remarks>
+    /// This cache is a DI singleton accessed concurrently from both the owning <c>*RepositoryActor</c> grain
+    /// (single-threaded writes) and directly from many <c>LogicUnit</c> instances during fire events
+    /// (concurrent reads from arbitrary grain activations). A <see cref="ConcurrentDictionary{TKey,TValue}"/>
+    /// is required to make this safe.
+    /// </remarks>
     public CachedEntityRepository(ILogger<CachedEntityRepository<TEntity, TKey>> logger, IEntityRepository<TEntity, TKey> repository)
     {
         _logger = logger;
         _repository = repository;
-        _cache = [];
-        _logger.LogInformation("Filled entity cache for type {Type} with {Number} items.", typeof(TEntity).Name, FillCache().Result);
+        _cache = new ConcurrentDictionary<TKey, TEntity>();
+        _logger.LogInformation("Filled entity cache for type {Type} with {Number} items.", typeof(TEntity).Name, FillCache());
     }
 
     /// <inheritdoc />
@@ -41,12 +48,15 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         try
         {
             await _repository.AddAsync(entity);
-            _cache.Add(entity.GetName(), entity);
+            if (!_cache.TryAdd(entity.GetName(), entity))
+            {
+                throw new ArgumentException($"An item with key '{entity.GetName()}' already exists in the cache.");
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add entity {EntityName} into the repository. Unknown failure.", entity.GetName());
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not add entity {EntityName} into the repository.", entity.GetName());
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not add entity {entity.GetName()} into the repository.", ex);
         }
     }
 
@@ -56,19 +66,12 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         try
         {
             await _repository.AddOrUpdateAsync(entity);
-            if (_cache.ContainsKey(entity.GetName()))
-            {
-                _cache[entity.GetName()] = entity;
-            }
-            else
-            {
-                _cache.Add(entity.GetName(), entity);
-            }
+            _cache[entity.GetName()] = entity;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not add or update entity {EntityName} in the repository. Unknown failure.", entity.GetName());
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not add or update entity {EntityName} in the repository.", entity.GetName());
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not add or update entity {entity.GetName()} in the repository.", ex);
         }
     }
 
@@ -77,20 +80,15 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     {
         try
         {
-            if (_cache.ContainsKey(key))
-            {
-                await _repository.DeleteAsync(key);
-                _cache.Remove(key);
+            var deleted = await _repository.DeleteAsync(key);
+            _cache.TryRemove(key, out _);
 
-                return true;
-            }
-
-            return false;
+            return deleted;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not delete entity {EntityName} from the repository. Unknown failure.", key);
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not delete entity {EntityName} from the repository.", key);
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not delete entity {key} from the repository.", ex);
         }
     }
 
@@ -111,11 +109,20 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
     {
         var keys = _repository.GetAllKeys();
 
-        // Update local cache in this situation
-        foreach (var key in keys.Where(key => !_cache.ContainsKey(key)))
+        // Update local cache for any keys present in the backing store but missing here
+        // (typically entries added by another process — e.g. the client adding a Unit).
+        foreach (var key in keys)
         {
+            if (_cache.ContainsKey(key))
+            {
+                continue;
+            }
+
             var item = _repository.Get(key);
-            _cache.Add(item.GetName(), item);
+            if (item != null)
+            {
+                _cache.TryAdd(key, item);
+            }
         }
 
         return keys;
@@ -131,18 +138,18 @@ public class CachedEntityRepository<TEntity, TKey> : IEntityRepository<TEntity, 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not update entity {EntityName} in repository. Unknown failure.", entity.GetName());
-            throw new DataAccessException(DataAccessErrorCode.OperationFailure);
+            _logger.LogError(ex, "Could not update entity {EntityName} in repository.", entity.GetName());
+            throw new DataAccessException(DataAccessErrorCode.OperationFailure, $"Could not update entity {entity.GetName()} in the repository.", ex);
         }
     }
 
-    private async Task<int> FillCache()
+    private int FillCache()
     {
         var items = _repository.GetAll();
         var count = 0;
         foreach (var item in items)
         {
-            _cache.Add(item.GetName(), item);
+            _cache.TryAdd(item.GetName(), item);
             count++;
         }
 

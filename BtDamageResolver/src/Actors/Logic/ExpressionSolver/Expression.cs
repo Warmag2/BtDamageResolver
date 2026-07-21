@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Faemiyah.BtDamageResolver.Api;
 
@@ -10,6 +11,8 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic.ExpressionSolver;
 /// </summary>
 public class Expression
 {
+    private static readonly HashSet<char> _tokenChars = [.. Enum.GetValues<Token>().Select(x => (char)x)];
+    private static readonly string[] _functionNames = Enum.GetNames<ExpressionFunction>();
     private readonly List<Expression> _expressions;
     private readonly ExpressionFunction _outerFunction;
     private readonly IResolverRandom _random;
@@ -39,6 +42,16 @@ public class Expression
     {
         _outerFunction = ExpressionFunction.None;
         _value = input;
+    }
+
+    /// <summary>
+    /// Is the given character a token.
+    /// </summary>
+    /// <param name="input">The character to test.</param>
+    /// <returns><b>True</b> if the character is a token, <b>false</b> otherwise.</returns>
+    public static bool IsToken(char input)
+    {
+        return _tokenChars.Contains(input);
     }
 
     /// <summary>
@@ -133,7 +146,7 @@ public class Expression
         var foundFunction = ExpressionFunction.None;
         string functionScope = null;
 
-        var functionName = Enum.GetNames<ExpressionFunction>().SingleOrDefault(input.StartsWith);
+        var functionName = Array.Find(_functionNames, input.StartsWith);
 
         if (functionName != null)
         {
@@ -176,7 +189,7 @@ public class Expression
 
                 for (var diceIndex = 0; diceIndex < numDice; diceIndex++)
                 {
-                    value += _random.NextPlusOne(diceSize);
+                    value += _random.DX(diceSize);
                 }
 
                 break;
@@ -207,7 +220,7 @@ public class Expression
     private void Construct(string input)
     {
         // If we start with a token, such as "-", put 0 before this so that it can be resolved properly
-        if (input[0].IsToken())
+        if (Expression.IsToken(input[0]))
         {
             _expressions.Add(new Expression(_random, "0"));
             _tokens.Add((Token)input[0]);
@@ -220,13 +233,13 @@ public class Expression
 
             for (var ii = 0; ii < input.Length; ii++)
             {
-                if (input[ii].IsToken())
+                if (Expression.IsToken(input[ii]))
                 {
                     _tokens.Add((Token)input[ii]);
 
                     if (ii != 0)
                     {
-                        _expressions.Add(new Expression(decimal.Parse(input[..ii])));
+                        _expressions.Add(new Expression(decimal.Parse(input[..ii], CultureInfo.InvariantCulture)));
                     }
 
                     input = input[(ii + 1)..];
@@ -255,7 +268,7 @@ public class Expression
 
             if (nothingFound)
             {
-                _expressions.Add(new Expression(decimal.Parse(input)));
+                _expressions.Add(new Expression(decimal.Parse(input, CultureInfo.InvariantCulture)));
                 input = string.Empty;
             }
         }

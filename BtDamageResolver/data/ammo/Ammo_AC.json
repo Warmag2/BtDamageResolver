@@ -1,6 +1,7 @@
 ﻿[
   {
     "Name": "AC-AP2",
+    "AmmoProxyName": "AP",
     "HitModifier": 1,
     "SpecialFeatures": [
       { "Data": "-4", "Type": "ArmorPiercing" },
@@ -10,6 +11,7 @@
   },
   {
     "Name": "AC-AP5",
+    "AmmoProxyName": "AP",
     "HitModifier": 1,
     "SpecialFeatures": [
       { "Data": "-3", "Type": "ArmorPiercing" },
@@ -19,6 +21,7 @@
   },
   {
     "Name": "AC-AP10",
+    "AmmoProxyName": "AP",
     "HitModifier": 1,
     "SpecialFeatures": [
       { "Data": "-2", "Type": "ArmorPiercing" },
@@ -28,6 +31,7 @@
   },
   {
     "Name": "AC-AP20",
+    "AmmoProxyName": "AP",
     "HitModifier": 1,
     "SpecialFeatures": [
       { "Data": "-1", "Type": "ArmorPiercing" },
@@ -36,7 +40,16 @@
     ]
   },
   {
+    "Name": "AC-Slug",
+    "AmmoProxyName": "Slug",
+    "SpecialFeatures": [
+     { "Type": "TargetingComputerValid" },
+     { "Type": "TargetingComputerValidAimed" }
+   ]
+  },
+  {
     "Name": "AC-LBXCluster",
+    "AmmoProxyName": "Cluster",
     "HitModifier": -1,
     "SpecialFeatures": [
       { "Type": "Cluster" },
@@ -47,6 +60,7 @@
   },
   {
     "Name": "AC-Single",
+    "AmmoProxyName": "Normal",
     "SpecialFeatures": [
      { "Type": "TargetingComputerValid" },
      { "Type": "TargetingComputerValidAimed" }

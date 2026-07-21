@@ -1,4 +1,4 @@
-FROM redis:latest
+FROM docker.io/redis:latest
 RUN mkdir /conf
 RUN mkdir /db
 COPY ["redis.conf", "/conf/redis.conf"]

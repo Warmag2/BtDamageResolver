@@ -40,6 +40,13 @@ public partial class PlayerActor
     /// <summary>
     /// Get the state of this player.
     /// </summary>
+    /// <remarks>
+    /// The returned <see cref="PlayerState"/> aliases the stored <see cref="UnitEntry"/> instances
+    /// via a shallow <c>ToList()</c>. This is safe only because the consumer is always reached via
+    /// a cross-grain or Redis call, both of which round-trip through the JSON serializer registered
+    /// in <c>Silo/Program.cs</c> and therefore produce a deep copy at the boundary. Do not call this
+    /// from same-grain code that mutates the result.
+    /// </remarks>
     /// <returns>The <see cref="PlayerState"/> object containing the properties of this unit actor.</returns>
     private Task<PlayerState> GetPlayerState()
     {

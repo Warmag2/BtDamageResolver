@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -8,7 +8,6 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Common.Constants;
-using Faemiyah.BtDamageResolver.Common.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,8 +27,9 @@ internal sealed class DataExporter
     /// <summary>
     /// Initializes a new instance of the <see cref="DataExporter"/> class.
     /// </summary>
-    /// <param name="logger">The logging interface.</param>
-    public DataExporter(ILoggerFactory loggerFactory)
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <param name="configuration">The application configuration.</param>
+    public DataExporter(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
         _logger = loggerFactory.CreateLogger<DataExporter>();
         _jsonSerializerOptions = GetJsonSerializerOptions();
@@ -40,16 +40,16 @@ internal sealed class DataExporter
         _jsonSerializerOptions.WriteIndented = true;
 
         // Repository provider setup
-        var configuration = GetConfiguration("DataImporterSettings.json");
-        var communicationOptions = configuration.GetSection(Settings.CommunicationOptionsBlockName).Get<CommunicationOptions>();
+        var connectionString = configuration.GetConnectionString(Settings.RedisConnectionStringName)
+            ?? throw new InvalidOperationException($"No '{Settings.RedisConnectionStringName}' connection string configured.");
         _repositoryProvider = new RepositoryProvider(
-            new RedisEntityRepository<Ammo>(loggerFactory.CreateLogger<RedisEntityRepository<Ammo>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
-            new RedisEntityRepository<ArcDiagram>(loggerFactory.CreateLogger<RedisEntityRepository<ArcDiagram>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
-            new RedisEntityRepository<ClusterTable>(loggerFactory.CreateLogger<RedisEntityRepository<ClusterTable>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
-            new RedisEntityRepository<CriticalDamageTable>(loggerFactory.CreateLogger<RedisEntityRepository<CriticalDamageTable>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
-            new RedisEntityRepository<PaperDoll>(loggerFactory.CreateLogger<RedisEntityRepository<PaperDoll>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
-            new RedisEntityRepository<Unit>(loggerFactory.CreateLogger<RedisEntityRepository<Unit>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString),
-            new RedisEntityRepository<Weapon>(loggerFactory.CreateLogger<RedisEntityRepository<Weapon>>(), Options.Create(_jsonSerializerOptions), communicationOptions.ConnectionString));
+            new RedisEntityRepository<Ammo>(loggerFactory.CreateLogger<RedisEntityRepository<Ammo>>(), Options.Create(_jsonSerializerOptions), connectionString),
+            new RedisEntityRepository<ArcDiagram>(loggerFactory.CreateLogger<RedisEntityRepository<ArcDiagram>>(), Options.Create(_jsonSerializerOptions), connectionString),
+            new RedisEntityRepository<ClusterTable>(loggerFactory.CreateLogger<RedisEntityRepository<ClusterTable>>(), Options.Create(_jsonSerializerOptions), connectionString),
+            new RedisEntityRepository<CriticalDamageTable>(loggerFactory.CreateLogger<RedisEntityRepository<CriticalDamageTable>>(), Options.Create(_jsonSerializerOptions), connectionString),
+            new RedisEntityRepository<PaperDoll>(loggerFactory.CreateLogger<RedisEntityRepository<PaperDoll>>(), Options.Create(_jsonSerializerOptions), connectionString),
+            new RedisEntityRepository<Unit>(loggerFactory.CreateLogger<RedisEntityRepository<Unit>>(), Options.Create(_jsonSerializerOptions), connectionString),
+            new RedisEntityRepository<Weapon>(loggerFactory.CreateLogger<RedisEntityRepository<Weapon>>(), Options.Create(_jsonSerializerOptions), connectionString));
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ internal sealed class DataExporter
                 switch (dataObject)
                 {
                     case Unit unit:
-                        var filename = Path.Combine(options.Folder, $"Unit {unit.Type} {dataName}.json".Replace(' ', '_'));
+                        var filename = Path.Combine(options.Folder, $"Unit_{unit.Type}_{dataName}.json".Replace(' ', '_'));
                         await File.WriteAllTextAsync(filename, JsonSerializer.Serialize(dataObject, _jsonSerializerOptions));
                         break;
                     default:

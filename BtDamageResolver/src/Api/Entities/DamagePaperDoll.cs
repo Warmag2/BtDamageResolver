@@ -35,17 +35,7 @@ public class DamagePaperDoll
     /// <summary>
     /// The collection of normal damage entries.
     /// </summary>
-    public Dictionary<Location, Dictionary<Guid, List<int>>> DamageCollection { get; set; } = [];
-
-    /// <summary>
-    /// The collection of critical damage entries.
-    /// </summary>
-    public Dictionary<Location, Dictionary<Guid, List<CriticalDamageEntry>>> DamageCollectionCritical { get; set; } = [];
-
-    /// <summary>
-    /// The collection of special damage entries.
-    /// </summary>
-    public Dictionary<Location, Dictionary<Guid, List<SpecialDamageEntry>>> DamageCollectionSpecial { get; set; } = [];
+    public Dictionary<Guid, List<DamageEntry>> DamageCollection { get; set; } = [];
 
     /// <summary>
     /// The paperdoll.
@@ -61,7 +51,7 @@ public class DamagePaperDoll
     /// Get all locations for this damage report.
     /// </summary>
     /// <returns>The locations for this damage report.</returns>
-    public List<Location> Locations => [.. DamageCollection.Keys];
+    public HashSet<Location> Locations => DamageCollection.SelectMany(d => d.Value).Select(v => v.Location).ToHashSet();
 
     /// <summary>
     /// Gets the total damage of a specific special damage type.
@@ -70,14 +60,7 @@ public class DamagePaperDoll
     /// <returns>The total damage of a specific special damage type.</returns>
     public int GetTotalDamageOfType(SpecialDamageType type)
     {
-        var result = 0;
-
-        foreach (var (_, value) in DamageCollectionSpecial)
-        {
-            result += value.SelectMany(r => r.Value).Where(l => l.Type == type).Sum(d => int.Parse(d.Data));
-        }
-
-        return result;
+        return DamageCollection.SelectMany(d => d.Value).Where(l => l.SpecialType == type).Sum(d => d.DamageAmount);
     }
 
     /// <summary>
@@ -93,56 +76,25 @@ public class DamagePaperDoll
         }
 
         DamageCollection.Merge(damagePaperDoll.DamageCollection);
-        DamageCollectionCritical.Merge(damagePaperDoll.DamageCollectionCritical);
-        DamageCollectionSpecial.Merge(damagePaperDoll.DamageCollectionSpecial);
     }
 
     /// <summary>
     /// Record damage to this damage report.
     /// </summary>
     /// <param name="location">The location to record to.</param>
-    /// <param name="amount">The amount of damage to record.</param>
-    public void RecordDamage(Location location, Guid creatorId, int amount)
+    /// <param name="damageEntry">The damage entry to record.</param>
+    public void RecordDamage(Guid creatorId, DamageEntry damageEntry)
     {
-        DamageCollection.Insert(location, creatorId, [amount]);
+        DamageCollection.Insert(creatorId, damageEntry);
     }
 
     /// <summary>
-    /// Record critical damage to this damage report.
+    /// Record damage to this damage report.
     /// </summary>
     /// <param name="location">The location to record to.</param>
-    /// <param name="creatorId">The creator of the critical damage entry.</param>
-    /// <param name="damage">The damage amount to record.</param>
-    /// <param name="threatType">The type of the critical damage threat.</param>
-    /// <param name="criticalDamageType">The type of the critical damage to record.</param>
-    public void RecordCriticalDamage(Location location, Guid creatorId, int damage, CriticalThreatType threatType, CriticalDamageType criticalDamageType)
+    /// <param name="damageEntry">The damage entry to record.</param>
+    public void RecordDamage(Guid creatorId, List<DamageEntry> damageEntries)
     {
-        DamageCollectionCritical.Insert(location, creatorId, [new CriticalDamageEntry(damage, threatType, criticalDamageType)]);
-    }
-
-    /// <summary>
-    /// Record critical damage to this damage report.
-    /// </summary>
-    /// <param name="location">The location to record to.</param>
-    /// <param name="creatorId">The creator of the critical damage entry.</param>
-    /// <param name="damage">The damage amount to record.</param>
-    /// <param name="threatType">The type of the critical damage threat.</param>
-    /// <param name="criticalDamageTypes">The list of critical damage types to record.</param>
-    public void RecordCriticalDamage(Location location, Guid creatorId, int damage, CriticalThreatType threatType, List<CriticalDamageType> criticalDamageTypes)
-    {
-        foreach (var criticalDamageType in criticalDamageTypes)
-        {
-            DamageCollectionCritical.Insert(location, creatorId, [new CriticalDamageEntry(damage, threatType, criticalDamageType)]);
-        }
-    }
-
-    /// <summary>
-    /// Record special damage to this damage report.
-    /// </summary>
-    /// <param name="location">The location to record to.</param>
-    /// <param name="specialDamageEntry">The special damage to record.</param>
-    public void RecordSpecialDamage(Location location, Guid creatorId, SpecialDamageEntry specialDamageEntry)
-    {
-        DamageCollectionSpecial.Insert(location, creatorId, [specialDamageEntry]);
+        DamageCollection.Insert(creatorId, damageEntries);
     }
 }
