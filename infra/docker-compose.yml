@@ -97,7 +97,7 @@ services:
       POSTGRES_USER: "${RESOLVER_USER:?err}"
       POSTGRES_PASSWORD: "${RESOLVER_PASSWORD:?err}"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d BtDamageResolver"]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d BtDamageResolver"]
       interval: 30s
       retries: 3
       start_period: 10s
