@@ -100,8 +100,8 @@ dotnet_diagnostic.CA1002.severity = none
 # Use generic event handler instances
 dotnet_diagnostic.CA1003.severity = warning
 
-# Avoid excessive parameters on generic types
-dotnet_diagnostic.CA1005.severity = warning
+# Do not avoid excessive parameters on generic types - sometimes you need more
+dotnet_diagnostic.CA1005.severity = none
 
 # Enums should have zero value - Not always
 dotnet_diagnostic.CA1008.severity = none
