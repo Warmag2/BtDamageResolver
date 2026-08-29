@@ -20,7 +20,7 @@
     "Heat": {
       "Short": 0
     },
-    "HitModifier": 0,
+    "HitModifier": -1,
     "SpecialFeatures": [ { "Data": "$tonnage/10", "Type": "Melee" } ]
   },
   {
@@ -44,7 +44,7 @@
     "Heat": {
       "Short": 0
     },
-    "HitModifier": -2,
+    "HitModifier": -1,
     "SpecialDamage": [ { "Data": "0", "Type": "PilotingSkillRoll" } ],
     "SpecialFeatures": [ { "Data": "$tonnage/5", "Type": "Melee" }, { "Type": "MeleeKick" } ]
   },
