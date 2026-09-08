@@ -9,6 +9,16 @@ namespace Faemiyah.BtDamageResolver.Api.Enums;
 public enum AttackType
 {
     /// <summary>
+    /// Target acquisition attack.
+    /// </summary>
+    TargetAcquisition,
+
+    /// <summary>
+    /// Artillery attack.
+    /// </summary>
+    Artillery,
+
+    /// <summary>
     /// Normal weapon attack.
     /// </summary>
     Normal,

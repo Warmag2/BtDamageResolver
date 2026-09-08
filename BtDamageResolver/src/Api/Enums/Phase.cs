@@ -7,6 +7,8 @@ public enum Phase
 {
     Initiative,
     Movement,
+    TargetAcquisition,
+    Artillery,
     Weapon,
     Melee,
     Heat,

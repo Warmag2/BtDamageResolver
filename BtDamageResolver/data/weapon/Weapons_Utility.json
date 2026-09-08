@@ -28,9 +28,38 @@
     "ClusterSize": 1
   },
   {
-    "Name": "Tag",
+    "Name": "Light TAG",
     "Type": "Energy",
-    "AttackType": "Normal",
+    "AttackType": "TargetAcquisition",
+    "Damage": {
+      "Short": 0
+    },
+    "DamageAerospace": {
+      "Short": 0
+    },
+    "Range": {
+      "PointBlank": 0,
+      "Short": 3,
+      "Medium": 6,
+      "Long": 9,
+      "Extreme": 9
+    },
+    "RangeAerospace": "Short",
+    "Heat": {
+      "Short": 0
+    },
+    "SpecialDamage": [
+      { "Data": "1", "Type": "Tag" }
+    ],
+    "SpecialFeatures": [
+      { "Type": "TargetingComputerValid" },
+      { "Type": "TargetingComputerValidAimed" }
+    ]
+  },
+  {
+    "Name": "TAG",
+    "Type": "Energy",
+    "AttackType": "TargetAcquisition",
     "Damage": {
       "Short": 0
     },

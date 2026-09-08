@@ -151,6 +151,10 @@ public class Weapon : NamedEntity, IEntityWithRulesValidation
         {
             switch (AttackType)
             {
+                case AttackType.TargetAcquisition:
+                    return Phase.TargetAcquisition;
+                case AttackType.Artillery:
+                    return Phase.TargetAcquisition;
                 case AttackType.Normal:
                     return Phase.Weapon;
                 case AttackType.Melee:

@@ -48,16 +48,18 @@ public partial class LogicUnit
                             var criticalDamageTable = GetCriticalDamageTable(criticalTableType, location);
 
                             // Critical rolls from damage may have a modifier.
+                            var criticalThreatRoll = ResolverRandom.D26();
+                            damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, damageOwnerId, "Critical threat", criticalThreatRoll));
                             var specialDamageThreatModifier = MathExpression.Parse(specialDamageEntry.Data);
-                            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Threat roll modifier from damage source", specialDamageThreatModifier));
+                            damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Critical threat damage source modifier", specialDamageThreatModifier));
                             var glancingBlowModifier = IsGlancingBlow(marginOfSuccess) ? -2 : 0;
                             if (glancingBlowModifier != 0)
                             {
-                                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Threat roll glancing blow modifier", glancingBlowModifier));
+                                damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, damageOwnerId, "Critical threat glancing blow modifier", glancingBlowModifier));
                             }
 
-                            var specialDamageEntryCriticalThreatRoll = Math.Clamp(ResolverRandom.D26() + specialDamageThreatModifier + glancingBlowModifier, 2, 12);
-                            damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, damageOwnerId, "Threat roll", specialDamageEntryCriticalThreatRoll));
+                            var specialDamageEntryCriticalThreatRoll = Math.Clamp(criticalThreatRoll + specialDamageThreatModifier + glancingBlowModifier, 2, 12);
+                            damageReport.Log(new AttackLogEntry(AttackLogEntryType.DiceRoll, damageOwnerId, "Modified critical threat", specialDamageEntryCriticalThreatRoll));
 
                             if (criticalDamageTable.Mapping[specialDamageEntryCriticalThreatRoll].Exists(c => c != CriticalDamageType.None))
                             {

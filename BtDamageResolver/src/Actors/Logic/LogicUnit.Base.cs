@@ -43,6 +43,6 @@ public partial class LogicUnit
     /// <inheritdoc />
     public bool IsGlancingBlow(int marginOfSuccess)
     {
-        return Unit.HasFeature(UnitFeature.NarrowLowProfile) && marginOfSuccess == 0;
+        return Unit.HasFeature(UnitFeature.NarrowLowProfile) && marginOfSuccess <= 1;
     }
 }
