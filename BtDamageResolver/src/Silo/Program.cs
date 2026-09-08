@@ -127,6 +127,11 @@ internal static class Program
                     .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(
                         isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver"),
                         jsonSerializerOptions: CreateJsonSerializerOptions()));
+
+                // Use System.Text.Json for grain storage instead of the default Newtonsoft-based serializer.
+                siloBuilder.UseSystemTextJsonGrainStorageSerializer();
+                siloBuilder.Services.Configure<SystemTextJsonGrainStorageSerializerOptions>(options =>
+                    ApplyDefaultJsonSerializerOptions(options.JsonSerializerOptions));
                 siloBuilder
                     .Configure<ClusterOptions>(options =>
                     {

@@ -101,7 +101,11 @@ public static class ConfigurationUtilities
         return options;
     }
 
-    private static void ApplyDefaultJsonSerializerOptions(JsonSerializerOptions options)
+    /// <summary>
+    /// Apply the Faemiyah default JSON serializer settings to an existing <see cref="JsonSerializerOptions"/> instance.
+    /// </summary>
+    /// <param name="options">The options instance to mutate.</param>
+    public static void ApplyDefaultJsonSerializerOptions(JsonSerializerOptions options)
     {
         options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         options.PropertyNameCaseInsensitive = false;
