@@ -80,7 +80,7 @@ internal static class Program
                 if (!_siloStopping)
                 {
                     _siloStopping = true;
-                    Task.Run(StopSilo).Ignore();
+                    Task.Run(StopSilo, CancellationToken.None).Ignore();
                 }
             }
 
@@ -110,8 +110,6 @@ internal static class Program
 
     private static IHost CreateSilo()
     {
-        //var (clientPort, siloPort) = GetSiloPortConfigurationFromEnvironment();
-
         var siloHostBuilder = Host.CreateDefaultBuilder()
             .UseOrleans((context, siloBuilder) =>
             {
@@ -152,21 +150,12 @@ internal static class Program
                     })
                     .AddGrainStorage(Settings.ActorStateStoreName, postgresConnectionString)
                     .AddGrainStorage(Settings.SessionStateStoreName, postgresConnectionString)
-                    .Configure<EndpointOptions>(options =>
-                    {
-                        options.AdvertisedIPAddress = GetHostIp();
-
-                        // The socket used for silo-to-silo will bind to this endpoint
-                        //options.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, clientPort);
-
-                        // The socket used by the gateway will bind to this endpoint
-                        //options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, siloPort);
-                    })
+                    .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = GetHostIp())
                     .AddGrainService<CommunicationService>()
                     .AddGrainService<LoggingService>()
                     .ConfigureServices(services =>
                     {
-                        services.AddKeyedSingleton<string>(Settings.PostgresConnectionStringName, postgresConnectionString);
+                        services.AddKeyedSingleton(Settings.PostgresConnectionStringName, postgresConnectionString);
                         services.ConfigureJsonSerializerOptions();
                         services.Configure<CompressionOptions>(configuration.GetSection(Settings.CompressionOptionsBlockName));
                         services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));

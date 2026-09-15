@@ -23,14 +23,14 @@ public partial class LogicUnit
 
         foreach (var (weapon, weaponEntry) in await GetActiveWeaponsFromBay(weaponBay))
         {
-            // If not processing tags, skip tag weapons
-            if (weapon.AttackType == AttackType.TargetAcquisition && !processOnlyTags)
+            // If processing tags, skip non-tag weapons
+            if (processOnlyTags && weapon.AttackType != AttackType.TargetAcquisition)
             {
                 continue;
             }
 
-            // If processing tags, skip non-tag weapons
-            if (weapon.AttackType != AttackType.TargetAcquisition && processOnlyTags)
+            // If not processing tags, skip tag weapons
+            if (!processOnlyTags && weapon.AttackType == AttackType.TargetAcquisition)
             {
                 continue;
             }

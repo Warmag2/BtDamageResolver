@@ -58,7 +58,7 @@ public class LoggingService : GrainService, ILoggingService
     public override Task Start()
     {
         _cancellationTokenSource = new CancellationTokenSource();
-        _writeLoopTask = Task.Run(() => LogWriteLoop(_cancellationTokenSource.Token));
+        _writeLoopTask = Task.Run(() => LogWriteLoop(_cancellationTokenSource.Token), CancellationToken.None);
         _logger.LogInformation("{Service} running log writing loop.", GetType());
 
         return base.Start();

@@ -68,10 +68,7 @@ public class Startup
             options.ApplicationMaxBufferSize = 1048576;
             options.TransportMaxBufferSize = 1048576;
         });
-        services.AddLogging(conf =>
-        {
-            conf.AddFaemiyahLogging();
-        });
+        services.AddLogging(conf => conf.AddFaemiyahLogging());
 
         services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(Configuration["DataProtectionKeysPath"] ?? "/app/dpkeys/"));
         services.AddRazorPages();

@@ -95,7 +95,7 @@ public partial class LogicUnit
     {
         var damageReport = new DamageReport
         {
-            Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
+            Phase = combatAction.Weapon.UsePhase,
             DamagePaperDoll = GetDamagePaperDoll(target, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, [.. combatAction.Weapon.SpecialFeatures.Select(w => w.Type)]),
             FiringUnitIds = [Unit.Id],
             FiringUnitNames = new() { { Unit.Id, Unit.Name } },
