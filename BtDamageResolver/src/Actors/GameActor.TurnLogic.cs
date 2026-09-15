@@ -206,32 +206,40 @@ public partial class GameActor
 
     private async Task<List<DamageReport>> ProcessFireEvent(bool processOnlyTags)
     {
-        var damageReports = new List<DamageReport>();
-
-        // Reset firing solutions with invalid targets
-        foreach (var bay in _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).SelectMany(p => p.Value.UnitEntries).SelectMany(u => u.WeaponBays))
+        try
         {
-            if (bay.FiringSolution.Target != Guid.Empty && !await IsUnitInGame(bay.FiringSolution.Target))
+            var damageReports = new List<DamageReport>();
+
+            // Reset firing solutions with invalid targets
+            foreach (var bay in _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).SelectMany(p => p.Value.UnitEntries).SelectMany(u => u.WeaponBays))
             {
-                var invalidTarget = bay.FiringSolution.Target;
-                bay.FiringSolution.Target = Guid.Empty;
-                bay.TimeStamp = DateTime.UtcNow;
-                _logger.LogWarning("Player {PlayerId} unit {UnitId} tried to fire at an unit {TargetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, invalidTarget);
+                if (bay.FiringSolution.Target != Guid.Empty && !await IsUnitInGame(bay.FiringSolution.Target))
+                {
+                    var invalidTarget = bay.FiringSolution.Target;
+                    bay.FiringSolution.Target = Guid.Empty;
+                    bay.TimeStamp = DateTime.UtcNow;
+                    _logger.LogWarning("Player {PlayerId} unit {UnitId} tried to fire at an unit {TargetUnitId} which does not exist or is not in the same game.", this.GetPrimaryKeyString(), bay.Id, invalidTarget);
+                }
             }
-        }
 
-        // Fire
-        foreach (var unit in _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).SelectMany(p => p.Value.UnitEntries))
+            // Fire
+            foreach (var unit in _gameActorState.State.PlayerStates.Where(p => !p.Value.IsSpectator).SelectMany(p => p.Value.UnitEntries))
+            {
+                damageReports.AddRange(await ProcessUnitFireEvent(unit, processOnlyTags));
+            }
+
+            // Mark that the damage reports happened during this turn
+            damageReports.ForEach(d => d.Turn = _gameActorState.State.Turn);
+
+            _gameActorDamageReportState.State.DamageReports.AddRange(damageReports);
+
+            return damageReports;
+        }
+        catch (Exception ex)
         {
-            damageReports.AddRange(await ProcessUnitFireEvent(unit, processOnlyTags));
+            _logger.LogError(ex, "Game {GameId} experienced a critical failure while processing fire event.", this.GetPrimaryKeyString());
+            throw new InvalidOperationException($"Game {this.GetPrimaryKeyString()} experienced a critical failure while processing fire event.", ex);
         }
-
-        // Mark that the damage reports happened during this turn
-        damageReports.ForEach(d => d.Turn = _gameActorState.State.Turn);
-
-        _gameActorDamageReportState.State.DamageReports.AddRange(damageReports);
-
-        return damageReports;
     }
 
     private async Task<List<DamageReport>> ProcessUnitFireEvent(UnitEntry unitEntry, bool processOnlyTags)
