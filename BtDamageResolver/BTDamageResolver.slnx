@@ -6,7 +6,6 @@
   <Project Path="src/ActorInterfaces/ActorInterfaces.csproj" />
   <Project Path="src/Actors/Actors.csproj" />
   <Project Path="src/Api/Api.csproj" />
-  <Project Path="src/Common/Common.csproj" />
   <Project Path="src/ServiceInterfaces/ServiceInterfaces.csproj" />
   <Project Path="src/Services/Services.csproj" />
   <Project Path="src/Silo/Silo.csproj" />

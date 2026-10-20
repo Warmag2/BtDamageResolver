@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.Actors.Constants;
 using Faemiyah.BtDamageResolver.Actors.Cryptography;
 using Faemiyah.BtDamageResolver.Actors.States;
-using Faemiyah.BtDamageResolver.Common.Constants;
-using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Runtime;
 
@@ -21,7 +19,6 @@ public partial class PlayerActor : Grain, IPlayerActor
     private readonly ILogger<PlayerActor> _logger;
     private readonly ICommunicationServiceClient _communicationServiceClient;
     private readonly IHasher _hasher;
-    private readonly FaemiyahLoggingOptions _loggingOptions;
     private readonly ILoggingServiceClient _loggingServiceClient;
     private readonly IPersistentState<PlayerActorState> _playerActorState;
 
@@ -37,7 +34,6 @@ public partial class PlayerActor : Grain, IPlayerActor
     public PlayerActor(
         [PersistentState(nameof(PlayerActorState), Settings.ActorStateStoreName)] IPersistentState<PlayerActorState> playerActorState,
         ILogger<PlayerActor> logger,
-        IOptions<FaemiyahLoggingOptions> loggingOptions,
         ICommunicationServiceClient communicationServiceClient,
         IHasher hasher,
         ILoggingServiceClient loggingServiceClient)
@@ -46,7 +42,6 @@ public partial class PlayerActor : Grain, IPlayerActor
         _logger = logger;
         _communicationServiceClient = communicationServiceClient;
         _hasher = hasher;
-        _loggingOptions = loggingOptions.Value;
         _loggingServiceClient = loggingServiceClient;
     }
 

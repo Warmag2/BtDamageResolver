@@ -13,12 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.Runtime" Version="10.3.1" />
+    <PackageReference Include="Microsoft.Orleans.Runtime" Version="10.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ActorInterfaces\ActorInterfaces.csproj" />
-    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\ServiceInterfaces\ServiceInterfaces.csproj" />
   </ItemGroup>
 

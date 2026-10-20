@@ -5,7 +5,7 @@
     <RootNamespace>Faemiyah.BtDamageResolver.Api</RootNamespace>
     <AssemblyName>Faemiyah.BtDamageResolver.Api</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.470</Version>
+    <Version>0.0.471</Version>
     <Description>API classes and interfaces for BtDamageResolver. Needed to connect to and interface with a cluster.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.13" />
     <PackageReference Include="SevenZip.Compression.Lzma" Version="0.0.15" />
-    <PackageReference Include="StackExchange.Redis" Version="3.2.1" />
+    <PackageReference Include="StackExchange.Redis" Version="3.4.5" />
   </ItemGroup>
 
 </Project>

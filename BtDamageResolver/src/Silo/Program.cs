@@ -10,13 +10,14 @@ using Faemiyah.BtDamageResolver.Api;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
-using Faemiyah.BtDamageResolver.Common.Constants;
-using Faemiyah.BtDamageResolver.Common.Logging;
-using Faemiyah.BtDamageResolver.Common.Logging.Options;
 using Faemiyah.BtDamageResolver.Services;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
+using Faemiyah.Common;
+using Faemiyah.Common.Hosting;
+using Faemiyah.Common.Hosting.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,7 +27,6 @@ using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
 using Orleans.Serialization;
-using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Silo;
 
@@ -111,6 +111,9 @@ internal static class Program
     private static IHost CreateSilo()
     {
         var siloHostBuilder = Host.CreateDefaultBuilder()
+            .ConfigureLogging(logging => logging
+                .AddFaemiyahLogging()
+                .AddFilter("DeploymentLoadPublisher", LogLevel.Warning))
             .UseOrleans((context, siloBuilder) =>
             {
                 var configuration = context.Configuration;
@@ -123,12 +126,12 @@ internal static class Program
                 siloBuilder
                     .Services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(
                         isSupported: type => type.Namespace != null && type.Namespace.StartsWith("Faemiyah.BtDamageResolver"),
-                        jsonSerializerOptions: CreateJsonSerializerOptions()));
+                        jsonSerializerOptions: JsonConfiguration.CreateJsonSerializerOptions()));
 
                 // Use System.Text.Json for grain storage instead of the default Newtonsoft-based serializer.
                 siloBuilder.UseSystemTextJsonGrainStorageSerializer();
                 siloBuilder.Services.Configure<SystemTextJsonGrainStorageSerializerOptions>(options =>
-                    ApplyDefaultJsonSerializerOptions(options.JsonSerializerOptions));
+                    JsonConfiguration.ApplyDefaultJsonSerializerOptions(options.JsonSerializerOptions));
                 siloBuilder
                     .Configure<ClusterOptions>(options =>
                     {
@@ -148,9 +151,9 @@ internal static class Program
                         options.Invariant = "Npgsql";
                         options.ConnectionString = postgresConnectionString;
                     })
-                    .AddGrainStorage(Settings.ActorStateStoreName, postgresConnectionString)
-                    .AddGrainStorage(Settings.SessionStateStoreName, postgresConnectionString)
-                    .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = GetHostIp())
+                    .AddGrainStorage(Actors.Constants.Settings.ActorStateStoreName, postgresConnectionString)
+                    .AddGrainStorage(Actors.Constants.Settings.SessionStateStoreName, postgresConnectionString)
+                    .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = HostNetwork.GetHostIp())
                     .AddGrainService<CommunicationService>()
                     .AddGrainService<LoggingService>()
                     .ConfigureServices(services =>
@@ -158,12 +161,6 @@ internal static class Program
                         services.AddKeyedSingleton(Settings.PostgresConnectionStringName, postgresConnectionString);
                         services.ConfigureJsonSerializerOptions();
                         services.Configure<CompressionOptions>(configuration.GetSection(Settings.CompressionOptionsBlockName));
-                        services.Configure<FaemiyahLoggingOptions>(configuration.GetSection(Settings.LoggingOptionsBlockName));
-                        services.AddLogging(conf =>
-                        {
-                            conf.AddFaemiyahLogging();
-                            conf.AddFilter("DeploymentLoadPublisher", LogLevel.Warning);
-                        });
                         services.Configure<ConsoleLifetimeOptions>(opt => opt.SuppressStatusMessages = true);
                         services.AddSingleton<ICommunicationServiceClient, CommunicationServiceClient>();
                         services.AddSingleton(serviceProvider => new ServerToClientCommunicator(

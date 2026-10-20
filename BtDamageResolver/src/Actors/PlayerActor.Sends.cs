@@ -126,10 +126,7 @@ public partial class PlayerActor
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception while processing player state update for player {PlayerId}.", this.GetPrimaryKeyString());
-            var errorDetail = _loggingOptions.SendDetailedErrorsToClient
-                ? $"{ex.Message}\n{ex.StackTrace}"
-                : "An internal error occurred. Please try again.";
-            await SendErrorMessageToClient(errorDetail);
+            await SendErrorMessageToClient($"{ex.Message}\n{ex.StackTrace}");
         }
 
         return false;
