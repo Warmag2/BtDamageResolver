@@ -349,7 +349,7 @@ public static class CollectionExtensions
     {
         foreach (var locationEntry in target)
         {
-            input.Insert(locationEntry.Key, locationEntry.Value);
+            input.Insert(locationEntry.Key, [.. locationEntry.Value]);
         }
     }
 }

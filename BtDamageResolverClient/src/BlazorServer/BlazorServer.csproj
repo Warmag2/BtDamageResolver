@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.472" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.473" />
     <PackageReference Include="Faemiyah.Common" Version="0.1.0" />
     <PackageReference Include="Faemiyah.Common.Hosting" Version="0.1.0" />
     <PackageReference Include="Faemiyah.Ui" Version="0.1.0" />

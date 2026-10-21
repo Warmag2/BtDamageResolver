@@ -154,7 +154,7 @@ public class DamageReport
             }
             else
             {
-                ConsumablesAttackers.Add(consumable.Key, consumable.Value);
+                ConsumablesAttackers.Add(consumable.Key, consumable.Value.Copy());
             }
         }
 

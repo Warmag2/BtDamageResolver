@@ -134,8 +134,13 @@ public static class VisualStyleController
     /// </summary>
     /// <param name="unitType">The unit type.</param>
     /// <returns><b>True</b> if relative arc should be hidden, <b>false</b> otherwise.</returns>
-    public static bool GetRelativeArcHidden(UnitType unitType)
+    public static bool GetRelativeArcHidden(UnitEntry unitEntry, UnitType unitType)
     {
+        if (!unitEntry.MultiTarget)
+        {
+            return false;
+        }
+
         switch (unitType)
         {
             case UnitType.AerospaceCapital:
