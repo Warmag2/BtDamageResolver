@@ -94,16 +94,16 @@
                 case UnitType.MechTripod:
                 case UnitType.MechQuad:
                     <div class="resolver_div_componentrow">
-                        <div class="resolver_div_attackerheat">
+                        <div class="resolver_div_heat">
                             @if (DamageReport.FiringUnitIds.Count > 1)
                             {
                                 <b>Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):</b>
                             }
                             else
                             {
-                                <b>Attacker heat:</b> 
+                                <b>Attacker heat:</b>
                             }
-
+                            &nbsp;
                             @(attackerConsumables.Heat)
                         </div>
                     </div>
@@ -116,7 +116,7 @@
     {
         @if (DamageReport.ConsumablesAttackers.TryGetValue(firingUnitId, out var attackerConsumables) && attackerConsumables.AmmoUsage.Any())
         {
-            <div class="resolver_div_componentrow">
+            <div class="resolver_div_componentcolumn">
                 @foreach (var ammoExpenditureItem in attackerConsumables.AmmoUsage)
                 {
                     <div class="resolver_div_ammo">
@@ -128,6 +128,7 @@
                         {
                             <b>Attacker spent @ammoExpenditureItem.Key:</b>
                         }
+                        &nbsp;
                         @ammoExpenditureItem.Value
                     </div>
                 }
@@ -137,7 +138,7 @@
         
     @if (DamageReport.ConsumablesDefender.AmmoUsage.Any())
     {
-        <div class="resolver_div_componentrow">
+        <div class="resolver_div_componentcolumn">
             @foreach (var ammoExpenditureItem in DamageReport.ConsumablesDefender.AmmoUsage)
             {
                 <div class="resolver_div_ammo">

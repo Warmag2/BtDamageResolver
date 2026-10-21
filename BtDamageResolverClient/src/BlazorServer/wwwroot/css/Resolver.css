@@ -311,6 +311,13 @@ a, .btn-link {
     padding: 0;
 }
 
+.resolver_div_componentcolumn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+}
+
 .resolver_div_componentcell {
     display: flex;
     align-items: center;
@@ -500,20 +507,18 @@ a, .btn-link {
 
 .resolver_div_damagereport.damageentry { padding: 0.5rem; }
 
-.resolver_div_attackerheat {
-    display: flex;
-    flex-direction: row;
+.resolver_div_heat {
     background-color: var(--color_bg_heat);
     color: var(--color_text_heat);
-    padding-left: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .resolver_div_ammo {
-    display: flex;
-    flex-direction: row;
     background-color: var(--color_bg_ammo);
     color: var(--color_text_ammo);
-    padding-left: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .resolver_span_damagereportheader {
