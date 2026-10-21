@@ -1,4 +1,4 @@
-﻿/*******************************************************************************
+/*******************************************************************************
     Base
 *******************************************************************************/
 
@@ -148,252 +148,6 @@ a, .btn-link {
     color: var(--color_text_reminder);
 }
 
-/*******************************************************************************
-    Toggle and radio inputs
-*******************************************************************************/
-.resolver_div_radiogroup {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.resolver_label_toggleradio {
-    position: relative;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    user-select: none;
-    white-space: nowrap;
-    font-family: Tahoma;
-}
-
-/* Hide the browser's default checkbox */
-.resolver_label_toggleradio input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-}
-
-.resolver_span_toggleradio {
-    display: inline-block;
-    position: relative;
-    padding-left: 4px;
-    padding-right: 4px;
-    vertical-align: middle;
-    margin-left: 0;
-    margin-right: 0;
-    border: 1px outset gray;
-    background-color: var(--color_bg_unselected);
-    color: var(--color_text_unselected);
-}
-
-.resolver_label_toggleradio:hover input:checked ~ .resolver_span_toggleradio {
-    background-color: var(--color_bg_hover_selected);
-    color: var(--color_text_hover_selected);
-}
-
-.resolver_label_toggleradio:hover input ~ .resolver_span_toggleradio {
-    background-color: var(--color_bg_hover);
-    color: var(--color_text_hover);
-}
-
-.resolver_label_toggleradio input:checked ~ .resolver_span_toggleradio {
-    background-color: var(--color_bg_selected);
-    color: var(--color_text_selected);
-}
-
-.resolver_span_toggleradio.reminder {
-    background-color: var(--color_bg_reminder);
-    color: var(--color_text_reminder);
-}
-
-.resolver_label_toggleradio input:checked ~ .resolver_span_toggleradio.reminder {
-    background-color: var(--color_bg_reminder_selected);
-    color: var(--color_text_reminder_selected);
-}
-
-.resolver_span_toggleradio.disabled {
-    background-color: var(--color_bg_disabled);
-    color: var(--color_text_disabled);
-}
-
-.resolver_label_toggleradio input:checked ~ .resolver_span_toggleradio.disabled {
-    background-color: var(--color_bg_disabled_selected);
-    color: var(--color_text_disabled_selected);
-}
-
-.resolver_span_toggleradio.error {
-    background: var(--color_bg_error);
-    color: var(--color_text_error);
-}
-
-/*******************************************************************************
-    CheckBox input
-*******************************************************************************/
-
-/* Customize the label (the container) */
-.resolver_label_checkbox {
-    display: block;
-    position: relative;
-    padding-left: 35px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    font-size: 16px;
-    user-select: none;
-}
-
-/* Hide the browser's default checkbox */
-.resolver_label_checkbox input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-}
-
-/* Create a custom checkbox */
-.checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 25px;
-    width: 25px;
-    border: 1px solid var(--color_text_selected);
-}
-
-/* On mouse-over, add a grey background color */
-.resolver_label_checkbox:hover input ~ .checkmark {
-    background-color: var(--color_bg_hover);
-}
-
-/* On mouse-over, add a background color when selected */
-.resolver_label_checkbox:hover input:checked ~ .checkmark {
-    background-color: var(--color_bg_hover_selected);
-}
-
-/* When the checkbox is not checked, add a khaki background color */
-.resolver_label_checkbox input ~ .checkmark {
-    background-color: var(--color_bg_unselected);
-}
-
-/* When the checkbox is checked, add a lawngreen background */
-.resolver_label_checkbox input:checked ~ .checkmark {
-    background-color: var(--color_bg_selected);
-}
-
-/* Create the checkmark/indicator (hidden when not checked) */
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-}
-
-/* Show the checkmark when checked */
-.resolver_label_checkbox input:checked ~ .checkmark:after {
-    display: block;
-}
-
-/* Style the checkmark/indicator */
-.resolver_label_checkbox .checkmark:after {
-    left: 9px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    transform: rotate(45deg);
-}
-
-/*******************************************************************************
-    Combobox input
-*******************************************************************************/
-
-.resolver_div_combobox {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    overflow-y: auto;
-    max-height: 300px;
-    z-index: 9999 !important;
-}
-
-.resolver_div_comboboxitem {
-    border: 1px outset var(--color_outline_base);
-    background-color: var(--color_bg_unselected);
-    color: var(--color_text_unselected);
-}
-
-.resolver_div_comboboxitem.active {
-    background-color: var(--color_bg_selected);
-    color: var(--color_text_selected);
-}
-
-.resolver_div_comboboxitem:hover {
-    background-color: var(--color_bg_hover);
-    color: var(--color_text_hover);
-}
-
-.resolver_div_comboboxitem.active:hover {
-    background-color: var(--color_bg_hover_selected);
-    color: var(--color_text_hover_selected);
-}
-
-/* Positioned wrapper for picker/combobox dropdowns so top:100% anchors correctly */
-.resolver_div_inputwrapper {
-    position: relative;
-    display: inline-flex;
-    flex: 1;
-}
-
-    /* Combobox modifier: cap width to a sensible max */
-    .resolver_div_inputwrapper.combobox {
-        max-width: 25rem;
-    }
-
-/*******************************************************************************
-    Distance picker input
-*******************************************************************************/
-
-.resolver_div_picker {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    overflow-y: auto;
-    width: 16rem;
-    z-index: 9999 !important;
-}
-
-.resolver_div_pickeritem {
-    border: 1px outset var(--color_outline_base);
-    float: left;
-    padding: 0.2rem 0.3rem;
-    vertical-align: middle;
-    margin-left: 0;
-    margin-right: 0;
-    background-color: var(--color_bg_unselected);
-    color: var(--color_text_unselected);
-}
-
-.resolver_div_pickeritem.active {
-    background-color: var(--color_bg_selected);
-    color: var(--color_text_selected);
-}
-
-.resolver_div_pickeritem:hover {
-    background-color: var(--color_bg_hover);
-    color: var(--color_text_hover);
-}
-
-.resolver_div_pickeritem.active:hover {
-    background-color: var(--color_bg_hover_selected);
-    color: var(--color_text_hover_selected);
-}
-
-.resolver_number_picker_display_only {
-    padding: 0.2rem 0.3rem;
-    font-weight: bold;
-}
 
 /*******************************************************************************
     PickSet input
@@ -432,50 +186,6 @@ a, .btn-link {
 }
 
 /*******************************************************************************
-    Tabs
-*******************************************************************************/
-
-/* Tab style */
-
-.resolver_div_tabcontainer {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    background-color: var(--color_bg_unselected);
-}
-
-.resolver_div_tab { }
-
-/* Individual tab buttons */
-
-.resolver_div_tab button {
-    background-color: var(--color_bg_unselected);
-    color: var(--color_text_unselected);
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 10px 14px;
-    font-size: 17px;
-}
-
-.resolver_div_tab button:hover {
-    background-color: var(--color_bg_hover);
-    color: var(--color_text_hover);
-}
-
-.resolver_div_tab button.active {
-    background-color: var(--color_bg_selected);
-    color: var(--color_text_selected);
-}
-
-.resolver_div_tab button.active:hover {
-    background-color: var(--color_bg_hover_selected);
-    color: var(--color_text_hover_selected);
-}
-
-.resolver_div_tabcontent { padding: 0; }
-
-/*******************************************************************************
     Tables
 *******************************************************************************/
 
@@ -511,132 +221,6 @@ a, .btn-link {
     font-weight: bold;
 }
 
-/*******************************************************************************
-    Accordion
-*******************************************************************************/
-
-/* Style the buttons that are used to open and close the accordion panel */
-
-.resolver_button_accordion {
-    background-color: var(--color_bg_unselected);
-    color: var(--color_text_unselected);
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 10px 14px;
-    font-size: 18px;
-    text-align: left;
-    width: 100%;
-}
-
-.resolver_button_accordion:hover {
-    background-color: var(--color_bg_hover);
-    color: var(--color_text_hover);
-}
-
-.resolver_button_accordion.active {
-    background-color: var(--color_bg_selected);
-    color: var(--color_text_selected);
-}
-
-.resolver_button_accordion.active:hover {
-    background-color: var(--color_bg_hover_selected);
-    color: var(--color_text_hover_selected);
-}
-
-.resolver_div_accordioncontent { padding: 0; }
-
-.resolver_accordion_indicator {
-    font-weight: bolder;
-    padding-right: 0.5em;
-}
-
-/*******************************************************************************
-    Expander
-*******************************************************************************/
-
-/* Style the buttons that are used to open and close the expander panel */
-
-.resolver_button_expander {
-    background-color: var(--color_bg_unselected);
-    color: var(--color_text_unselected);
-    cursor: pointer;
-    padding: 2px 8px;
-    font-size: 18px;
-    font-weight: bolder;
-    text-align: left;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-}
-
-    .resolver_button_expander:hover {
-        background-color: var(--color_bg_hover);
-        color: var(--color_text_hover);
-    }
-
-    .resolver_button_expander.active {
-        background-color: var(--color_bg_selected);
-        color: var(--color_text_selected);
-    }
-
-        .resolver_button_expander.active:hover {
-            background-color: var(--color_bg_hover_selected);
-            color: var(--color_text_hover_selected);
-        }
-
-/*******************************************************************************
-    Modal
-*******************************************************************************/
-
-/* The Modal (background) */
-
-.resolver_modal_background {
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-}
-
-/* Modal Content/Box */
-.resolver_modal {
-    background-color: var(--color_bg_base);
-    margin: 10% auto;
-    padding: 1rem 2rem 2rem 2rem;
-    border: 1px solid var(--color_outline_base);
-    width: fit-content;
-}
-
-.resolver_modal_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    vertical-align: central;
-    clear: unset;
-}
-
-.resolver_modal_body { }
-
-.resolver_modal_footer { }
-
-/* The Close Button */
-
-.button_modal_close {
-    color: var(--color_text_unselected);
-    background-color: var(--color_bg_unselected);
-    border: none;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.button_modal_close:hover {
-    color: var(--color_text_hover);
-    background-color: var(--color_bg_hover);
-}
 
 /*******************************************************************************
     Login screen
@@ -689,12 +273,6 @@ a, .btn-link {
     align-items: flex-start;
 }
 
-.resolver_div_componentblock {
-    display: flex;
-    margin: 0;
-    padding: 0.1rem 0.25rem;
-}
-
 .resolver_div_componentgroup {
     display: inline-grid;
     vertical-align: top;
@@ -740,9 +318,6 @@ a, .btn-link {
     padding: 0.1rem 0.3rem;
 }
 
-.resolver_div_componentcell_label {
-}
-
 .resolver_div_componentcell_content {
     min-width: 10rem;
 }
@@ -754,14 +329,6 @@ a, .btn-link {
 .resolver_div_estimate_header {
     margin-left: 0.5rem;
     font-weight: bold;
-}
-
-.resolver_div_unitid
-{
-    margin-top: 0.2rem;
-    margin-bottom: 0.2rem;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
 }
 
 .resolver_div_hr {
@@ -890,17 +457,6 @@ a, .btn-link {
 }
 
 
-.resolver_td_unitinformation_data {
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 1px;
-    padding-bottom: 1px;
-    font-family: Tahoma;
-    border: 1px outset gray;
-    background-color: var(--color_bg_unselected);
-    color: var(--color_text_unselected);
-}
-
 /* Unit display label */
 
 .resolver_div_unitinformation_data {
@@ -915,10 +471,6 @@ a, .btn-link {
     background-color: var(--color_bg_unselected);
     color: var(--color_text_unselected);
     font-family: Tahoma;
-}
-
-.resolver_style_alignright {
-    margin-left: auto;
 }
 
 /*******************************************************************************
@@ -1192,6 +744,594 @@ button.mobile {
     }
 
     .resolver_div_draghandle {
+        display: none;
+    }
+}
+
+/*******************************************************************************
+    Faemiyah UI components
+
+    Embedded copy of the Faemiyah.Ui component styles (fui-* classes). Kept here
+    instead of referencing _content/Faemiyah.Ui/faemiyah-ui.css so all client CSS
+    lives in one file. Mirror changes from the Faemiyah.Ui library here.
+*******************************************************************************/
+
+/*******************************************************************************
+    Faemiyah UI
+
+    Override the variables below on :root (or on any ancestor element) to theme
+    the components.
+*******************************************************************************/
+
+:root {
+    --fui-font-family-control: Tahoma, Verdana, sans-serif;
+    --fui-color-bg-base: #FFFFFF;
+    --fui-color-bg-component: #F0F0F0;
+    --fui-color-text-base: #000000;
+    --fui-color-bg-input: #FFFFFF;
+    --fui-color-text-input: #000000;
+    --fui-color-outline-base: gray;
+    --fui-color-bg-unselected: #E0E0E0;
+    --fui-color-text-unselected: #000000;
+    --fui-color-bg-selected: #646464;
+    --fui-color-text-selected: #FFFFFF;
+    --fui-color-bg-hover: #B1C1FF;
+    --fui-color-text-hover: #000000;
+    --fui-color-bg-hover-selected: #7080B1;
+    --fui-color-text-hover-selected: #FFFFFF;
+    --fui-color-bg-disabled: #D4D0C8;
+    --fui-color-text-disabled: #808080;
+    --fui-color-bg-disabled-selected: #8D8D8D;
+    --fui-color-text-disabled-selected: #E2DDD6;
+    --fui-color-bg-error: #FFB0B0;
+    --fui-color-text-error: #B00000;
+    --fui-color-bg-dragdrop: #CCAAFF;
+    --fui-color-bg-dragdrop-dropover: #AA88DD;
+    --fui-color-outline-reminder: #706050;
+    --fui-color-bg-reminder: #F8E8B0;
+    --fui-color-text-reminder: #000000;
+    --fui-color-bg-reminder-selected: #706050;
+    --fui-color-text-reminder-selected: #FFFFFF;
+    --fui-color-bg-tooltip: cornsilk;
+    --fui-color-text-tooltip: #000000;
+    --fui-color-outline-tooltip: black;
+    --fui-color-bg-modal-overlay: rgba(0, 0, 0, 0.4);
+    --fui-z-dropdown: 9999;
+    --fui-z-modal: 1;
+    --fui-z-tooltip: 10000;
+}
+
+/*******************************************************************************
+    State modifiers
+*******************************************************************************/
+
+.fui-reminder {
+    outline: 2px inset var(--fui-color-outline-reminder);
+    outline-offset: -2px;
+}
+
+/*******************************************************************************
+    Generic inputs
+*******************************************************************************/
+
+.fui-input {
+    background: var(--fui-color-bg-input);
+    color: var(--fui-color-text-input);
+}
+
+.fui-fullwidth {
+    width: 100%;
+}
+
+.fui-input.fui-reminder {
+    background-color: var(--fui-color-bg-reminder);
+    color: var(--fui-color-text-reminder);
+}
+
+.fui-input.fui-error {
+    background: var(--fui-color-bg-error);
+    color: var(--fui-color-text-error);
+}
+
+/*******************************************************************************
+    Buttons
+*******************************************************************************/
+
+.fui-button-add,
+.fui-button-delete {
+    font-weight: bold;
+}
+
+/*******************************************************************************
+    Toggle and radio inputs
+*******************************************************************************/
+
+.fui-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.fui-toggle-radio {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    font-family: var(--fui-font-family-control);
+}
+
+    /* Hide the browser's own input. */
+    .fui-toggle-radio input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+.fui-toggle-radio-label {
+    display: inline-block;
+    position: relative;
+    padding-left: 4px;
+    padding-right: 4px;
+    vertical-align: middle;
+    margin-left: 0;
+    margin-right: 0;
+    border: 1px outset var(--fui-color-outline-base);
+    background-color: var(--fui-color-bg-unselected);
+    color: var(--fui-color-text-unselected);
+}
+
+.fui-toggle-radio:hover input ~ .fui-toggle-radio-label {
+    background-color: var(--fui-color-bg-hover);
+    color: var(--fui-color-text-hover);
+}
+
+.fui-toggle-radio:hover input:checked ~ .fui-toggle-radio-label {
+    background-color: var(--fui-color-bg-hover-selected);
+    color: var(--fui-color-text-hover-selected);
+}
+
+.fui-toggle-radio input:checked ~ .fui-toggle-radio-label {
+    background-color: var(--fui-color-bg-selected);
+    color: var(--fui-color-text-selected);
+}
+
+.fui-toggle-radio-label.fui-reminder {
+    background-color: var(--fui-color-bg-reminder);
+    color: var(--fui-color-text-reminder);
+}
+
+.fui-toggle-radio input:checked ~ .fui-toggle-radio-label.fui-reminder {
+    background-color: var(--fui-color-bg-reminder-selected);
+    color: var(--fui-color-text-reminder-selected);
+}
+
+.fui-toggle-radio-label.fui-disabled {
+    background-color: var(--fui-color-bg-disabled);
+    color: var(--fui-color-text-disabled);
+}
+
+.fui-toggle-radio input:checked ~ .fui-toggle-radio-label.fui-disabled {
+    background-color: var(--fui-color-bg-disabled-selected);
+    color: var(--fui-color-text-disabled-selected);
+}
+
+.fui-toggle-radio-label.fui-error {
+    background: var(--fui-color-bg-error);
+    color: var(--fui-color-text-error);
+}
+
+/*******************************************************************************
+    Checkbox
+*******************************************************************************/
+
+.fui-checkbox {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    user-select: none;
+}
+
+    /* Hide the browser's own input. */
+    .fui-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+.fui-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    border: 1px solid var(--fui-color-text-selected);
+}
+
+.fui-checkbox input ~ .fui-checkmark {
+    background-color: var(--fui-color-bg-unselected);
+}
+
+.fui-checkbox input:checked ~ .fui-checkmark {
+    background-color: var(--fui-color-bg-selected);
+}
+
+.fui-checkbox:hover input ~ .fui-checkmark {
+    background-color: var(--fui-color-bg-hover);
+}
+
+.fui-checkbox:hover input:checked ~ .fui-checkmark {
+    background-color: var(--fui-color-bg-hover-selected);
+}
+
+.fui-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.fui-checkbox input:checked ~ .fui-checkmark:after {
+    display: block;
+}
+
+.fui-checkbox .fui-checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/*******************************************************************************
+    Input wrapper, combo box and number picker
+*******************************************************************************/
+
+/* Anchors the drop-downs below the input. */
+.fui-input-wrapper {
+    position: relative;
+    display: inline-flex;
+    flex: 1;
+}
+
+    .fui-input-wrapper.fui-combobox {
+        max-width: 25rem;
+    }
+
+.fui-combobox-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    overflow-y: auto;
+    max-height: 300px;
+    z-index: var(--fui-z-dropdown);
+}
+
+.fui-combobox-item {
+    border: 1px outset var(--fui-color-outline-base);
+    background-color: var(--fui-color-bg-unselected);
+    color: var(--fui-color-text-unselected);
+}
+
+.fui-picker {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    overflow-y: auto;
+    width: 16rem;
+    z-index: var(--fui-z-dropdown);
+}
+
+.fui-picker-item {
+    border: 1px outset var(--fui-color-outline-base);
+    float: left;
+    padding: 0.2rem 0.3rem;
+    vertical-align: middle;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: var(--fui-color-bg-unselected);
+    color: var(--fui-color-text-unselected);
+}
+
+.fui-combobox-item.fui-active,
+.fui-picker-item.fui-active {
+    background-color: var(--fui-color-bg-selected);
+    color: var(--fui-color-text-selected);
+}
+
+.fui-combobox-item:hover,
+.fui-picker-item:hover {
+    background-color: var(--fui-color-bg-hover);
+    color: var(--fui-color-text-hover);
+}
+
+.fui-combobox-item.fui-active:hover,
+.fui-picker-item.fui-active:hover {
+    background-color: var(--fui-color-bg-hover-selected);
+    color: var(--fui-color-text-hover-selected);
+}
+
+.fui-number-display {
+    padding: 0.2rem 0.3rem;
+    font-weight: bold;
+}
+
+/*******************************************************************************
+    Pick set
+*******************************************************************************/
+
+.fui-pickset {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.fui-pickset-item {
+    padding: 1px 4px;
+    margin-left: 2px;
+    margin-right: 2px;
+    border: 1px outset var(--fui-color-outline-base);
+    border-radius: 2px;
+    background-color: var(--fui-color-bg-unselected);
+    color: var(--fui-color-text-unselected);
+    font-family: var(--fui-font-family-control);
+}
+
+/*******************************************************************************
+    Tabs
+*******************************************************************************/
+
+.fui-tabs {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: var(--fui-color-bg-unselected);
+}
+
+    .fui-tab button {
+        background-color: var(--fui-color-bg-unselected);
+        color: var(--fui-color-text-unselected);
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 10px 14px;
+        font-size: 17px;
+    }
+
+        .fui-tab button:hover {
+            background-color: var(--fui-color-bg-hover);
+            color: var(--fui-color-text-hover);
+        }
+
+        .fui-tab button.fui-active {
+            background-color: var(--fui-color-bg-selected);
+            color: var(--fui-color-text-selected);
+        }
+
+            .fui-tab button.fui-active:hover {
+                background-color: var(--fui-color-bg-hover-selected);
+                color: var(--fui-color-text-hover-selected);
+            }
+
+.fui-align-right {
+    margin-left: auto;
+}
+
+/*******************************************************************************
+    Accordion
+*******************************************************************************/
+
+.fui-accordion-button {
+    background-color: var(--fui-color-bg-unselected);
+    color: var(--fui-color-text-unselected);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 14px;
+    font-size: 18px;
+    text-align: left;
+    width: 100%;
+}
+
+    .fui-accordion-button:hover {
+        background-color: var(--fui-color-bg-hover);
+        color: var(--fui-color-text-hover);
+    }
+
+    .fui-accordion-button.fui-active {
+        background-color: var(--fui-color-bg-selected);
+        color: var(--fui-color-text-selected);
+    }
+
+        .fui-accordion-button.fui-active:hover {
+            background-color: var(--fui-color-bg-hover-selected);
+            color: var(--fui-color-text-hover-selected);
+        }
+
+.fui-accordion-content {
+    padding: 0;
+}
+
+.fui-accordion-indicator {
+    font-weight: bolder;
+    padding-right: 0.5em;
+}
+
+/*******************************************************************************
+    Expander
+*******************************************************************************/
+
+.fui-expander {
+    position: relative;
+    background-color: var(--fui-color-bg-component);
+    color: var(--fui-color-text-base);
+}
+
+.fui-expander-button {
+    background-color: var(--fui-color-bg-unselected);
+    color: var(--fui-color-text-unselected);
+    cursor: pointer;
+    padding: 2px 8px;
+    font-size: 18px;
+    font-weight: bolder;
+    text-align: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+    .fui-expander-button:hover {
+        background-color: var(--fui-color-bg-hover);
+        color: var(--fui-color-text-hover);
+    }
+
+    .fui-expander-button.fui-active {
+        background-color: var(--fui-color-bg-selected);
+        color: var(--fui-color-text-selected);
+    }
+
+        .fui-expander-button.fui-active:hover {
+            background-color: var(--fui-color-bg-hover-selected);
+            color: var(--fui-color-text-hover-selected);
+        }
+
+/*******************************************************************************
+    Modal
+*******************************************************************************/
+
+.fui-modal-background {
+    position: fixed;
+    z-index: var(--fui-z-modal);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: var(--fui-color-bg-modal-overlay);
+}
+
+.fui-modal {
+    background-color: var(--fui-color-bg-base);
+    margin: 10% auto;
+    padding: 1rem 2rem 2rem 2rem;
+    border: 1px solid var(--fui-color-outline-base);
+    width: fit-content;
+    max-width: calc(100% - 2rem);
+    box-sizing: border-box;
+}
+
+.fui-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fui-modal-title {
+    padding-left: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.fui-modal-close {
+    color: var(--fui-color-text-unselected);
+    background-color: var(--fui-color-bg-unselected);
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+    .fui-modal-close:hover {
+        color: var(--fui-color-text-hover);
+        background-color: var(--fui-color-bg-hover);
+    }
+
+/*******************************************************************************
+    Reorderable list
+*******************************************************************************/
+
+.fui-reorderable-row {
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+}
+
+.fui-reorderable-cell {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0.1rem 0.3rem;
+}
+
+.fui-reorderable-item.fui-draggable:hover {
+    background-color: var(--fui-color-bg-dragdrop);
+}
+
+.fui-drag-handle {
+    display: flex;
+    align-items: center;
+    padding: 0.2rem 0.4rem;
+    cursor: grab;
+    color: var(--fui-color-text-base);
+    opacity: 0.4;
+    user-select: none;
+}
+
+    .fui-drag-handle:hover {
+        background-color: var(--fui-color-bg-dragdrop);
+        opacity: 1;
+    }
+
+.fui-reorderable-item--dropover {
+    border-top: 0.5rem solid var(--fui-color-bg-dragdrop-dropover);
+}
+
+.fui-reorderable-sentinel {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.1s, background-color 0.1s, outline-color 0.1s;
+    outline: 2px dashed transparent;
+    outline-offset: -2px;
+}
+
+.fui-reorderable-list--dragging > .fui-reorderable-sentinel {
+    height: 2rem;
+    outline-color: var(--fui-color-bg-dragdrop-dropover);
+}
+
+.fui-reorderable-sentinel--dropover {
+    background-color: var(--fui-color-bg-dragdrop-dropover);
+}
+
+/*******************************************************************************
+    Tooltip
+*******************************************************************************/
+
+.fui-tooltip {
+    position: absolute;
+    display: none;
+    z-index: var(--fui-z-tooltip);
+    pointer-events: none;
+    white-space: pre-line;
+    background: var(--fui-color-bg-tooltip);
+    color: var(--fui-color-text-tooltip);
+    border: 1px solid var(--fui-color-outline-tooltip);
+    border-radius: 2px;
+    padding: 4px;
+}
+
+/*******************************************************************************
+    Narrow screens
+*******************************************************************************/
+
+@media (max-width: 50rem) {
+    .fui-drag-handle {
         display: none;
     }
 }

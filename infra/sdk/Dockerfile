@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS base
+FROM faemiyahsdk:latest AS base
 WORKDIR /app
 
 FROM base AS build
@@ -13,9 +13,6 @@ COPY ["infra/sdk/", "."]
 WORKDIR "/build/src/Api"
 RUN dotnet build "Api.csproj" -c Release
 RUN dotnet pack "Api.csproj" -c Release -o /build/customnugets
-WORKDIR "/build/src/Common"
-RUN dotnet build "Common.csproj" -c Release
-RUN dotnet pack "Common.csproj" -c Release -o /build/customnugets
 
 FROM base AS final
 WORKDIR /build
