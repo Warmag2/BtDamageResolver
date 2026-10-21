@@ -366,7 +366,7 @@ a, .btn-link {
     grid-template-columns: repeat(7, auto);
 }
 
-.resolver_div_weaponentrylist > .resolver_div_reorderableitem {
+.resolver_div_weaponentrylist > .fui-reorderable-item {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
@@ -400,62 +400,13 @@ a, .btn-link {
     overflow: hidden;
 }
 
-.resolver_div_weaponentrylist > .resolver_div_reorderablesentinel {
+.resolver_div_weaponentrylist > .fui-reorderable-sentinel {
     grid-column: 1 / -1;
 }
 
-.resolver_div_componentlistcontainer > .resolver_div_reorderablesentinel {
+.resolver_div_componentlistcontainer > .fui-reorderable-sentinel {
     flex-basis: 100%;
 }
-
-.resolver_div_reorderableitem.draggable:hover {
-    background-color: var(--color_bg_dragdrop);
-}
-
-.resolver_div_draghandle {
-    display: flex;
-    align-items: center;
-    padding: 0.2rem 0.4rem;
-    cursor: grab;
-    color: var(--color_text_base);
-    opacity: 0.4;
-    user-select: none;
-}
-
-.resolver_div_draghandle:hover {
-    background-color: var(--color_bg_dragdrop);
-    opacity: 1;
-}
-
-.resolver_div_reorderableitem--dropover {
-    border-top: 0.5rem solid var(--color_bg_dragdrop_dropover);
-}
-
-.resolver_div_reorderablesentinel {
-    height: 0;
-    overflow: hidden;
-    transition: height 0.1s, background-color 0.1s, outline-color 0.1s;
-    outline: 2px dashed transparent;
-    outline-offset: -2px;
-}
-
-.resolver_div_reorderablelistcontainer--dragging > .resolver_div_reorderablesentinel {
-    height: 2rem;
-    outline-color: var(--color_bg_dragdrop_dropover);
-}
-
-.resolver_div_reorderablesentinel--dropover {
-    background-color: var(--color_bg_dragdrop_dropover);
-}
-
-.emptydragtarget {
-    background-color: var(--color_bg_weaponentry_active);
-}
-
-.emptydragtarget:hover {
-    background-color: var(--color_bg_dragdrop);
-}
-
 
 /* Unit display label */
 
@@ -550,16 +501,19 @@ a, .btn-link {
 .resolver_div_damagereport.damageentry { padding: 0.5rem; }
 
 .resolver_div_attackerheat {
+    display: flex;
+    flex-direction: row;
     background-color: var(--color_bg_heat);
     color: var(--color_text_heat);
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0.5rem;
 }
 
 .resolver_div_ammo {
+    display: flex;
+    flex-direction: row;
     background-color: var(--color_bg_ammo);
     color: var(--color_text_ammo);
-    padding: 0 0.5rem;
+    padding-left: 0.5rem;
 }
 
 .resolver_span_damagereportheader {
