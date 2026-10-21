@@ -15,32 +15,32 @@ public abstract partial class LogicUnit
     private static readonly int[] MovementModifierArray = [0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6];
 
     /// <inheritdoc/>
-    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, WeaponBay weaponBay, WeaponEntry weaponEntry)
+    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, FiringSolution firingSolution, bool isPrimaryTarget, WeaponEntry weaponEntry)
     {
-        return ResolveHitModifier(attackLog, target, primaryTargetArc, isPrimaryTarget, FormWeapon(weaponEntry), weaponBay, weaponEntry);
+        return ResolveHitModifier(attackLog, target, primaryTargetArc, firingSolution, isPrimaryTarget, FormWeapon(weaponEntry), weaponEntry);
     }
 
     /// <inheritdoc />
-    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry)
+    public (int TargetNumber, RangeBracket RangeBracket) ResolveHitModifier(AttackLog attackLog, ILogicUnit target, Arc primaryTargetArc, FiringSolution firingSolution, bool isPrimaryTarget, Weapon weapon, WeaponEntry weaponEntry)
     {
-        var rangeBracket = GetRangeBracket(weapon, weaponBay);
+        var rangeBracket = GetRangeBracket(firingSolution, weapon);
 
         var modifiers = new (string Label, int Value)[]
         {
             ("Base hit modifier", weapon.AttackType == AttackType.Normal ? Unit.Gunnery : Unit.Piloting),
-            ("Hit modifier from multiple targets", GetMultiTargetModifier(primaryTargetArc, isPrimaryTarget, weapon, weaponBay)),
+            ("Hit modifier from multiple targets", GetMultiTargetModifier(primaryTargetArc, firingSolution, isPrimaryTarget, weapon)),
             ("Hit modifier from heat effects", Unit.GetHeatAttackPenalty()),
             ("Hit modifier from EMP effects", GetPenaltyModifier()),
-            ("Hit modifier from firing solution", GetFiringSolutionModifier(weaponBay.FiringSolution)),
-            ("Hit modifier from range", GetRangeModifier(rangeBracket) + GetMinimumRangeModifier(weapon, weaponBay)),
+            ("Hit modifier from firing solution", GetFiringSolutionModifier(firingSolution)),
+            ("Hit modifier from range", GetRangeModifier(rangeBracket) + GetMinimumRangeModifier(firingSolution, weapon)),
             ("Hit modifier from target armor", GetArmorModifier(rangeBracket, target)),
             ("Hit modifier from weapon properties", GetWeaponModifier(weapon)),
             ("Hit modifier from weapon entry properties", weaponEntry.Modifier),
             ("Hit modifier from unit targeting computer", GetTargetingComputerModifier(weapon)),
             ("Hit modifier from unit type", target.GetUnitTypeModifier()),
-            ("Hit modifier from cover", target.GetCoverModifier(weaponBay.FiringSolution.Cover)),
-            ("Hit modifier from target stance", target.GetStanceModifier(weapon, weaponBay.FiringSolution.Distance)),
-            ("Hit modifier from movement direction", target.GetMovementDirectionModifier(weaponBay.FiringSolution.Direction)),
+            ("Hit modifier from cover", target.GetCoverModifier(firingSolution.Cover)),
+            ("Hit modifier from target stance", target.GetStanceModifier(weapon, firingSolution.Distance)),
+            ("Hit modifier from movement direction", target.GetMovementDirectionModifier(firingSolution.Direction)),
             ("Hit modifier from target movement class", GetMovementClassModifier(target, weapon)),
             ("Hit modifier from target movement amount", GetMovementModifierBase(target, weapon)),
             ("Hit modifier from target evasion", GetEvasionModifier(target)),
@@ -168,14 +168,14 @@ public abstract partial class LogicUnit
     /// <summary>
     /// Get penalty caused by minimum range.
     /// </summary>
+    /// <param name="firingSolution">The firing solution for the weapon.</param>
     /// <param name="weapon">The weapon used.</param>
-    /// <param name="weaponBay">The weapon bay the weapon is in.</param>
     /// <returns>The modifier for firing below weapon minimum range.</returns>
-    protected virtual int GetMinimumRangeModifier(Weapon weapon, WeaponBay weaponBay)
+    protected virtual int GetMinimumRangeModifier(FiringSolution firingSolution, Weapon weapon)
     {
-        if (weaponBay.FiringSolution.Distance <= weapon.RangeMinimum)
+        if (firingSolution.Distance <= weapon.RangeMinimum)
         {
-            return weapon.RangeMinimum - weaponBay.FiringSolution.Distance + 1;
+            return weapon.RangeMinimum - firingSolution.Distance + 1;
         }
 
         return 0;
@@ -207,12 +207,12 @@ public abstract partial class LogicUnit
     /// <summary>
     /// Gets the range bracket for a weapon in the context of this unit and a specific weapon bay.
     /// </summary>
+    /// <param name="firingSolution">The firing solution for the weapon.</param>
     /// <param name="weapon">The weapon to get the range bracket for.</param>
-    /// <param name="weaponBay">The weapon bay to get the range bracket for.</param>
     /// <returns>The range bracket for a weapon in the context of this unit.</returns>
-    protected virtual RangeBracket GetRangeBracket(Weapon weapon, WeaponBay weaponBay)
+    protected virtual RangeBracket GetRangeBracket(FiringSolution firingSolution, Weapon weapon)
     {
-        return GetRangeBracketGround(weapon, weaponBay.FiringSolution.Distance);
+        return GetRangeBracketGround(firingSolution.Distance, weapon);
     }
 
     /// <summary>
@@ -295,7 +295,7 @@ public abstract partial class LogicUnit
     /// </summary>
     /// <param name="weapon">The weapon to use.</param>
     /// <param name="distance">The distance to target.</param>
-    private static RangeBracket GetRangeBracketGround(Weapon weapon, int distance)
+    private static RangeBracket GetRangeBracketGround(int distance, Weapon weapon)
     {
         // Allow short range to be selected if point blank and short ranges are the same
         if (distance <= weapon.Range[RangeBracket.PointBlank] && weapon.Range[RangeBracket.PointBlank] < weapon.Range[RangeBracket.Short])
@@ -358,7 +358,7 @@ public abstract partial class LogicUnit
         return 0;
     }
 
-    private int GetMultiTargetModifier(Arc primaryTargetArc, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay)
+    private int GetMultiTargetModifier(Arc primaryTargetArc, FiringSolution firingSolution, bool isPrimaryTarget, Weapon weapon)
     {
         // Primary target is always 0 penalty
         if (isPrimaryTarget)
@@ -393,7 +393,7 @@ public abstract partial class LogicUnit
             case UnitType.Mech:
             case UnitType.MechTripod:
                 // Front arc for secondary targets is 1 penalty, all other arcs are 2 penalty.
-                switch (weaponBay.FiringSolution.RelativeArc)
+                switch (firingSolution.RelativeArc)
                 {
                     case Arc.Front:
                         return 1;
@@ -406,7 +406,7 @@ public abstract partial class LogicUnit
             case UnitType.VehicleTracked:
             case UnitType.VehicleWheeled:
                 // Front arc for same target as primary is 1 penalty, all other arcs are 2 penalty.
-                if (weaponBay.FiringSolution.RelativeArc == primaryTargetArc)
+                if (firingSolution.RelativeArc == primaryTargetArc)
                 {
                     return 1;
                 }

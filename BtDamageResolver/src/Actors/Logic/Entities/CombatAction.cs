@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
@@ -18,6 +19,11 @@ public class CombatAction
     /// May not be true for streaks etc. even if the fire event would othetwise happen.
     /// </remarks>
     public bool ActionHappened { get; set; }
+
+    /// <summary>
+    /// The firing solution used for the combat action.
+    /// </summary>
+    public FiringSolution FiringSolution { get; set; }
 
     /// <summary>
     /// Did the combat action hit or not.
@@ -53,7 +59,7 @@ public class CombatAction
     public Weapon Weapon { get; set; }
 
     /// <summary>
-    /// The weapon bay which initiated the combat action.
+    /// The weapons forming a single aerospace weapon, if any.
     /// </summary>
-    public WeaponBay WeaponBay { get; set; }
+    public IReadOnlyCollection<WeaponEntry> WeaponsAerospace { get; set; }
 }

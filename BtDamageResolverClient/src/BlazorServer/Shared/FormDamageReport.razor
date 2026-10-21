@@ -97,14 +97,14 @@
                         <div class="resolver_div_heat">
                             @if (DamageReport.FiringUnitIds.Count > 1)
                             {
-                                <b>Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):</b>
+                                @:Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):
                             }
                             else
                             {
-                                <b>Attacker heat:</b>
+                                @:Attacker heat:
                             }
                             &nbsp;
-                            @(attackerConsumables.Heat)
+                            <b>@(attackerConsumables.Heat)</b>
                         </div>
                     </div>
                 break;
@@ -122,14 +122,14 @@
                     <div class="resolver_div_ammo">
                         @if (DamageReport.FiringUnitIds.Count > 1)
                         {
-                            <b>Attacker (@DamageReport.FiringUnitNames[firingUnitId]) spent @ammoExpenditureItem.Key:</b>
+                            @:Attacker (@DamageReport.FiringUnitNames[firingUnitId]) spent <b>@ammoExpenditureItem.Key:</b>
                         }
                         else
                         {
-                            <b>Attacker spent @ammoExpenditureItem.Key:</b>
+                            @:Attacker spent <b>@ammoExpenditureItem.Key:</b>
                         }
                         &nbsp;
-                        @ammoExpenditureItem.Value
+                        <b>@ammoExpenditureItem.Value</b>
                     </div>
                 }
             </div>

@@ -76,11 +76,11 @@ public partial class LogicUnit
         }
     }
 
-    private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry)
+    private CombatAction ResolveHit(DamageReport hitCalculationDamageReport, ILogicUnit target, Arc primaryTargetArc, FiringSolution firingSolution, bool isPrimaryTarget, Weapon weapon, WeaponBay weaponBay, WeaponEntry weaponEntry)
     {
         hitCalculationDamageReport.Log(new AttackLogEntry(AttackLogEntryType.FiringSolution, Unit.Id, weapon.Name));
 
-        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, primaryTargetArc, isPrimaryTarget, weapon, weaponBay, weaponEntry);
+        var (targetNumber, rangeBracket) = ResolveHitModifier(hitCalculationDamageReport.AttackLog, target, primaryTargetArc, firingSolution, isPrimaryTarget, weapon, weaponEntry);
 
         // Weapons with target numbers above 12 cannot hit
         if (targetNumber > 12)
@@ -90,13 +90,14 @@ public partial class LogicUnit
             return new CombatAction
             {
                 ActionHappened = false,
+                FiringSolution = firingSolution,
                 HitHappened = false,
                 MarginOfSuccess = 0,
                 RangeBracket = rangeBracket,
                 UnitType = Unit.Type,
                 Troopers = Unit.Troopers,
                 Weapon = weapon,
-                WeaponBay = weaponBay
+                WeaponsAerospace = weaponBay.Weapons
             };
         }
 
@@ -108,13 +109,14 @@ public partial class LogicUnit
         var combatAction = new CombatAction
         {
             ActionHappened = true,
+            FiringSolution = firingSolution,
             HitHappened = hitHappened,
             MarginOfSuccess = hitRoll - targetNumber,
             RangeBracket = rangeBracket,
             UnitType = Unit.Type,
             Troopers = Unit.Troopers,
             Weapon = weapon,
-            WeaponBay = weaponBay
+            WeaponsAerospace = weaponBay.Weapons
         };
 
         // Transform combat action if necessary

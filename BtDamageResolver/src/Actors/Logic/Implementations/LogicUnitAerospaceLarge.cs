@@ -84,7 +84,7 @@ public abstract class LogicUnitAerospaceLarge : LogicUnitAerospace
 
         // In large aerospace craft, all weapons in the bay are combined, so it is not possible to only fire a part of them.
         // I.e. when applying ammo usage, calculate it for all weapons in the bay.
-        foreach (var weaponEntry in combatAction.WeaponBay.Weapons)
+        foreach (var weaponEntry in combatAction.WeaponsAerospace)
         {
             var weapon = FormWeapon(weaponEntry);
             SpendAmmo(hitCalculationDamageReport, weapon);

@@ -30,6 +30,14 @@ public partial class GameActor
     {
         Guid? primaryTargetCandidate = null;
 
+        // If unit is not multi-targeting, always use target of first weapon bay.
+        if (!unitEntry.MultiTarget)
+        {
+            return unitEntry.WeaponBays.FirstOrDefault()?.FiringSolution.Target == null
+                ? (Guid.Empty, Arc.Default)
+                : (unitEntry.WeaponBays[0].FiringSolution.Target, unitEntry.WeaponBays[0].FiringSolution.RelativeArc);
+        }
+
         // Units that have a clearly defined front arc and at least one of their targets in that arc must find their primary target from that arc.
         switch (unitEntry.Type)
         {
@@ -253,11 +261,24 @@ public partial class GameActor
         foreach (var weaponBay in unitEntry.WeaponBays)
         {
             // Only fire solutions with targets
-            if (weaponBay.FiringSolution.Target != Guid.Empty)
+            if (unitEntry.MultiTarget)
             {
-                var logicUnitDefender = GetUnitLogic(weaponBay.FiringSolution.Target);
-                var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
-                damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, primaryTargetArc, isPrimaryTarget, processOnlyTags, weaponBay));
+                if (weaponBay.FiringSolution.Target != Guid.Empty)
+                {
+                    var logicUnitDefender = GetUnitLogic(weaponBay.FiringSolution.Target);
+                    var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
+                    damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, primaryTargetArc, weaponBay.FiringSolution, isPrimaryTarget, processOnlyTags, weaponBay));
+                }
+            }
+            else
+            {
+                // When not multi-targeting, only fire at the primary target.
+                // Always use the firing solution from the first bay.
+                if (primaryTarget != Guid.Empty)
+                {
+                    var logicUnitDefender = GetUnitLogic(primaryTarget);
+                    damageReports.AddRange(await logicUnitAttacker.ResolveCombatForBay(logicUnitDefender, primaryTargetArc, unitEntry.WeaponBays[0].FiringSolution, true, processOnlyTags, weaponBay));
+                }
             }
         }
 
@@ -288,17 +309,19 @@ public partial class GameActor
 
         foreach (var weaponBay in unitEntry.WeaponBays)
         {
+            var target = unitEntry.MultiTarget ? weaponBay.FiringSolution.Target : primaryTarget;
+
             // Only calculate for units which are in the game
-            if (weaponBay.FiringSolution.Target != Guid.Empty && await IsUnitInGame(weaponBay.FiringSolution.Target))
+            if (target != Guid.Empty && await IsUnitInGame(target))
             {
-                logicUnitDefender = GetUnitLogic(weaponBay.FiringSolution.Target);
+                logicUnitDefender = GetUnitLogic(target);
                 setBlankNumbers = false;
             }
             else
             {
                 setBlankNumbers = true;
 
-                if (weaponBay.FiringSolution.Target != Guid.Empty)
+                if (target != Guid.Empty)
                 {
                     _logger.LogWarning(
                         "In Game {GameId}, unit {UnitId} tried to calculate target numbers for target {TargetUnitId} which does not exist or is not in the same game.",
@@ -313,9 +336,10 @@ public partial class GameActor
                 if (!setBlankNumbers)
                 {
                     var attackLog = new AttackLog();
-                    var isPrimaryTarget = weaponBay.FiringSolution.Target == primaryTarget;
+                    var isPrimaryTarget = target == primaryTarget;
 
-                    var (targetNumber, rangeBracket) = logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, primaryTargetArc, isPrimaryTarget, weaponBay, weaponEntry);
+                    FiringSolution firingSolution = unitEntry.MultiTarget ? weaponBay.FiringSolution : unitEntry.WeaponBays[0].FiringSolution;
+                    var (targetNumber, rangeBracket) = logicUnitAttacker.ResolveHitModifier(attackLog, logicUnitDefender, primaryTargetArc, firingSolution, isPrimaryTarget, weaponEntry);
 
                     var (ammoEstimate, ammoMax) = logicUnitAttacker.ProjectAmmo(targetNumber, rangeBracket, weaponEntry);
                     var (heatEstimate, heatMax) = logicUnitAttacker.ProjectHeat(targetNumber, rangeBracket, weaponEntry);

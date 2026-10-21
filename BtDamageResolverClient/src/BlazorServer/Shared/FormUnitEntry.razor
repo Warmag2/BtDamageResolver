@@ -134,12 +134,24 @@
             </div>
         </div>
 
-        <div class="resolver_div_componentgroup">
-            @foreach (var weaponBay in UnitEntry.WeaponBays)
-            {
-                <FormFiringSolution @key=@weaponBay.Id UnitEntry="@UnitEntry" WeaponBay="@weaponBay" />
-            }
-        </div>
+        @if (UnitEntry.WeaponBays.Any())
+        {
+            <div class="resolver_div_componentgroup">
+                <FormToggle @key=@($"{UnitEntry.Id}_MultiTarget") Checked="@UnitEntry.MultiTarget" Disabled="@isReady" ComparisonTimeStamp="@comparisonTime" OnChanged="@OnMultiTargetChanged">MultiTarget</FormToggle>
+
+                @if (UnitEntry.MultiTarget)
+                {
+                    @foreach (var weaponBay in UnitEntry.WeaponBays)
+                    {
+                        <FormFiringSolution @key=@weaponBay.Id UnitEntry="@UnitEntry" WeaponBay="@weaponBay" />
+                    }
+                }
+                else
+                {
+                    <FormFiringSolution @key=@UnitEntry.WeaponBays[0].Id UnitEntry="@UnitEntry" WeaponBay="@UnitEntry.WeaponBays[0]" />
+                }
+            </div>
+        }
 
         <div class="resolver_div_componentgroup">
             <div class="resolver_div_componentrow" style="@(VisualStyleController.HideElement(VisualStyleController.GetUnitStateHidden(UnitEntry.Type)))">
@@ -160,19 +172,19 @@
                 @switch (UnitEntry.Type)
                 {
                     case UnitType.AerospaceFighter:
-                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAttackPenalty() == 0))">Attack penalty: <b>@($"{UnitEntry.GetHeatAttackPenalty()}")</b></div>
-                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatRandomMovementDifficulty() == 0))">Avoid random movement: <b>@($"{UnitEntry.GetHeatRandomMovementDifficulty()}")</b>+</div>
-                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatShutdownDifficulty() == 0))">Avoid shutdown: <b>@($"{UnitEntry.GetHeatShutdownDifficulty()}")</b>+</div>
-                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAmmoExplosionDifficulty() == 0))">Avoid ammo explosion: <b>@($"{UnitEntry.GetHeatAmmoExplosionDifficulty()}")</b>+</div>
-                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatPilotDamageDifficulty() == 0))">Avoid pilot damage: <b>@($"{UnitEntry.GetHeatPilotDamageDifficulty()}")</b>+</div>
+                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAttackPenalty() == 0))">Attack penalty: &nbsp; <b>@($"{UnitEntry.GetHeatAttackPenalty()}")</b></div>
+                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatRandomMovementDifficulty() == 0))">Avoid random movement: &nbsp; <b>@($"{UnitEntry.GetHeatRandomMovementDifficulty()}")</b>+</div>
+                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatShutdownDifficulty() == 0))">Avoid shutdown: &nbsp; <b>@($"{UnitEntry.GetHeatShutdownDifficulty()}")</b>+</div>
+                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAmmoExplosionDifficulty() == 0))">Avoid ammo explosion: &nbsp; <b>@($"{UnitEntry.GetHeatAmmoExplosionDifficulty()}")</b>+</div>
+                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatPilotDamageDifficulty() == 0))">Avoid pilot damage: &nbsp; <b>@($"{UnitEntry.GetHeatPilotDamageDifficulty()}")</b>+</div>
                         break;
                     case UnitType.Mech:
                     case UnitType.MechQuad:
                     case UnitType.MechTripod:
-                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAttackPenalty() == 0))">Attack penalty: <b>@($"{UnitEntry.GetHeatAttackPenalty()}")</b></div>
-                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatSpeedPenalty() == 0))">Movement penalty: <b>@($"{UnitEntry.GetHeatSpeedPenalty()}")</b></div>
-                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatShutdownDifficulty() == 0))">Avoid shutdown: <b>@($"{UnitEntry.GetHeatShutdownDifficulty()}")</b>+</div>
-                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAmmoExplosionDifficulty() == 0))">Avoid ammo explosion: <b>@($"{UnitEntry.GetHeatAmmoExplosionDifficulty()}")</b>+</div>
+                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAttackPenalty() == 0))">Attack penalty: &nbsp; <b>@($"{UnitEntry.GetHeatAttackPenalty()}")</b></div>
+                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatSpeedPenalty() == 0))">Movement penalty: &nbsp; <b>@($"{UnitEntry.GetHeatSpeedPenalty()}")</b></div>
+                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatShutdownDifficulty() == 0))">Avoid shutdown: &nbsp; <b>@($"{UnitEntry.GetHeatShutdownDifficulty()}")</b>+</div>
+                        <div class="resolver_div_heat" style="@(VisualStyleController.HideElement(UnitEntry.GetHeatAmmoExplosionDifficulty() == 0))">Avoid ammo explosion: &nbsp; <b>@($"{UnitEntry.GetHeatAmmoExplosionDifficulty()}")</b>+</div>
                         break;
                     default:
                         @:This unit type does not track heat.
@@ -444,6 +456,15 @@
         if (UnitEntry.Movement != movement)
         {
             UnitEntry.Movement = movement;
+            SendUpdate();
+        }
+    }
+
+    private void OnMultiTargetChanged(bool multiTarget)
+    {
+        if (UnitEntry.MultiTarget != multiTarget)
+        {
+            UnitEntry.MultiTarget = multiTarget;
             SendUpdate();
         }
     }

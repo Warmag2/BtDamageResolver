@@ -16,7 +16,7 @@ namespace Faemiyah.BtDamageResolver.Actors.Logic;
 public partial class LogicUnit
 {
     /// <inheritdoc />
-    public virtual async Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, Arc primaryTargetArc, bool isPrimaryTarget, bool processOnlyTags, WeaponBay weaponBay)
+    public virtual async Task<List<DamageReport>> ResolveCombatForBay(ILogicUnit target, Arc primaryTargetArc, FiringSolution firingSolution, bool isPrimaryTarget, bool processOnlyTags, WeaponBay weaponBay)
     {
         var allDamageReports = new List<DamageReport>();
         var damageReportCombatActionPairs = new List<(DamageReport DamageReport, CombatAction CombatAction)>();
@@ -46,7 +46,7 @@ public partial class LogicUnit
                 InitialTroopers = target.Unit.Troopers
             };
 
-            var combatAction = ResolveHit(hitCalculationDamageReport, target, primaryTargetArc, isPrimaryTarget, weapon, weaponBay, weaponEntry);
+            var combatAction = ResolveHit(hitCalculationDamageReport, target, primaryTargetArc, firingSolution, isPrimaryTarget, weapon, weaponBay, weaponEntry);
 
             damageReportCombatActionPairs.Add((hitCalculationDamageReport, combatAction));
         }
