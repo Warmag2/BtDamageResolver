@@ -1,4 +1,4 @@
-FROM localhost/faemiyahsdk:latest AS base
+FROM faemiyahsdk:latest AS base
 WORKDIR /app
 
 FROM base AS build
