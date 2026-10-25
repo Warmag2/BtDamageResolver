@@ -7,7 +7,7 @@ using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
-using Faemiyah.BtDamageResolver.Client.BlazorServer.Entities;
+using Faemiyah.Ui;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
 

@@ -2,13 +2,11 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using CommandLine;
-using Faemiyah.BtDamageResolver.Common.Constants;
-using Faemiyah.BtDamageResolver.Common.Logging;
-using Faemiyah.BtDamageResolver.Common.Logging.Options;
+using Faemiyah.Common.Hosting.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Faemiyah.BtDamageResolver.Tools.DataImporter;
 
@@ -29,10 +27,12 @@ internal static class Program
     /// <returns>Zero on no errors, nonzero on error.</returns>
     public static int Main(string[] args)
     {
-        var configuration = Host.CreateApplicationBuilder(args).Configuration;
-        var section = configuration.GetSection(Settings.LoggingOptionsBlockName);
-        var loggingOptions = Options.Create(section.Get<FaemiyahLoggingOptions>());
-        var loggerFactory = new FaemiyahLoggerFactory(loggingOptions);
+        var builder = Host.CreateApplicationBuilder(args);
+        builder.Logging.AddFaemiyahLogging();
+        using var host = builder.Build();
+
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
 
         var logger = loggerFactory.CreateLogger("DataImporter");
         logger.LogInformation(LogoText);

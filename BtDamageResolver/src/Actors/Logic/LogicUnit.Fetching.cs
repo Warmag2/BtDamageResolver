@@ -63,10 +63,22 @@ public partial class LogicUnit
     protected virtual AttackType TransformAttackType(ILogicUnit target, AttackType attackType, List<WeaponFeature> weaponFeatures)
     {
         var targetType = target.Unit.Type;
-        var transformedAttackType = attackType;
+
+        // Target Acquisition attacks always use normal attack tables
+        if (attackType == AttackType.TargetAcquisition)
+        {
+            return AttackType.Normal;
+        }
+
+        // Melee attacks that are not kicks or punches use normal attack tables
+        if (attackType == AttackType.Melee)
+        {
+            return AttackType.Normal;
+        }
 
         // Punch and kick tables only exist for mechs, revert to normal for all other target types
         // Special handling for mechs
+        var transformedAttackType = attackType;
         switch (targetType)
         {
             case UnitType.Mech:
@@ -78,6 +90,7 @@ public partial class LogicUnit
                     transformedAttackType = AttackType.Punch;
                 }
 
+                // Except for DFA attacks against prone mechs, which hit normal table
                 if (weaponFeatures.Contains(WeaponFeature.MeleeDfa) && target.Unit.Stance is Stance.Prone)
                 {
                     transformedAttackType = AttackType.Normal;
@@ -87,12 +100,6 @@ public partial class LogicUnit
             default:
                 transformedAttackType = AttackType.Normal;
                 break;
-        }
-
-        // Melee attacks that are not kicks or punches use normal attack tables
-        if (transformedAttackType == AttackType.Melee)
-        {
-            transformedAttackType = AttackType.Normal;
         }
 
         return transformedAttackType;

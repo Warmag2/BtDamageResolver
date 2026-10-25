@@ -1,30 +1,10 @@
-﻿namespace Faemiyah.BtDamageResolver.Common.Constants;
+﻿namespace Faemiyah.BtDamageResolver.Api.Constants;
 
 /// <summary>
-/// Contains common constants for Orleans usage.
+/// Common configuration constants for Orleans usage.
 /// </summary>
 public static class Settings
 {
-    /// <summary>
-    /// Name of the data store for actor states.
-    /// </summary>
-    public const string ActorStateStoreName = "ActorState";
-
-    /// <summary>
-    /// Name of the data store for session states.
-    /// </summary>
-    public const string SessionStateStoreName = "SessionState";
-
-    /// <summary>
-    /// The name of the options block which contains Orleans clustering settings (the ADO.NET invariant).
-    /// </summary>
-    public const string ClusterOptionsBlockName = "ClusterOptions";
-
-    /// <summary>
-    /// The name of the options block which configures application logging.
-    /// </summary>
-    public const string LoggingOptionsBlockName = "LoggingOptions";
-
     /// <summary>
     /// The name of the options block which configures on-wire compression for Redis pub/sub payloads.
     /// </summary>

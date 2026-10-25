@@ -95,8 +95,8 @@ public partial class LogicUnit
     {
         var damageReport = new DamageReport
         {
-            Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-            DamagePaperDoll = GetDamagePaperDoll(target, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, [.. combatAction.Weapon.SpecialFeatures.Select(w => w.Type)]),
+            Phase = combatAction.Weapon.UsePhase,
+            DamagePaperDoll = GetDamagePaperDoll(target, combatAction.Weapon.AttackType, combatAction.FiringSolution.Direction, [.. combatAction.Weapon.SpecialFeatures.Select(w => w.Type)]),
             FiringUnitIds = [Unit.Id],
             FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = target.Unit.Id,
@@ -126,7 +126,7 @@ public partial class LogicUnit
         damagePackets = TransformDamagePacketsBasedOnTargetType(damageReport, damagePackets, target);
 
         // Finally, apply damage packets
-        await target.ApplyDamagePackets(damageReport, Unit.Id, damagePackets, combatAction.WeaponBay.FiringSolution, combatAction.MarginOfSuccess);
+        await target.ApplyDamagePackets(damageReport, Unit.Id, damagePackets, combatAction.FiringSolution, combatAction.MarginOfSuccess);
 
         return damageReport;
     }
@@ -142,7 +142,7 @@ public partial class LogicUnit
         var damageReport = new DamageReport
         {
             Phase = combatAction.Weapon.Type == WeaponType.Melee ? Phase.Melee : Phase.Weapon,
-            DamagePaperDoll = GetDamagePaperDoll(this, combatAction.Weapon.AttackType, combatAction.WeaponBay.FiringSolution.Direction, []),
+            DamagePaperDoll = GetDamagePaperDoll(this, combatAction.Weapon.AttackType, combatAction.FiringSolution.Direction, []),
             FiringUnitIds = [Unit.Id],
             FiringUnitNames = new() { { Unit.Id, Unit.Name } },
             TargetUnitId = Unit.Id,
@@ -454,7 +454,7 @@ public partial class LogicUnit
     {
         if (combatAction.Weapon.HasFeature(WeaponFeature.Melee, out var meleeFeatureEntry))
         {
-            var meleeDamage = MathExpression.Parse(meleeFeatureEntry.Data.InsertVariables(Unit, combatAction.WeaponBay));
+            var meleeDamage = MathExpression.Parse(meleeFeatureEntry.Data.InsertVariables(combatAction.FiringSolution, Unit));
             damageReport.Log(new AttackLogEntry(AttackLogEntryType.Calculation, Unit.Id, "Melee damage", meleeDamage));
 
             return Task.FromResult(meleeDamage);

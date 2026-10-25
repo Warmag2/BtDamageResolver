@@ -70,7 +70,7 @@ public abstract class LogicUnitAerospace : LogicUnit
     }
 
     /// <inheritdoc />
-    protected override int GetMinimumRangeModifier(Weapon weapon, WeaponBay weaponBay)
+    protected override int GetMinimumRangeModifier(FiringSolution firingSolution, Weapon weapon)
     {
         return 0;
     }
@@ -82,9 +82,9 @@ public abstract class LogicUnitAerospace : LogicUnit
     }
 
     /// <inheritdoc />
-    protected override RangeBracket GetRangeBracket(Weapon weapon, WeaponBay weaponBay)
+    protected override RangeBracket GetRangeBracket(FiringSolution firingSolution, Weapon weapon)
     {
-        return GetRangeBracketAerospace(weapon, weaponBay.FiringSolution.Distance);
+        return GetRangeBracketAerospace(weapon, firingSolution.Distance);
     }
 
     /// <inheritdoc />

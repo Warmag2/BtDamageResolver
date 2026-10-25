@@ -148,13 +148,13 @@ public class DamageReport
 
         foreach (var consumable in damageReport.ConsumablesAttackers)
         {
-            if (ConsumablesAttackers.TryGetValue(consumable.Key, out Consumables value))
+            if (ConsumablesAttackers.TryGetValue(consumable.Key, out var value))
             {
                 value.Merge(consumable.Value);
             }
             else
             {
-                ConsumablesAttackers.Add(consumable.Key, consumable.Value);
+                ConsumablesAttackers.Add(consumable.Key, consumable.Value.Copy());
             }
         }
 
@@ -169,7 +169,7 @@ public class DamageReport
     /// <param name="ammoAmount">The amount to spend.</param>
     public void SpendAmmoAttacker(Guid attackerId, string ammoType, int ammoAmount)
     {
-        if (ConsumablesAttackers.TryGetValue(attackerId, out Consumables consumables))
+        if (ConsumablesAttackers.TryGetValue(attackerId, out var consumables))
         {
             consumables.SpendAmmo(ammoType, ammoAmount);
         }

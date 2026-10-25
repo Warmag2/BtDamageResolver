@@ -3,13 +3,13 @@ using System.IO;
 using System.Text.Json;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Compression;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Communication;
 using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic;
-using Faemiyah.BtDamageResolver.Common.Constants;
-using Faemiyah.BtDamageResolver.Common.Logging;
-using Faemiyah.BtDamageResolver.Common.Logging.Options;
+using Faemiyah.Common.Hosting;
+using Faemiyah.Common.Hosting.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.DataProtection;
@@ -21,7 +21,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Client.BlazorServer;
 
@@ -52,7 +51,6 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.Configure<CompressionOptions>(Configuration.GetSection(Settings.CompressionOptionsBlockName));
-        services.Configure<FaemiyahLoggingOptions>(Configuration.GetSection(Settings.LoggingOptionsBlockName));
         services.Configure<CircuitOptions>(options =>
         {
             options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromHours(1);
@@ -68,10 +66,7 @@ public class Startup
             options.ApplicationMaxBufferSize = 1048576;
             options.TransportMaxBufferSize = 1048576;
         });
-        services.AddLogging(conf =>
-        {
-            conf.AddFaemiyahLogging();
-        });
+        services.AddLogging(conf => conf.AddFaemiyahLogging());
 
         services.AddDataProtection().SetApplicationName("BtDamageResolverClient").PersistKeysToFileSystem(new DirectoryInfo(Configuration["DataProtectionKeysPath"] ?? "/app/dpkeys/"));
         services.AddRazorPages();
@@ -85,6 +80,7 @@ public class Startup
                 Environments.Production,
                 StringComparison.OrdinalIgnoreCase);
         });
+
         services.ConfigureJsonSerializerOptions();
         services.AddSingleton<IEntityRepository<Ammo, string>>(GetRedisEntityRepository<Ammo>);
         services.AddSingleton<IEntityRepository<ArcDiagram, string>>(GetRedisEntityRepository<ArcDiagram>);

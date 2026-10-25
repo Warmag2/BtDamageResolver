@@ -306,10 +306,10 @@ public static class CollectionExtensions
     /// Insert objects to a guid -separated list.
     /// </summary>
     /// <typeparam name="TEntity">The type of the entity in the guid separated list.</typeparam>
-    /// <param name="ownerId">The owner of the special damage entries.</param>
-    /// <param name="location">The location to insert to.</param>
-    /// <param name="entries">The special damage entries to insert.</param>
-    public static void Insert<TEntity>(this Dictionary<Guid, List<TEntity>> input, Guid ownerId, List<TEntity> objects)
+    /// <param name="input">The input dictionary.</param>
+    /// <param name="ownerId">The owner of the entries to add.</param>
+    /// <param name="objects">The objects to insert.</param>
+    public static void Insert<TEntity>(this Dictionary<Guid, List<TEntity>> input, Guid ownerId, IReadOnlyCollection<TEntity> objects)
     {
         if (input.TryGetValue(ownerId, out var ownerList))
         {
@@ -317,7 +317,7 @@ public static class CollectionExtensions
         }
         else
         {
-            input.Add(ownerId, objects);
+            input.Add(ownerId, [.. objects]);
         }
     }
 

@@ -28,10 +28,13 @@
     <FormServer @key="_userStateController.PlayerName"></FormServer>
 }
 
-<ContainerTabSelector Enabled="@_userStateController.IsConnectedToGame" SelectedTab="@_selectedTab" TabNames="@_tabs" OnTabSelected="@SelectTab">
-    <div class="resolver_div_tab resolver_style_alignright">
-        <button @onclick="@LeaveGame" class="resolver_button_leave">X</button>
-    </div>
+<ContainerTabSelector Enabled="@_userStateController.IsConnectedToGame" SelectedTab="@_selectedTab" OnTabSelected="@SelectTab">
+    <ContainerTabItem Name="Data" />
+    <ContainerTabItem Name="Dashboard" />
+    <ContainerTabItem Name="AllUnits" />
+    <ContainerTabItem Name="DamageReports" />
+    <ContainerTabItem Name="Options" />
+    <ContainerTabButton AlignRight="true" OnClick="@LeaveGame">X</ContainerTabButton>
 </ContainerTabSelector>
 
 <ContainerTab Enabled="@_userStateController.IsConnectedToGame" TabIdentity="Data" TabSelection="@_selectedTab">
@@ -59,7 +62,6 @@
 
 @code
 {
-    private readonly List<string> _tabs = new() { "Data", "Dashboard", "AllUnits", "DamageReports", "Options" };
     private string _selectedTab = "Dashboard";
     private string _errorMessage;
 

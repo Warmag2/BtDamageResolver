@@ -17,6 +17,11 @@ services:
       redis:
         condition: service_healthy
     restart: on-failure
+    logging:
+      driver: k8s-file
+      options:
+        path: /var/log/containers/resolver.log
+        max-size: 4mb
 
   # Battletech Damage Resolver Client
   resolverclient:
@@ -35,6 +40,11 @@ services:
     depends_on:
       - resolver
     restart: on-failure
+    logging:
+      driver: k8s-file
+      options:
+        path: /var/log/containers/resolverclient.log
+        max-size: 4mb
 
   # Data Importer
   resolverdataimporter:
@@ -49,6 +59,11 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    logging:
+      driver: k8s-file
+      options:
+        path: /var/log/containers/resolverdataimporter.log
+        max-size: 4mb
 
   # Data Exporter
   resolverdataexporter:
@@ -66,6 +81,11 @@ services:
         condition: service_healthy
     volumes:
       - ./tmp:/app/data
+    logging:
+      driver: k8s-file
+      options:
+        path: /var/log/containers/resolverdataexporter.log
+        max-size: 4mb
 
   # Grafana
   grafana:
@@ -86,6 +106,11 @@ services:
       resolverpostgres:
         condition: service_healthy
     restart: on-failure
+    logging:
+      driver: k8s-file
+      options:
+        path: /var/log/containers/resolvergrafana.log
+        max-size: 4mb
 
   # Postgresql
   resolverpostgres:
@@ -109,6 +134,11 @@ services:
     restart: on-failure
     networks:
       - resolvernet
+    logging:
+      driver: k8s-file
+      options:
+        path: /var/log/containers/resolverpostgres.log
+        max-size: 4mb
 
   # Redis
   redis:
@@ -129,6 +159,11 @@ services:
     networks:
       - resolvernet
     restart: on-failure
+    logging:
+      driver: k8s-file
+      options:
+        path: /var/log/containers/resolverredis.log
+        max-size: 4mb
 
 networks:
   resolvernet:

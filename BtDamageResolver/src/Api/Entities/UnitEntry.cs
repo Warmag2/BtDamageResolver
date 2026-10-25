@@ -52,6 +52,11 @@ public partial class UnitEntry : Unit, IEntityWithRulesValidation
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Is this unit currently targeting multiple enemies.
+    /// </summary>
+    public bool MultiTarget { get; set; }
+
+    /// <summary>
     /// Is this unit currently narced.
     /// </summary>
     public bool Narced { get; set; }

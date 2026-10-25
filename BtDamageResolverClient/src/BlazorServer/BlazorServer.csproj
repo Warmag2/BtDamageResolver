@@ -9,9 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.467" />
-    <PackageReference Include="Faemiyah.BtDamageResolver.Common" Version="0.0.467" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.9" />
+    <PackageReference Include="Faemiyah.BtDamageResolver.Api" Version="0.0.473" />
+    <PackageReference Include="Faemiyah.Common" Version="0.1.0" />
+    <PackageReference Include="Faemiyah.Common.Hosting" Version="0.1.0" />
+    <PackageReference Include="Faemiyah.Ui" Version="0.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.13" />
   </ItemGroup>
 
   <ItemGroup>

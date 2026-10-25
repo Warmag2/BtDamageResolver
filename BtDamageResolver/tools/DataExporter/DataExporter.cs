@@ -5,13 +5,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Repositories.Providers;
+using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
-using Faemiyah.BtDamageResolver.Common.Constants;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using static Faemiyah.BtDamageResolver.Common.ConfigurationUtilities;
 
 namespace Faemiyah.BtDamageResolver.Tools.DataExporter;
 
@@ -32,7 +31,7 @@ internal sealed class DataExporter
     public DataExporter(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
         _logger = loggerFactory.CreateLogger<DataExporter>();
-        _jsonSerializerOptions = GetJsonSerializerOptions();
+        _jsonSerializerOptions = Faemiyah.Common.JsonConfiguration.CreateJsonSerializerOptions();
 
         // Pretty printing options
         _jsonSerializerOptions.IndentCharacter = ' ';
