@@ -10,7 +10,7 @@
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Faemiyah.Common" Version="0.1.0" />
     <PackageReference Include="Faemiyah.Common.Hosting" Version="0.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
     <PackageReference Include="Microsoft.Orleans.Client" Version="10.4.0" />
     <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="10.4.0" />
     <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.4.0" />
