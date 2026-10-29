@@ -1,0 +1,50 @@
+{
+    "Features": [
+        "CombatComputer",
+        "Cowl",
+        "DifficultEjection",
+        "WeakHeadArmor"
+    ],
+    "JumpJets": 0,
+    "Sinks": 12,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 90,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Gauss Rifle"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-10"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-4"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Cyclops CP-11-A"
+}

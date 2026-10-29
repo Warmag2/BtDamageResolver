@@ -1,0 +1,66 @@
+{
+    "Features": [
+        "NarrowLowProfile"
+    ],
+    "JumpJets": 0,
+    "Sinks": 26,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 65,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Rapid",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan Ultra AC/20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Machine Gun"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Flamer"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Cauldron Born A"
+}

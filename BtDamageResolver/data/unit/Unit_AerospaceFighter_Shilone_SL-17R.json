@@ -1,0 +1,63 @@
+{
+    "Features": [],
+    "JumpJets": 0,
+    "Sinks": 40,
+    "Speed": 6,
+    "Type": "AerospaceFighter",
+    "Tonnage": 65,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Large Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-15"
+                }
+            ],
+            "Name": "Default"
+        },
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        },
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        },
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-4"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Shilone SL-17R"
+}

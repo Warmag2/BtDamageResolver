@@ -1,0 +1,66 @@
+{
+    "Features": [],
+    "JumpJets": 0,
+    "Sinks": 20,
+    "Speed": 10,
+    "Type": "AerospaceFighter",
+    "Tonnage": 35,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-4"
+                }
+            ],
+            "Name": "Default"
+        },
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Small Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Small Laser"
+                }
+            ],
+            "Name": "Default"
+        },
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Small Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Small Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Sholagar SL-21G"
+}

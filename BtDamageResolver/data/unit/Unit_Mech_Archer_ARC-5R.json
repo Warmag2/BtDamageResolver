@@ -1,0 +1,44 @@
+{
+    "Features": [
+        "BattleFists",
+        "CommandUnit",
+        "Stable"
+    ],
+    "JumpJets": 0,
+    "Sinks": 24,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 70,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-15"
+                },
+                {
+                    "Ammo": "Artemis",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-15"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER Large Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER Large Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Archer ARC-5R"
+}

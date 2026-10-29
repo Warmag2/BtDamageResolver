@@ -1,0 +1,51 @@
+{
+    "Features": [
+        "TargetingComputer",
+        "TargetingLongRange"
+    ],
+    "JumpJets": 0,
+    "Sinks": 40,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 85,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-10"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Warhawk Prime"
+}

@@ -1,0 +1,62 @@
+{
+    "Features": [
+        "Ecm"
+    ],
+    "JumpJets": 4,
+    "Sinks": 27,
+    "Speed": 4,
+    "Type": "Mech",
+    "Tonnage": 70,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Streak SRM-4"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Light PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Light PPC"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Little Grasshopper"
+}

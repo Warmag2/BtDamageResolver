@@ -1,0 +1,44 @@
+{
+    "Features": [
+        "BattleFists",
+        "JettisonableWeapon",
+        "Rugged"
+    ],
+    "JumpJets": 5,
+    "Sinks": 26,
+    "Speed": 5,
+    "Type": "Mech",
+    "Tonnage": 55,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER PPC"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Small Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Melee Punch"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Griffin GRF-3M"
+}

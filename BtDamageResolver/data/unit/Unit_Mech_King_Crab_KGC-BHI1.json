@@ -1,0 +1,42 @@
+{
+    "Features": [
+        "Ams",
+        "CommandUnit"
+    ],
+    "JumpJets": 0,
+    "Sinks": 20,
+    "Speed": 3,
+    "Type": "Mech",
+    "Tonnage": 100,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Gauss Rifle"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Gauss Rifle"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "ER Large Laser"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LRM-20"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "King Crab KGC-BHI1"
+}

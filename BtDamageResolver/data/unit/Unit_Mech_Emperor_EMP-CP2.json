@@ -1,0 +1,52 @@
+{
+    "Features": [
+        "CommandUnit"
+    ],
+    "JumpJets": 3,
+    "Sinks": 20,
+    "Speed": 3,
+    "Type": "Mech",
+    "Tonnage": 90,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Slug",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LBX AC/20"
+                },
+                {
+                    "Ammo": "Slug",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "LBX AC/20"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Pulse Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Emperor EMP-CP2"
+}

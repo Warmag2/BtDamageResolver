@@ -1,0 +1,47 @@
+{
+    "Features": [],
+    "JumpJets": 6,
+    "Sinks": 20,
+    "Speed": 6,
+    "Type": "Mech",
+    "Tonnage": 45,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER PPC"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "TAG"
+                },
+                {
+                    "Ammo": "AP Strike",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Melee Retractable Blade"
+                },
+                {
+                    "Ammo": "AP Strike",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Melee Retractable Blade"
+                },
+                {
+                    "Ammo": "Normal",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "SRM-2"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Ivan"
+}

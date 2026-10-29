@@ -1,0 +1,37 @@
+{
+    "Features": [
+        "Ams",
+        "ImprovedSensors"
+    ],
+    "JumpJets": 0,
+    "Sinks": 24,
+    "Speed": 8,
+    "Type": "Mech",
+    "Tonnage": 45,
+    "Troopers": 1,
+    "WeaponBays": [
+        {
+            "Arc": "Default",
+            "Weapons": [
+                {
+                    "Ammo": "Slug",
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan LBX AC/2"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                },
+                {
+                    "Amount": 1,
+                    "Modifier": 0,
+                    "WeaponName": "Clan ER Medium Laser"
+                }
+            ],
+            "Name": "Default"
+        }
+    ],
+    "Name": "Fenris A"
+}
