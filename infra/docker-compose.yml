@@ -7,7 +7,7 @@ services:
     image: resolver:latest
     environment:
       DOTNET_ENVIRONMENT: Release
-      ConnectionStrings__Postgres: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=resolverpostgres;Port=5432;Database=BtDamageResolver;SSL Mode=Disable;"
+      ConnectionStrings__Postgres: "User ID=${RESOLVER_USER:?err};Password=${RESOLVER_PASSWORD:?err};Host=host.docker.internal;Port=5432;Database=resolver;"
       ConnectionStrings__Redis: "redis:6379,password=${RESOLVER_PASSWORD:?err}"
     networks:
       - resolvernet
@@ -87,59 +87,6 @@ services:
         path: /var/log/containers/resolverdataexporter.log
         max-size: 4mb
 
-  # Grafana
-  grafana:
-    container_name: grafana
-    image: resolvergrafana:latest
-    environment:
-      GF_SECURITY_ADMIN_USER: "${RESOLVER_USER:?err}"
-      GF_SECURITY_ADMIN_PASSWORD: "${RESOLVER_PASSWORD:?err}"
-      DATASOURCE_USER: "${RESOLVER_USER:?err}"
-      DATASOURCE_PASSWORD: "${RESOLVER_PASSWORD:?err}"
-    ports:
-      - 63000:3000
-    volumes:
-      - grafana-data:/var/lib/grafana
-    networks:
-      - resolvernet
-    depends_on:
-      resolverpostgres:
-        condition: service_healthy
-    restart: on-failure
-    logging:
-      driver: k8s-file
-      options:
-        path: /var/log/containers/resolvergrafana.log
-        max-size: 4mb
-
-  # Postgresql
-  resolverpostgres:
-    container_name: resolverpostgres
-    hostname: resolverpostgres
-    image: resolverpostgres:latest
-    environment:
-      POSTGRES_DB: BtDamageResolver
-      POSTGRES_USER: "${RESOLVER_USER:?err}"
-      POSTGRES_PASSWORD: "${RESOLVER_PASSWORD:?err}"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d BtDamageResolver"]
-      interval: 30s
-      retries: 3
-      start_period: 10s
-      timeout: 10s
-    ports:
-      - 65432:5432
-    volumes:
-      - postgres-data:/var/lib/postgresql/18/docker
-    restart: on-failure
-    networks:
-      - resolvernet
-    logging:
-      driver: k8s-file
-      options:
-        path: /var/log/containers/resolverpostgres.log
-        max-size: 4mb
-
   # Redis
   redis:
     container_name: redis
@@ -169,7 +116,5 @@ networks:
   resolvernet:
 
 volumes:
-  grafana-data:
-  postgres-data:
   redis-data:
   resolverclient-dpkeys:
