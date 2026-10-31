@@ -12,11 +12,11 @@
     <PackageReference Include="Faemiyah.Common" Version="0.1.1" />
     <PackageReference Include="Faemiyah.Common.Hosting" Version="0.1.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
-    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="10.4.1" />
-    <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="10.4.1" />
-    <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.4.1" />
-    <PackageReference Include="Microsoft.Orleans.Serialization.SystemTextJson" Version="10.4.1" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="10.4.1" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AdoNet" Version="10.4.2" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="10.4.2" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.4.2" />
+    <PackageReference Include="Microsoft.Orleans.Serialization.SystemTextJson" Version="10.4.2" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="10.4.2" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
   </ItemGroup>
 
