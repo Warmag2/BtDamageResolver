@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
 using Faemiyah.BtDamageResolver.Api.Constants;
-using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
@@ -84,9 +83,6 @@ public partial class PlayerActor
         // server later forgets due to a failed write or deactivation.
         await _playerActorState.WriteStateAsync();
         await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(false));
-
-        // Log the logout to permanent store
-        await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Logout, 0);
 
         return true;
     }
@@ -210,8 +206,5 @@ public partial class PlayerActor
 
         // Respond with a connection response
         await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
-
-        // Log the login to permanent store
-        await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.Login, 0);
     }
 }

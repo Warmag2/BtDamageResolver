@@ -6,7 +6,6 @@ using Faemiyah.BtDamageResolver.Actors.States.Types;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Options;
-using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
@@ -104,9 +103,6 @@ public partial class PlayerActor
                 // Save this state first and wait for save to finish to avoid any race conditions
                 // arising from changes incurred by uploading the state to the game actor.
                 await _playerActorState.WriteStateAsync();
-
-                // Log the number of updated units to permanent store
-                await _loggingServiceClient.LogPlayerAction(DateTime.UtcNow, this.GetPrimaryKeyString(), PlayerActionType.UpdateUnit, updatedUnits.Count);
 
                 // If we are connected to the game, also push player state to the game actor to be distributed to other players.
                 if (IsConnectedToGame())

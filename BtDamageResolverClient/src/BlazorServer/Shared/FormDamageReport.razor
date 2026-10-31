@@ -1,4 +1,4 @@
-﻿@inherits BaseFaemiyahComponent
+@inherits BaseFaemiyahComponent
 @using Faemiyah.BtDamageResolver.Api.Entities
 @using Faemiyah.BtDamageResolver.Api.Enums
 @using Faemiyah.BtDamageResolver.Client.BlazorServer.Logic
@@ -97,14 +97,13 @@
                         <div class="resolver_div_heat">
                             @if (DamageReport.FiringUnitIds.Count > 1)
                             {
-                                @:Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):
+                                <text>Attacker heat (@DamageReport.FiringUnitNames[firingUnitId]):</text>
                             }
                             else
                             {
-                                @:Attacker heat:
+                                <text>Attacker heat:</text>
                             }
-                            &nbsp;
-                            <b>@(attackerConsumables.Heat)</b>
+                            &nbsp;<b>@attackerConsumables.Heat</b>
                         </div>
                     </div>
                 break;
@@ -122,14 +121,13 @@
                     <div class="resolver_div_ammo">
                         @if (DamageReport.FiringUnitIds.Count > 1)
                         {
-                            @:Attacker (@DamageReport.FiringUnitNames[firingUnitId]) spent <b>@ammoExpenditureItem.Key:</b>
+                            <text>Attacker (@DamageReport.FiringUnitNames[firingUnitId]) spent</text>
                         }
                         else
                         {
-                            @:Attacker spent <b>@ammoExpenditureItem.Key:</b>
+                            <text>Attacker spent</text>
                         }
-                        &nbsp;
-                        <b>@ammoExpenditureItem.Value</b>
+                        &nbsp;<b>@ammoExpenditureItem.Key</b>:&nbsp;<b>@ammoExpenditureItem.Value</b>
                     </div>
                 }
             </div>

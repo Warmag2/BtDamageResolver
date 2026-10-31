@@ -9,7 +9,6 @@ using Faemiyah.BtDamageResolver.Actors.Logic.Interfaces;
 using Faemiyah.BtDamageResolver.Actors.States;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
-using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
@@ -24,7 +23,6 @@ public partial class GameActor : Grain, IGameActor
     private readonly ILogger<GameActor> _logger;
     private readonly ICommunicationServiceClient _communicationServiceClient;
     private readonly IHasher _hasher;
-    private readonly ILoggingServiceClient _loggingServiceClient;
     private readonly IPersistentState<GameActorState> _gameActorState;
     private readonly IPersistentState<GameActorDamageReportState> _gameActorDamageReportState;
     private readonly ILogicUnitFactory _logicUnitFactory;
@@ -38,15 +36,13 @@ public partial class GameActor : Grain, IGameActor
     /// <param name="communicationServiceClient">The communication service client.</param>
     /// <param name="hasher">The password hasher.</param>
     /// <param name="logicUnitFactory">The unit logic factory.</param>
-    /// <param name="loggingServiceClient">The logging service client.</param>
     public GameActor(
         [PersistentState(nameof(GameActorState), Settings.ActorStateStoreName)] IPersistentState<GameActorState> gameActorState,
         [PersistentState(nameof(GameActorDamageReportState), Settings.ActorStateStoreName)] IPersistentState<GameActorDamageReportState> gameActorDamageReportState,
         ILogger<GameActor> logger,
         ICommunicationServiceClient communicationServiceClient,
         IHasher hasher,
-        ILogicUnitFactory logicUnitFactory,
-        ILoggingServiceClient loggingServiceClient)
+        ILogicUnitFactory logicUnitFactory)
     {
         _gameActorState = gameActorState;
         _gameActorDamageReportState = gameActorDamageReportState;
@@ -54,7 +50,6 @@ public partial class GameActor : Grain, IGameActor
         _communicationServiceClient = communicationServiceClient;
         _hasher = hasher;
         _logicUnitFactory = logicUnitFactory;
-        _loggingServiceClient = loggingServiceClient;
     }
 
     /// <inheritdoc />
@@ -178,9 +173,6 @@ public partial class GameActor : Grain, IGameActor
 
         await CheckGameStateUpdateEvents(refreshGameEntry: true);
 
-        // Log logins to permanent store
-        await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Login, 0);
-
         return true;
     }
 
@@ -199,9 +191,6 @@ public partial class GameActor : Grain, IGameActor
             await CheckGameStateUpdateEvents(refreshGameEntry: true);
 
             _logger.LogInformation("In Game {GameId}, Player {PlayerId} successfully disconnected.", this.GetPrimaryKeyString(), playerId);
-
-            // Log logout to permanent store only when the player was actually present.
-            await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.LogOut, 0);
         }
         else
         {

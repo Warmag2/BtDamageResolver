@@ -19,7 +19,6 @@ public partial class PlayerActor : Grain, IPlayerActor
     private readonly ILogger<PlayerActor> _logger;
     private readonly ICommunicationServiceClient _communicationServiceClient;
     private readonly IHasher _hasher;
-    private readonly ILoggingServiceClient _loggingServiceClient;
     private readonly IPersistentState<PlayerActorState> _playerActorState;
 
     /// <summary>
@@ -30,19 +29,16 @@ public partial class PlayerActor : Grain, IPlayerActor
     /// <param name="loggingOptions">The logging options.</param>
     /// <param name="communicationServiceClient">The communication service client.</param>
     /// <param name="hasher">The password hasher.</param>
-    /// <param name="loggingServiceClient">The logging service client.</param>
     public PlayerActor(
         [PersistentState(nameof(PlayerActorState), Settings.ActorStateStoreName)] IPersistentState<PlayerActorState> playerActorState,
         ILogger<PlayerActor> logger,
         ICommunicationServiceClient communicationServiceClient,
-        IHasher hasher,
-        ILoggingServiceClient loggingServiceClient)
+        IHasher hasher)
     {
         _playerActorState = playerActorState;
         _logger = logger;
         _communicationServiceClient = communicationServiceClient;
         _hasher = hasher;
-        _loggingServiceClient = loggingServiceClient;
     }
 
     /// <inheritdoc />
