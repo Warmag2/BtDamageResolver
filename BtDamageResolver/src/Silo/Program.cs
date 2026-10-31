@@ -15,6 +15,7 @@ using Faemiyah.BtDamageResolver.Api.Entities.Interfaces;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Services;
 using Faemiyah.BtDamageResolver.Services.Interfaces;
+using Faemiyah.BtDamageResolver.Silo.Database;
 using Faemiyah.Common;
 using Faemiyah.Common.Hosting;
 using Faemiyah.Common.Hosting.Logging;
@@ -53,6 +54,8 @@ internal static class Program
 
         try
         {
+            await InitializeDatabase();
+
             await _siloHost.StartAsync(CancellationTokenSource.Token);
         }
         catch (OperationCanceledException ex)
@@ -87,6 +90,19 @@ internal static class Program
             // Event handler execution exits immediately, leaving the silo shutdown running on a background thread,
             // but the app doesn't crash because a.Cancel has been set = true
         };
+    }
+
+    private static async Task InitializeDatabase()
+    {
+        var configuration = _siloHost.Services.GetRequiredService<IConfiguration>();
+        var logger = _siloHost.Services.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(DatabaseInitializer));
+        var postgresConnectionString = configuration.GetConnectionString(Settings.PostgresConnectionStringName);
+        if (string.IsNullOrEmpty(postgresConnectionString))
+        {
+            throw new InvalidOperationException($"No '{Settings.PostgresConnectionStringName}' connection string configured.");
+        }
+
+        await DatabaseInitializer.EnsureInitializedAsync(postgresConnectionString, logger, CancellationTokenSource.Token);
     }
 
     private static async Task StopSilo()
@@ -155,7 +171,6 @@ internal static class Program
                     .AddGrainStorage(Actors.Constants.Settings.SessionStateStoreName, postgresConnectionString)
                     .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = HostNetwork.GetHostIp())
                     .AddGrainService<CommunicationService>()
-                    .AddGrainService<LoggingService>()
                     .ConfigureServices(services =>
                     {
                         services.AddKeyedSingleton(Settings.PostgresConnectionStringName, postgresConnectionString);
@@ -171,7 +186,6 @@ internal static class Program
                             serviceProvider.GetRequiredService<DataHelper>(),
                             serviceProvider.GetRequiredService<IGrainFactory>()));
                         services.AddSingleton<IHasher, FaemiyahPasswordHasher>();
-                        services.AddSingleton<ILoggingServiceClient, LoggingServiceClient>();
                         services.AddSingleton<ILogicUnitFactory, LogicUnitFactory>();
                         services.AddSingleton<IMathExpression, MathExpression>();
                         services.AddSingleton<IResolverRandom, ResolverRandom>();

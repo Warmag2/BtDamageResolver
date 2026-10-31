@@ -9,7 +9,6 @@ using Faemiyah.BtDamageResolver.Api.Entities;
 using Faemiyah.BtDamageResolver.Api.Entities.RepositoryEntities;
 using Faemiyah.BtDamageResolver.Api.Enums;
 using Faemiyah.BtDamageResolver.Api.Extensions;
-using Faemiyah.BtDamageResolver.Services.Interfaces.Enums;
 using Microsoft.Extensions.Logging;
 using Orleans;
 
@@ -131,9 +130,6 @@ public partial class GameActor
                 await DistributeDamageReportsToPlayers(_gameActorDamageReportState.State.DamageReports.GetReportsForTurn(_gameActorState.State.Turn));
             }
 
-            // Log update to permanent store
-            await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Update, 1);
-
             // Remark game existence only on events that change lobby-relevant state (join/leave/turn).
             // Per-keystroke player-state edits do not need to refresh the lobby entry, which would otherwise
             // trigger a broadcast storm via GameEntryRepository.AddOrUpdate -> Distribute().
@@ -195,9 +191,6 @@ public partial class GameActor
                 playerState.IsReady = false;
                 playerState.TimeStamp = _gameActorState.State.TurnTimeStamp;
             }
-
-            // Log turns to permanent store
-            await _loggingServiceClient.LogGameAction(DateTime.UtcNow, this.GetPrimaryKeyString(), GameActionType.Turn, _gameActorState.State.Turn);
 
             return true;
         }
