@@ -1,0 +1,22 @@
+name: btdamageresolver-dev
+
+services:
+  resolverpostgres-dev:
+    container_name: resolverpostgres-dev
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: "${RESOLVER_USER:?err}"
+      POSTGRES_PASSWORD: "${RESOLVER_PASSWORD:?err}"
+      POSTGRES_DB: resolver
+    ports:
+      - "5432:5432"
+    volumes:
+      - resolverpostgres-dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d resolver"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  resolverpostgres-dev:
