@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -30,7 +31,20 @@ public class LocalStorage
     /// <returns>A tuple with the success status of the fetch, and the credentials, if found.</returns>
     public async Task<Credentials> GetUserCredentials()
     {
-        var credentialsResult = await _protectedLocalStorage.GetAsync<Credentials>(LocalStorageStoreName, LocalStorageVariableUserCredentials);
+        ProtectedBrowserStorageResult<Credentials> credentialsResult;
+
+        try
+        {
+            credentialsResult = await _protectedLocalStorage.GetAsync<Credentials>(LocalStorageStoreName, LocalStorageVariableUserCredentials);
+        }
+        catch (CryptographicException)
+        {
+            // The stored value was protected with a data protection key that is no longer available
+            // (for example, after the key ring was cleared). Treat it as absent and discard the stale value.
+            await RemoveUserCredentials();
+
+            return null;
+        }
 
         if (credentialsResult.Success && !string.IsNullOrWhiteSpace(credentialsResult.Value.Name))
         {
@@ -79,7 +93,17 @@ public class LocalStorage
     /// <returns>The persistent client id for this browser.</returns>
     public async Task<Guid> GetClientId()
     {
-        var clientIdResult = await _protectedLocalStorage.GetAsync<Guid>(LocalStorageStoreName, LocalStorageVariableClientId);
+        ProtectedBrowserStorageResult<Guid> clientIdResult = default;
+
+        try
+        {
+            clientIdResult = await _protectedLocalStorage.GetAsync<Guid>(LocalStorageStoreName, LocalStorageVariableClientId);
+        }
+        catch (CryptographicException)
+        {
+            // The stored value was protected with a data protection key that is no longer available
+            // (for example, after the key ring was cleared). Fall through to generate a fresh client id.
+        }
 
         if (clientIdResult.Success && clientIdResult.Value != Guid.Empty)
         {
