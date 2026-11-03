@@ -82,10 +82,16 @@
 
             if (connectionResponse.IsConnected)
             {
-                _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
                 _userStateController.IsConnectedToServer = true;
                 _userStateController.PlayerName = connectionResponse.PlayerId;
-                await _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, AuthenticationToken = connectionResponse.AuthenticationToken });
+
+                // Only connection responses that answer a login carry a token. Game join/leave responses
+                // carry an empty token and must not overwrite the stored credentials for this session.
+                if (connectionResponse.AuthenticationToken != Guid.Empty)
+                {
+                    _resolverCommunicator.SetAuthenticationToken(connectionResponse.AuthenticationToken);
+                    await _localStorage.SetUserCredentials(new Credentials { Name = connectionResponse.PlayerId, AuthenticationToken = connectionResponse.AuthenticationToken });
+                }
             }
             else
             {
@@ -163,6 +169,8 @@
     {
         if (firstRender)
         {
+            _resolverCommunicator.SetClientId(await _localStorage.GetClientId());
+
             var credentials = await _localStorage.GetUserCredentials();
 
             if (credentials != null)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Faemiyah.BtDamageResolver.Actors.States.Types;
 using Faemiyah.BtDamageResolver.Api.Options;
 
@@ -15,7 +16,7 @@ public class PlayerActorState
     /// </summary>
     public PlayerActorState()
     {
-        AuthenticationToken = Guid.NewGuid();
+        AuthenticationTokens = new Dictionary<Guid, AuthenticationToken>();
         Options = new PlayerOptions();
         PasswordHash = null;
         PasswordSalt = null;
@@ -24,9 +25,13 @@ public class PlayerActorState
     }
 
     /// <summary>
-    /// The authentication token of the player.
+    /// The authentication tokens of the player, keyed by the client id of the browser session that owns each token.
     /// </summary>
-    public Guid AuthenticationToken { get; set; }
+    /// <remarks>
+    /// Each browser session has its own token, so logging in from one browser does not invalidate the sessions of
+    /// other browsers. Tokens expire according to <see cref="AuthenticationToken.Lifetime"/>.
+    /// </remarks>
+    public Dictionary<Guid, AuthenticationToken> AuthenticationTokens { get; set; }
 
     /// <summary>
     /// The ID of the game this player is in.

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Faemiyah.BtDamageResolver.Actors.States.Types;
 using Faemiyah.BtDamageResolver.Api.ClientInterface.Events;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Faemiyah.BtDamageResolver.Api.Entities;
@@ -15,20 +17,65 @@ public partial class PlayerActor
 {
     private async Task<bool> CheckAuthentication(Guid token)
     {
-        if (_playerActorState.State.AuthenticationToken == token)
+        var now = DateTime.UtcNow;
+
+        if (_playerActorState.State.AuthenticationTokens.Values.Any(authenticationToken => authenticationToken.Token == token && !authenticationToken.IsExpired(now)))
         {
             return true;
         }
 
-        await SendErrorMessageToClient("You or another user is trying to use this player actor, but the supplied authorization token was incorrect.");
+        await SendErrorMessageToClient("You or another user is trying to use this player actor, but the supplied authorization token was incorrect or has expired.");
         return false;
     }
 
-    private ConnectionResponse GetConnectionResponse(bool isConnected)
+    /// <summary>
+    /// Removes all expired authentication tokens from the player state.
+    /// </summary>
+    /// <remarks>
+    /// Does not persist the state by itself. Callers that rely on the pruning being durable must write the state.
+    /// </remarks>
+    /// <returns><b>True</b> if any tokens were removed, <b>false</b> otherwise.</returns>
+    private bool PruneExpiredAuthenticationTokens()
+    {
+        var now = DateTime.UtcNow;
+        var expiredClientIds = _playerActorState.State.AuthenticationTokens
+            .Where(pair => pair.Value.IsExpired(now))
+            .Select(pair => pair.Key)
+            .ToList();
+
+        foreach (var clientId in expiredClientIds)
+        {
+            _playerActorState.State.AuthenticationTokens.Remove(clientId);
+        }
+
+        return expiredClientIds.Count != 0;
+    }
+
+    /// <summary>
+    /// Removes any authentication token with the given value from the player state.
+    /// </summary>
+    /// <remarks>
+    /// Does not persist the state by itself. Callers that rely on the removal being durable must write the state.
+    /// </remarks>
+    /// <param name="token">The token value to remove.</param>
+    private void RemoveAuthenticationToken(Guid token)
+    {
+        var clientIds = _playerActorState.State.AuthenticationTokens
+            .Where(pair => pair.Value.Token == token)
+            .Select(pair => pair.Key)
+            .ToList();
+
+        foreach (var clientId in clientIds)
+        {
+            _playerActorState.State.AuthenticationTokens.Remove(clientId);
+        }
+    }
+
+    private ConnectionResponse GetConnectionResponse(bool isConnected, Guid authenticationToken)
     {
         var connectionResponse = new ConnectionResponse
         {
-            AuthenticationToken = _playerActorState.State.AuthenticationToken,
+            AuthenticationToken = authenticationToken,
             GameId = _playerActorState.State.GameId,
             IsConnected = isConnected,
             PlayerId = this.GetPrimaryKeyString(),

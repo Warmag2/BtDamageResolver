@@ -28,6 +28,15 @@ public class Credentials
     public Guid? AuthenticationToken { get; set; }
 
     /// <summary>
+    /// The id of the browser session making the request.
+    /// </summary>
+    /// <remarks>
+    /// Generated once per browser and persisted in browser local storage. The server keys each issued
+    /// authentication token by this id, which lets multiple browsers hold independent sessions for the same user.
+    /// </remarks>
+    public Guid ClientId { get; set; }
+
+    /// <summary>
     /// User or game name.
     /// </summary>
     [Required]

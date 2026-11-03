@@ -26,6 +26,7 @@ public class ResolverCommunicator : IDisposable
 
     private string _playerName;
     private Guid _authenticationToken;
+    private Guid _clientId;
     private ClientToServerCommunicator _clientToServerCommunicator;
     private bool disposed;
 
@@ -56,12 +57,22 @@ public class ResolverCommunicator : IDisposable
     }
 
     /// <summary>
+    /// Sets the persistent client id identifying this browser session to the server.
+    /// </summary>
+    /// <param name="clientId">The client id.</param>
+    public void SetClientId(Guid clientId)
+    {
+        _clientId = clientId;
+    }
+
+    /// <summary>
     /// Connects to the server.
     /// </summary>
     /// <param name="credentials">The user credentials.</param>
     public void Connect(Credentials credentials)
     {
         _playerName = credentials.Name;
+        credentials.ClientId = _clientId;
         Reset();
 
         try

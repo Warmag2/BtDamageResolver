@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.Api.Entities;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
@@ -11,16 +12,16 @@ public class LocalStorage
 {
     private const string LocalStorageStoreName = "BtDamageResolverClient";
     private const string LocalStorageVariableUserCredentials = "BtDamageResolverUserCredentials";
-    private readonly ProtectedSessionStorage _protectedSessionStorage;
+    private const string LocalStorageVariableClientId = "BtDamageResolverClientId";
+    private readonly ProtectedLocalStorage _protectedLocalStorage;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalStorage"/> class.
     /// </summary>
-    /// <param name="localStorageService">The local storage service.</param>
-    /// <param name="protectedSessionStorage">Protected session storage service.</param>
-    public LocalStorage(ProtectedSessionStorage protectedSessionStorage)
+    /// <param name="protectedLocalStorage">Protected local storage service.</param>
+    public LocalStorage(ProtectedLocalStorage protectedLocalStorage)
     {
-        _protectedSessionStorage = protectedSessionStorage;
+        _protectedLocalStorage = protectedLocalStorage;
     }
 
     /// <summary>
@@ -29,7 +30,7 @@ public class LocalStorage
     /// <returns>A tuple with the success status of the fetch, and the credentials, if found.</returns>
     public async Task<Credentials> GetUserCredentials()
     {
-        var credentialsResult = await _protectedSessionStorage.GetAsync<Credentials>(LocalStorageStoreName, LocalStorageVariableUserCredentials);
+        var credentialsResult = await _protectedLocalStorage.GetAsync<Credentials>(LocalStorageStoreName, LocalStorageVariableUserCredentials);
 
         if (credentialsResult.Success && !string.IsNullOrWhiteSpace(credentialsResult.Value.Name))
         {
@@ -42,11 +43,21 @@ public class LocalStorage
     /// <summary>
     /// Sets user credentials.
     /// </summary>
+    /// <remarks>
+    /// Only the user name and the authentication token are persisted. The password is never stored,
+    /// so a compromised browser store cannot leak it. Reconnecting relies on the authentication token.
+    /// </remarks>
     /// <param name="credentials">The credentials to set to.</param>
     /// <returns>A task which finishes when the credentials are set.</returns>
     public async Task SetUserCredentials(Credentials credentials)
     {
-        await _protectedSessionStorage.SetAsync(LocalStorageStoreName, LocalStorageVariableUserCredentials, credentials);
+        var persistedCredentials = new Credentials
+        {
+            Name = credentials.Name,
+            AuthenticationToken = credentials.AuthenticationToken
+        };
+
+        await _protectedLocalStorage.SetAsync(LocalStorageStoreName, LocalStorageVariableUserCredentials, persistedCredentials);
     }
 
     /// <summary>
@@ -55,6 +66,29 @@ public class LocalStorage
     /// <returns>A task which finishes when the credentials are removed.</returns>
     public async Task RemoveUserCredentials()
     {
-        await _protectedSessionStorage.DeleteAsync(LocalStorageVariableUserCredentials);
+        await _protectedLocalStorage.DeleteAsync(LocalStorageVariableUserCredentials);
+    }
+
+    /// <summary>
+    /// Gets the persistent client id for this browser, generating and storing one if it does not yet exist.
+    /// </summary>
+    /// <remarks>
+    /// The client id identifies this browser to the server so that each browser can hold its own session.
+    /// It is deliberately kept separate from the user credentials so that it survives logging out.
+    /// </remarks>
+    /// <returns>The persistent client id for this browser.</returns>
+    public async Task<Guid> GetClientId()
+    {
+        var clientIdResult = await _protectedLocalStorage.GetAsync<Guid>(LocalStorageStoreName, LocalStorageVariableClientId);
+
+        if (clientIdResult.Success && clientIdResult.Value != Guid.Empty)
+        {
+            return clientIdResult.Value;
+        }
+
+        var clientId = Guid.NewGuid();
+        await _protectedLocalStorage.SetAsync(LocalStorageStoreName, LocalStorageVariableClientId, clientId);
+
+        return clientId;
     }
 }

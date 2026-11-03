@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Faemiyah.BtDamageResolver.ActorInterfaces;
+using Faemiyah.BtDamageResolver.Actors.States.Types;
 using Faemiyah.BtDamageResolver.Api.Constants;
 using Microsoft.Extensions.Logging;
 using Orleans;
@@ -13,7 +14,7 @@ namespace Faemiyah.BtDamageResolver.Actors;
 public partial class PlayerActor
 {
     /// <inheritdoc/>
-    public async Task<bool> Connect(string password)
+    public async Task<bool> Connect(Guid clientId, string password)
     {
         if (password == null)
         {
@@ -31,11 +32,13 @@ public partial class PlayerActor
 
         if (_hasher.Verify(password, _playerActorState.State.PasswordSalt, _playerActorState.State.PasswordHash))
         {
-            // Invalidate any previous authentication token when connecting
-            _playerActorState.State.AuthenticationToken = Guid.NewGuid();
+            // Issue a fresh token for this browser session only, leaving other sessions untouched.
+            var authenticationToken = new AuthenticationToken(Guid.NewGuid(), DateTime.UtcNow);
+            PruneExpiredAuthenticationTokens();
+            _playerActorState.State.AuthenticationTokens[clientId] = authenticationToken;
             await _playerActorState.WriteStateAsync();
 
-            await PerformConnectionActions();
+            await PerformConnectionActions(authenticationToken.Token);
 
             return true;
         }
@@ -43,6 +46,9 @@ public partial class PlayerActor
         _logger.LogWarning("Player {PlayerId} has received a failed connection request from a client. Incorrect password.", this.GetPrimaryKeyString());
 
         await SendErrorMessageToClient($"Player {this.GetPrimaryKeyString()} has received a failed connection request from a client. Incorrect password.");
+
+        // Signal the failure explicitly so the client discards any stored credentials.
+        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(false, Guid.Empty));
 
         return false;
     }
@@ -52,7 +58,7 @@ public partial class PlayerActor
     {
         if (await CheckAuthentication(authenticationToken))
         {
-            await PerformConnectionActions();
+            await PerformConnectionActions(authenticationToken);
 
             return true;
         }
@@ -60,6 +66,9 @@ public partial class PlayerActor
         _logger.LogWarning("Player {PlayerId} has received a failed connection request from a client. Incorrect or expired authentication token.", this.GetPrimaryKeyString());
 
         await SendErrorMessageToClient($"Player {this.GetPrimaryKeyString()} has received a failed connection request from a client. Incorrect or expired authentication token. Please login with a password.");
+
+        // Signal the failure explicitly so the client discards the stale stored token.
+        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(false, Guid.Empty));
 
         return false;
     }
@@ -79,10 +88,13 @@ public partial class PlayerActor
             await SendErrorMessageToClient($"Inconsistent state. Player {this.GetPrimaryKeyString()} Unable to sign out of the active game. {_playerActorState.State.GameId}");
         }
 
+        // Signing out revokes this browser session's token so a later reconnect requires a password.
+        RemoveAuthenticationToken(authenticationToken);
+
         // Persist before responding so the client never sees a "disconnected" response that the
         // server later forgets due to a failed write or deactivation.
         await _playerActorState.WriteStateAsync();
-        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(false));
+        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(false, Guid.Empty));
 
         return true;
     }
@@ -117,7 +129,7 @@ public partial class PlayerActor
     /// <inheritdoc />
     public async Task<bool> LeaveGame()
     {
-        return await LeaveGame(_playerActorState.State.AuthenticationToken);
+        return await LeaveGameInternal();
     }
 
     /// <inheritdoc />
@@ -128,6 +140,11 @@ public partial class PlayerActor
             return false;
         }
 
+        return await LeaveGameInternal();
+    }
+
+    private async Task<bool> LeaveGameInternal()
+    {
         if (!IsConnectedToGame())
         {
             _logger.LogInformation("Player {PlayerId} tried to disconnect from game but is not in a game.", this.GetPrimaryKeyString());
@@ -166,8 +183,9 @@ public partial class PlayerActor
             await gameActor.RequestGameOptions(this.GetPrimaryKeyString());
             await gameActor.RequestDamageReports(this.GetPrimaryKeyString());
 
-            // Connection state has been updated, so respond with it
-            await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
+            // Connection state has been updated, so respond with it. The token is not re-sent here;
+            // it was already delivered by the connection response of the original login.
+            await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true, Guid.Empty));
 
             return true;
         }
@@ -188,10 +206,10 @@ public partial class PlayerActor
         await _playerActorState.WriteStateAsync();
 
         await SendOnlyThisPlayerGameStateToClient();
-        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
+        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true, Guid.Empty));
     }
 
-    private async Task PerformConnectionActions()
+    private async Task PerformConnectionActions(Guid authenticationToken)
     {
         _logger.LogInformation("Player {PlayerId} received a successful connection request from a client.", this.GetPrimaryKeyString());
 
@@ -199,12 +217,12 @@ public partial class PlayerActor
         await SendDataToClient(EventNames.PlayerOptions, _playerActorState.State.Options);
 
         // Ask for game-related state objects
-        await RequestGameOptions(_playerActorState.State.AuthenticationToken);
-        await RequestGameState(_playerActorState.State.AuthenticationToken);
-        await RequestDamageReports(_playerActorState.State.AuthenticationToken);
+        await RequestGameOptions(authenticationToken);
+        await RequestGameState(authenticationToken);
+        await RequestDamageReports(authenticationToken);
         await RequestTargetNumbers();
 
-        // Respond with a connection response
-        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true));
+        // Respond with a connection response carrying the token for this browser session.
+        await SendDataToClient(EventNames.ConnectionResponse, GetConnectionResponse(true, authenticationToken));
     }
 }

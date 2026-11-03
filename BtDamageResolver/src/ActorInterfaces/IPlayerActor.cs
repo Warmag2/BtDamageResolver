@@ -14,13 +14,15 @@ public interface IPlayerActor : IGrainWithStringKey
     /// <summary>
     /// Connect to the selected player actor.
     /// </summary>
+    /// <param name="clientId">The id of the browser session making the request, used to key the issued authentication token.</param>
     /// <param name="password">The password for the actor.</param>
     /// <remarks>
     /// If this player actor has not yet been claimed, its password is set to the selected password and the
-    /// method returns a success.
+    /// method returns a success. A successful connection issues a fresh authentication token for the given
+    /// browser session without invalidating the tokens of other browser sessions.
     /// </remarks>
     /// <returns><b>True</b> if the connection request succeeded, <b>false</b> otherwise.</returns>
-    Task<bool> Connect(string password);
+    Task<bool> Connect(Guid clientId, string password);
 
     /// <summary>
     /// Connect to the selected player actor.

@@ -65,7 +65,7 @@ public class ServerToClientCommunicator : RedisServerToClientCommunicator
         }
         else
         {
-            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedConnectRequest.Credentials.Name).Connect(unpackedConnectRequest.Credentials.Password))
+            if (!await _grainFactory.GetGrain<IPlayerActor>(unpackedConnectRequest.Credentials.Name).Connect(unpackedConnectRequest.Credentials.ClientId, unpackedConnectRequest.Credentials.Password))
             {
                 LogError(unpackedConnectRequest);
             }
